@@ -1,0 +1,24 @@
+.table th {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6c757d;
+}
+
+.form-check-input {
+  cursor: pointer;
+  width: 2.2em;
+  height: 1.2em;
+}
+
+.form-check-input:checked {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.role-select {
+  min-width: 130px;
+  font-size: 0.82rem;
+  cursor: pointer;
+}

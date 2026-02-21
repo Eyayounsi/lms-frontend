@@ -1,0 +1,31 @@
+<div class="settings-sidebar mb-lg-0">
+    <div>
+        <h6 class="mb-3">Menu Principal</h6>
+        <ul class="mb-3 pb-1">
+            <li>
+                <a [routerLink]="routes.admin_dashboard" class="d-inline-flex align-items-center" routerLinkActive="active">
+                    <i class="isax isax-grid-35 me-2"></i>Tableau de bord
+                </a>
+            </li>
+            <li>
+                <a [routerLink]="routes.admin_users" class="d-inline-flex align-items-center" routerLinkActive="active">
+                    <i class="isax isax-profile-2user5 me-2"></i>Gestion des Utilisateurs
+                </a>
+            </li>
+        </ul>
+        <hr>
+        <h6 class="mb-3">Paramètres</h6>
+        <ul>
+            <li>
+                <a [routerLink]="routes.adminSettings" class="d-inline-flex align-items-center" routerLinkActive="active">
+                    <i class="isax isax-setting-25 me-2"></i>Mon Profil
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" (click)="onLogout()" class="d-inline-flex align-items-center">
+                    <i class="isax isax-logout5 me-2"></i>Déconnexion
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

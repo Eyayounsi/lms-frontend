@@ -1,0 +1,227 @@
+<!-- Header -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card border-0 sa-header-banner">
+      <div class="card-body d-flex align-items-center gap-3 py-3">
+        <span class="icon-box bg-white bg-opacity-25 flex-shrink-0">
+          <i class="ti ti-users fs-20 text-white"></i>
+        </span>
+        <div class="flex-grow-1">
+          <h5 class="mb-0 text-white">Gestion Globale des Utilisateurs</h5>
+          <small class="text-white opacity-75">Super-Admin — Gérer tous les comptes, y compris les administrateurs</small>
+        </div>
+        <button class="btn btn-light btn-sm" (click)="loadUsers()">
+          <i class="ti ti-refresh me-1"></i>Actualiser
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alertes -->
+@if (successMessage) {
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="ti ti-circle-check me-2"></i>{{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage=''"></button>
+  </div>
+}
+@if (errorMessage) {
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="ti ti-alert-circle me-2"></i>{{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage=''"></button>
+  </div>
+}
+
+<!-- Filtres -->
+<div class="card mb-3 border-0">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Rechercher</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="ti ti-search"></i></span>
+          <input type="text" class="form-control" placeholder="Nom ou email..."
+            [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Rôle</label>
+        <select class="form-select" [(ngModel)]="filterRole" (ngModelChange)="onFilterChange()">
+          <option value="">Tous les rôles</option>
+          <option value="SUPERADMIN">Super Admin</option>
+          <option value="ADMIN">Admin</option>
+          <option value="INSTRUCTOR">Instructeur</option>
+          <option value="STUDENT">Étudiant</option>
+          <option value="RECRUITER">Recruteur</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Statut</label>
+        <select class="form-select" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+          <option value="">Tous</option>
+          <option value="ACTIVE">Actif</option>
+          <option value="BLOCKED">Bloqué</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" (click)="loadUsers()">
+          <i class="ti ti-refresh me-1"></i>Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card border-0">
+  <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+    <h6 class="card-title mb-0 fw-bold">Liste Complète des Utilisateurs</h6>
+    <span class="badge bg-warning text-dark">{{ filteredUsers.length }} utilisateur(s)</span>
+  </div>
+  <div class="card-body p-0">
+
+    @if (loading) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-warning" role="status"></div>
+        <p class="mt-2 text-muted">Chargement...</p>
+      </div>
+    }
+
+    @if (!loading && filteredUsers.length === 0) {
+      <div class="text-center py-5">
+        <i class="ti ti-users-off fs-40 text-muted d-block mb-2"></i>
+        <p class="text-muted">Aucun utilisateur trouvé</p>
+      </div>
+    }
+
+    @if (!loading && filteredUsers.length > 0) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-3">#</th>
+              <th>Utilisateur</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>Inscription</th>
+              <th class="text-center">Bloquer</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers; let i = $index; track user.id) {
+              <tr [class.table-warning-subtle]="user.role === 'SUPERADMIN'"
+                  [class.table-danger-subtle]="user.role === 'ADMIN'">
+                <td class="ps-3 text-muted small">{{ i + 1 }}</td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="user-avatar d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
+                         [class.bg-warning]="user.role === 'SUPERADMIN'"
+                         [class.bg-danger-transparent]="user.role === 'ADMIN'"
+                         [class.bg-primary-transparent]="user.role !== 'SUPERADMIN' && user.role !== 'ADMIN'">
+                      @if (user.role === 'SUPERADMIN') {
+                        <i class="ti ti-crown text-white"></i>
+                      } @else {
+                        <span class="fw-bold text-uppercase"
+                          [class.text-danger]="user.role === 'ADMIN'"
+                          [class.text-primary]="user.role !== 'ADMIN'">
+                          {{ user.fullName.charAt(0) }}
+                        </span>
+                      }
+                    </div>
+                    <div>
+                      <p class="mb-0 fw-semibold">{{ user.fullName }}</p>
+                      <small class="text-muted">{{ user.phone || 'Pas de tél.' }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-muted small">{{ user.email }}</td>
+                <td>
+                  @if (user.role === 'SUPERADMIN') {
+                    <!-- SuperAdmin : non modifiable -->
+                    <span class="badge bg-warning text-dark">
+                      <i class="ti ti-crown me-1"></i>Super Admin
+                    </span>
+                  } @else {
+                    <select class="form-select form-select-sm role-select"
+                      [ngModel]="user.role"
+                      (ngModelChange)="changeRole(user, $event)">
+                      <option value="STUDENT">Étudiant</option>
+                      <option value="INSTRUCTOR">Instructeur</option>
+                      <option value="RECRUITER">Recruteur</option>
+                      <option value="ADMIN">Administrateur</option>
+                      <option value="SUPERADMIN">Super Admin</option>
+                    </select>
+                  }
+                </td>
+                <td>
+                  @if (user.accountStatus === 'ACTIVE') {
+                    <span class="badge bg-success-transparent text-success">
+                      <i class="ti ti-circle-check me-1"></i>Actif
+                    </span>
+                  } @else if (user.accountStatus === 'BLOCKED') {
+                    <span class="badge bg-danger-transparent text-danger">
+                      <i class="ti ti-ban me-1"></i>Bloqué
+                    </span>
+                  } @else {
+                    <span class="badge bg-warning-transparent text-warning">
+                      <i class="ti ti-clock me-1"></i>En attente
+                    </span>
+                  }
+                </td>
+                <td class="text-muted small">{{ formatDate(user.createdAt) }}</td>
+                <td class="text-center">
+                  <div class="form-check form-switch d-flex justify-content-center mb-0">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                      [checked]="user.accountStatus === 'BLOCKED'"
+                      [disabled]="user.role === 'SUPERADMIN'"
+                      [title]="user.role === 'SUPERADMIN' ? 'Impossible de bloquer un Super Admin' : (user.accountStatus === 'BLOCKED' ? 'Débloquer' : 'Bloquer')"
+                      (change)="toggleBlock(user)">
+                  </div>
+                </td>
+                <td class="text-center">
+                  @if (user.role !== 'SUPERADMIN') {
+                    <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(user)" title="Supprimer">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  } @else {
+                    <span class="text-muted small">—</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- Modal de suppression -->
+@if (userToDelete) {
+  <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-sm">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title">
+            <i class="ti ti-alert-triangle text-danger me-2"></i>Confirmer la suppression
+          </h5>
+          <button type="button" class="btn-close" (click)="cancelDelete()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Êtes-vous sûr de vouloir supprimer le compte de <strong>{{ userToDelete.fullName }}</strong> ?</p>
+          <p class="text-muted small mb-0">Cette action est irréversible.</p>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-outline-secondary" (click)="cancelDelete()">Annuler</button>
+          <button type="button" class="btn btn-danger" (click)="deleteUser()">
+            <i class="ti ti-trash me-1"></i>Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}

@@ -1,0 +1,36 @@
+<!-- Main Wrapper -->
+<div
+  class="main-wrapper"
+  [ngClass]="{
+     'home-3':base==='index-three','home-4':base==='index-four' ,'home-five':base==='index-five','index-six':base==='index-six'
+  }"
+  >
+
+    @if (isuserHeader) {
+      <app-header></app-header>
+    }
+  
+    @if (isAdminHeader) {
+      <app-admin-header></app-admin-header>
+    }
+    <div>
+      <router-outlet></router-outlet>
+    </div>
+
+</div>
+
+<!-- ===== MODAL COMPTE BLOQUÉ ===== -->
+@if (blockedMessage) {
+  <div class="blocked-overlay">
+    <div class="blocked-modal">
+      <div class="blocked-icon">
+        <i class="ti ti-ban"></i>
+      </div>
+      <h4 class="blocked-title">Compte bloqué</h4>
+      <p class="blocked-text">{{ blockedMessage }}</p>
+      <button class="btn btn-danger w-100 mt-2" (click)="onBlockedLogout()">
+        <i class="ti ti-logout me-2"></i>Se déconnecter
+      </button>
+    </div>
+  </div>
+}

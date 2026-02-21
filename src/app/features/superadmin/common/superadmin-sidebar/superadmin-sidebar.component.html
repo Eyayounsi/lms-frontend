@@ -1,0 +1,50 @@
+<div class="settings-sidebar mb-lg-0">
+
+  <!-- Avatar + Nom -->
+  <div class="d-flex align-items-center gap-3 p-3 mb-3 rounded-3 superadmin-profile-box">
+    <div class="avatar avatar-md rounded-circle bg-warning d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:48px;height:48px;">
+      <i class="ti ti-crown fs-22 text-white"></i>
+    </div>
+    <div class="overflow-hidden">
+      <p class="mb-0 fw-bold text-truncate text-white" style="max-width:150px">{{ userName }}</p>
+      <span class="badge bg-warning text-dark small">Super Administrateur</span>
+    </div>
+  </div>
+
+  <h6 class="mb-3 text-muted text-uppercase small fw-semibold">Menu Principal</h6>
+  <ul class="mb-3 pb-1">
+    <li>
+      <a [routerLink]="routes.superadmin_dashboard"
+         class="d-inline-flex align-items-center"
+         routerLinkActive="active">
+        <i class="isax isax-grid-35 me-2"></i>Tableau de bord
+      </a>
+    </li>
+    <li>
+      <a [routerLink]="routes.superadmin_users"
+         class="d-inline-flex align-items-center"
+         routerLinkActive="active">
+        <i class="isax isax-profile-2user5 me-2"></i>Gestion des Utilisateurs
+      </a>
+    </li>
+  </ul>
+
+  <hr>
+
+  <h6 class="mb-3 text-muted text-uppercase small fw-semibold">Paramètres</h6>
+  <ul>
+    <li>
+      <a [routerLink]="routes.superadminSettings"
+         class="d-inline-flex align-items-center"
+         routerLinkActive="active">
+        <i class="isax isax-setting-25 me-2"></i>Mon Profil
+      </a>
+    </li>
+    <li>
+      <a href="javascript:void(0)" (click)="onLogout()" class="d-inline-flex align-items-center text-danger">
+        <i class="isax isax-logout5 me-2"></i>Déconnexion
+      </a>
+    </li>
+  </ul>
+</div>

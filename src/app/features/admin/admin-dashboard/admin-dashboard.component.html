@@ -1,0 +1,216 @@
+<!-- Bannière Admin -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card border-0 admin-banner">
+      <div class="card-body d-flex align-items-center gap-3 py-4">
+        <div class="admin-avatar-ring flex-shrink-0">
+          <div class="admin-avatar">
+            <i class="ti ti-shield-check fs-24 text-white"></i>
+          </div>
+        </div>
+        <div class="flex-grow-1">
+          <h4 class="mb-1 text-white fw-bold">Bienvenue, {{ userName }} 🛡️</h4>
+          <p class="mb-0 text-white opacity-75 small">Tableau de bord Administrateur — Gestion de la plateforme</p>
+        </div>
+        <button class="btn btn-light btn-sm" (click)="loadStats()">
+          <i class="ti ti-refresh me-1"></i>Actualiser
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Skeleton -->
+@if (loading) {
+  <div class="row g-3 mb-4">
+    @for (i of [1,2,3,4]; track i) {
+      <div class="col-sm-6 col-xl-3">
+        <div class="card border-0">
+          <div class="card-body">
+            <div class="skeleton skeleton-line w-50 mb-2"></div>
+            <div class="skeleton skeleton-line w-75 mb-3" style="height:28px"></div>
+            <div class="skeleton skeleton-line w-100"></div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}
+
+@if (!loading && stats) {
+  <!-- ─── Cartes Stats ───────────────────────────────────────────────────────── -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="stat-icon bg-primary-transparent">
+              <i class="ti ti-users fs-20 text-primary"></i>
+            </div>
+            <span class="badge bg-primary-transparent text-primary">Total</span>
+          </div>
+          <h2 class="fw-bold mb-1">{{ stats.totalUsers }}</h2>
+          <p class="text-muted small mb-2">Utilisateurs enregistrés</p>
+          <div class="progress" style="height:4px"><div class="progress-bar bg-primary" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="stat-icon bg-success-transparent">
+              <i class="ti ti-circle-check fs-20 text-success"></i>
+            </div>
+            <span class="badge bg-success-transparent text-success">
+              {{ stats.totalUsers > 0 ? ((stats.activeUsers / stats.totalUsers) * 100 | number:'1.0-0') : 0 }}%
+            </span>
+          </div>
+          <h2 class="fw-bold mb-1 text-success">{{ stats.activeUsers }}</h2>
+          <p class="text-muted small mb-2">Comptes actifs</p>
+          <div class="progress" style="height:4px">
+            <div class="progress-bar bg-success"
+              [style.width]="(stats.totalUsers > 0 ? stats.activeUsers/stats.totalUsers*100 : 0) + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="stat-icon bg-danger-transparent">
+              <i class="ti ti-ban fs-20 text-danger"></i>
+            </div>
+            <span class="badge bg-danger-transparent text-danger">
+              {{ stats.totalUsers > 0 ? ((stats.blockedUsers / stats.totalUsers) * 100 | number:'1.0-0') : 0 }}%
+            </span>
+          </div>
+          <h2 class="fw-bold mb-1 text-danger">{{ stats.blockedUsers }}</h2>
+          <p class="text-muted small mb-2">Comptes bloqués</p>
+          <div class="progress" style="height:4px">
+            <div class="progress-bar bg-danger"
+              [style.width]="(stats.totalUsers > 0 ? stats.blockedUsers/stats.totalUsers*100 : 0) + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 stat-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="stat-icon bg-warning-transparent">
+              <i class="ti ti-user-plus fs-20 text-warning"></i>
+            </div>
+            <span class="badge bg-warning-transparent text-warning">Ce mois</span>
+          </div>
+          <h2 class="fw-bold mb-1 text-warning">{{ newThisMonth }}</h2>
+          <p class="text-muted small mb-2">Nouvelles inscriptions</p>
+          <div class="progress" style="height:4px"><div class="progress-bar bg-warning" style="width:60%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Donut + Bar ──────────────────────────────────────────────────────── -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-5">
+      <div class="card border-0">
+        <div class="card-header bg-transparent border-0 pb-0">
+          <h6 class="fw-bold mb-1"><i class="ti ti-chart-pie me-2 text-danger"></i>Statut des Comptes</h6>
+        </div>
+        <div class="card-body pt-2">
+          @if (donutSeries.length > 0) {
+            <apx-chart
+              [series]="donutSeries" [chart]="donutOptions.chart" [labels]="donutOptions.labels"
+              [colors]="donutOptions.colors" [legend]="donutOptions.legend"
+              [dataLabels]="donutOptions.dataLabels" [plotOptions]="donutOptions.plotOptions"
+              [tooltip]="donutOptions.tooltip">
+            </apx-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div class="card border-0">
+        <div class="card-header bg-transparent border-0 pb-0">
+          <h6 class="fw-bold mb-1"><i class="ti ti-chart-bar me-2 text-primary"></i>Utilisateurs par Rôle</h6>
+        </div>
+        <div class="card-body pt-2">
+          @if (barSeries.length > 0) {
+            <apx-chart
+              [series]="barSeries" [chart]="barOptions.chart" [plotOptions]="barOptions.plotOptions"
+              [colors]="barOptions.colors" [dataLabels]="barOptions.dataLabels"
+              [xaxis]="barOptions.xaxis" [yaxis]="barOptions.yaxis"
+              [grid]="barOptions.grid" [legend]="barOptions.legend" [tooltip]="barOptions.tooltip">
+            </apx-chart>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Line + Actions ───────────────────────────────────────────────────── -->
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="card border-0">
+        <div class="card-header bg-transparent border-0 pb-0">
+          <h6 class="fw-bold mb-1"><i class="ti ti-trending-up me-2 text-danger"></i>Inscriptions (12 derniers mois)</h6>
+        </div>
+        <div class="card-body pt-2">
+          @if (lineSeries.length > 0) {
+            <apx-chart
+              [series]="lineSeries" [chart]="lineOptions.chart" [colors]="lineOptions.colors"
+              [fill]="lineOptions.fill" [stroke]="lineOptions.stroke" [markers]="lineOptions.markers"
+              [xaxis]="lineOptions.xaxis" [yaxis]="lineOptions.yaxis"
+              [grid]="lineOptions.grid" [dataLabels]="lineOptions.dataLabels" [tooltip]="lineOptions.tooltip">
+            </apx-chart>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card border-0 h-100">
+        <div class="card-header bg-transparent border-0 pb-0">
+          <h6 class="fw-bold mb-1"><i class="ti ti-bolt me-2 text-warning"></i>Actions Rapides</h6>
+        </div>
+        <div class="card-body">
+          <a [routerLink]="routes.admin_users"
+             class="quick-link d-flex align-items-center gap-3 p-3 rounded-3 mb-3 text-decoration-none">
+            <div class="stat-icon bg-primary-transparent">
+              <i class="ti ti-users fs-20 text-primary"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Gérer les Utilisateurs</p>
+              <small class="text-muted">Bloquer, supprimer, modifier</small>
+            </div>
+            <i class="ti ti-chevron-right text-muted"></i>
+          </a>
+          <div class="quick-link d-flex align-items-center gap-3 p-3 rounded-3 mb-3"
+               (click)="loadStats()" style="cursor:pointer">
+            <div class="stat-icon bg-success-transparent">
+              <i class="ti ti-refresh fs-20 text-success"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Rafraîchir les Données</p>
+              <small class="text-muted">Recharger les statistiques</small>
+            </div>
+            <i class="ti ti-chevron-right text-muted"></i>
+          </div>
+          <hr class="my-2">
+          <!-- Résumé par rôle -->
+          @for (entry of stats.usersByRole | keyvalue; track entry.key) {
+            <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
+              <div class="d-flex align-items-center gap-2">
+                <span class="role-dot" [style.background]="getRoleColor(entry.key)"></span>
+                <small class="fw-semibold">{{ getRoleLabel(entry.key) }}</small>
+              </div>
+              <span class="badge" [style.background]="getRoleColor(entry.key) + '20'"
+                    [style.color]="getRoleColor(entry.key)">{{ entry.value }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
