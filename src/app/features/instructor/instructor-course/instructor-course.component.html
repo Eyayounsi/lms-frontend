@@ -1,161 +1,197 @@
+﻿<div class="page-content">
 
-    <div class="row">
-        <div class="col-xxl col-lg-4 col-md-6">
-            <div class="card bg-success">
-                <div class="card-body">
-                    <h6 class="fw-medium mb-1 text-white">Active Courses</h6>
-                    <h4 class="fw-bold text-white">45</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-xxl col-lg-4 col-md-6">
-            <div class="card bg-secondary">
-                <div class="card-body">
-                    <h6 class="fw-medium mb-1 text-white">Pending Courses</h6>
-                    <h4 class="fw-bold text-white">21</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-xxl col-lg-4 col-md-6">
-            <div class="card bg-info">
-                <div class="card-body">
-                    <h6 class="fw-medium mb-1 text-white">Draft Courses</h6>
-                    <h4 class="fw-bold text-white">15</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-xxl col-lg-4 col-md-6">
-            <div class="card bg-skyblue">
-                <div class="card-body">
-                    <h6 class="fw-medium mb-1 text-white">Free Courses</h6>
-                    <h4 class="fw-bold text-white">16</h4>
-                </div>
-            </div>
-        </div>
-        <div class="col-xxl col-lg-4 col-md-6">
-            <div class="card bg-purple">
-                <div class="card-body">
-                    <h6 class="fw-medium mb-1 text-white">Paid Courses</h6>
-                    <h4 class="fw-bold text-white">21</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="page-title d-flex align-items-center justify-content-between">
-        <h5 class="fw-bold">Courses</h5>
-        <div class="d-flex align-items-center list-icons">
-            <a [routerLink]="routes.instructorCourse" class="active me-2"><i class="isax isax-task"></i></a>
-            <a [routerLink]="routes.instructorCourseGrid"><i class="isax isax-element-3"></i></a>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8">
-            <div class="mb-3">
-                <div class="dropdown">
-                    <a href="javascript:void(0);" class="dropdown-toggle text-gray-6 btn  rounded border d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                        Status
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end p-3">
-                        <li>
-                            <a href="javascript:void(0);" class="dropdown-item rounded-1">Published</a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0);" class="dropdown-item rounded-1">Pending</a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0);" class="dropdown-item rounded-1">Draft</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-icon mb-3">
-                <span class="input-icon-addon">
-                    <i class="isax isax-search-normal-14"></i>
-                </span>
-                <input  [(ngModel)]="searchDataValue" [ngModelOptions]="{ standalone: true }" type="search" (ngModelChange)="searchData(searchDataValue)" class="form-control form-control-md" placeholder="Search">
-            </div>
-        </div>
-    </div>
-    <div class="table-responsive custom-table">
-        <table matSort (matSortChange)="sortData($event)" class="table">
-            <thead class="thead-light">
-                <tr>
-                    <th>Course Name</th>
-                    <th>Students</th>
-                    <th>Price</th>
-                    <th>Ratings</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @for(data of tableData;track data){
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center">
-                        
-                            <a [routerLink]="routes.courseDetails" class="avatar avatar-lg me-2 flex-shrink-0"><img class="img-fluid object-fit-cover" src="assets/img/course/{{data.img}}" alt=""></a>
-                           
-                            <div>
-                                <h6 class="fw-medium mb-2"><a [routerLink]="routes.courseDetails">{{data.courseName}}</a></h6>
-                                <div class="d-flex align-items-center">
-                                    <span class="d-inline-flex fs-12 align-items-center me-2 pe-2 border-end"><i class="isax isax-video-circle me-1 text-gray-9 fw-bold"></i>{{data.lessons}}</span>
-                                    <span class="d-inline-flex fs-12 align-items-center me-2 pe-2 border-end"><i class="isax isax-message-question me-1 text-gray-9 fw-bold"></i>{{data.quizzes}}</span>
-                                    <span class="d-inline-flex fs-12 align-items-center"><i class="isax isax-clock me-1 text-gray-9 fw-bold"></i>{{data.duration}}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>{{data.students}}</td>
-                    <td>{{data.price}}</td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-star fs-12 filled text-warning me-1"></i>
-                            <span>{{data.ratings}}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge badge-sm d-inline-flex align-items-center me-1" [ngClass]="data.status==='Published'?'bg-success':data.status==='Pending'?'bg-skyblue':'bg-info'">
-                            <i class="fa-solid fa-circle fs-5 me-1"></i>
-                            {{data.status}}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="d-flex align-items-center">
-                            <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon"><i class="isax isax-edit-2"></i></a>
-                            <a href="javascript:void(0);" class="d-inline-flex fs-14 action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="isax isax-trash"></i></a>
-                        </div>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    </div>
-    <!-- /pagination -->
-    <app-custom-pagination/>
-    <!-- /pagination -->
+  <!-- Messages -->
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
+    <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+    <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+  </div>
 
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-xxl col-lg-3 col-md-6">
+      <div class="card bg-success">
+        <div class="card-body">
+          <h6 class="fw-medium mb-1 text-white">Cours Publiés</h6>
+          <h4 class="fw-bold text-white">{{ publishedCount }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl col-lg-3 col-md-6">
+      <div class="card bg-warning">
+        <div class="card-body">
+          <h6 class="fw-medium mb-1 text-white">En attente</h6>
+          <h4 class="fw-bold text-white">{{ pendingCount }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl col-lg-3 col-md-6">
+      <div class="card bg-secondary">
+        <div class="card-body">
+          <h6 class="fw-medium mb-1 text-white">Brouillons</h6>
+          <h4 class="fw-bold text-white">{{ draftCount }}</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-xxl col-lg-3 col-md-6">
+      <div class="card bg-danger">
+        <div class="card-body">
+          <h6 class="fw-medium mb-1 text-white">Rejetés</h6>
+          <h4 class="fw-bold text-white">{{ rejectedCount }}</h4>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    			<!-- Delete Modal -->
-			<div class="modal fade" id="delete_modal">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-body text-center custom-modal-body">
-							<span class="avatar avatar-lg bg-danger-transparent rounded-circle mb-2">
-								<i class="isax isax-trash fs-24 text-danger"></i>
-							</span>
-							<div>
-								<h4 class="mb-2">Delete Course</h4>
-								<p class="mb-3">Are you sure you want to delete course?</p>
-								<div class="d-flex align-items-center justify-content-center">
-									<a href="javascript:void(0);" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Cancel</a>
-									<a href="javascript:void(0);" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Yes, Delete</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Delete Modal -->
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold mb-0"><i class="fa-solid fa-graduation-cap me-2"></i>Mes Cours</h5>
+    <a [routerLink]="routes.addCourse" class="btn btn-primary">
+      <i class="fa-solid fa-plus me-1"></i>Nouveau cours
+    </a>
+  </div>
+
+  <!-- Filtres -->
+  <div class="row mb-4">
+    <div class="col-md-7">
+      <div class="input-group">
+        <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
+        <input type="text" class="form-control" [(ngModel)]="searchTerm"
+               (input)="applyFilters()" placeholder="Rechercher un cours...">
+      </div>
+    </div>
+    <div class="col-md-5">
+      <select class="form-select" [(ngModel)]="selectedStatus" (change)="applyFilters()">
+        <option value="">Tous les statuts</option>
+        <option value="DRAFT">Brouillon</option>
+        <option value="PENDING">En attente</option>
+        <option value="PUBLISHED">Publié</option>
+        <option value="REJECTED">Rejeté</option>
+        <option value="ARCHIVED">Archivé</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-muted">Chargement de vos cours...</p>
+  </div>
+
+  <!-- Aucun cours -->
+  <div *ngIf="!loading && filteredCourses.length === 0" class="text-center py-5">
+    <i class="fa-solid fa-book-open fa-3x text-muted mb-3"></i>
+    <h5 class="text-muted">Aucun cours trouvé</h5>
+    <p class="text-muted">
+      <a [routerLink]="routes.addCourse" class="text-primary">Créez votre premier cours</a>
+    </p>
+  </div>
+
+  <!-- Liste des cours -->
+  <div *ngIf="!loading && filteredCourses.length > 0">
+    <div class="card mb-3 shadow-sm" *ngFor="let course of filteredCourses">
+      <div class="card-body">
+        <div class="row align-items-center">
+
+          <!-- Image -->
+          <div class="col-md-2">
+            <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded"
+                 style="height: 90px; width: 100%; object-fit: cover;" alt="cover">
+          </div>
+
+          <!-- Info -->
+          <div class="col-md-6">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <h5 class="mb-0">{{ course.title }}</h5>
+              <span class="badge" [ngClass]="getStatusBadgeClass(course.status)">
+                {{ getStatusLabel(course.status) }}
+              </span>
+              <span *ngIf="course.hasPendingEdit" class="badge bg-primary">
+                <i class="fa-solid fa-pen-to-square me-1"></i>Modification en attente
+              </span>
+            </div>
+            <p class="text-muted small mb-1">
+              <i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
+              &nbsp;|&nbsp;
+              <i class="fa-solid fa-euro-sign me-1"></i>{{ course.price | number:'1.2-2' }}
+              &nbsp;|&nbsp;
+              <i class="fa-solid fa-users me-1"></i>{{ course.enrollmentCount || 0 }} inscrit(s)
+            </p>
+            <p class="text-muted small mb-0">
+              <i class="fa-solid fa-layer-group me-1"></i>{{ course.sectionsCount || 0 }} section(s)
+              &nbsp;|&nbsp;
+              <i class="fa-solid fa-play-circle me-1"></i>{{ course.lessonsCount || 0 }} leçon(s)
+            </p>
+            <!-- Message rejet -->
+            <div *ngIf="course.status === 'REJECTED' && course.rejectionReason"
+                 class="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+              <i class="fa-solid fa-ban me-1"></i><strong>Rejeté :</strong> {{ course.rejectionReason }}
+            </div>
+            <!-- Message rejet modification -->
+            <div *ngIf="course.editRejectionReason"
+                 class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
+              <i class="fa-solid fa-pen me-1"></i><strong>Modification rejetée :</strong> {{ course.editRejectionReason }}
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="col-md-4 text-end d-flex flex-column align-items-end gap-2">
+            <button class="btn btn-outline-info btn-sm w-100" (click)="viewDetails(course.id)">
+              <i class="fa-solid fa-eye me-1"></i>Détails
+            </button>
+            <!-- Modifier : masqué si cours en attente de validation ou modification en cours -->
+            <button *ngIf="course.status !== 'PENDING_REVIEW' && !course.hasPendingEdit"
+                    class="btn btn-outline-primary btn-sm w-100" (click)="editCourse(course.id)">
+              <i class="fa-solid fa-pen me-1"></i>Modifier
+            </button>
+            <button *ngIf="course.status === 'PENDING_REVIEW' || course.hasPendingEdit"
+                    class="btn btn-outline-secondary btn-sm w-100 disabled" disabled
+                    title="Modification impossible : en attente de validation">
+              <i class="fa-solid fa-lock me-1"></i>En attente de validation
+            </button>
+            <button *ngIf="course.status === 'DRAFT' || course.status === 'REJECTED'"
+                    class="btn btn-warning btn-sm w-100" (click)="submitForReview(course)">
+              <i class="fa-solid fa-paper-plane me-1"></i>Soumettre pour validation
+            </button>
+            <button *ngIf="course.status === 'PUBLISHED'"
+                    class="btn btn-outline-secondary btn-sm w-100" (click)="archiveCourse(course)">
+              <i class="fa-solid fa-archive me-1"></i>Archiver
+            </button>
+            <button *ngIf="course.status === 'DRAFT' || course.status === 'REJECTED' || course.status === 'ARCHIVED'"
+                    class="btn btn-danger btn-sm w-100" (click)="openDeleteModal(course)">
+              <i class="fa-solid fa-trash me-1"></i>Supprimer
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal Suppression -->
+<div *ngIf="showDeleteModal" class="modal fade show d-block" tabindex="-1"
+     style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <div class="mb-3" style="width:60px; height:60px; background:rgba(220,53,69,0.1); border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">
+          <i class="fa-solid fa-trash fa-xl text-danger"></i>
+        </div>
+        <h5 class="mb-2">Supprimer le cours ?</h5>
+        <p class="text-muted mb-4">
+          Êtes-vous sûr de vouloir supprimer <strong>{{ courseToDelete?.title }}</strong> ?<br>
+          Cette action est irréversible.
+        </p>
+        <div class="d-flex justify-content-center gap-2">
+          <button class="btn btn-light rounded-pill px-4" (click)="closeDeleteModal()">Annuler</button>
+          <button class="btn btn-danger rounded-pill px-4" (click)="confirmDelete()">Oui, supprimer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

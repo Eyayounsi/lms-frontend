@@ -1,4 +1,4 @@
-			
+﻿			
             
             
             <!-- Course -->
@@ -152,9 +152,9 @@
 										<div id="collapsecustomicon1Four" class="accordion-collapse collapse show" aria-labelledby="headingcustomicon1Four" data-bs-parent="#accordioncustomicon1Example">
 											<div class="accordion-body">
 												<div class="filter-range">
-													<mat-slider min="200" max="5000" step="500" showTickMarks discrete [displayWith]="formatLabel1">
-                                                        <input matSliderStartThumb [value]="startValue">
-                                                        <input matSliderEndThumb [value]="endValue">
+										<mat-slider min="0" max="5000" step="100" showTickMarks discrete [displayWith]="formatLabel1">
+                                                        <input matSliderStartThumb [(ngModel)]="startValue" (valueChange)="applyFilters()">
+                                                        <input matSliderEndThumb [(ngModel)]="endValue" (valueChange)="applyFilters()">
                                                     </mat-slider>
 												</div>
 											</div>
@@ -275,7 +275,7 @@
 								<div class="row align-items-center">
 									<div class="col-lg-4">
 											<div class="show-result text-center text-lg-start">
-												<h6 class="fw-medium">Showing 1-9 of 50 results</h6>
+												<h6 class="fw-medium">Showing {{ filteredCourses.length }} of {{ courses.length }} results</h6>
 											</div>
 									</div>
 									<div class="col-lg-8">	
@@ -286,15 +286,15 @@
 														<a [routerLink]="routes.courseGrid" class="grid-view active"><i class="feather icon-grid"></i></a>
 														<a [routerLink]="routes.courseList" class="list-view"><i class="isax isax-task"></i></a>
 													</div>
-													<select class="form-select">
-														<option>Newly Published </option>
-														<option>Trending Courses</option>
-														<option>Top Rated</option>
-														<option>Free Courses</option>
-													</select>
-													<div class=" search-group">
-														<i class="isax isax-search-normal-1"></i>
-														<input type="text" class="form-control" placeholder="Search" >
+												<select class="form-select" [(ngModel)]="sortOption" (ngModelChange)="applyFilters()">
+													<option value="">Newly Published</option>
+													<option value="newest">Newest</option>
+													<option value="toprated">Top Rated</option>
+													<option value="free">Free Courses</option>
+												</select>
+												<div class=" search-group">
+													<i class="isax isax-search-normal-1"></i>
+													<input type="text" class="form-control" placeholder="Search" [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
 													</div>
 												</div>
 											</form>
@@ -304,307 +304,52 @@
 							</div>
 							<!-- /Filter -->
 							
-							<div class="row">
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-01.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<div class="badge text-bg-danger">15% off</div>
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[0]}" (click)="iconSelect(0)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-29.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Brenda Slaton</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Design
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Information About UI/UX Design Degree</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.9 (200 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$120</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-02.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[1]}" (click)="iconSelect(1)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-30.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Ana Reyes</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Wordpress
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Wordpress for Beginners - Master Wordpress Quickly</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (160 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$140</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-03.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[2]}" (click)="iconSelect(2)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-31.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Andrew Pirtle</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Design
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Sketch from A to Z (2024): Become an app designer</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (160 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$140</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-04.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[3]}" (click)="iconSelect(3)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-32.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Christy Garner</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Programming
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Build Responsive Real World Websites with Crash Course</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.2 (220 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$200</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-05.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[4]}" (click)="iconSelect(4)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-32.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Justin Gregory</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Programming
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Learn JavaScript and Express to become a Expert</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (180 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$130</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-06.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[5]}" (click)="iconSelect(5)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-33.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Carolyn Hines</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Programming
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Introduction to Python Programming</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (180 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$130</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-07.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[6]}" (click)="iconSelect(6)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-34.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Rafael Miller</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Programming
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Build Responsive Websites with HTML5 and CSS3</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (180 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$170</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-08.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[7]}" (click)="iconSelect(7)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-35.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">Nancy Duarte</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Design
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Information About Photoshop Design Degree</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (180 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$170</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-								<div class="col-xl-4 col-md-6">
-									<div class="course-item-two course-item mx-0">
-										<div class="course-img">
-											<a [routerLink]="routes.courseDetails">
-												<img src="assets/img/course/course-09.jpg" alt="img" class="img-fluid">  
-											</a>
-											<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-												<a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[8]}" (click)="iconSelect(8)"><i class="isax isax-heart"></i></a>
-											</div>
-										</div>
-										<div class="course-content">
-											<div class="d-flex justify-content-between mb-2">
-												<div class="d-flex align-items-center">
-													<a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-														<img src="assets/img/user/user-36.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-													</a>
-													<div class="ms-2">
-														<a [routerLink]="routes.instructorDetails" class="link-default fs-14">James Kagan</a>
-													</div>
-												</div>
-												<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-													Design
-												</span>
-											</div>
-											<h6 class="title mb-2"><a [routerLink]="routes.courseDetails">C# Developers Double Your Coding with Visual Studio</a></h6>
-											<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (180 Reviews)</p>
-											<div class="d-flex align-items-center justify-content-between">
-												<h5 class="text-secondary mb-0">$180</h5>
-												<a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							
+<!-- Loading -->
+<div *ngIf="loading" class="text-center py-5">
+<div class="spinner-border text-secondary" role="status">
+<span class="visually-hidden">Loading...</span>
+</div>
+</div>
+
+<!-- No courses -->
+<div *ngIf="!loading && filteredCourses.length === 0" class="text-center py-5">
+<p class="text-muted">No courses available.</p>
+</div>
+
+<div *ngIf="!loading && filteredCourses.length > 0" class="row">
+<div *ngFor="let course of filteredCourses" class="col-xl-4 col-md-6">
+<div class="course-item-two course-item mx-0">
+<div class="course-img">
+<a href="javascript:void(0);" (click)="goToCourse(course.id)">
+<img [src]="getImageUrl(course.coverImage)" alt="img" class="img-fluid">
+</a>
+<div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
+<div *ngIf="course.onSale" class="badge text-bg-danger">En promo</div>
+<a href="javascript:void(0);" class="fav-icon ms-auto"><i class="isax isax-heart"></i></a>
+</div>
+</div>
+<div class="course-content">
+<div class="d-flex justify-content-between mb-2">
+<div class="d-flex align-items-center">
+<img [src]="getAvatarUrl(course.instructorAvatar)" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
+<div class="ms-2">
+<span class="link-default fs-14">{{ course.instructorName }}</span>
+</div>
+</div>
+<span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
+{{ course.categoryName }}
+</span>
+</div>
+<h6 class="title mb-2"><a href="javascript:void(0);" (click)="goToCourse(course.id)">{{ course.title }}</a></h6>
+<p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>{{ course.averageRating | number:'1.1-1' }} ({{ course.reviewCount }} Reviews)</p>
+<div class="d-flex align-items-center justify-content-between">
+<h5 class="text-secondary mb-0">{{ formatPrice(course) }}</h5>
+<a href="javascript:void(0);" (click)="goToCourse(course.id)" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
+</div>
+</div>
+</div>
+</div>
+</div>
 							<!-- /pagination -->
 							<div class="row align-items-center">
 								<div class="col-md-2">

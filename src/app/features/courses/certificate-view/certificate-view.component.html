@@ -1,0 +1,132 @@
+<!-- Loading -->
+<div *ngIf="loading" class="d-flex justify-content-center align-items-center" style="min-height:300px;">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<!-- ─── FORMULAIRE DE RECHERCHE (pas de code dans l'URL) ─────────────────── -->
+<div *ngIf="!loading && showForm" class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm border-0 rounded-4 p-4 text-center">
+        <!-- Icon -->
+        <div class="mb-3">
+          <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10"
+                style="width:72px;height:72px;">
+            <i class="isax isax-shield-tick text-primary" style="font-size:2rem;"></i>
+          </span>
+        </div>
+        <h4 class="fw-bold mb-1">Vérifier un certificat</h4>
+        <p class="text-muted mb-4">Saisissez le code de vérification figurant sur le certificat pour confirmer son authenticité.</p>
+
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control form-control-lg"
+            placeholder="Ex : CERT-XXXXXXXXXXXXXXXX"
+            [(ngModel)]="inputCode"
+            (keyup.enter)="verifyCode()"
+            autofocus
+          />
+        </div>
+        <button
+          class="btn btn-primary btn-lg w-100"
+          (click)="verifyCode()"
+          [disabled]="!inputCode.trim()">
+          <i class="isax isax-search-normal me-2"></i>Vérifier
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error -->
+<div *ngIf="!loading && !showForm && errorMessage" class="container py-5 text-center">
+  <div class="alert alert-danger d-inline-flex align-items-center gap-2 px-4 py-3 mb-3">
+    <i class="isax isax-close-circle fs-20"></i>
+    {{ errorMessage }}
+  </div>
+  <div>
+    <a routerLink="/courses/certificates/verify" class="btn btn-outline-primary btn-sm">
+      <i class="isax isax-arrow-left-2 me-1"></i>Réessayer
+    </a>
+  </div>
+</div>
+
+<!-- Certificate -->
+<div *ngIf="!loading && certificate" class="certificate-wrapper">
+
+  <!-- Print button (hidden on print) -->
+  <div class="text-center mb-4 no-print">
+    <button class="btn btn-primary me-2" (click)="print()">
+      <i class="isax isax-printer me-2"></i>Imprimer / Télécharger PDF
+    </button>
+  </div>
+
+  <!-- Certificate card -->
+  <div class="certificate-card mx-auto">
+
+    <!-- Top border accent -->
+    <div class="cert-top-bar"></div>
+
+    <div class="cert-body">
+
+      <!-- Logo & header -->
+      <div class="text-center mb-3">
+        <img src="assets/img/logo/logo.svg" alt="Logo" class="cert-logo mb-3" onerror="this.style.display='none'">
+        <p class="cert-site-name mb-0">EduLearn Platform</p>
+      </div>
+
+      <hr class="cert-divider">
+
+      <!-- Title -->
+      <div class="text-center my-4">
+        <h1 class="cert-title">Certificat d'Achèvement</h1>
+        <p class="cert-subtitle">Certificate of Completion</p>
+      </div>
+
+      <!-- Body text -->
+      <div class="text-center my-4">
+        <p class="cert-presented">Présenté à</p>
+        <h2 class="cert-student-name">{{ certificate.studentName }}</h2>
+      </div>
+
+      <div class="text-center my-4">
+        <p class="cert-course-label">pour avoir complété avec succès le cours</p>
+        <h3 class="cert-course-title">« {{ certificate.courseTitle }} »</h3>
+      </div>
+
+      <hr class="cert-divider">
+
+      <!-- Footer info -->
+      <div class="cert-footer row text-center mt-4">
+        <div class="col-4">
+          <p class="cert-info-label">Date d'émission</p>
+          <p class="cert-info-value">{{ formatDate(certificate.issuedAt) }}</p>
+        </div>
+        <div class="col-4">
+          <div class="cert-seal">
+            <i class="isax isax-medal-star cert-seal-icon"></i>
+          </div>
+        </div>
+        <div class="col-4">
+          <p class="cert-info-label">Code de vérification</p>
+          <p class="cert-info-value cert-code">{{ certificate.certificateCode }}</p>
+        </div>
+      </div>
+
+    </div><!-- /cert-body -->
+
+    <!-- Bottom border accent -->
+    <div class="cert-bottom-bar"></div>
+
+  </div><!-- /certificate-card -->
+
+  <!-- Validity info (hidden on print) -->
+  <div class="text-center mt-4 no-print">
+    <small class="text-muted">
+      <i class="isax isax-shield-tick me-1"></i>
+      Ce certificat est authentique. Code : <strong>{{ certificate.certificateCode }}</strong>
+    </small>
+  </div>
+
+</div>

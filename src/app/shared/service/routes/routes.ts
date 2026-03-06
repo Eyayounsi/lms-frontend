@@ -7,11 +7,15 @@ export const routes = {
   // Admin Routes
   admin_dashboard: '/admin/admin-dashboard',
   admin_users: '/admin/admin-users',
+  admin_courses: '/admin/admin-courses',
+  admin_categories: '/admin/admin-categories',
   adminSettings: '/admin/admin-settings',
 
   // Recruiter Routes
   recruiter_dashboard: '/recruiter/recruiter-dashboard',
+  recruiter_shared_profiles: '/recruiter/recruiter-shared-profiles',
   recruiterSettings: '/recruiter/recruiter-settings',
+  forceChangePassword: '/auth/force-change-password',
 
   // Instructor Routes
   instructor: '/instructor/',
@@ -34,6 +38,7 @@ export const routes = {
   studentsDetails: '/instructor/students-details',
   instructorQuizResult: '/instructor/instructor-quiz-results',
   instructorCourse: '/instructor/instructor-course',
+  instructorMyCourses: '/instructor/instructor-my-courses',
   instructorCourseGrid: '/instructor/instructor-course-grid',
   instructorTickets: '/instructor/instructor-tickets',
   instructorMessage: '/instructor/instructor-message',
@@ -79,6 +84,7 @@ export const routes = {
   studentOrderHistory: '/student/student-order-history',
   studentWishlist: '/student/student-wishlist',
   studentCourses: '/student/student-courses',
+  studentMyCourses: '/student/student-my-courses',
   studentReviews: '/student/student-reviews',
   studentQuizDetails: '/student/student-quiz-details',
   studentQuiz: '/student/student-quiz',
@@ -152,6 +158,8 @@ export const routes = {
   checkout: '/courses/checkout',
   courseDetails: '/courses/course-details',
   courseDetails2: '/courses/course-details-2',
+  courseListPublic: '/courses/course-list-public',
+  verifyCertificate: '/courses/certificates/verify',
   addCourse: '/courses/add-course',
 };
 

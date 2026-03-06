@@ -1,60 +1,112 @@
 
     <div class="page-title d-flex align-items-center justify-content-between">
-        <h5>Order History</h5>
+        <h5>Historique des commandes</h5>
     </div>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="mb-3">
-                    <div class="dropdown">
-                        <a href="javascript:void(0);" class="dropdown-toggle btn rounded border d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                            Status
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end p-3">
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Completed</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Pending</a>
-                            </li>
-                        </ul>
+
+    <!-- Alerte erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+        <i class="isax isax-close-circle me-2"></i>{{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+    </div>
+
+    <!-- Stat total -->
+    <div *ngIf="!loading && orders.length > 0" class="row mb-3">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body py-3 d-flex align-items-center">
+                    <span class="earnings-icon bg-success me-3"><i class="isax isax-dollar-circle4"></i></span>
+                    <div>
+                        <p class="mb-0 text-muted small">Total dépensé</p>
+                        <h5 class="fw-bold text-success mb-0">{{ getTotalSpent() | number:'1.2-2' }} €</h5>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="input-icon mb-3">
-                    <span class="input-icon-addon">
-                        <i class="isax isax-search-normal-14"></i>
-                    </span>
-                    <input  [(ngModel)]="searchDataValue" [ngModelOptions]="{ standalone: true }" type="search" (ngModelChange)="searchData(searchDataValue)" class="form-control form-control-md" placeholder="Search">
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body py-3 d-flex align-items-center">
+                    <span class="earnings-icon bg-primary me-3"><i class="isax isax-book-1"></i></span>
+                    <div>
+                        <p class="mb-0 text-muted small">Cours achetés</p>
+                        <h5 class="fw-bold text-primary mb-0">{{ orders.length }}</h5>
+                    </div>
                 </div>
             </div>
         </div>
-            <div class="table-responsive custom-table">
-                <table matSort (matSortChange)="sortData($event)" class="table">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (data of tableData;track data){
-                        <tr>
-                            <td><a href="javascript:void(0);" class="text-primary" data-bs-toggle="modal" data-bs-target="#view_invoice">{{data.orderId}}</a></td>
-                            <td>{{data.date}}</td>
-                            <td>{{data.amount}}</td>
-                            <td><span class="badge d-inline-flex align-items-center me-1" [ngClass]="data.status==='Completed'?'bg-success':'bg-info'"><i class="fa-solid fa-circle fs-5 me-1"></i>{{data.status}}</span></td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon" data-bs-toggle="modal" data-bs-target="#view_invoice"><i class="isax isax-eye"></i></a>
-                                    <a href="javascript:void(0);" class="d-inline-flex fs-14 action-icon"><i class="isax isax-import"></i></a>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
+    </div>
+
+    <!-- Filtres -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="mb-3">
+                <div class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle btn rounded border d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ statusFilter ? getStatusLabel(statusFilter) : 'Tous les statuts' }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end p-3">
+                        <li><a href="javascript:void(0);" class="dropdown-item rounded-1" (click)="statusFilter = ''; applyFilters()">Tous</a></li>
+                        <li><a href="javascript:void(0);" class="dropdown-item rounded-1" (click)="statusFilter = 'COMPLETED'; applyFilters()">Complété</a></li>
+                        <li><a href="javascript:void(0);" class="dropdown-item rounded-1" (click)="statusFilter = 'PENDING'; applyFilters()">En attente</a></li>
+                        <li><a href="javascript:void(0);" class="dropdown-item rounded-1" (click)="statusFilter = 'REFUNDED'; applyFilters()">Remboursé</a></li>
+                    </ul>
+                </div>
             </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-icon mb-3">
+                <span class="input-icon-addon">
+                    <i class="isax isax-search-normal-14"></i>
+                </span>
+                <input [(ngModel)]="searchValue" (ngModelChange)="applyFilters()" type="search" class="form-control form-control-md" placeholder="Rechercher...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Chargement -->
+    <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Chargement des commandes...</p>
+    </div>
+
+    <!-- Aucune commande -->
+    <div *ngIf="!loading && filteredOrders.length === 0 && !errorMessage" class="text-center py-5">
+        <i class="isax isax-shopping-cart" style="font-size:3rem; color:#ccc"></i>
+        <h5 class="text-muted mt-3">Aucune commande trouvée</h5>
+        <p class="text-muted">Vos achats de cours apparaîtront ici.</p>
+    </div>
+
+    <!-- Table -->
+    <div *ngIf="!loading && filteredOrders.length > 0" class="table-responsive custom-table">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>#</th>
+                    <th>Cours</th>
+                    <th>Instructeur</th>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let order of filteredOrders; let i = index">
+                    <td class="text-muted small">#{{ order.enrollmentId }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img [src]="getImageUrl(order.courseCoverImage)" alt=""
+                                 class="rounded me-2" style="width:48px;height:36px;object-fit:cover;">
+                            <span class="fw-medium">{{ order.courseTitle }}</span>
+                        </div>
+                    </td>
+                    <td class="text-muted">{{ order.instructorName }}</td>
+                    <td>{{ formatDate(order.purchaseDate) }}</td>
+                    <td class="fw-semibold">{{ order.amount | number:'1.2-2' }} €</td>
+                    <td>
+                        <span class="badge d-inline-flex align-items-center" [ngClass]="getStatusClass(order.status)">
+                            <i class="fa-solid fa-circle fs-10 me-1"></i>{{ getStatusLabel(order.status) }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>

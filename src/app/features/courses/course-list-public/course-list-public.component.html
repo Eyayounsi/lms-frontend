@@ -1,0 +1,399 @@
+﻿<!-- Course Catalogue Public  V1..V7 -->
+<section class="course-content course-list-content">
+  <div class="container">
+
+    <!-- Alerts -->
+    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show mt-3">
+      <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
+      <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mt-3">
+      <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
+      <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+    </div>
+
+    <div class="row align-items-baseline">
+
+      <!--  SIDEBAR FILTRES -->
+      <div class="col-lg-3 theiaStickySidebar">
+        <div class="filter-clear">
+
+          <div class="clear-filter mb-4 pb-lg-2 d-flex align-items-center justify-content-between">
+            <h5><i class="feather-filter me-2"></i>Filtres</h5>
+            <a href="javascript:void(0);" class="clear-text" (click)="clearFilters()">Effacer</a>
+          </div>
+
+          <div class="accordion accordion-customicon1 accordions-items-seperate">
+
+            <!-- Catégories -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <a href="javascript:void(0);" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#filterCat" aria-expanded="true">
+                  Catégories <i class="fa-solid fa-chevron-down"></i>
+                </a>
+              </h2>
+              <div id="filterCat" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                  <div>
+                    <label class="custom_check">
+                      <input type="radio" name="cat" [value]="null" [(ngModel)]="selectedCategoryId" (change)="onFilterChange()">
+                      <span class="checkmark"></span> Toutes les catégories
+                    </label>
+                  </div>
+                  <div *ngFor="let cat of categories">
+                    <label class="custom_check">
+                      <input type="radio" name="cat" [value]="cat.id" [(ngModel)]="selectedCategoryId" (change)="onFilterChange()">
+                      <span class="checkmark"></span> {{ cat.name }}
+                    </label>
+                  </div>
+                  <div *ngIf="categories.length === 0 && !loading" class="text-muted small">Chargement...</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Prix -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <a href="javascript:void(0);" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#filterPrice" aria-expanded="true">
+                  Prix <i class="fa-solid fa-chevron-down"></i>
+                </a>
+              </h2>
+              <div id="filterPrice" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                  <div>
+                    <label class="custom_check custom_one">
+                      <input type="radio" name="price" value="all" [(ngModel)]="priceFilter" (change)="onFilterChange()">
+                      <span class="checkmark"></span> Tous
+                    </label>
+                  </div>
+                  <div>
+                    <label class="custom_check custom_one">
+                      <input type="radio" name="price" value="free" [(ngModel)]="priceFilter" (change)="onFilterChange()">
+                      <span class="checkmark"></span> Gratuit
+                    </label>
+                  </div>
+                  <div>
+                    <label class="custom_check custom_one mb-0">
+                      <input type="radio" name="price" value="paid" [(ngModel)]="priceFilter" (change)="onFilterChange()">
+                      <span class="checkmark"></span> Payant
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Niveau -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <a href="javascript:void(0);" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#filterLevel" aria-expanded="true">
+                  Niveau <i class="fa-solid fa-chevron-down"></i>
+                </a>
+              </h2>
+              <div id="filterLevel" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                  <div>
+                    <label class="custom_check custom_one">
+                      <input type="checkbox" [checked]="isLevelSelected('BEGINNER')" (change)="toggleLevel('BEGINNER')">
+                      <span class="checkmark"></span> Débutant
+                    </label>
+                  </div>
+                  <div>
+                    <label class="custom_check custom_one">
+                      <input type="checkbox" [checked]="isLevelSelected('INTERMEDIATE')" (change)="toggleLevel('INTERMEDIATE')">
+                      <span class="checkmark"></span> Intermédiaire
+                    </label>
+                  </div>
+                  <div>
+                    <label class="custom_check custom_one mb-0">
+                      <input type="checkbox" [checked]="isLevelSelected('ADVANCED')" (change)="toggleLevel('ADVANCED')">
+                      <span class="checkmark"></span> Avancé
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Note minimale -->
+            <div class="accordion-item">
+              <h2 class="accordion-header">
+                <a href="javascript:void(0);" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#filterRating" aria-expanded="true">
+                  Note <i class="fa-solid fa-chevron-down"></i>
+                </a>
+              </h2>
+              <div id="filterRating" class="accordion-collapse collapse show">
+                <div class="accordion-body">
+                  <div>
+                    <label class="custom_check custom_one">
+                      <input type="radio" name="rating" [value]="0" [(ngModel)]="minRating" (change)="onFilterChange()">
+                      <span class="checkmark"></span> Toutes les notes
+                    </label>
+                  </div>
+                  <div>
+                    <label class="custom_check custom_one">
+                      <input type="radio" name="rating" [value]="4" [(ngModel)]="minRating" (change)="onFilterChange()">
+                      <span class="checkmark"></span>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-warning"></i>
+                      &amp; plus
+                    </label>
+                  </div>
+                  <div>
+                    <label class="custom_check custom_one">
+                      <input type="radio" name="rating" [value]="3" [(ngModel)]="minRating" (change)="onFilterChange()">
+                      <span class="checkmark"></span>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-light me-1"></i>
+                      <i class="fa-solid fa-star text-light"></i>
+                      &amp; plus
+                    </label>
+                  </div>
+                  <div>
+                    <label class="custom_check custom_one mb-0">
+                      <input type="radio" name="rating" [value]="2" [(ngModel)]="minRating" (change)="onFilterChange()">
+                      <span class="checkmark"></span>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-warning me-1"></i>
+                      <i class="fa-solid fa-star text-light me-1"></i>
+                      <i class="fa-solid fa-star text-light me-1"></i>
+                      <i class="fa-solid fa-star text-light"></i>
+                      &amp; plus
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- /Sidebar -->
+
+      <!--  CONTENU PRINCIPAL -->
+      <div class="col-lg-9">
+
+        <!-- Barre d'outils -->
+        <div class="showing-list mb-4">
+          <div class="row align-items-center">
+            <div class="col-lg-4">
+              <div class="show-result text-center text-lg-start">
+                <h6 *ngIf="!loading" class="fw-medium">
+                  {{ filteredCourses.length }} cours trouvé{{ filteredCourses.length > 1 ? 's' : '' }}
+                </h6>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="show-filter add-course-info">
+                <form action="#">
+                  <div class="d-sm-flex justify-content-center justify-content-lg-end mb-1 mb-lg-0">
+                    <!-- Vue grille/liste -->
+                    <div class="view-icons mb-2 mb-sm-0">
+                      <a href="javascript:void(0);" [class.active]="viewMode === 'grid'" class="grid-view" (click)="viewMode = 'grid'"><i class="feather icon-grid"></i></a>
+                      <a href="javascript:void(0);" [class.active]="viewMode === 'list'" class="list-view" (click)="viewMode = 'list'"><i class="isax isax-task"></i></a>
+                    </div>
+                    <!-- Tri -->
+                    <select class="form-select" [(ngModel)]="sortBy" name="sortBy" (change)="onFilterChange()">
+                      <option value="newest">Récemment publiés</option>
+                      <option value="top-rated">Mieux notés</option>
+                      <option value="popular">Plus populaires</option>
+                      <option value="price-asc">Prix croissant</option>
+                      <option value="price-desc">Prix décroissant</option>
+                    </select>
+                    <!-- Recherche rapide -->
+                    <div class="search-group">
+                      <i class="feather-search"></i>
+                      <input type="text" class="form-control" placeholder="Rechercher..." [(ngModel)]="searchTerm" name="searchTerm" (input)="onSearchInput()">
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /Barre d'outils -->
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted">Chargement des cours...</p>
+        </div>
+
+        <!-- Aucun résultat -->
+        <div *ngIf="!loading && filteredCourses.length === 0" class="text-center py-5">
+          <i class="fa-solid fa-magnifying-glass fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">Aucun cours trouvé</h5>
+          <p class="text-muted small">Essayez de modifier vos critères de recherche.</p>
+          <button class="btn btn-outline-primary btn-sm rounded-pill px-4" (click)="clearFilters()">
+            <i class="fa-solid fa-rotate-left me-1"></i>Réinitialiser les filtres
+          </button>
+        </div>
+
+        <!--  VUE GRILLE  -->
+        <div *ngIf="!loading && paginatedCourses.length > 0 && viewMode === 'grid'" class="row">
+          <div class="col-xl-4 col-md-6 d-flex" *ngFor="let course of paginatedCourses">
+            <div class="course-item-two course-item mx-0 flex-fill" style="cursor:pointer;" (click)="goToDetail(course.id)">
+              <div class="course-img">
+                <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" style="height:185px;object-fit:cover;">
+                <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
+                  <a href="javascript:void(0);" class="fav-icon ms-auto"
+                     [class.selected]="isInWishlist(course.id)"
+                     (click)="toggleWishlist(course, $event)"
+                     title="{{ isInWishlist(course.id) ? 'Retirer de la wishlist' : 'Ajouter à la wishlist' }}">
+                    <i class="isax isax-heart"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="course-content">
+                <div class="d-flex justify-content-between mb-2">
+                  <div class="d-flex align-items-center">
+                    <img [src]="getInstructorAvatar(course.instructorAvatar)"
+                         class="img-fluid avatar avatar-sm rounded-circle" alt="instructor">
+                    <div class="ms-2">
+                      <span class="link-default fs-14">{{ course.instructorName }}</span>
+                    </div>
+                  </div>
+                  <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
+                    {{ course.categoryName || 'Cours' }}
+                  </span>
+                </div>
+                <h6 class="title mb-2">{{ course.title }}</h6>
+                <p class="d-flex align-items-center mb-3" *ngIf="course.averageRating; else noRating">
+                  <i class="fa-solid fa-star text-warning me-2"></i>
+                  {{ course.averageRating | number:'1.1-1' }} ({{ course.reviewCount || 0 }} avis)
+                </p>
+                <ng-template #noRating>
+                  <p class="d-flex align-items-center mb-3 text-muted small">
+                    <i class="fa-regular fa-star me-2"></i>Aucun avis
+                  </p>
+                </ng-template>
+                <div class="d-flex align-items-center justify-content-between">
+                  <h5 class="text-secondary mb-0">{{ formatPrice(course) }}</h5>
+                  <ng-container *ngIf="isEnrolled(course.id); else notEnrolledGrid">
+                    <a routerLink="/student/student-my-courses" class="btn btn-success btn-sm d-inline-flex align-items-center" (click)="$event.stopPropagation()">
+                      Accéder<i class="isax isax-arrow-right-3 ms-1"></i>
+                    </a>
+                  </ng-container>
+                  <ng-template #notEnrolledGrid>
+                    <div class="d-flex gap-1">
+                      <a href="javascript:void(0);" (click)="addToCart(course.id, $event)" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center" title="Ajouter au panier">
+                        <i class="isax isax-shopping-cart me-1"></i>Panier
+                      </a>
+                      <a href="javascript:void(0);" (click)="goToDetail(course.id); $event.stopPropagation()" class="btn btn-dark btn-sm d-inline-flex align-items-center">
+                        Voir<i class="isax isax-arrow-right-3 ms-1"></i>
+                      </a>
+                    </div>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /VUE GRILLE -->
+
+        <!--  VUE LISTE  -->
+        <div *ngIf="!loading && paginatedCourses.length > 0 && viewMode === 'list'" class="row course-list-wrap">
+          <div class="col-12" *ngFor="let course of paginatedCourses">
+            <div class="courses-list-item" style="cursor:pointer;" (click)="goToDetail(course.id)">
+              <div class="d-md-flex align-items-center">
+                <div class="position-relative overflow-hidden rounded-3 card-image">
+                  <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded-3" alt="{{ course.title }}" style="min-height:120px;object-fit:cover;">
+                  <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
+                    <a href="javascript:void(0);" class="like"
+                       [class.selected]="isInWishlist(course.id)"
+                       (click)="toggleWishlist(course, $event)">
+                      <i class="isax isax-heart"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
+                  <div class="d-flex flex-wrap align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                      <img [src]="getInstructorAvatar(course.instructorAvatar)"
+                           class="img-fluid rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;" alt="">
+                      <p class="mb-0">{{ course.instructorName }}</p>
+                    </div>
+                    <span>
+                      <a href="javascript:void(0);" class="tag-btn" (click)="$event.stopPropagation()">{{ course.categoryName || 'Cours' }}</a>
+                    </span>
+                  </div>
+                  <h4 class="mt-3 mb-2">{{ course.title }}</h4>
+                  <div class="d-flex align-items-center" *ngIf="course.averageRating">
+                    <p class="d-flex align-items-center mb-0">
+                      <i class="fa-solid fa-star text-warning me-2"></i>
+                      {{ course.averageRating | number:'1.1-1' }} ({{ course.reviewCount || 0 }} avis)
+                    </p>
+                    <span class="dot"></span>
+                    <p class="mb-0">{{ getLevelLabel(course.level) }}</p>
+                  </div>
+                  <div class="d-flex justify-content-between mt-3 align-items-center">
+                    <h5 class="text-secondary">{{ formatPrice(course) }}</h5>
+                    <ng-container *ngIf="isEnrolled(course.id); else notEnrolledList">
+                      <a routerLink="/student/student-my-courses" class="btn btn-success btn-sm d-inline-flex align-items-center" (click)="$event.stopPropagation()">
+                        Accéder<i class="fs-8 fas fa-angle-right ms-2"></i>
+                      </a>
+                    </ng-container>
+                    <ng-template #notEnrolledList>
+                      <div class="d-flex gap-2">
+                        <a href="javascript:void(0);" (click)="addToCart(course.id, $event)" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center" title="Ajouter au panier">
+                          <i class="isax isax-shopping-cart me-1"></i>Panier
+                        </a>
+                        <a href="javascript:void(0);" (click)="goToDetail(course.id); $event.stopPropagation()" class="btn btn-dark btn-sm d-inline-flex align-items-center">
+                          Voir le cours<i class="fs-8 fas fa-angle-right ms-2"></i>
+                        </a>
+                      </div>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /VUE LISTE -->
+
+        <!--  PAGINATION  -->
+        <div *ngIf="!loading && totalPages > 1" class="row align-items-center mt-4">
+          <div class="col-md-2">
+            <p class="pagination-text">Page {{ currentPage }} sur {{ totalPages }}</p>
+          </div>
+          <div class="col-md-10">
+            <ul class="pagination lms-page justify-content-center justify-content-md-end mt-2 mt-md-0">
+              <li class="page-item prev" [class.disabled]="currentPage === 1">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(currentPage - 1)">
+                  <i class="fas fa-angle-left"></i>
+                </a>
+              </li>
+              <li *ngIf="currentPage > 3" class="page-item">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(1)">1</a>
+              </li>
+              <li *ngIf="currentPage > 4" class="page-item disabled">
+                <a class="page-link">...</a>
+              </li>
+              <li *ngFor="let p of getPageRange()" class="page-item" [class.active]="p === currentPage">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(p)">{{ p }}</a>
+              </li>
+              <li *ngIf="currentPage < totalPages - 3" class="page-item disabled">
+                <a class="page-link">...</a>
+              </li>
+              <li *ngIf="currentPage < totalPages - 2" class="page-item">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(totalPages)">{{ totalPages }}</a>
+              </li>
+              <li class="page-item next" [class.disabled]="currentPage === totalPages">
+                <a class="page-link" href="javascript:void(0)" (click)="goToPage(currentPage + 1)">
+                  <i class="fas fa-angle-right"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <!-- /PAGINATION -->
+
+      </div>
+      <!-- /Contenu principal -->
+
+    </div>
+  </div>
+</section>

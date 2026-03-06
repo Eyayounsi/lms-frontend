@@ -1,114 +1,197 @@
-import { Component } from '@angular/core';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { DataService } from '../../../shared/service/data/data.service';
-import { routes } from '../../../shared/service/routes/routes';
-import { apiResultFormat, instructorCourse } from '../../../shared/models/model';
-import { Router, RouterLink } from '@angular/router';
-import { pageSelection, PaginationService, tablePageSize } from '../../../shared/service/custom-pagination/pagination.service';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatPaginatorModule } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { CustomPaginationComponent } from '../../../shared/service/custom-pagination/custom-pagination.component';
+import { Router, RouterLink } from '@angular/router';
+import { routes } from '../../../shared/service/routes/routes';
+import { CourseService } from '../../../shared/service/course/course.service';
+import Swal from 'sweetalert2';
+
 @Component({
     selector: 'app-instructor-course',
     templateUrl: './instructor-course.component.html',
     styleUrls: ['./instructor-course.component.scss'],
-    imports:[CommonModule,MatTableModule,MatSortModule,MatPaginatorModule,MatSelectModule,CustomPaginationComponent,FormsModule,RouterLink]
+    imports: [CommonModule, FormsModule, RouterLink]
 })
-export class InstructorCourseComponent {
+export class InstructorCourseComponent implements OnInit {
   public routes = routes;
 
-  // pagination variables
-  public pageSize = 10;
-  public tableData: instructorCourse[] = [];
-  public tableDataCopy: instructorCourse[] = [];
-  public actualData: instructorCourse[] = [];
-  public currentPage = 1;
-  public skip = 0;
-  public limit: number = this.pageSize;
-  public serialNumberArray: number[] = [];
-  public totalData = 0;       
-  public pageSelection: pageSelection[] = [];
-  dataSource!: MatTableDataSource<instructorCourse>;
-  public searchDataValue = '';
-  constructor(
-    private data: DataService,
-    private router: Router,
-    private pagination: PaginationService
-  ) {
-    this.data.getInstructorCourseList().subscribe((apiRes: apiResultFormat) => {
-      this.actualData = apiRes.data;
-      this.pagination.tablePageSize.subscribe((res: tablePageSize) => {
-        if (this.router.url == this.routes.instructorCourse) {
-          this.getTableData({ skip: res.skip, limit: res.limit });
-          this.pageSize = res.pageSize;
-        }
-      });
+  courses: any[] = [];
+  filteredCourses: any[] = [];
+  loading = true;
+  errorMessage = '';
+  successMessage = '';
+
+  searchTerm = '';
+  selectedStatus = '';
+
+  // Stats
+  publishedCount = 0;
+  pendingCount = 0;
+  draftCount = 0;
+  rejectedCount = 0;
+
+  // Modal delete
+  courseToDelete: any = null;
+  showDeleteModal = false;
+
+  constructor(private courseService: CourseService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.loadCourses();
+  }
+
+  loadCourses(): void {
+    this.loading = true;
+    this.courseService.getMyCourses().subscribe({
+      next: (data) => {
+        this.courses = data;
+        this.applyFilters();
+        this.computeStats();
+        this.loading = false;
+      },
+      error: (err) => {
+        this.errorMessage = 'Erreur lors du chargement des cours';
+        this.loading = false;
+        console.error(err);
+      }
     });
   }
-  private getTableData(pageOption: pageSelection): void {
-    this.data.getInstructorCourseList().subscribe((apiRes: apiResultFormat) => {
-      this.tableData = [];
-      this.tableDataCopy = [];
-      this.serialNumberArray = [];
-      this.totalData = apiRes.totalData;
-      apiRes.data.map((res: instructorCourse, index: number) => {
-        const serialNumber = index + 1;
-        if (index >= pageOption.skip && serialNumber <= pageOption.limit) {
-          res.sNo = serialNumber;
-          this.tableData.push(res);
-          this.tableDataCopy.push(res);
-          this.serialNumberArray.push(serialNumber);
-        }
-      });
-      this.dataSource = new MatTableDataSource<instructorCourse>(this.actualData);
-      this.pagination.calculatePageSize.next({
-        totalData: this.totalData,
-        pageSize: this.pageSize,
-        tableData: this.tableData,
-        tableDataCopy: this.tableDataCopy,
-        serialNumberArray: this.serialNumberArray,
+
+  computeStats(): void {
+    this.publishedCount = this.courses.filter(c => c.status === 'PUBLISHED').length;
+    this.pendingCount   = this.courses.filter(c => c.status === 'PENDING').length;
+    this.draftCount     = this.courses.filter(c => c.status === 'DRAFT').length;
+    this.rejectedCount  = this.courses.filter(c => c.status === 'REJECTED').length;
+  }
+
+  applyFilters(): void {
+    this.filteredCourses = this.courses.filter(c => {
+      const matchSearch = !this.searchTerm ||
+        c.title.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchStatus = !this.selectedStatus || c.status === this.selectedStatus;
+      return matchSearch && matchStatus;
+    });
+  }
+
+  // Soumettre un cours DRAFT pour revue
+  submitForReview(course: any): void {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Soumettre pour validation ?',
+      html: `<b>${course.title}</b><br><br>
+             Une fois soumis, <b>vous ne pourrez plus modifier ce cours</b><br>
+             tant qu'il est en attente de validation par l'administrateur.`,
+      confirmButtonText: '<i class="isax isax-send me-1"></i> Confirmer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#d63384',
+      cancelButtonColor: '#6c757d',
+      showCancelButton: true,
+      timer: 10000,
+      timerProgressBar: true,
+      allowOutsideClick: false,
+      reverseButtons: true,
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+      this.courseService.submitForReview(course.id).subscribe({
+        next: () => {
+          this.showSuccess('Cours soumis pour validation !');
+          this.loadCourses();
+        },
+        error: (err) => this.errorMessage = err.error?.message || 'Erreur lors de la soumission'
       });
     });
   }
 
-  public searchData(value: string): void {
-    if (value == '') {
-      this.tableData = this.tableDataCopy;
-    } else {
-      this.dataSource.filter = value.trim().toLowerCase();
-      this.tableData = this.dataSource.filteredData;
+  // Archiver un cours PUBLISHED
+  archiveCourse(course: any): void {
+    if (!confirm(`Archiver le cours "${course.title}" ? Il ne sera plus visible par les étudiants.`)) return;
+    this.courseService.archiveCourse(course.id).subscribe({
+      next: () => {
+        this.showSuccess('Cours archivé avec succès');
+        this.loadCourses();
+      },
+      error: (err) => this.errorMessage = err.error?.message || 'Erreur lors de l\'archivage'
+    });
+  }
+
+  // Ouvrir modal de suppression
+  openDeleteModal(course: any): void {
+    this.courseToDelete = course;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal(): void {
+    this.courseToDelete = null;
+    this.showDeleteModal = false;
+  }
+
+  confirmDelete(): void {
+    if (!this.courseToDelete) return;
+    this.courseService.deleteCourse(this.courseToDelete.id).subscribe({
+      next: () => {
+        this.showSuccess('Cours supprimé');
+        this.closeDeleteModal();
+        this.loadCourses();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Erreur lors de la suppression';
+        this.closeDeleteModal();
+      }
+    });
+  }
+
+  // Naviguer vers l'édition du cours
+  editCourse(courseId: number): void {
+    this.router.navigate([this.routes.addCourse], { queryParams: { id: courseId } });
+  }
+
+  // Naviguer vers les détails du cours
+  viewDetails(courseId: number): void {
+    this.router.navigate(['/instructor/instructor-course-detail'], { queryParams: { courseId } });
+  }
+
+  // Badges de statut
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case 'PUBLISHED': return 'bg-success';
+      case 'PENDING':   return 'bg-warning text-dark';
+      case 'DRAFT':     return 'bg-secondary';
+      case 'REJECTED':  return 'bg-danger';
+      case 'ARCHIVED':  return 'bg-dark';
+      default:          return 'bg-secondary';
     }
   }
 
-  public sortData(sort: Sort) {
-    const data = this.tableData.slice();
-
-    if (!sort.active || sort.direction === '') {
-      this.tableData = data;
-    } else {
-      this.tableData = data.sort((a, b) => {
-        const aValue = (a as never)[sort.active];
-
-        const bValue = (b as never)[sort.active];
-        return (aValue < bValue ? -1 : 1) * (sort.direction === 'asc' ? 1 : -1);
-      });
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'PUBLISHED': return 'Publié';
+      case 'PENDING':   return 'En attente';
+      case 'DRAFT':     return 'Brouillon';
+      case 'REJECTED':  return 'Rejeté';
+      case 'ARCHIVED':  return 'Archivé';
+      default:          return status;
     }
   }
-  public changePageSize(pageSize: number): void {
-    this.pageSelection = [];
-    this.limit = pageSize;
-    this.skip = 0;
-    this.currentPage = 1;
-    this.pagination.tablePageSize.next({
-      skip: this.skip,
-      limit: this.limit,
-      pageSize: this.pageSize,
-    });
+
+  getLevelLabel(level: string): string {
+    switch (level) {
+      case 'BEGINNER':     return 'Débutant';
+      case 'INTERMEDIATE': return 'Intermédiaire';
+      case 'ADVANCED':     return 'Avancé';
+      default:             return level;
+    }
   }
 
+  getImageUrl(path: string): string {
+    if (!path) return 'assets/img/course/course-01.jpg';
+    const clean = path.startsWith('/') ? path : '/' + path;
+    return `http://localhost:8081${clean}`;
+  }
 
+  private showSuccess(msg: string): void {
+    this.successMessage = msg;
+    this.errorMessage = '';
+    setTimeout(() => this.successMessage = '', 3500);
+  }
 
 }

@@ -20,15 +20,21 @@
           <form class="banner-search" (ngSubmit)="onSubmit()">
             <div class="dropdown">
               <a class="hero-dropdown" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
-                Select Category <i class="isax isax-arrow-down5 fs-12"></i>
+                {{ selectedCategoryName }} <i class="isax isax-arrow-down5 fs-12"></i>
               </a>
               <ul class="dropdown-menu p-1">
-                <li><a class="dropdown-item" href="javascript:void(0);">Design</a></li>
-                <li><a class="dropdown-item" href="javascript:void(0);">Programming</a></li>
-                <li><a class="dropdown-item" href="javascript:void(0);">Marketing</a></li>
+                <li *ngFor="let cat of categories">
+                  <a class="dropdown-item" href="javascript:void(0);"
+                     (click)="selectCategory(cat.id, cat.name)">
+                    <i *ngIf="cat.icon" [class]="cat.icon" class="me-2"></i>{{ cat.name }}
+                  </a>
+                </li>
+                <li *ngIf="categories.length === 0">
+                  <a class="dropdown-item text-muted">Chargement...</a>
+                </li>
               </ul>
             </div>
-            <input type="text" name="search" class="border-0 form-control p-0"
+            <input type="text" name="search" [(ngModel)]="searchTerm" class="border-0 form-control p-0"
               placeholder="Search for Courses, Instructors" />
             <button type="submit" class="btn btn-secondary ms-auto">
               <i class="isax isax-arrow-right-1"></i>
@@ -77,18 +83,19 @@
             <div class="swiper-wrapper">
               <div class="swiper swiper-cards swiper-3d swiper-initialized swiper-horizontal swiper-pointer-events swiper-watch-progress" >
                 <div class="swiper-wrapper">
-                  <div class="swiper-slide ng-star-inserted swiper-slide-visible swiper-slide-active" style="z-index: 3; transform: translate3d(0px, 0px, 0px) rotateZ(0deg) scale(1);">
+                  <div *ngFor="let course of bannerCourses; let i = index"
+                    class="swiper-slide ng-star-inserted swiper-slide-visible"
+                    [class.swiper-slide-active]="i === 0"
+                    [class.swiper-slide-next]="i === 1"
+                    [style.z-index]="3 - i">
 
                     <div class="swiper-slide">
                       <div class="course-item-two course-item mb-0">
                         <div class="course-img">
-                          <img src="assets/img/course/course-22.jpg" alt="img" class="img-fluid" />
+                          <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" />
                           <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                            <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[1]}" (click)="iconSelect(1)">
+                            <a href="javascript:void(0);" class="fav-icon">
                               <i class="isax isax-heart"></i>
-                            </a>
-                            <a href="javascript:void(0);" class="brand-icon ms-auto">
-                              <img src="assets/img/icons/course-01.svg" alt="img" class="img-fluid" />
                             </a>
                           </div>
                         </div>
@@ -96,128 +103,30 @@
                           <div class="d-flex justify-content-between mb-2">
                             <div class="d-flex align-items-center">
                               <a href="javascript:void(0);" class="avatar avatar-sm">
-                                <img src="assets/img/user/user-50.jpg" alt="img"
+                                <img [src]="getAvatarUrl(course.instructorAvatar)" alt="img"
                                   class="img-fluid avatar avatar-sm rounded-circle" />
                               </a>
                               <div class="ms-2">
-                                <a href="javascript:void(0);" class="link-default fs-14">David Benitz</a>
+                                <a href="javascript:void(0);" class="link-default fs-14">{{ course.instructorName }}</a>
                               </div>
                             </div>
                             <span
                               class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium">
-                              Productivity
+                              {{ course.categoryName || 'Cours' }}
                             </span>
                           </div>
                           <h6 class="mb-2">
-                            <a [routerLink]="routes.courseDetails">The Complete Business and Management Course</a>
+                            <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">{{ course.title }}</a>
                           </h6>
-                          <p class="d-flex align-items-center mb-3">
+                          <p class="d-flex align-items-center mb-3" *ngIf="course.averageRating">
                             <i class="ti ti-star-filled text-warning me-2"></i>
-                            rating
+                            {{ course.averageRating | number:'1.1-1' }} ({{ course.reviewCount || 0 }} avis)
                           </p>
                           <div class="d-flex align-items-center justify-content-between">
                             <h6 class="text-secondary fs-16 fw-semi-bold mb-0">
-                             $168
+                             {{ formatPrice(course) }}
                             </h6>
-                            <a [routerLink]="routes.cart" class="btn btn-dark btn-sm d-inline-flex align-items-center">Add to Cart<i
-                                class="isax isax-arrow-right-3 ms-1"></i></a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="swiper-slide ng-star-inserted swiper-slide-visible swiper-slide-next" style="z-index: 2; transform: translate3d(calc(7.25032% - 321px), 0px, -100.005px) rotateZ(2.0001deg) scale(1);">
-
-                    <div class="swiper-slide">
-                      <div class="course-item-two course-item mb-0">
-                        <div class="course-img">
-                          <img src="assets/img/course/course-25.jpg" alt="img" class="img-fluid" />
-                          <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                            <a href="javascript:void(0);" class="fav-icon" >
-                              <i class="isax isax-heart"></i>
-                            </a>
-                            <a href="javascript:void(0);" class="brand-icon ms-auto">
-                              <img src="assets/img/icons/course-01.svg" alt="img" class="img-fluid" />
-                            </a>
-                          </div>
-                        </div>
-                        <div class="course-content">
-                          <div class="d-flex justify-content-between mb-2">
-                            <div class="d-flex align-items-center">
-                              <a href="javascript:void(0);" class="avatar avatar-sm">
-                                <img src="assets/img/user/user-50.jpg" alt="img"
-                                  class="img-fluid avatar avatar-sm rounded-circle" />
-                              </a>
-                              <div class="ms-2">
-                                <a href="javascript:void(0);" class="link-default fs-14">David Benitz</a>
-                              </div>
-                            </div>
-                            <span
-                              class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium">
-                              Productivity
-                            </span>
-                          </div>
-                          <h6 class="mb-2">
-                            <a [routerLink]="routes.courseDetails">The Complete Business and Management Course</a>
-                          </h6>
-                          <p class="d-flex align-items-center mb-3">
-                            <i class="ti ti-star-filled text-warning me-2"></i>
-                            rating
-                          </p>
-                          <div class="d-flex align-items-center justify-content-between">
-                            <h6 class="text-secondary fs-16 fw-semi-bold mb-0">
-                             $168
-                            </h6>
-                            <a [routerLink]="routes.cart" class="btn btn-dark btn-sm d-inline-flex align-items-center">Add to Cart<i
-                                class="isax isax-arrow-right-3 ms-1"></i></a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="swiper-slide " style="z-index: 1; transform: translate3d(calc(13.0005% - 642px), 0px, -200.01px) rotateZ(4.0002deg) scale(1); transition-duration: 0ms;">
-
-                    <div class="swiper-slide">
-                      <div class="course-item-two course-item mb-0">
-                        <div class="course-img">
-                          <img src="assets/img/course/course-23.jpg" alt="img" class="img-fluid" />
-                          <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                            <a href="javascript:void(0);" class="fav-icon" >
-                              <i class="isax isax-heart"></i>
-                            </a>
-                            <a href="javascript:void(0);" class="brand-icon ms-auto">
-                              <img src="assets/img/icons/course-01.svg" alt="img" class="img-fluid" />
-                            </a>
-                          </div>
-                        </div>
-                        <div class="course-content">
-                          <div class="d-flex justify-content-between mb-2">
-                            <div class="d-flex align-items-center">
-                              <a href="javascript:void(0);" class="avatar avatar-sm">
-                                <img src="assets/img/user/user-50.jpg" alt="img"
-                                  class="img-fluid avatar avatar-sm rounded-circle" />
-                              </a>
-                              <div class="ms-2">
-                                <a href="javascript:void(0);" class="link-default fs-14">David Benitz</a>
-                              </div>
-                            </div>
-                            <span
-                              class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium">
-                              Productivity
-                            </span>
-                          </div>
-                          <h6 class="mb-2">
-                            <a [routerLink]="routes.courseDetails">The Complete Business and Management Course</a>
-                          </h6>
-                          <p class="d-flex align-items-center mb-3">
-                            <i class="ti ti-star-filled text-warning me-2"></i>
-                            rating
-                          </p>
-                          <div class="d-flex align-items-center justify-content-between">
-                            <h6 class="text-secondary fs-16 fw-semi-bold mb-0">
-                             $168
-                            </h6>
-                            <a [routerLink]="routes.cart" class="btn btn-dark btn-sm d-inline-flex align-items-center">Add to Cart<i
+                            <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)" class="btn btn-dark btn-sm d-inline-flex align-items-center">Voir le cours<i
                                 class="isax isax-arrow-right-3 ms-1"></i></a>
                           </div>
                         </div>
@@ -374,74 +283,21 @@
     </div>
     <div class="top-courses-slider lazy">
       <ngx-slick-carousel #slickModal="slick-carousel" [config]="topCourseSlider">
-        <div ngxSlickItem>
+        <div ngxSlickItem *ngFor="let cat of categories">
           <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-6.svg" alt="img" />
+            <div class="category-icon mx-auto d-flex align-items-center justify-content-center rounded-circle bg-light" style="width:72px;height:72px" *ngIf="cat.icon">
+              <i [class]="cat.icon" style="font-size:32px"></i>
+            </div>
+            <img class="mx-auto" src="assets/img/category/icons/icon-6.svg" alt="img" *ngIf="!cat.icon" />
             <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Frontend Developer</a>
-            </h6>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-7.svg" alt="img" />
-            <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Jira Management</a>
-            </h6>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-8.svg" alt="img" />
-            <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Figma Developer</a>
-            </h6>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-9.svg" alt="img" />
-            <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Framer Developer</a>
-            </h6>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-10.svg" alt="img" />
-            <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Vue js Developer</a>
-            </h6>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-11.svg" alt="img" />
-            <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Shopify Developer</a>
-            </h6>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-10.svg" alt="img" />
-            <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Vue js Developer</a>
-            </h6>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="categories-item categories-item-three mb-0">
-            <img class="mx-auto" src="assets/img/category/icons/icon-11.svg" alt="img" />
-            <h6 class="title">
-              <a [routerLink]="routes.courseCategory">Shopify Developer</a>
+              <a href="javascript:void(0);" (click)="selectCategory(cat.id, cat.name)">{{ cat.name }}</a>
             </h6>
           </div>
         </div>
       </ngx-slick-carousel>
       
     </div>
-    <a [routerLink]="routes.courseCategory" class="btn btn-primary btn-md">View All Categories</a>
+    <a [routerLink]="'/courses/course-list-public'" class="btn btn-primary btn-md">Voir toutes les catégories</a>
   </div>
 </section>
 <!-- /top courses -->
@@ -514,175 +370,43 @@
     </div>
     <div class="feature-course-slider-2">
       <ngx-slick-carousel #slickModal="slick-carousel" [config]="featureCourseSlider2">
-        <div ngxSlickItem>
+        <div ngxSlickItem *ngFor="let course of featuredCourses; let i = index">
           <div class="course-item">
             <div class="course-img">
-              <a [routerLink]="routes.courseDetails">
-                <img src="assets/img/course/course-36.jpg" alt="img" class="img-fluid" />
+              <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">
+                <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" />
               </a>
               <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="price-badge ms-auto">$500</span>
+                <span class="price-badge ms-auto">{{ formatPrice(course) }}</span>
               </div>
             </div>
             <div class="d-flex align-items-center justify-content-between">
-              <span class="badge badge-md badge-soft-info rounded-pill">UI/UX</span>
-              <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[1]}" (click)="iconSelect(1)"><i class="isax isax-heart"></i></a>
+              <span class="badge badge-md badge-soft-info rounded-pill">{{ course.categoryName || 'Cours' }}</span>
+              <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[i+1]}" (click)="iconSelect(i+1)"><i class="isax isax-heart"></i></a>
             </div>
             <div class="pb-3 border-bottom mb-3">
               <h5>
-                <a [routerLink]="routes.courseDetails">Information About UI/UX Design Degree</a>
+                <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">{{ course.title }}</a>
               </h5>
             </div>
             <div class="d-flex align-items-center justify-content-between mb-4">
               <div class="course-rating">
-                <span class="course-user"><a href="javascript:void(0);"><img src="assets/img/user/user-06.jpg" alt="img"
+                <span class="course-user"><a href="javascript:void(0);"><img [src]="getAvatarUrl(course.instructorAvatar)" alt="img"
                       class="img-fluid" /></a></span>
-                <a href="javascript:void(0);">Brenda Slaton</a>
+                <a href="javascript:void(0);">{{ course.instructorName }}</a>
               </div>
-              <div class="d-flex">
+              <div class="d-flex" *ngIf="course.averageRating">
                 <span class="d-flex align-items-center rating"><i
-                    class="fa-solid fa-star text-warning me-2"></i>5.0</span>
+                    class="fa-solid fa-star text-warning me-2"></i>{{ course.averageRating | number:'1.1-1' }}</span>
               </div>
             </div>
-            <a [routerLink]="routes.courseDetails" class="btn buy-course-btn">Buy Course Now</a>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="course-item">
-            <div class="course-img">
-              <a [routerLink]="routes.courseDetails">
-                <img src="assets/img/course/course-37.jpg" alt="img" class="img-fluid" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="price-badge ms-auto">$300</span>
-              </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="badge badge-soft-danger badge-md rounded-pill shadow-none">Productivity</span>
-              <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[2]}" (click)="iconSelect(2)"><i class="isax isax-heart"></i></a>
-            </div>
-            <div class="pb-3 border-bottom mb-3">
-              <h5>
-                <a [routerLink]="routes.courseDetails">Learn & Create ReactJS Tech Fundamentals Apps</a>
-              </h5>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <div class="course-rating">
-                <span class="course-user"><a href="javascript:void(0);"><img src="assets/img/user/user-07.jpg" alt="img"
-                      class="img-fluid" /></a></span>
-                <a href="javascript:void(0);">David Benitez</a>
-              </div>
-              <div class="d-flex">
-                <span class="d-flex align-items-center rating"><i
-                    class="fa-solid fa-star text-warning me-2"></i>5.0</span>
-              </div>
-            </div>
-            <a [routerLink]="routes.courseDetails" class="btn buy-course-btn">Buy Course Now</a>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="course-item">
-            <div class="course-img">
-              <a [routerLink]="routes.courseDetails">
-                <img src="assets/img/course/course-38.jpg" alt="img" class="img-fluid" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="price-badge ms-auto">$350</span>
-              </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="badge badge-soft-purple badge-md rounded-pill shadow-none">Management</span>
-              <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[3]}" (click)="iconSelect(3)"><i class="isax isax-heart"></i></a>
-            </div>
-            <div class="pb-3 border-bottom mb-3">
-              <h5>
-                <a [routerLink]="routes.courseDetails">The Complete Business and Management Course</a>
-              </h5>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <div class="course-rating">
-                <span class="course-user"><a href="javascript:void(0);"><img src="assets/img/user/user-08.jpg" alt="img"
-                      class="img-fluid" /></a></span>
-                <a href="javascript:void(0);">Calvin Johnsen</a>
-              </div>
-              <div class="d-flex">
-                <span class="d-flex align-items-center rating"><i
-                    class="fa-solid fa-star text-warning me-2"></i>5.0</span>
-              </div>
-            </div>
-            <a [routerLink]="routes.courseDetails" class="btn buy-course-btn">Buy Course Now</a>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="course-item">
-            <div class="course-img">
-              <a [routerLink]="routes.courseDetails">
-                <img src="assets/img/course/course-39.jpg" alt="img" class="img-fluid" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="price-badge ms-auto">$500</span>
-              </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="badge badge-soft-success badge-md rounded-pill shadow-none">Art & Media</span>
-              <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[4]}" (click)="iconSelect(4)"><i class="isax isax-heart5 text-danger"></i></a>
-            </div>
-            <div class="pb-3 border-bottom mb-3">
-              <h5>
-                <a [routerLink]="routes.courseDetails">Build Creative Arts & media Course Completed</a>
-              </h5>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <div class="course-rating">
-                <span class="course-user"><a href="javascript:void(0);"><img src="assets/img/user/user-09.jpg" alt="img"
-                      class="img-fluid" /></a></span>
-                <a href="javascript:void(0);">David Benitez</a>
-              </div>
-              <div class="d-flex">
-                <span class="d-flex align-items-center rating"><i
-                    class="fa-solid fa-star text-warning me-2"></i>5.0</span>
-              </div>
-            </div>
-            <a [routerLink]="routes.courseDetails" class="btn buy-course-btn">Buy Course Now</a>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="course-item">
-            <div class="course-img">
-              <a [routerLink]="routes.courseDetails2">
-                <img src="assets/img/course/course-37.jpg" alt="img" class="img-fluid" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="price-badge ms-auto">$300</span>
-              </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="badge badge-soft-danger badge-md rounded-pill shadow-none">Productivity</span>
-              <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[5]}" (click)="iconSelect(5)"><i class="isax isax-heart"></i></a>
-            </div>
-            <div class="pb-3 border-bottom mb-3">
-              <h5>
-                <a [routerLink]="routes.courseDetails2">Learn & Create ReactJS Tech Fundamentals Apps</a>
-              </h5>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <div class="course-rating">
-                <span class="course-user"><a href="javascript:void(0);"><img src="assets/img/user/user-07.jpg" alt="img"
-                      class="img-fluid" /></a></span>
-                <a href="javascript:void(0);">David Benitez</a>
-              </div>
-              <div class="d-flex">
-                <span class="d-flex align-items-center rating"><i
-                    class="fa-solid fa-star text-warning me-2"></i>5.0</span>
-              </div>
-            </div>
-            <a [routerLink]="routes.courseDetails" class="btn buy-course-btn">Buy Course Now</a>
+            <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)" class="btn buy-course-btn">Voir le cours</a>
           </div>
         </div>
       </ngx-slick-carousel>
     </div>
     <div class="d-flex align-items-center justify-content-center">
-      <a [routerLink]="routes.courseList" class="btn btn-primary btn-md">View All Courses</a>
+      <a [routerLink]="'/courses/course-list-public'" class="btn btn-primary btn-md">Voir tous les cours</a>
     </div>
   </div>
 </section>
@@ -892,133 +616,21 @@
     </div>
     <div class="featured-instructor-slider lazy">
       <ngx-slick-carousel #slickModal="slick-carousel" [config]="instructorSlider">
-        <div ngxSlickItem>
-          <div class="instructor-item instructor-item-three mb-0" data-aos="flip-left" >
-            <div class="instructors-img">
-              <a [routerLink]="routes.instructorList" tabindex="0">
-                <img class="img-fluid" alt="Img" src="assets/img/instructor/instructor-09.jpg" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="verify">
-                  <img src="assets/img/icons/verify-icon.svg" alt="img" class="img-fluid" />
-                </span>
-                <a href="javascript:void(0);" class="favourite ms-auto">
-                  <i class="isax isax-heart"></i>
-                </a>
-              </div>
-            </div>
-            <div class="instructor-content">
-              <div>
-                <h3 class="title">
-                  <a [routerLink]="routes.instructorDetails">Joyce Pence</a>
-                </h3>
-                <span class="designation">Lead Designer</span>
-              </div>
-              <p class="rating"><i class="fas fa-star me-1"></i>4.8</p>
-            </div>
-          </div>
-        </div>
-        <div ngxSlickItem>
+        <div ngxSlickItem *ngFor="let inst of topInstructors">
           <div class="instructor-item instructor-item-three mb-0" data-aos="flip-left">
             <div class="instructors-img">
-              <a [routerLink]="routes.instructorList" tabindex="0">
-                <img class="img-fluid" alt="Img" src="assets/img/instructor/instructor-10.jpg" />
+              <a [routerLink]="[routes.instructorDetails, inst.id]" tabindex="0">
+                <img class="img-fluid" [alt]="inst.name" [src]="getAvatarUrl(inst.avatar)" />
               </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="verify">
-                  <img src="assets/img/icons/verify-icon.svg" alt="img" class="img-fluid" />
-                </span>
-                <a href="javascript:void(0);" class="favourite ms-auto">
-                  <i class="isax isax-heart"></i>
-                </a>
-              </div>
             </div>
             <div class="instructor-content">
               <div>
                 <h3 class="title">
-                  <a [routerLink]="routes.instructorDetails">Edith Dorsey</a>
+                  <a [routerLink]="[routes.instructorDetails, inst.id]">{{ inst.name }}</a>
                 </h3>
-                <span class="designation">Accountant</span>
+                <span class="designation">Instructeur</span>
               </div>
-              <p class="rating"><i class="fas fa-star me-1"></i>5.0</p>
-            </div>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="instructor-item instructor-item-three mb-0" data-aos="flip-left">
-            <div class="instructors-img">
-              <a [routerLink]="routes.instructorList" tabindex="0">
-                <img class="img-fluid" alt="Img" src="assets/img/instructor/instructor-11.jpg" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="verify">
-                  <img src="assets/img/icons/verify-icon.svg" alt="img" class="img-fluid" />
-                </span>
-                <a href="javascript:void(0);" class="favourite ms-auto">
-                  <i class="isax isax-heart"></i>
-                </a>
-              </div>
-            </div>
-            <div class="instructor-content">
-              <div>
-                <h3 class="title">
-                  <a [routerLink]="routes.instructorDetails">Ruben Holmes</a>
-                </h3>
-                <span class="designation">Architect</span>
-              </div>
-              <p class="rating"><i class="fas fa-star me-1"></i>4.8</p>
-            </div>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="instructor-item instructor-item-three mb-0" data-aos="flip-left">
-            <div class="instructors-img">
-              <a [routerLink]="routes.instructorList" tabindex="0">
-                <img class="img-fluid" alt="Img" src="assets/img/instructor/instructor-12.jpg" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="verify">
-                  <img src="assets/img/icons/verify-icon.svg" alt="img" class="img-fluid" />
-                </span>
-                <a href="javascript:void(0);" class="favourite ms-auto">
-                  <i class="isax isax-heart"></i>
-                </a>
-              </div>
-            </div>
-            <div class="instructor-content">
-              <div>
-                <h3 class="title">
-                  <a [routerLink]="routes.instructorDetails">Carol Magner</a>
-                </h3>
-                <span class="designation">Lead Designer</span>
-              </div>
-              <p class="rating"><i class="fas fa-star me-1"></i>4.5</p>
-            </div>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="instructor-item instructor-item-three mb-0" data-aos="flip-left">
-            <div class="instructors-img">
-              <a [routerLink]="routes.instructorList" tabindex="0">
-                <img class="img-fluid" alt="Img" src="assets/img/instructor/instructor-10.jpg" />
-              </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="verify">
-                  <img src="assets/img/icons/verify-icon.svg" alt="img" class="img-fluid" />
-                </span>
-                <a href="javascript:void(0);" class="favourite ms-auto">
-                  <i class="isax isax-heart"></i>
-                </a>
-              </div>
-            </div>
-            <div class="instructor-content">
-              <div>
-                <h3 class="title">
-                  <a [routerLink]="routes.instructorDetails">Edith Dorsey</a>
-                </h3>
-                <span class="designation">Accountant</span>
-              </div>
-              <p class="rating"><i class="fas fa-star me-1"></i>5.0</p>
+              <p class="rating" *ngIf="inst.avgRating"><i class="fas fa-star me-1"></i>{{ inst.avgRating }}</p>
             </div>
           </div>
         </div>

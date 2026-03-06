@@ -148,7 +148,9 @@
                   </div>
                 </td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-danger" (click)="confirmDelete(user)" title="Supprimer">
+                  <button class="btn btn-sm btn-danger" (click)="confirmDelete(user)"
+                          [disabled]="user.role.includes('ADMIN')"
+                          [title]="user.role.includes('ADMIN') ? 'Impossible de supprimer un admin' : 'Supprimer'">
                     <i class="ti ti-trash"></i>
                   </button>
                 </td>

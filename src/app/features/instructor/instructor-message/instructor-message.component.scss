@@ -1,0 +1,18 @@
+/* Instructor sent messages — dark purple */
+.sent-message {
+  background: #4a1d96 !important;
+  color: #ffffff !important;
+  border-radius: 12px 12px 0 12px;
+  padding: 8px 14px;
+
+  p {
+    color: #ffffff !important;
+    margin-bottom: 0;
+  }
+}
+
+/* Received messages — keep default but show sender name clearly */
+.received-message {
+  border-radius: 12px 12px 12px 0;
+  padding: 8px 14px;
+}

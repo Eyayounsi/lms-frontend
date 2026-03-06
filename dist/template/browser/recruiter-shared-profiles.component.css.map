@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/recruiter/recruiter-shared-profiles/recruiter-shared-profiles.component.scss"],
+  "sourcesContent": [".hover-shadow {\r\n  transition: box-shadow 0.2s ease, transform 0.2s ease;\r\n  &:hover {\r\n    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);\r\n    transform: translateY(-2px);\r\n  }\r\n}\r\n"],
+  "mappings": ";AAAA,CAAA;AACE,cAAA,WAAA,KAAA,IAAA,EAAA,UAAA,KAAA;;AACA,CAFF,YAEE;AACE,cAAA,EAAA,IAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACA,aAAA,WAAA;;",
+  "names": []
+}

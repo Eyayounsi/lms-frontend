@@ -1,0 +1,136 @@
+// ─── Floating Notes Button (chatbot style) ────────────────────────────────────
+
+.notes-fab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 1050;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.45);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 24px rgba(99, 102, 241, 0.55);
+  }
+
+  &--open {
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    box-shadow: 0 4px 18px rgba(239, 68, 68, 0.4);
+  }
+}
+
+// ─── Notes Slide-in Panel ─────────────────────────────────────────────────────
+
+.notes-panel {
+  position: fixed;
+  bottom: 96px;
+  right: 28px;
+  z-index: 1049;
+  width: 360px;
+  max-height: calc(100vh - 130px);
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.16);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(20px) scale(0.97);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+
+  &--visible {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  &__body {
+    padding: 14px 16px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  &__section {
+    margin-bottom: 18px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__section-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+
+  &__textarea {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.875rem;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #6366f1;
+    }
+  }
+
+  &__divider {
+    border-color: #e2e8f0;
+    margin: 14px 0;
+  }
+}
+
+.notes-saved-msg {
+  font-size: 0.8rem;
+  color: #22c55e;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+
+@media (max-width: 480px) {
+  .notes-panel {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 88px;
+  }
+
+  .notes-fab {
+    bottom: 16px;
+    right: 16px;
+  }
+}

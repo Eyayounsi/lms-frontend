@@ -87,6 +87,31 @@
             </div>
         </div>
         <div class="card mb-0">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div>
+                        <h5 class="fs-18 mb-1"><i class="ti ti-share me-2"></i>Partage du profil</h5>
+                        <p class="text-muted mb-0">Rendez votre profil visible par les recruteurs de la plateforme pour recevoir des opportunités professionnelles.</p>
+                    </div>
+                    <div class="form-check form-switch ms-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="shareToggle"
+                               [checked]="shareWithRecruiters"
+                               (change)="onToggleShare($event)"
+                               [disabled]="shareLoading">
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge" [class]="shareWithRecruiters ? 'bg-success' : 'bg-secondary'">
+                        {{ shareWithRecruiters ? 'Profil visible par les recruteurs' : 'Profil masqué' }}
+                    </span>
+                    <span class="spinner-border spinner-border-sm text-muted" *ngIf="shareLoading"></span>
+                </div>
+                <div class="alert alert-success py-2 mt-2 fs-13" *ngIf="shareSuccess">{{ shareSuccess }}</div>
+                <div class="alert alert-danger py-2 mt-2 fs-13" *ngIf="shareError">{{ shareError }}</div>
+            </div>
+        </div>
+
+        <div class="card mb-0">
             <div class="card-body">	
                 <h5 class="fs-18 mb-3">Delete Account</h5>								
                 <h6 class="mb-1">Are you sure you want to delete your account?</h6>

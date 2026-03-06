@@ -1,6 +1,6 @@
 
 <!-- Breadcrumb -->
-<div [hidden]="page==='course-details-2'" class="breadcrumb-bar text-center">
+<div *ngIf="page !== 'course-details-2' && page !== 'course-details' && page !== 'course-watch'" class="breadcrumb-bar text-center">
     <div class="container">
         <div class="row">
             <div class="col-md-12 col-12">

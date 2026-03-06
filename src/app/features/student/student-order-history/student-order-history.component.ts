@@ -1,108 +1,92 @@
-import { Component } from '@angular/core';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { routes } from '../../../shared/service/routes/routes';
-import { apiResultFormat, pageSelection, studentOrderHistory } from '../../../shared/models/model';
-import { DataService } from '../../../shared/service/data/data.service';
-import { PaginationService, tablePageSize } from '../../../shared/service/custom-pagination/pagination.service';
 import { FormsModule } from '@angular/forms';
+import { OrderService, OrderHistoryDto } from '../../../shared/service/order/order.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-student-order-history',
     templateUrl: './student-order-history.component.html',
     styleUrl: './student-order-history.component.scss',
-    imports : [CommonModule,MatSortModule,FormsModule],
+    imports: [CommonModule, FormsModule],
 })
-export class StudentOrderHistoryComponent {
-routes=routes;
-// pagination variables
-public pageSize = 10;
-public tableData: studentOrderHistory[] = [];
-public tableDataCopy: studentOrderHistory[] = [];
-public actualData: studentOrderHistory[] = [];
-public currentPage = 1;
-public skip = 0;
-public limit: number = this.pageSize;
-public serialNumberArray: number[] = [];
-public totalData = 0;       
-public pageSelection: pageSelection[] = [];
-dataSource!: MatTableDataSource<studentOrderHistory>;
-public searchDataValue = '';
-constructor(
-  private data: DataService,
-  private router: Router,
-  private pagination: PaginationService
-) {
-  this.data.getStudentOrderHistory().subscribe((apiRes: apiResultFormat) => {
-    this.actualData = apiRes.data;
-    this.pagination.tablePageSize.subscribe((res: tablePageSize) => {
-      if (this.router.url == this.routes.studentOrderHistory) {
-        this.getTableData({ skip: res.skip, limit: res.limit });
-        this.pageSize = res.pageSize;
+export class StudentOrderHistoryComponent implements OnInit {
+  orders: OrderHistoryDto[] = [];
+  filteredOrders: OrderHistoryDto[] = [];
+  loading = true;
+  errorMessage = '';
+  searchValue = '';
+  statusFilter = '';
+
+  constructor(private orderService: OrderService) {}
+
+  ngOnInit(): void {
+    this.loadOrders();
+  }
+
+  loadOrders(): void {
+    this.loading = true;
+    this.orderService.getMyOrders().subscribe({
+      next: (data) => {
+        this.orders = data;
+        this.filteredOrders = data;
+        this.loading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Erreur lors du chargement des commandes.';
+        this.loading = false;
       }
     });
-  });
-}
-private getTableData(pageOption: pageSelection): void {
-  this.data.getStudentOrderHistory().subscribe((apiRes: apiResultFormat) => {
-    this.tableData = [];
-    this.tableDataCopy = [];
-    this.serialNumberArray = [];
-    this.totalData = apiRes.totalData;
-    apiRes.data.map((res: studentOrderHistory, index: number) => {
-      const serialNumber = index + 1;
-      if (index >= pageOption.skip && serialNumber <= pageOption.limit) {
-        res.sNo = serialNumber;
-        this.tableData.push(res);
-        this.tableDataCopy.push(res);
-        this.serialNumberArray.push(serialNumber);
-      }
-    });
-    this.dataSource = new MatTableDataSource<studentOrderHistory>(this.actualData);
-    this.pagination.calculatePageSize.next({
-      totalData: this.totalData,
-      pageSize: this.pageSize,
-      tableData: this.tableData,
-      tableDataCopy: this.tableDataCopy,
-      serialNumberArray: this.serialNumberArray,
-    });
-  });
-}
-
-public searchData(value: string): void {
-  if (value == '') {
-    this.tableData = this.tableDataCopy;
-  } else {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.tableData = this.dataSource.filteredData;
   }
-}
 
-public sortData(sort: Sort) {
-  const data = this.tableData.slice();
+  applyFilters(): void {
+    let result = [...this.orders];
+    if (this.statusFilter) {
+      result = result.filter(o => o.status === this.statusFilter);
+    }
+    if (this.searchValue.trim()) {
+      const q = this.searchValue.toLowerCase();
+      result = result.filter(o =>
+        o.courseTitle.toLowerCase().includes(q) ||
+        o.instructorName.toLowerCase().includes(q) ||
+        String(o.enrollmentId).includes(q)
+      );
+    }
+    this.filteredOrders = result;
+  }
 
-  if (!sort.active || sort.direction === '') {
-    this.tableData = data;
-  } else {
-    this.tableData = data.sort((a, b) => {
-      const aValue = (a as never)[sort.active];
+  getImageUrl(path: string): string {
+    if (!path) return 'assets/img/course/course-01.jpg';
+    const clean = path.startsWith('/') ? path : '/' + path;
+    return `${environment.apiUrl.replace('/api', '')}${clean}`;
+  }
 
-      const bValue = (b as never)[sort.active];
-      return (aValue < bValue ? -1 : 1) * (sort.direction === 'asc' ? 1 : -1);
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '-';
+    return new Date(dateStr).toLocaleDateString('fr-FR', {
+      day: '2-digit', month: 'short', year: 'numeric'
     });
   }
-}
-public changePageSize(pageSize: number): void {
-  this.pageSelection = [];
-  this.limit = pageSize;
-  this.skip = 0;
-  this.currentPage = 1;
-  this.pagination.tablePageSize.next({
-    skip: this.skip,
-    limit: this.limit,
-    pageSize: this.pageSize,
-  });
-}
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'COMPLETED': return 'bg-success';
+      case 'PENDING':   return 'bg-warning text-dark';
+      case 'REFUNDED':  return 'bg-danger';
+      default:          return 'bg-secondary';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'COMPLETED': return 'Complété';
+      case 'PENDING':   return 'En attente';
+      case 'REFUNDED':  return 'Remboursé';
+      default:          return status;
+    }
+  }
+
+  getTotalSpent(): number {
+    return this.orders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  }
 }

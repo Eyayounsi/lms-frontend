@@ -1,4 +1,39 @@
+﻿
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
+    <!-- LIST MODE : sidebar "Quiz Results" click (no quizId) -->
+    <ng-container *ngIf="!loading && listMode">
+        <h5 class="page-title fw-bold mb-3">Résultats des Quiz</h5>
+        <div *ngIf="allQuizzes.length === 0" class="border rounded-2 p-4 text-center text-muted">
+            Aucun quiz créé pour le moment.
+        </div>
+        <div *ngFor="let quiz of allQuizzes" class="border rounded-2 p-3 mb-3">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h6 class="mb-1">{{ quiz.title }}</h6>
+                    <p class="text-muted fs-12 mb-1">
+                        {{ quiz.lessonTitle ? quiz.lessonTitle + '  ' : '' }}{{ quiz.courseName }}
+                    </p>
+                    <div class="d-flex align-items-center gap-3 fs-13">
+                        <span><i class="isax isax-message-question5 text-primary me-1"></i>{{ quiz.numberOfQuestions }} questions</span>
+                        <span><i class="isax isax-clock5 text-secondary me-1"></i>{{ quiz.durationMinutes }} min</span>
+                        <span><i class="isax isax-medal-star5 text-warning me-1"></i>Pass: {{ quiz.passMark }}/{{ quiz.totalMarks }}</span>
+                    </div>
+                </div>
+                <a [routerLink]="['/instructor/instructor-quiz-results', quiz.id]" class="btn btn-sm btn-secondary">
+                    <i class="isax isax-chart me-1"></i>Voir les résultats
+                </a>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- DETAIL MODE : specific quiz results -->
+    <ng-container *ngIf="!loading && !listMode && data">
     <h5 class="page-title">Quiz Results</h5>
     <div class="card">
         <div class="card-body">
@@ -7,10 +42,10 @@
                     <img src="assets/img/students/quiz.jpg" alt="">
                 </div>
                 <div>
-                    <h5 class="mb-2"><a href="javascript:void(0);">Information About UI/UX Design Degree</a></h5>
+                    <h5 class="mb-2"><a href="javascript:void(0);">{{ data.quizTitle }}</a></h5>
                     <div class="question-info d-flex align-items-center">
-                        <p class="d-flex align-items-center fs-14 me-2 pe-2 border-end mb-0"><i class="isax isax-message-question5 text-primary-soft me-2"></i>25 Questions</p>
-                        <p class="d-flex align-items-center fs-14 mb-0"><i class="isax isax-clock5 text-secondary-soft me-2"></i>30 Minutes</p>
+                        <p class="d-flex align-items-center fs-14 me-2 pe-2 border-end mb-0"><i class="isax isax-message-question5 text-primary-soft me-2"></i>{{ data.courseName }}</p>
+                        <p class="d-flex align-items-center fs-14 mb-0"><i class="isax isax-clock5 text-secondary-soft me-2"></i>{{ results.length }} Attempts</p>
                     </div>
                 </div>
             </div>
@@ -22,8 +57,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="mb-1 fw-normal text-gray-5">Total Particpants</h6>
-                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">30</span>
+                            <h6 class="mb-1 fw-normal text-gray-5">Total Participants</h6>
+                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">{{ data.totalParticipants }}</span>
                         </div>
                         <div class="icon-box bg-soft-secondary">
                             <img src="assets/img/icon/user-tick.svg" alt="">
@@ -37,10 +72,10 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="mb-1 fw-normal text-gray-5">Scores</h6>
-                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">03</span>
+                            <h6 class="mb-1 fw-normal text-gray-5">Pass Rate</h6>
+                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">{{ getPassRate() }}%</span>
                         </div>
-                        <div class="icon-box  bg-soft-info">
+                        <div class="icon-box bg-soft-info">
                             <img src="assets/img/icon/document.svg" alt="">
                         </div>
                     </div>
@@ -52,10 +87,10 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="mb-1 fw-normal text-gray-5">Average Time</h6>
-                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">00:00:55</span>
+                            <h6 class="mb-1 fw-normal text-gray-5">Average Score</h6>
+                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">{{ getAverageScore() }}%</span>
                         </div>
-                        <div class="icon-box  bg-soft-purple">
+                        <div class="icon-box bg-soft-purple">
                             <img src="assets/img/icon/clock.svg" alt="">
                         </div>
                     </div>
@@ -69,29 +104,34 @@
                 <tr>
                     <th>Student Name</th>
                     <th>Score</th>
-                    <th>Attemplts</th>
-                    <th>Finish Time</th>
+                    <th>Attempts</th>
+                    <th>Status</th>
+                    <th>Date</th>
                 </tr>
             </thead>
             <tbody>
-                @for (data of tableData;track data){
-                <tr>
+                <tr *ngIf="results.length === 0">
+                    <td colspan="5" class="text-center text-muted py-4">No results yet</td>
+                </tr>
+                <tr *ngFor="let r of results">
                     <td>
                         <div class="d-flex align-items-center">
-                            <a [routerLink]="routes.studentsDetails" class="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
-                                <img src="assets/img/user/{{data.img}}" alt="">
-                            </a>
-                            <a [routerLink]="routes.studentsDetails" class="fs-14">{{data.studentName}}</a>
+                            <span class="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
+                                <img [src]="r.studentAvatar || 'assets/img/user/user-01.jpg'" alt="">
+                            </span>
+                            <span class="fs-14">{{ r.studentName }}</span>
                         </div>
                     </td>
-                    <td>{{data.score}}</td>
-                    <td>{{data.attempts}}</td>
-                    <td>{{data.finishTime}}</td>
+                    <td>{{ r.score }}%</td>
+                    <td>{{ r.attempts }}</td>
+                    <td>
+                        <span class="badge" [class.badge-success]="r.passed" [class.badge-danger]="!r.passed">
+                            {{ r.passed ? 'Passed' : 'Failed' }}
+                        </span>
+                    </td>
+                    <td>{{ r.finishedAt | date:'short' }}</td>
                 </tr>
-                }
             </tbody>
         </table>
     </div>
-    <!-- /pagination -->
-    <app-custom-pagination/>
-    <!-- /pagination -->
+    </ng-container>

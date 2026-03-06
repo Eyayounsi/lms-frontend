@@ -41,8 +41,9 @@
                     <div class="d-flex align-items-center">
                         <span class="icon-box bg-primary-transparent me-2 me-xxl-3 flex-shrink-0"><img src="assets/img/icon/graduation.svg" alt=""></span>
                         <div>
-                            <span class="d-block">Enrolled Courses</span>
-                            <h4 class="fs-24 mt-1">12</h4>
+                            <span class="d-block">Cours inscrits</span>
+                            <h4 class="fs-24 mt-1" *ngIf="!loading">{{ totalCourses }}</h4>
+                            <div *ngIf="loading" class="spinner-border spinner-border-sm text-primary mt-1"></div>
                         </div>
                     </div>
                 </div>
@@ -54,8 +55,9 @@
                     <div class="d-flex align-items-center">
                         <span class="icon-box bg-secondary-transparent me-2 me-xxl-3 flex-shrink-0"><img src="assets/img/icon/book.svg" alt=""></span>
                         <div>
-                            <span class="d-block">Active Courses</span>
-                            <h4 class="fs-24 mt-1">03</h4>
+                            <span class="d-block">Cours en cours</span>
+                            <h4 class="fs-24 mt-1" *ngIf="!loading">{{ activeCourses }}</h4>
+                            <div *ngIf="loading" class="spinner-border spinner-border-sm text-secondary mt-1"></div>
                         </div>
                     </div>
                 </div>
@@ -67,112 +69,74 @@
                     <div class="d-flex align-items-center">
                         <span class="icon-box bg-success-transparent me-2 me-xxl-3 flex-shrink-0"><img src="assets/img/icon/bookmark.svg" alt=""></span>
                         <div>
-                            <span class="d-block">Completed Courses</span>
-                            <h4 class="fs-24 mt-1">10</h4>
+                            <span class="d-block">Cours terminés</span>
+                            <h4 class="fs-24 mt-1" *ngIf="!loading">{{ completedCourses }}</h4>
+                            <div *ngIf="loading" class="spinner-border spinner-border-sm text-success mt-1"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <h5 class="mb-3 fs-18">Recently Enrolled Courses</h5>
-    <div class="row">
-        <div class="col-xl-4 col-md-6">
+    <h5 class="mb-3 fs-18">Cours récemment inscrits</h5>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-center py-4">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+
+    <!-- Aucun cours -->
+    <div *ngIf="!loading && recentCourses.length === 0" class="alert alert-info">
+        <i class="isax isax-info-circle me-2"></i>Vous n'avez pas encore acheté de cours.
+        <a [routerLink]="routes.courseListPublic" class="alert-link ms-1">Explorer le catalogue →</a>
+    </div>
+
+    <div class="row" *ngIf="!loading && recentCourses.length > 0">
+        <div class="col-xl-4 col-md-6" *ngFor="let course of recentCourses">
             <div class="course-item-two course-item mx-0">
                 <div class="course-img">
-                    <a [routerLink]="routes.courseDetails">
-                        <img src="assets/img/course/course-01.jpg" alt="img" class="img-fluid">  
+                    <a [routerLink]="routes.courseWatch" [queryParams]="{courseId: course.id}">
+                        <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" style="height:180px;object-fit:cover;">
                     </a>
-                    <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                        <div class="badge text-bg-danger">15% off</div>
-                        <a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[0]}" (click)="iconSelect(0)"><i class="isax isax-heart"></i></a>
+                    <!-- Badge progression -->
+                    <div class="position-absolute start-0 top-0 p-2">
+                        <span class="badge rounded-pill {{ getProgressClass(course.progressPct) }}">
+                            {{ course.progressPct }}%
+                        </span>
                     </div>
                 </div>
                 <div class="course-content">
-                    <div class="d-flex justify-content-between mb-2">
-                        <div class="d-flex align-items-center">
-                            <a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-                                <img src="assets/img/user/user-29.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-                            </a>
-                            <div class="ms-2">
-                                <a [routerLink]="routes.instructorDetails" class="link-default fs-14">Brenda Slaton</a>
+                    <h6 class="title mb-2">
+                        <a [routerLink]="routes.courseWatch" [queryParams]="{courseId: course.id}">
+                            {{ course.title }}
+                        </a>
+                    </h6>
+                    <p class="d-flex align-items-center mb-2 text-muted small">
+                        <i class="isax isax-user me-1"></i>{{ course.instructorName }}
+                    </p>
+                    <!-- Barre de progression -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span>Progression</span>
+                            <span class="fw-semibold">{{ course.progressPct }}%</span>
+                        </div>
+                        <div class="progress" style="height:6px;">
+                            <div class="progress-bar {{ getProgressClass(course.progressPct) }}"
+                                 role="progressbar"
+                                 [style.width.%]="course.progressPct">
                             </div>
                         </div>
-                        <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                            Design
-                        </span>
                     </div>
-                    <h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Information About UI/UX Design Degree</a></h6>
-                    <p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.9 (200 Reviews)</p>
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="text-secondary mb-0">$120</h5>
-                        <a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-md-6">
-            <div class="course-item-two course-item mx-0">
-                <div class="course-img">
-                    <a [routerLink]="routes.courseDetails">
-                        <img src="assets/img/course/course-02.jpg" alt="img" class="img-fluid">  
-                    </a>
-                    <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                        <a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[1]}" (click)="iconSelect(1)"><i class="isax isax-heart"></i></a>
-                    </div>
-                </div>
-                <div class="course-content">
-                    <div class="d-flex justify-content-between mb-2">
-                        <div class="d-flex align-items-center">
-                            <a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-                                <img src="assets/img/user/user-30.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-                            </a>
-                            <div class="ms-2">
-                                <a [routerLink]="routes.instructorDetails" class="link-default fs-14">Ana Reyes</a>
-                            </div>
-                        </div>
-                        <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                            Wordpress
+                        <span *ngIf="course.progressPct >= 100" class="badge bg-success-transparent text-success">
+                            <i class="isax isax-tick-circle me-1"></i>Terminé
                         </span>
-                    </div>
-                    <h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Wordpress for Beginners - Master Wordpress Quickly</a></h6>
-                    <p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (160 Reviews)</p>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="text-secondary mb-0">$140</h5>
-                        <a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-4 col-md-6">
-            <div class="course-item-two course-item mx-0">
-                <div class="course-img">
-                    <a [routerLink]="routes.courseDetails">
-                        <img src="assets/img/course/course-03.jpg" alt="img" class="img-fluid">  
-                    </a>
-                    <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                        <a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected':isSelected[2]}" (click)="iconSelect(2)"><i class="isax isax-heart"></i></a>
-                    </div>
-                </div>
-                <div class="course-content">
-                    <div class="d-flex justify-content-between mb-2">
-                        <div class="d-flex align-items-center">
-                            <a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-                                <img src="assets/img/user/user-31.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-                            </a>
-                            <div class="ms-2">
-                                <a [routerLink]="routes.instructorDetails" class="link-default fs-14">Andrew Pirtle</a>
-                            </div>
-                        </div>
-                        <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                            Design
-                        </span>
-                    </div>
-                    <h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Sketch from A to Z (2024): Become an app designer</a></h6>
-                    <p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (160 Reviews)</p>
-                    <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="text-secondary mb-0">$140</h5>
-                        <a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
+                        <span *ngIf="course.progressPct === 0" class="text-muted small">Non commencé</span>
+                        <a [routerLink]="routes.courseWatch" [queryParams]="{courseId: course.id}"
+                           class="btn btn-dark btn-sm d-inline-flex align-items-center ms-auto">
+                            {{ course.progressPct > 0 ? 'Continuer' : 'Commencer' }}
+                            <i class="isax isax-arrow-right-3 ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>

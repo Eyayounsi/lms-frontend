@@ -1,209 +1,397 @@
-
-<!-- Bannière de bienvenue -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card border-0 bg-primary text-white">
-            <div class="card-body d-flex align-items-center gap-3 py-3">
-                <span class="icon-box bg-white bg-opacity-25 flex-shrink-0">
-                    <i class="ti ti-user fs-20 text-white"></i>
-                </span>
-                <div>
-                    <h5 class="mb-0 text-white">Bienvenue, {{ userName }} !</h5>
-                    <span class="badge bg-white text-primary mt-1">{{ userRole }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Loading spinner -->
+<div *ngIf="loading" class="d-flex justify-content-center align-items-center py-5">
+  <div class="spinner-border text-primary" role="status"></div>
 </div>
 
- <div class="row">
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="icon-box bg-primary-transparent me-2 me-xxl-3 flex-shrink-0">
-                            <img src="assets/img/icon/graduation.svg" alt="">
-                        </span>
-                        <div>
-                            <span class="d-block">Enrolled Courses</span>
-                            <h4 class="fs-24 mt-1">12</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<ng-container *ngIf="!loading">
+
+<!-- Welcome Banner -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card border-0" style="background: linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:16px;">
+      <div class="card-body d-flex align-items-center gap-3 py-4">
+        <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;">
+          {{ userName.charAt(0).toUpperCase() }}
         </div>
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="icon-box bg-secondary-transparent me-2 me-xxl-3 flex-shrink-0">
-                            <img src="assets/img/icon/book.svg" alt="">
-                        </span>
-                        <div>
-                            <span class="d-block">Active Courses</span>
-                            <h4 class="fs-24 mt-1">08</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div>
+          <h4 class="mb-1 text-white fw-bold">Bonjour, {{ userName }} 👋</h4>
+          <span class="badge bg-white text-primary">{{ userRole | titlecase }}</span>
         </div>
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="icon-box bg-success-transparent me-2 me-xxl-3 flex-shrink-0">
-                            <img src="assets/img/icon/bookmark.svg" alt="">
-                        </span>
-                        <div>
-                            <span class="d-block">Completed Courses</span>
-                            <h4 class="fs-24 mt-1">06</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="ms-auto d-none d-md-flex gap-3 text-white text-end">
+          <div>
+            <div class="fs-22 fw-bold">{{ totalStudents }}</div>
+            <div class="fs-12 opacity-75">Étudiants</div>
+          </div>
+          <div class="vr opacity-25"></div>
+          <div>
+            <div class="fs-22 fw-bold">{{ totalCourses }}</div>
+            <div class="fs-12 opacity-75">Cours</div>
+          </div>
+          <div class="vr opacity-25"></div>
+          <div>
+            <div class="fs-22 fw-bold">€{{ totalRevenue | number:'1.0-0' }}</div>
+            <div class="fs-12 opacity-75">Revenus</div>
+          </div>
         </div>
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="icon-box bg-info-transparent me-2 me-xxl-3 flex-shrink-0">
-                            <img src="assets/img/icon/user-octagon.svg" alt="">
-                        </span>
-                        <div>
-                            <span class="d-block">Total Students</span>
-                            <h4 class="fs-24 mt-1">17</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="icon-box bg-blue-transparent me-2 me-xxl-3 flex-shrink-0">
-                            <img src="assets/img/icon/book-2.svg" alt="">
-                        </span>
-                        <div>
-                            <span class="d-block">Total Courses</span>
-                            <h4 class="fs-24 mt-1">11</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="icon-box bg-purple-transparent me-2 me-xxl-3 flex-shrink-0">
-                            <img src="assets/img/icon/money-add.svg" alt="">
-                        </span>
-                        <div>
-                            <span class="d-block">Total Earnings</span>
-                            <h4 class="fs-24 mt-1">$486</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="card">
-        <div class="card-body">
-            <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between border-bottom mb-2 pb-3">
-                <h5 class="fw-bold">Earnings by Year</h5> 
-                <app-date-range-picker/>
-                
-            </div>
-            <div id="earnnings_chart">
-                <apx-chart
-                [series]="Earningchart.series"
-                [chart]="Earningchart.chart"
-                [xaxis]="Earningchart.xaxis"
-                [yaxis]="Earningchart.yaxis"
-                [stroke]="Earningchart.stroke"
-                [tooltip]="Earningchart.tooltip"
-                [dataLabels]="Earningchart.dataLabels"
-                [fill]="Earningchart.fill"
-                [plotOptions]="Earningchart.plotOptions"
-                [grid]="Earningchart.grid"
-            ></apx-chart>
-            </div>
+  </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box bg-primary-transparent">
+            <i class="ti ti-book fs-20 text-primary"></i>
+          </span>
+          <span class="badge bg-primary-transparent text-primary small">Total</span>
         </div>
+        <h3 class="fw-bold mb-1">{{ totalCourses }}</h3>
+        <p class="text-muted mb-0 small">Cours créés</p>
+      </div>
     </div>
-    <h5 class="mb-3 fw-bold">Recently Created Courses</h5>
-    <div class="table-responsive custom-table">
-        <table class="table">
-            <thead class="thead-light">
-                <tr>
-                    <th>Courses</th>
-                    <th>Enrolled</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <div class="course-title d-flex align-items-center">
-                            <a [routerLink]="routes.courseDetails" class="avatar avatar-xl flex-shrink-0 me-2"><img src="assets/img/instructor/instructor-table-01.jpg" alt="Img"></a>
-                            <div>
-                                <p class="fw-medium"><a [routerLink]="routes.courseDetails">Complete HTML, CSS and Javascript<br> Course</a></p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>0</td>
-                    <td>Published</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="course-title d-flex align-items-center">
-                            <a [routerLink]="routes.courseDetails" class="avatar avatar-xl flex-shrink-0 me-2"><img src="assets/img/instructor/instructor-table-02.jpg" alt="Img"></a>
-                            <div>
-                                <p class="fw-medium"><a [routerLink]="routes.courseDetails">Complete Course on Fullstack Web<br> Developer</a></p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>Published</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="course-title d-flex align-items-center">
-                            <a [routerLink]="routes.courseDetails" class="avatar avatar-xl flex-shrink-0 me-2"><img src="assets/img/instructor/instructor-table-03.jpg" alt="Img"></a>
-                            <div>
-                                <p class="fw-medium"><a [routerLink]="routes.courseDetails">Data Science Fundamentals and<br> Advanced Bootcampr</a></p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>2</td>
-                    <td>Published</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="course-title d-flex align-items-center">
-                            <a [routerLink]="routes.courseDetails" class="avatar avatar-xl flex-shrink-0 me-2"><img src="assets/img/instructor/instructor-table-04.jpg" alt="Img"></a>
-                            <div>
-                                <p class="fw-medium"><a [routerLink]="routes.courseDetails">Master Microservices with Spring Boot<br> and Spring Cloud</a></p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>1</td>
-                    <td>Published</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="course-title d-flex align-items-center">
-                            <a [routerLink]="routes.courseDetails" class="avatar avatar-xl flex-shrink-0 me-2"><img src="assets/img/instructor/instructor-table-05.jpg" alt="Img"></a>
-                            <div>
-                                <p class="fw-medium"><a [routerLink]="routes.courseDetails">Information About UI/UX Design<br> Degree</a></p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>0</td>
-                    <td>Published</td>
-                </tr>
-            </tbody>
-        </table>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box bg-success-transparent">
+            <i class="ti ti-rocket fs-20 text-success"></i>
+          </span>
+          <span class="badge bg-success-transparent text-success small">Publiés</span>
+        </div>
+        <h3 class="fw-bold mb-1">{{ publishedCourses }}</h3>
+        <p class="text-muted mb-0 small">Cours publiés</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box bg-info-transparent">
+            <i class="ti ti-users fs-20 text-info"></i>
+          </span>
+          <span class="badge bg-info-transparent text-info small">Total</span>
+        </div>
+        <h3 class="fw-bold mb-1">{{ totalStudents }}</h3>
+        <p class="text-muted mb-0 small">Étudiants inscrits</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box bg-warning-transparent">
+            <i class="ti ti-currency-euro fs-20 text-warning"></i>
+          </span>
+          <span class="badge bg-warning-transparent text-warning small">Ce mois</span>
+        </div>
+        <h3 class="fw-bold mb-1">€{{ currentMonthRevenue | number:'1.0-2' }}</h3>
+        <p class="text-muted mb-0 small">Revenus du mois</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box" style="background:rgba(16,185,129,.12);">
+            <i class="ti ti-chart-bar fs-20" style="color:#10b981;"></i>
+          </span>
+          <span class="badge small" style="background:rgba(16,185,129,.12);color:#10b981;">Total</span>
+        </div>
+        <h3 class="fw-bold mb-1">€{{ totalRevenue | number:'1.0-2' }}</h3>
+        <p class="text-muted mb-0 small">Revenus totaux</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box" style="background:rgba(245,158,11,.12);">
+            <i class="ti ti-star fs-20" style="color:#f59e0b;"></i>
+          </span>
+          <span class="badge small" style="background:rgba(245,158,11,.12);color:#f59e0b;">Avg</span>
+        </div>
+        <h3 class="fw-bold mb-1">{{ avgRating || '–' }}</h3>
+        <p class="text-muted mb-0 small">Note moyenne</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box" style="background:rgba(99,102,241,.12);">
+            <i class="ti ti-trophy fs-20" style="color:#6366f1;"></i>
+          </span>
+          <span class="badge small" style="background:rgba(99,102,241,.12);color:#6366f1;">Taux</span>
+        </div>
+        <h3 class="fw-bold mb-1">{{ completionRate }}%</h3>
+        <p class="text-muted mb-0 small">Taux de complétion</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <span class="icon-box bg-danger-transparent">
+            <i class="ti ti-clock fs-20 text-danger"></i>
+          </span>
+          <span class="badge bg-danger-transparent text-danger small">Attente</span>
+        </div>
+        <h3 class="fw-bold mb-1">{{ pendingCourses }}</h3>
+        <p class="text-muted mb-0 small">Cours en attente</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h6 class="fw-bold mb-0">Étudiants par cours</h6>
+            <p class="text-muted small mb-0">Top cours les plus populaires</p>
+          </div>
+          <span class="badge bg-primary-transparent text-primary">Inscriptions</span>
+        </div>
+        <apx-chart *ngIf="enrollmentChart"
+          [series]="enrollmentChart.series"
+          [chart]="enrollmentChart.chart"
+          [xaxis]="enrollmentChart.xaxis"
+          [yaxis]="enrollmentChart.yaxis"
+          [plotOptions]="enrollmentChart.plotOptions"
+          [fill]="enrollmentChart.fill"
+          [colors]="enrollmentChart.colors"
+          [dataLabels]="enrollmentChart.dataLabels"
+          [grid]="enrollmentChart.grid"
+          [legend]="enrollmentChart.legend"
+          [tooltip]="enrollmentChart.tooltip"
+        ></apx-chart>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="mb-3">
+          <h6 class="fw-bold mb-0">Progression des étudiants</h6>
+          <p class="text-muted small mb-0">Distribution de la complétion</p>
+        </div>
+        <apx-chart *ngIf="completionDonut"
+          [series]="completionDonut.series"
+          [chart]="completionDonut.chart"
+          [labels]="completionDonut.labels"
+          [colors]="completionDonut.colors"
+          [legend]="completionDonut.legend"
+          [dataLabels]="completionDonut.dataLabels"
+          [responsive]="completionDonut.responsive"
+          [plotOptions]="completionDonut.plotOptions"
+          [tooltip]="completionDonut.tooltip"
+        ></apx-chart>
+        <div *ngIf="students.length === 0" class="text-center py-4 text-muted">
+          <i class="ti ti-users fs-32 d-block mb-2"></i>
+          Aucun étudiant inscrit
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h6 class="fw-bold mb-0">Évolution des revenus</h6>
+            <p class="text-muted small mb-0">6 derniers mois</p>
+          </div>
+          <span class="badge" style="background:rgba(6,182,212,.12);color:#06b6d4;">Revenus</span>
+        </div>
+        <apx-chart *ngIf="revenueChart"
+          [series]="revenueChart.series"
+          [chart]="revenueChart.chart"
+          [xaxis]="revenueChart.xaxis"
+          [yaxis]="revenueChart.yaxis"
+          [stroke]="revenueChart.stroke"
+          [fill]="revenueChart.fill"
+          [colors]="revenueChart.colors"
+          [dataLabels]="revenueChart.dataLabels"
+          [grid]="revenueChart.grid"
+          [tooltip]="revenueChart.tooltip"
+        ></apx-chart>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card border-0 h-100">
+      <div class="card-body">
+        <div class="mb-3">
+          <h6 class="fw-bold mb-0">Statut des cours</h6>
+          <p class="text-muted small mb-0">Répartition par statut</p>
+        </div>
+        <apx-chart *ngIf="statusChart"
+          [series]="statusChart.series"
+          [chart]="statusChart.chart"
+          [xaxis]="statusChart.xaxis"
+          [plotOptions]="statusChart.plotOptions"
+          [colors]="statusChart.colors"
+          [dataLabels]="statusChart.dataLabels"
+          [grid]="statusChart.grid"
+          [legend]="statusChart.legend"
+          [tooltip]="statusChart.tooltip"
+        ></apx-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- My Courses Table -->
+<div class="card border-0 mb-4">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h6 class="fw-bold mb-0">Mes cours</h6>
+      <a [routerLink]="routes.instructorMyCourses" class="btn btn-sm btn-outline-primary">Voir tout</a>
+    </div>
+    <div *ngIf="courses.length === 0" class="text-center py-4 text-muted">
+      <i class="ti ti-book fs-32 d-block mb-2"></i>Aucun cours créé.
+    </div>
+    <div class="table-responsive" *ngIf="courses.length > 0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Cours</th>
+            <th>Étudiants</th>
+            <th>Note</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of courses | slice:0:8">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img [src]="c.coverImageUrl || 'assets/img/course/course-01.jpg'" alt="" style="width:48px;height:36px;object-fit:cover;border-radius:6px;">
+                <div>
+                  <p class="fw-medium mb-0 fs-14">{{ c.title }}</p>
+                  <span class="text-muted fs-12">{{ c.category?.name || '' }}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="fw-semibold">{{ c.enrollmentCount || 0 }}</span></td>
+            <td>
+              <span *ngIf="c.averageRating" class="d-flex align-items-center gap-1 text-warning fs-13">
+                <i class="ti ti-star-filled"></i> {{ c.averageRating | number:'1.1-1' }}
+              </span>
+              <span *ngIf="!c.averageRating" class="text-muted fs-12">–</span>
+            </td>
+            <td>
+              <span class="badge small" [ngClass]="getStatusBadge(c.courseStatus)">{{ getStatusLabel(c.courseStatus) }}</span>
+            </td>
+            <td>
+              <a [routerLink]="['/instructor/instructor-my-courses']" [queryParams]="{id: c.id}" class="btn btn-xs btn-outline-secondary me-1">
+                <i class="ti ti-edit fs-12"></i>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Students Table -->
+<div class="card border-0">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+      <div>
+        <h6 class="fw-bold mb-0">Mes étudiants</h6>
+        <p class="text-muted small mb-0">{{ students.length }} inscription(s) au total</p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <input type="text" class="form-control form-control-sm"
+               placeholder="Rechercher un étudiant..."
+               [(ngModel)]="searchStudent" style="min-width:200px;">
+        <select class="form-select form-select-sm" [(ngModel)]="filterCourse" style="min-width:160px;">
+          <option [ngValue]="0">Tous les cours</option>
+          <option *ngFor="let c of courses" [ngValue]="c.id">{{ c.title }}</option>
+        </select>
+      </div>
     </div>
 
-          
+    <div *ngIf="students.length === 0" class="text-center py-5 text-muted">
+      <i class="ti ti-users fs-40 d-block mb-3"></i>
+      <p class="mb-0">Aucun étudiant inscrit pour le moment.</p>
+    </div>
+
+    <div class="table-responsive" *ngIf="students.length > 0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Étudiant</th>
+            <th>Cours</th>
+            <th>Inscrit le</th>
+            <th>Progression</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of filteredStudents">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">
+                  {{ s.studentName?.charAt(0)?.toUpperCase() || 'E' }}
+                </div>
+                <div>
+                  <p class="fw-medium mb-0 fs-14">{{ s.studentName }}</p>
+                  <span class="text-muted fs-12">{{ s.studentEmail }}</span>
+                </div>
+              </div>
+            </td>
+            <td><span class="fs-13">{{ s.courseTitle }}</span></td>
+            <td><span class="fs-12 text-muted">{{ s.enrolledAt | date:'dd/MM/yyyy' }}</span></td>
+            <td style="min-width:140px;">
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-fill" style="height:6px;border-radius:3px;">
+                  <div class="progress-bar" [ngClass]="getProgressClass(s.completionPercentage)"
+                    [style.width.%]="s.completionPercentage || 0"></div>
+                </div>
+                <span class="fs-12 fw-semibold" style="min-width:34px;">{{ (s.completionPercentage || 0) | number:'1.0-0' }}%</span>
+              </div>
+            </td>
+            <td>
+              <span *ngIf="s.completed" class="badge bg-success-transparent text-success">
+                <i class="ti ti-circle-check me-1"></i>Complété
+              </span>
+              <span *ngIf="!s.completed && (s.completionPercentage || 0) > 0" class="badge bg-warning-transparent text-warning">
+                <i class="ti ti-loader me-1"></i>En cours
+              </span>
+              <span *ngIf="!s.completed && !(s.completionPercentage || 0)" class="badge bg-secondary-transparent text-secondary">
+                Non commencé
+              </span>
+            </td>
+          </tr>
+          <tr *ngIf="filteredStudents.length === 0">
+            <td colspan="5" class="text-center text-muted py-4">Aucun résultat pour cette recherche.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</ng-container>
+

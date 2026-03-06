@@ -5,10 +5,6 @@ import { Observable } from 'rxjs';
 
 /**
  * Service de gestion du profil utilisateur.
- *
- * L'intercepteur Auth (auth.interceptor.ts) ajoute automatiquement
- * le header "Authorization: Bearer <token>" à CHAQUE requête HTTP.
- * Ces endpoints /api/user/** sont donc automatiquement sécurisés.
  */
 @Injectable({
   providedIn: 'root'
@@ -24,9 +20,21 @@ export class ProfileService {
     return this.http.get(`${this.apiUrl}/user/profile`);
   }
 
-  // Mettre à jour nom, téléphone, email
-  updateProfile(data: { fullName?: string; email?: string; phone?: string }): Observable<any> {
+  // Mettre à jour le profil (tous les champs)
+  updateProfile(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/user/profile`, data);
+  }
+
+  // Uploader l'avatar
+  uploadAvatar(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/user/avatar`, formData);
+  }
+
+  // Profil public d'un instructeur (sans auth)
+  getInstructorProfile(instructorId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/public/instructor/${instructorId}`);
   }
 
   // Changer le mot de passe (exige l'ancien)
@@ -40,6 +48,13 @@ export class ProfileService {
   deleteAccount(password: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/user/account`, {
       params: { password },
+      responseType: 'text' as 'json'
+    });
+  }
+
+  // Activer/désactiver le partage du profil avec les recruteurs
+  toggleShareWithRecruiters(share: boolean): Observable<any> {
+    return this.http.put(`${this.apiUrl}/user/share-profile`, { share }, {
       responseType: 'text' as 'json'
     });
   }

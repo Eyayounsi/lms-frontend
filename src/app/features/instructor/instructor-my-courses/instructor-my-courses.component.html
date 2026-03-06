@@ -1,0 +1,423 @@
+<!-- Messages -->
+        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
+          <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
+          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+        </div>
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="mb-0">Mes Cours</h4>
+          <button class="btn btn-primary" (click)="toggleCreateForm()">
+            <i class="fa-solid fa-plus me-2"></i>{{ showCreateForm ? 'Annuler' : 'Nouveau Cours' }}
+          </button>
+        </div>
+
+        <!-- Formulaire de création -->
+        <div *ngIf="showCreateForm" class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fa-solid fa-plus-circle me-2"></i>Créer un nouveau cours</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label class="form-label">Titre du cours *</label>
+                <input type="text" class="form-control" [(ngModel)]="newCourse.title" 
+                       placeholder="Ex: Introduction à Angular 18">
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Niveau</label>
+                <select class="form-select" [(ngModel)]="newCourse.level">
+                  <option value="BEGINNER">Débutant</option>
+                  <option value="INTERMEDIATE">Intermédiaire</option>
+                  <option value="ADVANCED">Avancé</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" rows="3" [(ngModel)]="newCourse.description"
+                          placeholder="Décrivez votre cours..."></textarea>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Prix (€)</label>
+                <input type="number" class="form-control" [(ngModel)]="newCourse.price" 
+                       min="0" step="0.01" placeholder="29.99">
+              </div>
+              <div class="col-12 text-end">
+                <button class="btn btn-success" (click)="createCourse()" [disabled]="creating || !newCourse.title.trim()">
+                  <span *ngIf="creating" class="spinner-border spinner-border-sm me-2"></span>
+                  <i *ngIf="!creating" class="fa-solid fa-check me-2"></i>
+                  {{ creating ? 'Création...' : 'Créer le cours' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          <p class="mt-2 text-muted">Chargement de vos cours...</p>
+        </div>
+
+        <!-- Liste vide -->
+        <div *ngIf="!loading && courses.length === 0" class="text-center py-5">
+          <i class="fa-solid fa-book-open fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">Vous n'avez pas encore de cours</h5>
+          <p class="text-muted">Cliquez sur "Nouveau Cours" pour commencer</p>
+        </div>
+
+        <!-- Grille des cours -->
+        <div class="row" *ngIf="!loading && courses.length > 0">
+          <div class="col-md-6 col-lg-4 mb-4" *ngFor="let course of courses">
+            <div class="card h-100 course-card shadow-sm">
+              <!-- Image -->
+              <div class="course-img-wrapper position-relative">
+                <img [src]="getImageUrl(course.coverImage)" class="card-img-top" 
+                     alt="{{ course.title }}" style="height: 180px; object-fit: cover;">
+                <span class="badge position-absolute top-0 end-0 m-2" 
+                      [ngClass]="getStatusBadgeClass(course.status)">
+                  {{ getStatusLabel(course.status) }}
+                </span>
+              </div>
+              
+              <!-- Corps -->
+              <div class="card-body d-flex flex-column">
+                <h6 class="card-title">{{ course.title }}</h6>
+                <p class="text-muted small mb-2">
+                  <i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
+                </p>
+                <p class="text-muted small flex-grow-1">
+                  {{ course.description?.length > 80 ? (course.description | slice:0:80) + '...' : course.description }}
+                </p>
+                
+                <!-- Prix -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-bold text-primary fs-5">{{ course.price | number:'1.2-2' }} €</span>
+                  <small class="text-muted">{{ course.createdAt | date:'dd/MM/yyyy' }}</small>
+                </div>
+
+                <!-- Raison du rejet -->
+                <div *ngIf="course.status === 'REJECTED' && course.rejectionReason" 
+                     class="alert alert-danger py-1 px-2 small mb-2">
+                  <i class="fa-solid fa-exclamation-triangle me-1"></i>
+                  {{ course.rejectionReason }}
+                </div>
+
+                <!-- Boutons -->
+                <div class="d-flex gap-1 flex-wrap">
+                  <button class="btn btn-sm btn-outline-primary" (click)="openDetail(course)"
+                          title="Voir / Modifier">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                  <button *ngIf="course.status === 'DRAFT'" 
+                          class="btn btn-sm btn-outline-danger" (click)="deleteCourse(course)"
+                          title="Supprimer">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                  <button *ngIf="course.status === 'PUBLISHED'"
+                          class="btn btn-sm btn-outline-secondary" (click)="archiveCourse(course)"
+                          title="Archiver">
+                    <i class="fa-solid fa-archive"></i>
+                  </button>
+                </div>
+
+                <!-- Bouton Publier à l'admin (DRAFT ou REJECTED) -->
+                <div class="mt-2" *ngIf="course.status === 'DRAFT' || course.status === 'REJECTED'">
+                  <button class="btn btn-success btn-sm w-100" (click)="submitForReview(course)">
+                    <i class="fa-solid fa-paper-plane me-1"></i>Publier à l'admin
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!--  MODAL DÉTAIL / ÉDITION DU COURS       -->
+        <!-- ═══════════════════════════════════════ -->
+        <div *ngIf="showDetailModal" class="modal fade show d-block" tabindex="-1" 
+             style="background-color: rgba(0,0,0,0.5);">
+          <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+              
+              <!-- Header -->
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                  <i class="fa-solid fa-book me-2"></i>{{ selectedCourse?.title }}
+                  <span class="badge bg-warning text-dark ms-2 small fw-normal"
+                        *ngIf="selectedCourse?.status === 'DRAFT' && !selectedCourse?.sections?.length">
+                    Nouveau cours
+                  </span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" (click)="closeDetail()"></button>
+              </div>
+
+              <!-- Body -->
+              <div class="modal-body" *ngIf="selectedCourse">
+
+                <!-- Mode LECTURE -->
+                <div *ngIf="!editMode">
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <img [src]="getImageUrl(selectedCourse.coverImage)" class="img-fluid rounded" alt="cover">
+                      <div class="mt-2">
+                        <label class="btn btn-sm btn-outline-primary w-100">
+                          <i class="fa-solid fa-camera me-1"></i>
+                          {{ uploadingCover ? 'Upload...' : 'Changer la couverture' }}
+                          <input type="file" accept="image/*" hidden (change)="onCoverUpload($event, selectedCourse.id)">
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-md-8">
+                      <p><strong>Statut:</strong> 
+                        <span class="badge" [ngClass]="getStatusBadgeClass(selectedCourse.status)">
+                          {{ getStatusLabel(selectedCourse.status) }}
+                        </span>
+                      </p>
+                      <p><strong>Niveau:</strong> {{ getLevelLabel(selectedCourse.level) }}</p>
+                      <p><strong>Prix:</strong> {{ selectedCourse.price | number:'1.2-2' }} €</p>
+                      <p><strong>Description:</strong></p>
+                      <p class="text-muted">{{ selectedCourse.description }}</p>
+
+                      <!-- Avertissement pour les cours publiés -->
+                      <div *ngIf="selectedCourse.status === 'PUBLISHED'" class="alert alert-warning py-2 px-3 small mb-2">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                        Toute modification soumettra ce cours à une <strong>nouvelle validation admin</strong> avant d'être remis en ligne.
+                      </div>
+
+                      <button class="btn btn-sm btn-warning" (click)="startEdit()"
+                              *ngIf="selectedCourse.status === 'DRAFT' || selectedCourse.status === 'REJECTED' || selectedCourse.status === 'PUBLISHED'">
+                        <i class="fa-solid fa-pen me-1"></i>Modifier
+                      </button>
+                    </div>
+                  </div>
+
+                  <hr>
+
+                  <!-- Guide étape par étape pour un nouveau cours -->
+                  <div *ngIf="selectedCourse.status === 'DRAFT' && !selectedCourse.sections?.length"
+                       class="alert alert-info d-flex gap-2 mb-3">
+                    <i class="fa-solid fa-circle-info fs-5 mt-1 flex-shrink-0"></i>
+                    <div>
+                      <strong>Prochaines étapes pour compléter votre cours :</strong>
+                      <ol class="mb-0 mt-1 ps-3 small">
+                        <li>Ajoutez une ou plusieurs <strong>sections</strong> (chapitres) ci-dessous</li>
+                        <li>Dans chaque section, ajoutez des <strong>leçons</strong></li>
+                        <li>Uploadez des <strong>vidéos</strong> et/ou <strong>PDF</strong> pour chaque leçon</li>
+                        <li>Quand tout est prêt, cliquez <strong>"Publier à l'admin"</strong></li>
+                      </ol>
+                    </div>
+                  </div>
+
+                  <!-- SECTIONS & LEÇONS -->
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="mb-0"><i class="fa-solid fa-list me-2"></i>Sections & Leçons</h6>
+                    <button class="btn btn-sm btn-primary" (click)="toggleAddSection(selectedCourse.id)"
+                            *ngIf="selectedCourse.status === 'DRAFT' || selectedCourse.status === 'REJECTED'">
+                      <i class="fa-solid fa-plus me-1"></i>Ajouter une section
+                    </button>
+                  </div>
+
+                  <!-- Form ajout section -->
+                  <div *ngIf="addingSectionToCourseId === selectedCourse.id" class="mb-3">
+                    <div class="input-group">
+                      <input type="text" class="form-control" [(ngModel)]="newSectionTitle" placeholder="Titre de la section">
+                      <button class="btn btn-success" (click)="addSection(selectedCourse.id)" [disabled]="!newSectionTitle.trim()">
+                        <i class="fa-solid fa-check"></i>
+                      </button>
+                      <button class="btn btn-outline-secondary" (click)="toggleAddSection(selectedCourse.id)">
+                        <i class="fa-solid fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Liste des sections -->
+                  <div *ngIf="selectedCourse.sections?.length === 0" class="text-muted text-center py-3">
+                    Aucune section. Ajoutez-en une pour commencer.
+                  </div>
+
+                  <div class="accordion" id="sectionsAccordion">
+                    <div class="accordion-item" *ngFor="let section of selectedCourse.sections; let i = index">
+                      <h2 class="accordion-header">
+                        <button class="accordion-button" [class.collapsed]="i > 0" type="button" 
+                                data-bs-toggle="collapse" [attr.data-bs-target]="'#section' + section.id">
+                          <strong>Section {{ i+1 }}:</strong>&nbsp;{{ section.title }}
+                          <span class="badge bg-info ms-2">{{ section.lessons?.length || 0 }} leçon(s)</span>
+                        </button>
+                      </h2>
+                      <div [id]="'section' + section.id" class="accordion-collapse collapse" [class.show]="i === 0">
+                        <div class="accordion-body">
+                          
+                          <!-- Leçons -->
+                          <div *ngFor="let lesson of section.lessons; let j = index" class="border-bottom">
+                            <div class="d-flex align-items-center justify-content-between p-2">
+                              <div>
+                                <i class="fa-solid fa-play-circle text-success me-2" *ngIf="lesson.lessonType === 'VIDEO' || !lesson.lessonType"></i>
+                                <i class="fa-solid fa-file-lines text-info me-2" *ngIf="lesson.lessonType === 'TEXT'"></i>
+                                <i class="fa-solid fa-file-pdf text-danger me-2" *ngIf="lesson.lessonType === 'PDF'"></i>
+                                <strong>{{ j+1 }}.</strong> {{ lesson.title }}
+                                <span class="badge bg-secondary ms-2" style="font-size:10px">{{ lesson.lessonType || 'VIDEO' }}</span>
+                                <span *ngIf="lesson.videoUrl" class="badge bg-success ms-2">Vidéo</span>
+                                <span *ngIf="lesson.pdfUrl" class="badge bg-info ms-2">PDF</span>
+                                <span *ngIf="lesson.articleContent" class="badge bg-warning ms-2">Article</span>
+                              </div>
+                              <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-secondary" title="Ressources"
+                                        (click)="toggleLessonResources(lesson.id)">
+                                  <i class="fa-solid fa-paperclip"></i>
+                                </button>
+                                <div class="d-flex gap-1" *ngIf="selectedCourse.status === 'DRAFT' || selectedCourse.status === 'REJECTED'">
+                                  <label class="btn btn-sm btn-outline-success" title="Upload vidéo"
+                                         *ngIf="lesson.lessonType === 'VIDEO' || !lesson.lessonType">
+                                    <i class="fa-solid fa-video"></i>
+                                    <input type="file" accept="video/*" hidden (change)="onVideoUpload($event, lesson.id)">
+                                  </label>
+                                  <label class="btn btn-sm btn-outline-info" title="Upload PDF"
+                                         *ngIf="lesson.lessonType === 'PDF'">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                    <input type="file" accept=".pdf" hidden (change)="onPdfUpload($event, lesson.id)">
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Panneau Ressources -->
+                            <div *ngIf="expandedResourceLessonId === lesson.id" class="bg-light px-3 py-2">
+                              <div *ngIf="loadingResourcesMap[lesson.id]" class="text-center py-1">
+                                <div class="spinner-border spinner-border-sm text-secondary"></div>
+                              </div>
+                              <div *ngIf="!loadingResourcesMap[lesson.id]">
+                                <div *ngIf="lessonResources[lesson.id]?.length === 0" class="text-muted small mb-1">Aucune ressource.</div>
+                                <div *ngFor="let res of lessonResources[lesson.id]" class="d-flex align-items-center justify-content-between mb-1">
+                                  <a [href]="res.url" target="_blank" class="small">
+                                    <i class="fa-solid fa-link me-1"></i>{{ res.title }}
+                                  </a>
+                                  <button class="btn btn-sm btn-outline-danger py-0 px-1" (click)="deleteResource(res.id, lesson.id)">
+                                    <i class="fa-solid fa-trash" style="font-size:10px"></i>
+                                  </button>
+                                </div>
+                                <!-- Formulaire ajout -->
+                                <div *ngIf="addingResourceTo === lesson.id" class="row g-1 mt-1">
+                                  <div class="col-5">
+                                    <input class="form-control form-control-sm" [(ngModel)]="newResourceForm[lesson.id].title" placeholder="Titre">
+                                  </div>
+                                  <div class="col-5">
+                                    <input class="form-control form-control-sm" [(ngModel)]="newResourceForm[lesson.id].url" placeholder="URL">
+                                  </div>
+                                  <div class="col-2 d-flex gap-1">
+                                    <button class="btn btn-sm btn-success px-1" (click)="addResource(lesson.id)"
+                                            [disabled]="!newResourceForm[lesson.id]?.title?.trim() || !newResourceForm[lesson.id]?.url?.trim()">
+                                      <i class="fa-solid fa-check"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-secondary px-1" (click)="toggleAddResource(lesson.id)">
+                                      <i class="fa-solid fa-times"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                                <button *ngIf="addingResourceTo !== lesson.id" class="btn btn-sm btn-outline-primary mt-1 py-0"
+                                        (click)="toggleAddResource(lesson.id)">
+                                  <i class="fa-solid fa-plus me-1"></i>Ajouter une ressource
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Ajouter leçon -->
+                          <div class="mt-2" *ngIf="selectedCourse.status === 'DRAFT' || selectedCourse.status === 'REJECTED'">
+                            <div *ngIf="addingLessonToSectionId === section.id" class="card card-body p-2 mb-2">
+                              <div class="row g-2 align-items-end">
+                                <div class="col-5">
+                                  <label class="form-label small mb-1">Titre de la leçon</label>
+                                  <input type="text" class="form-control form-control-sm" [(ngModel)]="newLessonTitle" 
+                                         placeholder="Titre de la leçon">
+                                </div>
+                                <div class="col-3">
+                                  <label class="form-label small mb-1">Type</label>
+                                  <select class="form-select form-select-sm" [(ngModel)]="newLessonType">
+                                    <option value="VIDEO">Vidéo</option>
+                                    <option value="TEXT">Texte / Article</option>
+                                    <option value="PDF">PDF</option>
+                                  </select>
+                                </div>
+                                <div class="col-4 d-flex gap-1">
+                                  <button class="btn btn-sm btn-success" (click)="addLesson(section.id)" [disabled]="!newLessonTitle.trim()">
+                                    <i class="fa-solid fa-check me-1"></i>Ajouter
+                                  </button>
+                                  <button class="btn btn-sm btn-outline-secondary" (click)="toggleAddLesson(section.id)">
+                                    <i class="fa-solid fa-times"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                            <button *ngIf="addingLessonToSectionId !== section.id" 
+                                    class="btn btn-sm btn-outline-primary mt-1" (click)="toggleAddLesson(section.id)">
+                              <i class="fa-solid fa-plus me-1"></i>Ajouter une leçon
+                            </button>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Mode ÉDITION -->
+                <div *ngIf="editMode">
+                  <div class="row g-3">
+                    <div class="col-md-8">
+                      <label class="form-label">Titre</label>
+                      <input type="text" class="form-control" [(ngModel)]="editCourse.title">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Niveau</label>
+                      <select class="form-select" [(ngModel)]="editCourse.level">
+                        <option value="BEGINNER">Débutant</option>
+                        <option value="INTERMEDIATE">Intermédiaire</option>
+                        <option value="ADVANCED">Avancé</option>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label">Description</label>
+                      <textarea class="form-control" rows="4" [(ngModel)]="editCourse.description"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label">Prix (€)</label>
+                      <input type="number" class="form-control" [(ngModel)]="editCourse.price" min="0" step="0.01">
+                    </div>
+                    <div class="col-12 text-end">
+                      <button class="btn btn-secondary me-2" (click)="editMode = false">Annuler</button>
+                      <div *ngIf="selectedCourse?.status === 'PUBLISHED'" class="alert alert-warning small py-2 px-3 d-inline-block me-2 mb-0">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i>Ce cours sera soumis à une nouvelle approbation.
+                      </div>
+                      <button class="btn btn-success" (click)="saveEdit()">
+                        <i class="fa-solid fa-check me-1"></i>Enregistrer
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Footer -->
+              <div class="modal-footer">
+                <button *ngIf="!editMode && (selectedCourse?.status === 'DRAFT' || selectedCourse?.status === 'REJECTED')"
+                        class="btn btn-success me-auto" (click)="submitForReview(selectedCourse); closeDetail()">
+                  <i class="fa-solid fa-paper-plane me-1"></i>Publier à l'admin
+                </button>
+                <button *ngIf="!editMode && selectedCourse?.status === 'PUBLISHED'"
+                        class="btn btn-outline-secondary" (click)="archiveCourse(selectedCourse)">
+                  <i class="fa-solid fa-archive me-1"></i>Archiver
+                </button>
+                <button class="btn btn-secondary" (click)="closeDetail()">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+

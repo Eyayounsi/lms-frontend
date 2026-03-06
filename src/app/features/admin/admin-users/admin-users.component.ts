@@ -67,6 +67,7 @@ export class AdminUsersComponent implements OnInit {
   }
 
   confirmDelete(user: AdminUser): void {
+    if (user.role.includes('ADMIN')) return;
     this.userToDelete = user;
   }
 

@@ -244,8 +244,28 @@
              </div>
            </div>
            <div class="menu-login">
-             <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-2"><i class="isax isax-user me-2"></i>Sign In</a>
-             <a [routerLink]="routes.register" class="btn btn-secondary w-100"><i class="isax isax-user-edit me-2"></i>Register</a>
+             <ng-container *ngIf="!isLoggedIn">
+               <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-2"><i class="isax isax-user me-2"></i>Sign In</a>
+               <a [routerLink]="routes.register" class="btn btn-secondary w-100"><i class="isax isax-user-edit me-2"></i>Register</a>
+             </ng-container>
+             <ng-container *ngIf="isLoggedIn">
+               <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light mb-2">
+                 <div class="user-avatar-circle" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">{{ userInitials }}</div>
+                 <div>
+                   <p class="mb-0 fw-semibold fs-14 text-truncate" style="max-width:160px;">{{ userName }}</p>
+                   <span class="badge bg-primary-subtle text-primary small">{{ userRole | titlecase }}</span>
+                 </div>
+               </div>
+               <a [routerLink]="profileRoute" class="dropdown-item rounded py-2 px-2 d-flex align-items-center gap-2 mb-1">
+                 <i class="isax isax-user-square fs-18 text-primary"></i>Mon Profil
+               </a>
+               <a [routerLink]="dashboardRoute" class="dropdown-item rounded py-2 px-2 d-flex align-items-center gap-2 mb-1">
+                 <i class="isax isax-home-2 fs-18 text-success"></i>Mon Dashboard
+               </a>
+               <a href="javascript:void(0);" class="btn btn-outline-danger w-100 mt-2" (click)="doLogout()">
+                 <i class="isax isax-logout me-2"></i>Déconnexion
+               </a>
+             </ng-container>
            </div>
          </div>
          <div [hidden]="base ==='index-three'|| base==='index-four'">
@@ -298,22 +318,71 @@
                  <span class="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">1</span>
                </a>
              </div>
-               @if (base==='index'||base==='index-six'){
-   
-                 <a [routerLink]="routes.login" class="btn btn-primary d-inline-flex align-items-center me-2">
-                   Sign In
+             <ng-container *ngIf="isLoggedIn">
+               <div class="icon-btn me-3 position-relative">
+                 <a [routerLink]="dashboardRoute" class="position-relative" title="Messages">
+                   <i class="isax isax-messages-35 fs-20"></i>
+                   <span *ngIf="unreadMsgCount > 0"
+                     style="position:absolute;top:-6px;right:-8px;background:#4a1d96;color:#fff;border-radius:50%;font-size:10px;font-weight:700;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;padding:0 3px;">
+                     {{ unreadMsgCount > 99 ? '99+' : unreadMsgCount }}
+                   </span>
                  </a>
-                 <a [routerLink]="routes.register" class="btn btn-secondary me-0">
-                   Register
-                 </a>
-               }
+               </div>
+             </ng-container>
+           @if(base==='index' || base==='index-six'){
+              <ng-container *ngIf="!isLoggedIn">
+                <a [routerLink]="routes.login" class="btn btn-primary d-inline-flex align-items-center me-2">
+                  Sign In
+                </a>
+                <a [routerLink]="routes.register" class="btn btn-secondary me-0">
+                  Register
+                </a>
+              </ng-container>
+              <ng-container *ngIf="isLoggedIn">
+                <div class="dropdown me-0" [class.show]="isProfileDropdownOpen">
+                  <button class="btn p-0 border-0 bg-transparent" (click)="toggleProfileDropdown()" style="outline:none;">
+                    <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">{{ userInitials }}</div>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end p-2 mt-2" [class.show]="isProfileDropdownOpen" style="min-width:220px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.13);">
+                    <li class="px-3 py-2 border-bottom mb-1">
+                      <p class="mb-0 fw-semibold">{{ userName }}</p>
+                      <span class="badge bg-primary-subtle text-primary small">{{ userRole | titlecase }}</span>
+                    </li>
+                    <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2" [routerLink]="profileRoute" (click)="isProfileDropdownOpen=false"><i class="isax isax-user-square fs-18 text-primary"></i>Mon Profil</a></li>
+                    <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2" [routerLink]="dashboardRoute" (click)="isProfileDropdownOpen=false"><i class="isax isax-home-2 fs-18 text-success"></i>Mon Dashboard</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2 text-danger" href="javascript:void(0);" (click)="doLogout()"><i class="isax isax-logout fs-18"></i>Déconnexion</a></li>
+                  </ul>
+                </div>
+              </ng-container>
+            }
            @if(base === 'index-two' || base==='courses' || base==='pages'|| base==='blog'){
-             <a [routerLink]="routes.login" class="btn btn-light d-inline-flex align-items-center me-2">
-               <i class="isax isax-lock-circle me-2"></i>Sign In
-           </a>
-           <a [routerLink]="routes.register" class="btn btn-secondary me-0">
-               <i class="isax isax-user-edit me-2"></i>Register
-           </a>
+            <ng-container *ngIf="!isLoggedIn">
+              <a [routerLink]="routes.login" class="btn btn-light d-inline-flex align-items-center me-2">
+                <i class="isax isax-lock-circle me-2"></i>Sign In
+              </a>
+              <a [routerLink]="routes.register" class="btn btn-secondary me-0">
+                <i class="isax isax-user-edit me-2"></i>Register
+              </a>
+            </ng-container>
+            <ng-container *ngIf="isLoggedIn">
+              <div class="dropdown me-0" [class.show]="isProfileDropdownOpen">
+                <button class="btn p-0 border-0 bg-transparent d-flex align-items-center gap-2" (click)="toggleProfileDropdown()" style="outline:none;">
+                  <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">{{ userInitials }}</div>
+                  <span class="d-none d-lg-inline fw-medium fs-14">{{ userName }}</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end p-2 mt-2" [class.show]="isProfileDropdownOpen" style="min-width:220px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.13);">
+                  <li class="px-3 py-2 border-bottom mb-1">
+                    <p class="mb-0 fw-semibold">{{ userName }}</p>
+                    <span class="badge bg-primary-subtle text-primary small">{{ userRole | titlecase }}</span>
+                  </li>
+                  <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2" [routerLink]="profileRoute" (click)="isProfileDropdownOpen=false"><i class="isax isax-user-square fs-18 text-primary"></i>Mon Profil</a></li>
+                  <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2" [routerLink]="dashboardRoute" (click)="isProfileDropdownOpen=false"><i class="isax isax-home-2 fs-18 text-success"></i>Mon Dashboard</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2 text-danger" href="javascript:void(0);" (click)="doLogout()"><i class="isax isax-logout fs-18"></i>Déconnexion</a></li>
+                </ul>
+              </div>
+            </ng-container>
            }
            </div>
          </div>

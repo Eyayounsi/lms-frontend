@@ -1,73 +1,84 @@
 
     <div class="page-title d-flex align-items-center justify-content-between">
-        <h5 class="fw-bold">My Profile</h5>
-        <a href="javascript:void(0);" class="edit-profile-icon"><i class="isax isax-edit-2"></i></a>
+        <h5 class="fw-bold">Mon Profil</h5>
+        <a [routerLink]="routes.studentSettings" class="edit-profile-icon" title="Modifier le profil">
+            <i class="isax isax-edit-2"></i>
+        </a>
     </div>
-    <div class="card mb-0">
+
+    <!-- Chargement -->
+    <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Chargement du profil...</p>
+    </div>
+
+    <!-- Erreur -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+        <i class="isax isax-warning-2 me-2"></i>{{ errorMessage }}
+    </div>
+
+    <!-- Données réelles -->
+    <div class="card mb-3" *ngIf="!loading && profile">
         <div class="card-body">
-            <h6 class="fs-18 page-title fw-bold">Basic Information</h6>
+            <div class="d-flex align-items-center">
+                <div class="position-relative me-3">
+                    <img [src]="getAvatarUrl()" class="rounded-circle" width="80" height="80" style="object-fit:cover;" alt="Avatar">
+                    <label class="position-absolute bottom-0 end-0 bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
+                           style="width:28px;height:28px;cursor:pointer;" title="Changer l'avatar">
+                        <i class="isax isax-camera fs-14"></i>
+                        <input type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)">
+                    </label>
+                </div>
+                <div>
+                    <h5 class="mb-1">{{ profile.fullName }}</h5>
+                    <p class="text-muted mb-0">{{ profile.email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-0" *ngIf="!loading && profile">
+        <div class="card-body">
+            <h6 class="fs-18 page-title fw-bold">Informations personnelles</h6>
             <div class="row">
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <h6>First Name</h6>
-                        <span>Ronald</span>
+                        <h6 class="text-muted small mb-1">Prénom</h6>
+                        <span class="fw-medium">{{ getFirstName() }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <h6>Last Name</h6>
-                        <span>Richard</span>
+                        <h6 class="text-muted small mb-1">Nom</h6>
+                        <span class="fw-medium">{{ getLastName() || '—' }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <h6>Registration Date</h6>
-                        <span>16 Jan 2024, 11:15 AM</span>
+                        <h6 class="text-muted small mb-1">Nom complet</h6>
+                        <span class="fw-medium">{{ profile.fullName || '—' }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <h6>User Name</h6>
-                        <span>studentdemo</span>
+                        <h6 class="text-muted small mb-1">Email</h6>
+                        <span class="fw-medium">{{ profile.email || '—' }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
-                        <h6>Phone Number</h6>
-                        <span>90154-91036</span>
+                        <h6 class="text-muted small mb-1">Téléphone</h6>
+                        <span class="fw-medium">{{ profile.phone || 'Non renseigné' }}</span>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <h6>Email</h6>
-                        <span>studentdemo&#64;example.com</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <h6>Gender</h6>
-                        <span>Male</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <h6>DOB</h6>
-                        <span>16 Jan 2020</span>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <h6>Age</h6>
-                        <span>24</span>
-                    </div>
-                </div>
-                <div class="col-md-12">
-                    <div>
-                        <h6>Bio</h6>
-                        <span>Hello! I'm Ronald Richard. I'm passionate about developing innovative software solutions, analyzing classic literature. I aspire to become a software developer, work as an editor. In my free time, I enjoy coding, reading, hiking etc.
-                        </span>
-                    </div>
-                </div>
-            </div>								
+            </div>
+
+            <div class="mt-3 pt-3 border-top">
+                <a [routerLink]="routes.studentSettings" class="btn btn-secondary btn-sm rounded-pill">
+                    <i class="isax isax-edit-2 me-1"></i>Modifier le profil
+                </a>
+                <a [routerLink]="routes.studentChangePassword" class="btn btn-outline-secondary btn-sm rounded-pill ms-2">
+                    <i class="isax isax-lock me-1"></i>Changer le mot de passe
+                </a>
+            </div>
         </div>
     </div>

@@ -16,8 +16,8 @@ export class AppComponent {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
         const URL = event.url.split('/');
-        this.base =URL[1] ? URL[1].replace('-',' '): '';
-        this.page = URL[2] ? URL[2].replace('-',' '): '';
+        this.base = URL[1] ? URL[1].replace('-',' '): '';
+        this.page = URL[2] ? URL[2].split('?')[0].replace('-',' '): '';
       }
       if(this.base === 'index'){
         this.page = 'Deals Dashboard'

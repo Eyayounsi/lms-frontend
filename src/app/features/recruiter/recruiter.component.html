@@ -1,1 +1,17 @@
-<router-outlet></router-outlet>
+<div class="content">
+  <div class="container">
+    <div class="row">
+
+      <!-- Sidebar Recruteur -->
+      <app-recruiter-sidebar class="col-lg-3"></app-recruiter-sidebar>
+      <!-- /Sidebar Recruteur -->
+
+      <!-- Contenu principal -->
+      <div class="col-lg-9">
+        <router-outlet></router-outlet>
+      </div>
+      <!-- /Contenu principal -->
+
+    </div>
+  </div>
+</div>

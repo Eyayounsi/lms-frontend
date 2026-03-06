@@ -99,12 +99,12 @@ export class FeaturesComponent implements OnInit, OnDestroy {
   }
 
   private setRouting(data: url): void {
-    this.routeStatus = data.url.split('/')[1];
-    this.routeStatusSub = data.url.split('/')[2];
+    this.routeStatus = data.url.split('/')[1]?.split('?')[0];
+    this.routeStatusSub = data.url.split('/')[2]?.split('?')[0];
 
-    this.common.base.next(data.url.split('/')[1]);
-    this.common.page.next(data.url.split('/')[2]);
-    this.common.last.next(data.url.split('/')[3]);
+    this.common.base.next(data.url.split('/')[1]?.split('?')[0]);
+    this.common.page.next(data.url.split('/')[2]?.split('?')[0]);
+    this.common.last.next(data.url.split('/')[3]?.split('?')[0]);
 
     if (
       this.routeStatus == 'index' ||

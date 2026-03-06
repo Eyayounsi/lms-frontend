@@ -11,9 +11,7 @@ import {
 } from 'ng-apexcharts';
 import { routes } from '../../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { DateRangePickerComponent } from '../../layouts/date-range-picker/date-range-picker.component';
+import { InstructorRevenueService, InstructorRevenueDto, RevenueByCourse } from '../../../shared/service/revenue/instructor-revenue.service';
 export type ChartOptions = {
   series: ApexAxisChartSeries | any;
   chart: ApexChart | any;
@@ -27,69 +25,51 @@ export type ChartOptions = {
     selector: 'app-instructor-earnings',
     templateUrl: './instructor-earnings.component.html',
     styleUrls: ['./instructor-earnings.component.scss'],
-    imports:[CommonModule,RouterLink,NgApexchartsModule,BsDatepickerModule,DateRangePickerComponent] 
+    imports:[CommonModule,NgApexchartsModule]
 })
 export class InstructorEarningsComponent implements OnInit {
   public routes = routes;
   @ViewChild('chart') chart!: ChartComponent;
   public earningChart: Partial<ChartOptions> | any;
 
-  ngOnInit(): void {
-    this.earningChart = {
-        series: [{
-        name: "Earnings",
-        data: [25, 40, 30, 55, 25, 35, 25,50,20,40,20,50]
-      }],
-        chart: {
-        height: 273,
-        type: 'area',
-        zoom: {
-        enabled: false
-        }
-      },
-      colors: ['#FF4667'],
-      dataLabels: {
-        enabled: false
-      },
-      stroke: {
-        curve: 'straight'
-      },
-      title: {
-        text: '',
-        align: 'left'
-      },
-      // grid: {
-      //   row: {
-      //     colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-      //     opacity: 0.5
-      //   },
-      // },
-      xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul','Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-      },
-      yaxis: {
-        min: 10,
-        max: 60,
-        tickAmount: 5,
-          labels: {
-          formatter: (val:any) => {
-            return val / 1 + 'K'
-          }
-          }
-        },
-        legend: {
-          position: 'top',
-          horizontalAlign: 'left'
-        }
-      
-    };
-  }
-  bsValue = new Date();
-  bsRangeValue: Date[];
-  maxDate = new Date();
+  revenue: InstructorRevenueDto | null = null;
+  loading = true;
+  errorMessage = '';
 
-  constructor(){
-    this.maxDate.setDate(this.maxDate.getDate() + 7);
-    this.bsRangeValue = [this.bsValue, this.maxDate];
+  constructor(private revenueService: InstructorRevenueService) {}
+
+  ngOnInit(): void {
+    this.revenueService.getMyRevenueDashboard().subscribe({
+      next: (data) => {
+        this.revenue = data;
+        this.loading = false;
+        this.buildChart(data.byCourse);
+      },
+      error: () => {
+        this.errorMessage = 'Erreur lors du chargement des revenus.';
+        this.loading = false;
+        this.buildChart([]);
+      }
+    });
+  }
+
+  buildChart(byCourse: RevenueByCourse[]): void {
+    const labels = byCourse.map(c =>
+      c.courseTitle.length > 20 ? c.courseTitle.substring(0, 20) + '...' : c.courseTitle
+    );
+    const values = byCourse.map(c => Number(c.instructorRevenue.toFixed(2)));
+    const chartLabels = labels.length > 0 ? labels : ['Aucun cours'];
+    const chartValues = values.length > 0 ? values : [0];
+
+    this.earningChart = {
+      series: [{ name: 'Revenu (€)', data: chartValues }],
+      chart: { height: 273, type: 'bar', toolbar: { show: false } },
+      colors: ['#FF4667'],
+      dataLabels: { enabled: false },
+      plotOptions: { bar: { borderRadius: 4, horizontal: false } },
+      xaxis: { categories: chartLabels },
+      yaxis: { labels: { formatter: (val: any) => val + ' €' } },
+      tooltip: { y: { formatter: (val: any) => val + ' €' } }
+    };
   }
 }

@@ -67,6 +67,48 @@
 @if(last === 'students-details'){
     <router-outlet></router-outlet>
 }
+
+<!-- ================================================================
+     FLOATING NOTES BUTTON (bloc-notes instructeur)
+     ================================================================ -->
+<!-- Bouton flottant -->
+<button class="notes-fab" (click)="toggleNotesPanel()"
+        title="Mes Notes" [class.notes-fab--open]="showNotesPanel">
+  <i class="isax isax-note" *ngIf="!showNotesPanel"></i>
+  <i class="isax isax-close-circle" *ngIf="showNotesPanel"></i>
+</button>
+
+<!-- Panneau Notes -->
+<div class="notes-panel" [class.notes-panel--visible]="showNotesPanel">
+
+  <!-- Header -->
+  <div class="notes-panel__header">
+    <div class="d-flex align-items-center gap-2">
+      <i class="isax isax-note-2 fs-18"></i>
+      <span class="fw-semibold">Mes Notes</span>
+    </div>
+    <button class="btn-close btn-close-white btn-sm" (click)="showNotesPanel = false"></button>
+  </div>
+
+  <!-- Corps -->
+  <div class="notes-panel__body">
+    <div class="notes-panel__section">
+      <div class="notes-panel__section-title">
+        <i class="isax isax-clipboard-text me-1"></i>Notes générales
+      </div>
+      <textarea class="notes-panel__textarea" rows="10"
+                placeholder="Notez vos idées, rappels, tâches..."
+                [(ngModel)]="instructorNote"
+                (input)="saveNote()"></textarea>
+      <div *ngIf="noteSaved" class="notes-saved-msg mt-1">
+        <i class="fa-solid fa-circle-check me-1"></i>Sauvegardé
+      </div>
+    </div>
+  </div>
+
+</div>
+<!-- /Bloc-notes instructeur -->
+
 <!-- Footer -->
 <footer class="footer">
   <div class="footer-bg">

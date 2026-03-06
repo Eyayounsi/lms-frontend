@@ -1,0 +1,105 @@
+<!-- Messages -->
+        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+          <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
+          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+        </div>
+
+        <!-- Banner paiement confirmé -->
+        <div *ngIf="paymentConfirmed" class="alert alert-success alert-dismissible fade show">
+          <i class="fa-solid fa-circle-check me-2"></i>
+          <strong>Paiement confirmé !</strong> Votre cours est maintenant accessible.
+          <button type="button" class="btn-close" (click)="paymentConfirmed = false"></button>
+        </div>
+
+        <!-- Confirmation en cours -->
+        <div *ngIf="confirmingPayment" class="alert alert-info">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Confirmation du paiement en cours...
+        </div>
+
+        <h4 class="mb-4">
+          <i class="fa-solid fa-graduation-cap me-2 text-primary"></i>Mes Cours Achetés
+        </h4>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2 text-muted">Chargement...</p>
+        </div>
+
+        <!-- Aucun cours -->
+        <div *ngIf="!loading && courses.length === 0" class="text-center py-5">
+          <i class="fa-solid fa-shopping-bag fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">Vous n'avez pas encore acheté de cours</h5>
+          <p class="text-muted">Parcourez notre catalogue pour trouver des cours</p>
+          <a routerLink="/courses/course-list-public" class="btn btn-primary">
+            <i class="fa-solid fa-search me-1"></i>Voir les cours
+          </a>
+        </div>
+
+        <!-- Grille des cours -->
+        <div class="row" *ngIf="!loading && courses.length > 0">
+          <div class="col-md-6 col-lg-4 mb-4" *ngFor="let course of courses">
+            <div class="card h-100 course-card shadow-sm">
+              <!-- Image couverture -->
+              <div class="position-relative">
+                <img [src]="getImageUrl(course.coverImage)" class="card-img-top"
+                     style="height: 180px; object-fit: cover;" alt="cover">
+                <!-- Badge de progression -->
+                <div class="position-absolute top-0 end-0 p-2">
+                  <span class="badge rounded-pill {{ getProgressClass(course.progressPct) }}">
+                    <span *ngIf="course.progressPct >= 100">
+                      <i class="fa-solid fa-check me-1"></i>Terminé
+                    </span>
+                    <span *ngIf="course.progressPct > 0 && course.progressPct < 100">
+                      {{ course.progressPct }}%
+                    </span>
+                    <span *ngIf="course.progressPct === 0">Nouveau</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="card-body d-flex flex-column">
+                <h6 class="card-title">{{ course.title }}</h6>
+                <p class="text-muted small mb-1">
+                  <i class="fa-solid fa-user-tie me-1"></i>{{ course.instructorName }}
+                </p>
+                <p class="text-muted small mb-3">
+                  <i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
+                </p>
+
+                <!-- Barre de progression -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between small mb-1">
+                    <span class="text-muted">Progression</span>
+                    <span class="fw-semibold">{{ getProgressLabel(course.progressPct) }}</span>
+                  </div>
+                  <div class="progress" style="height: 8px; border-radius: 4px;">
+                    <div class="progress-bar {{ getProgressClass(course.progressPct) }}"
+                         role="progressbar"
+                         [style.width.%]="course.progressPct"
+                         [attr.aria-valuenow]="course.progressPct"
+                         aria-valuemin="0"
+                         aria-valuemax="100">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bouton principal -->
+                <button class="btn mt-auto w-100"
+                        [class.btn-primary]="course.progressPct < 100"
+                        [class.btn-success]="course.progressPct >= 100"
+                        (click)="goToCourse(course.id)">
+                  <i class="fa-solid me-1"
+                     [class.fa-play]="course.progressPct === 0"
+                     [class.fa-rotate-right]="course.progressPct > 0 && course.progressPct < 100"
+                     [class.fa-eye]="course.progressPct >= 100"></i>
+                  <span *ngIf="course.progressPct === 0">Commencer</span>
+                  <span *ngIf="course.progressPct > 0 && course.progressPct < 100">Continuer</span>
+                  <span *ngIf="course.progressPct >= 100">Revoir</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+

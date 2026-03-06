@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/shared/pipe/capitalize-words.pipe.ts"],
+  "sourcesContent": ["import { Pipe, PipeTransform } from '@angular/core';\n\n@Pipe({\n  name: 'capitalizeWords',\n  standalone: true\n})\nexport class CapitalizeWordsPipe implements PipeTransform {\n\n  transform(value: string): string {\n    if (!value) {\n      return '';\n    }\n    return value\n      .split('-') // Split the string by hyphens\n      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word\n      .join(' '); // Join the words with spaces\n  }\n\n}\n"],
+  "mappings": ";;;;;;;AAMM,IAAO,sBAAP,MAAO,qBAAmB;EAE9B,UAAU,OAAa;AACrB,QAAI,CAAC,OAAO;AACV,aAAO;IACT;AACA,WAAO,MACJ,MAAM,GAAG,EACT,IAAI,UAAQ,KAAK,OAAO,CAAC,EAAE,YAAW,IAAK,KAAK,MAAM,CAAC,CAAC,EACxD,KAAK,GAAG;EACb;;qCAVW,sBAAmB;EAAA;8FAAnB,sBAAmB,MAAA,KAAA,CAAA;;;sEAAnB,qBAAmB,CAAA;UAJ/B;WAAK;MACJ,MAAM;MACN,YAAY;KACb;;;",
+  "names": []
+}

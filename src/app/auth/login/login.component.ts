@@ -8,6 +8,9 @@ import { FormsModule } from '@angular/forms';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { AuthService } from '../../shared/service/auth/auth.service';
 import { BlockedService } from '../../shared/service/auth/blocked.service';
+import { CourseService } from '../../shared/service/course/course.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
     selector: 'app-login',
@@ -57,7 +60,8 @@ export class LoginComponent implements OnInit {
     private DataService: DataService, 
     public router: Router,
     private authService: AuthService,
-    private blockedService: BlockedService
+    private blockedService: BlockedService,
+    private courseService: CourseService
   ) {
     this.welcomeLogin = this.DataService.welcomeLogin;
   }
@@ -105,6 +109,13 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('email', res.email);
         localStorage.setItem('fullName', res.fullName);
         localStorage.setItem('role', res.role);
+        localStorage.setItem('firstLogin', res.firstLogin ? 'true' : 'false');
+
+        // ─── Première connexion RECRUITER → forcer le changement de mot de passe ──
+        if (res.firstLogin === true) {
+          this.router.navigate([routes.forceChangePassword]);
+          return;
+        }
 
         // ─── Redirection selon le rôle ───────────────────────────────
         // Le backend retourne res.role sous la forme "[INSTRUCTOR]"
@@ -112,19 +123,42 @@ export class LoginComponent implements OnInit {
         // On utilise .includes() pour détecter le rôle sans se soucier des crochets
         const role: string = res.role;
 
-        if (role.includes('INSTRUCTOR')) {
-          this.router.navigate([routes.instructor_dashboard]);
-        } else if (role.includes('STUDENT')) {
-          this.router.navigate([routes.students_Dashboard]);
-        } else if (role.includes('SUPERADMIN')) {
-          this.router.navigate([routes.superadmin_dashboard]);
-        } else if (role.includes('ADMIN')) {
-          this.router.navigate([routes.admin_dashboard]);
-        } else if (role.includes('RECRUITER')) {
-          this.router.navigate([routes.recruiter_dashboard]);
+        // Sync guest cart to backend after student login
+        const guestCart: any[] = JSON.parse(localStorage.getItem('guest_cart') || '[]');
+        const hasGuestItems = guestCart.length > 0 && role.includes('STUDENT');
+        
+        const navigateAfterLogin = () => {
+          if (role.includes('INSTRUCTOR')) {
+            this.router.navigate([routes.instructor_dashboard]);
+          } else if (role.includes('STUDENT')) {
+            const returnUrl = localStorage.getItem('pendingReturnUrl');
+            localStorage.removeItem('pendingReturnUrl');
+            if (returnUrl) {
+              this.router.navigateByUrl(returnUrl);
+            } else if (hasGuestItems) {
+              this.router.navigate([routes.cart]);
+            } else {
+              this.router.navigate([routes.students_Dashboard]);
+            }
+          } else if (role.includes('SUPERADMIN')) {
+            this.router.navigate([routes.superadmin_dashboard]);
+          } else if (role.includes('ADMIN')) {
+            this.router.navigate([routes.admin_dashboard]);
+          } else if (role.includes('RECRUITER')) {
+            this.router.navigate([routes.recruiter_dashboard]);
+          } else {
+            this.router.navigate([routes.home]);
+          }
+        };
+
+        if (hasGuestItems) {
+          localStorage.removeItem('guest_cart');
+          const cartCalls = guestCart.map((item: any) =>
+            this.courseService.addToCart(item.id).pipe(catchError(() => of(null)))
+          );
+          forkJoin(cartCalls).subscribe({ next: () => navigateAfterLogin(), error: () => navigateAfterLogin() });
         } else {
-          // Rôle inconnu → page d'accueil par défaut
-          this.router.navigate([routes.home]);
+          navigateAfterLogin();
         }
       },
       error: (error: any) => {

@@ -24,6 +24,12 @@ export class StudentSettingsComponent implements OnInit {
   deletePassword = '';
   deleteError = '';
 
+  // Share with recruiters
+  shareWithRecruiters = false;
+  shareLoading = false;
+  shareSuccess = '';
+  shareError = '';
+
   constructor(
     private profileService: ProfileService,
     private authService: AuthService,
@@ -38,6 +44,7 @@ export class StudentSettingsComponent implements OnInit {
         this.profileForm.fullName = profile.fullName || '';
         this.profileForm.email = profile.email || '';
         this.profileForm.phone = profile.phone || '';
+        this.shareWithRecruiters = profile.shareWithRecruiters === true;
       },
       error: (err) => {
         console.error('Erreur chargement profil:', err);
@@ -57,6 +64,29 @@ export class StudentSettingsComponent implements OnInit {
       },
       error: (err) => {
         this.errorMessage = err.error || 'Erreur lors de la mise à jour.';
+      }
+    });
+  }
+
+  onToggleShare(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.shareLoading = true;
+    this.shareSuccess = '';
+    this.shareError = '';
+    this.profileService.toggleShareWithRecruiters(checked).subscribe({
+      next: () => {
+        this.shareWithRecruiters = checked;
+        this.shareLoading = false;
+        this.shareSuccess = checked
+          ? 'Votre profil est maintenant visible par les recruteurs.'
+          : 'Votre profil est masqué des recruteurs.';
+        setTimeout(() => this.shareSuccess = '', 3000);
+      },
+      error: (err) => {
+        this.shareLoading = false;
+        this.shareError = err.error || 'Erreur lors de la mise à jour.';
+        // Revert toggle 
+        this.shareWithRecruiters = !checked;
       }
     });
   }

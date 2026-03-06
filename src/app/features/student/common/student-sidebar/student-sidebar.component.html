@@ -12,6 +12,9 @@
                 <a [routerLink]="routes.studentCourses" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-teacher5 me-2"></i>Enrolled Courses</a>
             </li>
             <li>
+                <a [routerLink]="routes.studentMyCourses" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="fa-solid fa-graduation-cap me-2"></i>Mes Cours Achetés</a>
+            </li>
+            <li>
                 <a [routerLink]="routes.student_Certificate" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-note-215 me-2"></i>My Certificates</a>
             </li>
             <li>
@@ -30,7 +33,10 @@
                 <a [routerLink]="routes.students_referral" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-tag-user5 me-2"></i>Referrals</a>
             </li>
             <li>
-                <a [routerLink]="routes.studentsMessage" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-messages-35 me-2"></i>Messages</a>
+                <a [routerLink]="routes.studentsMessage" class="d-inline-flex align-items-center justify-content-between w-100" routerLinkActive="active">
+                  <span class="d-flex align-items-center"><i class="isax isax-messages-35 me-2"></i>Messages</span>
+                  <span *ngIf="unreadMsgCount > 0" class="badge rounded-pill ms-1" style="background:#4a1d96;color:#fff;font-size:10px;">+{{ unreadMsgCount > 99 ? '99' : unreadMsgCount }}</span>
+                </a>
             </li>
             <li>
                 <a [routerLink]="routes.students_tickets" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-ticket5 me-2"></i>Support Tickets</a>

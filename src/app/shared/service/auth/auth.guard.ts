@@ -4,13 +4,15 @@ import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
 import { map, catchError, of } from 'rxjs';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (route, state) => {
 
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Token absent → redirect login
+  // Token absent → sauvegarder l'URL courante et rediriger vers login
   if (!authService.isLoggedIn()) {
+    // Sauvegarder l'URL complète (chemin + query params) pour revenir après login
+    localStorage.setItem('pendingReturnUrl', state.url);
     router.navigate(['/auth/login']);
     return false;
   }

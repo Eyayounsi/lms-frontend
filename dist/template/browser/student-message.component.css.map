@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/student/student-message/student-message.component.scss"],
+  "sourcesContent": ["/* Student sent messages — dark purple */\r\n.sent-message {\r\n  background: #4a1d96 !important;\r\n  color: #ffffff !important;\r\n  border-radius: 12px 12px 0 12px;\r\n  padding: 8px 14px;\r\n\r\n  p {\r\n    color: #ffffff !important;\r\n    margin-bottom: 0;\r\n  }\r\n}\r\n"],
+  "mappings": ";;;AACA,CAAA;AACE,cAAA;AACA,SAAA;AACA,iBAAA,KAAA,KAAA,EAAA;AACA,WAAA,IAAA;;AAEA,CANF,aAME;AACE,SAAA;AACA,iBAAA;;",
+  "names": []
+}

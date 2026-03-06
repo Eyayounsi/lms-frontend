@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/recruiter/recruiter-dashboard/recruiter-dashboard.component.scss"],
+  "sourcesContent": ["/* Recruiter Dashboard Styles */\r\n\r\n.hover-action {\r\n  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;\r\n  &:hover {\r\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);\r\n    transform: translateY(-2px);\r\n    border-color: #198754 !important;\r\n  }\r\n}\r\n"],
+  "mappings": ";AAEA,CAAA;AACE;IAAA,WAAA,KAAA,IAAA;IAAA,UAAA,KAAA,IAAA;IAAA,aAAA,KAAA;;AACA,CAFF,YAEE;AACE,cAAA,EAAA,IAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACA,aAAA,WAAA;AACA,gBAAA;;",
+  "names": []
+}

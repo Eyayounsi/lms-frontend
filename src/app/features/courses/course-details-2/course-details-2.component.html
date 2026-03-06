@@ -1,407 +1,370 @@
-            <!-- banner -->
-            <section class="inner-banner">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <h1 class="text-white mb-3 mb-sm-2">The Complete Web Developer Course 2.0</h1>
-                            <p class="text-white fs-14 mb-3">Learn Web Development by building 25 websites and mobile apps using HTML, CSS, Javascript, PHP, Python</p>
-                            <div class="d-flex align-items-center gap-2 gap-sm-3 gap-xl-4 flex-wrap justify-content-md-start justify-content-center">
-                              <p class="fw-medium text-white d-flex align-items-center mb-0"><img class="me-2" src="./assets/img/icons/book.svg" alt="img">12+ Lesson</p>
-                              <p class="fw-medium text-white d-flex align-items-center mb-0"><img class="me-2" src="./assets/img/icons/timer-start.svg" alt="img">9hr 30min</p>
-                              <p class="fw-medium text-white d-flex align-items-center mb-0"><img class="me-2" src="./assets/img/icons/people.svg" alt="img">32 students enrolled</p>
-                              <span class="badge badge-sm rounded-pill bg-warning fs-12">Web Development</span>
-                            </div>
-                            <div class="d-sm-flex align-items-center justify-content-sm-between mt-5">
-                                <div class="d-flex text-start align-items-center justify-content-sm-start justify-content-center">
-                                    <div class="avatar avatar-lg">
-                                        <img class="rounded-circle" src="./assets/img/avatar/avatar10.jpg" alt="img">
-                                    </div>
-                                    <div class="ms-2">
-                                    <h6 class="fs-18 text-white"><a [routerLink]="routes.instructorDetails">Nicole Brown</a></h6>
-                                    <p class="text-white fs-14">Instructor</p>
-                                </div>
-                                </div>
-                                <div class="d-flex mt-sm-0 mt-2 align-items-center justify-content-sm-start justify-content-center">
-                                    <i class="fa-solid fa-star text-warning me-1"></i>
-                                    <i class="fa-solid fa-star text-warning me-1"></i>
-                                    <i class="fa-solid fa-star text-warning me-1"></i>
-                                    <i class="fa-solid fa-star text-warning me-1"></i>
-                                    <i class="fa-solid fa-star text-white me-1"></i>
-                                    <p class="text-white fs-14"><span class="text-warning">4.0</span> (15) </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-             </section>
-             <!-- banner -->
+﻿<!-- Loading state -->
+<div *ngIf="loading" class="text-center py-5">
+  <div class="spinner-border text-primary"></div>
+  <p class="mt-2">Chargement du cours...</p>
+</div>
 
-			<!-- Course detail -->
-			<section class="course-details">
-				<div class="container">
-                    <div class="row">
-                        <div class="col-lg-8">
-                           <div class="course-page-content">
-                              <div class="card">
-                                <div class="card-body">
-                                    <h5 class="subs-title mb-3">Overview</h5>
-                                    <h6 class="mb-3">Course Description</h6>
-                                    <p>Embark on a transformative journey into AI with Mike Wheeler, your guide in this Udemy Best Seller course on ChatGPT and Prompt Engineering. As an experience instructor who has taught well over 300,000 students, Mike unveils the secrets of developing your own custom GPTs, ensuring your skills shine in the thriving digital marketplace. </p>
-                                   <p>This course will get your familiar with Generative AI and the effective use of ChatGPT and is perfect for the beginner. You will also learn advanced prompting techniques to take your Prompt Engineering skills to the next level!</p>
-                                  <h6 class="mb-3">What you'll learn</h6>
-                                  <ul class="custom-list">
-                                    <li class="list-items">Become a UX designer</li>
-                                    <li class="list-items">You will be able to add UX designer to your CV</li>
-                                    <li class="list-items">Become a UI designer</li>
-                                    <li class="list-items">Build & test a full website design.</li>
-                                    <li class="list-items">Build & test a full mobile app.</li>
-                                </ul>
-                                <h6 class="mb-3 mt-4">Requirements</h6>
-                                <ul class="custom-list mb-0">
-                                    <li class="list-items">You will need a copy of Adobe XD 2019 or above. A free trial can be downloaded from Adobe.</li>
-                                    <li class="list-items">No previous design experience is needed.</li>
-                                    <li class="list-items">No previous Adobe XD skills are needed.</li>
-                                </ul>
+<!-- Error state -->
+<div *ngIf="!loading && errorMessage && !course" class="container py-5 text-center">
+  <p class="text-danger">{{ errorMessage }}</p>
+  <a [routerLink]="routes.courseListPublic" class="btn btn-primary">Voir tous les cours</a>
+</div>
+
+<!-- Main content -->
+<ng-container *ngIf="!loading && course">
+
+  <!-- Alerts -->
+  <div *ngIf="successMessage" class="alert alert-success alert-dismissible mx-3 mt-2" role="alert">
+    {{ successMessage }}
+    <button type="button" class="btn-close" (click)="successMessage=''"></button>
+  </div>
+  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible mx-3 mt-2" role="alert">
+    {{ errorMessage }}
+    <button type="button" class="btn-close" (click)="errorMessage=''"></button>
+  </div>
+
+  <!-- banner -->
+  <section class="inner-banner">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8">
+          <h1 class="text-white mb-3 mb-sm-2">{{ course.title }}</h1>
+          <p class="text-white fs-14 mb-3">{{ course.description }}</p>
+          <div class="d-flex align-items-center gap-2 gap-sm-3 gap-xl-4 flex-wrap justify-content-md-start justify-content-center">
+            <p class="fw-medium text-white d-flex align-items-center mb-0">
+              <img class="me-2" src="./assets/img/icons/book.svg" alt="img">{{ getTotalLessons() }} leçons
+            </p>
+            <p class="fw-medium text-white d-flex align-items-center mb-0">
+              <img class="me-2" src="./assets/img/icons/people.svg" alt="img">{{ course.enrollmentCount || 0 }} étudiants inscrits
+            </p>
+            <span class="badge badge-sm rounded-pill bg-warning fs-12">{{ course.categoryName }}</span>
+            <span class="badge badge-sm rounded-pill bg-info fs-12">{{ getLevelLabel(course.level) }}</span>
+          </div>
+          <div class="d-sm-flex align-items-center justify-content-sm-between mt-5">
+            <div class="d-flex text-start align-items-center justify-content-sm-start justify-content-center">
+              <div class="avatar avatar-lg">
+                <img class="rounded-circle" [src]="getAvatarUrl(course.instructorAvatar)" alt="instructor">
+              </div>
+              <div class="ms-2">
+                <h6 class="fs-18 text-white">{{ course.instructorName }}</h6>
+                <p class="text-white fs-14">Instructeur</p>
+              </div>
+            </div>
+            <div class="d-flex mt-sm-0 mt-2 align-items-center justify-content-sm-start justify-content-center">
+              <ng-container *ngFor="let s of stars">
+                <i class="fa-solid fa-star me-1"
+                   [class.text-warning]="s <= (course.averageRating || 0)"
+                   [class.text-white]="s > (course.averageRating || 0)"></i>
+              </ng-container>
+              <p class="text-white fs-14">
+                <span class="text-warning">{{ (course.averageRating || 0) | number:'1.1-1' }}</span>
+                ({{ course.reviewCount || 0 }})
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /banner -->
+
+  <!-- Course detail -->
+  <section class="course-details">
+    <div class="container">
+      <div class="row">
+        <!-- Main column -->
+        <div class="col-lg-8">
+          <div class="course-page-content">
+
+            <!-- Overview -->
+            <div class="card">
+              <div class="card-body">
+                <h5 class="subs-title mb-3">Aperçu</h5>
+                <h6 class="mb-3">Description du cours</h6>
+                <p>{{ course.description }}</p>
+
+                <ng-container *ngIf="course.objectives?.length">
+                  <h6 class="mb-3">Ce que vous apprendrez</h6>
+                  <ul class="custom-list">
+                    <li *ngFor="let obj of course.objectives" class="list-items">{{ obj }}</li>
+                  </ul>
+                </ng-container>
+
+                <ng-container *ngIf="course.requirements?.length">
+                  <h6 class="mb-3 mt-4">Prérequis</h6>
+                  <ul class="custom-list mb-0">
+                    <li *ngFor="let req of course.requirements" class="list-items">{{ req }}</li>
+                  </ul>
+                </ng-container>
+              </div>
+            </div>
+
+            <!-- Course Content -->
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex justify-content-between flex-wrap">
+                  <h5 class="subs-title mb-2 mb-sm-3">Contenu du cours</h5>
+                  <h6 class="text-gray-7 mb-3">{{ getTotalLessons() }} leçons</h6>
+                </div>
+                <div *ngIf="course.sections?.length; else noSections"
+                     class="accordion accordion-customicon1 accordions-items-seperate p-0"
+                     id="courseAccordion">
+                  <div *ngFor="let section of course.sections; let i = index"
+                       class="accordion-item" [class.mb-0]="i === course.sections.length - 1">
+                    <h2 class="accordion-header" [id]="'heading-' + i">
+                      <button class="accordion-button collapsed" type="button"
+                              data-bs-toggle="collapse"
+                              [attr.data-bs-target]="'#collapse-' + i"
+                              aria-expanded="false"
+                              [attr.aria-controls]="'collapse-' + i">
+                        {{ section.title }}
+                        <i class="fa-solid fa-chevron-down"></i>
+                      </button>
+                    </h2>
+                    <div [id]="'collapse-' + i"
+                         class="accordion-collapse collapse"
+                         [attr.aria-labelledby]="'heading-' + i"
+                         data-bs-parent="#courseAccordion">
+                      <div class="accordion-body p-0">
+                        <ul>
+                          <li *ngFor="let lesson of section.lessons; let li = last"
+                              class="p-4 px-3 d-flex justify-content-between"
+                              [class.pb-0]="li">
+                            <p class="mb-0">
+                              <img class="me-2" src="./assets/img/icons/play.svg" alt>
+                              {{ lesson.title }}
+                            </p>
+                            <div class="d-flex gap-xl-5 gap-3">
+                              <a href="javascript:void(0);" *ngIf="lesson.isFreePreview" class="preview-link">Aperçu</a>
+                              <p class="mb-0" *ngIf="lesson.durationSeconds">
+                                {{ lesson.durationSeconds | number:'1.0-0' }}s
+                              </p>
                             </div>
-                              </div>
-                              <div class="card">
-                                <div class="card-body">
-                                <div class="d-flex justify-content-between flex-wrap">
-                              <h5 class="subs-title mb-2 mb-sm-3">Course Content</h5>
-                              <h6 class="text-gray-7 mb-3">92 Lectures <span class="text-secondary">10:56:11</span></h6>
-                            </div>
-                            <div class="accordion accordion-customicon1 accordions-items-seperate p-0" id="accordioncustomicon1Example">
-                                <div class="accordion-item" data-aos="fade-up">
-                                    <h2 class="accordion-header" id="headingcustomicon1One">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon1One" aria-expanded="false" aria-controls="collapsecustomicon1One">
-                                        Getting Started <i class="fa-solid fa-chevron-down"></i>
-                                        </button>
-                                    </h2>
-                                    <div id="collapsecustomicon1One" class="accordion-collapse collapse" aria-labelledby="headingcustomicon1One" data-bs-parent="#accordioncustomicon1Example">
-                                        <div class="accordion-body p-0">
-                                            <ul>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.1 Introduction to the User Experience Course</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.2 Exercise: Your first design challenge</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.3 How to solve the previous exercise</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.4 Find out why smart objects are amazing</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.5 How to use text layers effectively</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
-                                    <h2 class="accordion-header" id="headingcustomicon1Two">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon1Two" aria-expanded="false" aria-controls="collapsecustomicon1Two">
-                                        The Brief<i class="fa-solid fa-chevron-down"></i>
-                                        </button>
-                                    </h2>
-                                    <div id="collapsecustomicon1Two" class="accordion-collapse collapse" aria-labelledby="headingcustomicon1Two" data-bs-parent="#accordioncustomicon1Example">
-                                        <div class="accordion-body p-0">
-                                            <ul>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.1 Introduction to the User Experience Course</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.2 Exercise: Your first design challenge</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.3 How to solve the previous exercise</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.4 Find out why smart objects are amazing</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.5 How to use text layers effectively</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
-                                    <h2 class="accordion-header" id="headingcustomicon1Three">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon1Three" aria-expanded="false" aria-controls="collapsecustomicon1Three">
-                                        Wireframing Low Fidelity<i class="fa-solid fa-chevron-down"></i>
-                                        </button>
-                                    </h2>
-                                    <div id="collapsecustomicon1Three" class="accordion-collapse collapse" aria-labelledby="headingcustomicon1Three" data-bs-parent="#accordioncustomicon1Example">
-                                        <div class="accordion-body p-0">
-                                            <ul>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.1 Introduction to the User Experience Course</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.2 Exercise: Your first design challenge</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.3 How to solve the previous exercise</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.4 Find out why smart objects are amazing</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.5 How to use text layers effectively</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="accordion-item mb-0" data-aos="fade-up" data-aos-delay="350">
-                                    <h2 class="accordion-header" id="headingcustomicon1Four">
-                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon1Four" aria-expanded="false" aria-controls="collapsecustomicon1Four">
-                                        Type, Color & Icon Introduction<i class="fa-solid fa-chevron-down"></i>
-                                        </button>
-                                    </h2>
-                                    <div id="collapsecustomicon1Four" class="accordion-collapse collapse" aria-labelledby="headingcustomicon1Four" data-bs-parent="#accordioncustomicon1Example">
-                                        <div class="accordion-body p-0">
-                                            <ul>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.1 Introduction to the User Experience Course</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.2 Exercise: Your first design challenge</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.3 How to solve the previous exercise</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.4 Find out why smart objects are amazing</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                                <li class="p-4 px-3 pb-0 d-flex justify-content-between">
-                                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/play.svg" alt="img">Lecture1.5 How to use text layers effectively</p>   
-                                                   <div class="d-flex gap-xl-5 gap-3">
-                                                    <a href="javascript:void(0);" class="preview-link">Preview</a>
-                                                    <p class="mb-0">02:53</p>
-                                                   </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                               
-                            </div>
-                            </div>
-                              </div>
-                              <div class="card">
-                                <div class="card-body">
-                                <h5 class="subs-title mb-3">About the instructor</h5>
-                                <div class="d-flex align-items-center justify-content-between mt-4 gap-2 flex-wrap">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-lg">
-                                            <img class="rounded-circle" src="./assets/img/avatar/avatar10.jpg" alt="img">
-                                        </div>
-                                        <div class="ms-2">
-                                        <h5 class="fs-18 fw-semibold"><a [routerLink]="routes.instructorDetails">Nicole Brown</a></h5>
-                                        <p class="mb-0">UX/UI Designer</p>
-                                    </div>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fa-solid fa-star text-warning me-1"></i>
-                                        <i class="fa-solid fa-star text-warning me-1"></i>
-                                        <i class="fa-solid fa-star text-warning me-1"></i>
-                                        <i class="fa-solid fa-star text-warning me-1"></i>
-                                        <i class="fa-solid fa-star text-warning me-1"></i>
-                                        <p class="mb-0">4.5</p>
-                                    </div>
-                                </div>
-                                <div class="course-info align-items-center d-flex gap-2 gap-xl-3 mt-3 mb-3 flex-wrap">
-                                  <p class="fw-medium d-flex align-items-center fs-14 mb-0"><img class="me-2" src="./assets/img/icons/play2.svg" alt="img">5Courses</p>
-                                  <p class="fw-medium d-flex align-items-center fs-14 mb-0"><img class="me-2" src="./assets/img/icons/book2.svg" alt="img">12+ Lesson</p>
-                                  <p class="fw-medium d-flex align-items-center fs-14 mb-0"><img class="me-2" src="./assets/img/icons/timer-start2.svg" alt="img">9hr 30min</p>
-                                  <p class="fw-medium d-flex align-items-center fs-14 mb-0"><img class="me-2" src="./assets/img/icons/people.svg" alt="img">270,866 students enrolled</p>
-                                </div>
-                                <p>UI/UX Designer, with 7+ Years Experience. Guarantee of High Quality Work.</p>
-                                <p>Skills: Web Design, UI Design, UX/UI Design, Mobile Design, User Interface Design, Sketch, Photoshop, GUI, Html, Css, Grid Systems, Typography, Minimal, Template, English, Bootstrap, Responsive Web Design, Pixel Perfect, Graphic Design, Corporate, Creative, Flat, Luxury and much more.</p>
-                               <h6 class="fs-16 mb-2">Available for:</h6>
-                               <ol class="order-list mb-0">
-                                    <li class="list-items">Full Time Office Work</li>
-                                    <li class="list-items">Remote Work</li>
-                                    <li class="list-items">Freelance</li>
-                                    <li class="list-items">Contract</li>
-                                    <li class="list-items">Worldwide</li> 
-                               </ol>
-                            </div>
-                              </div>
-                              <div class="card">
-                                <div class="card-body">
-                                <h5 class="subs-title mb-3">Post A comment</h5>
-                                <form class="course-details-form">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                        <div class="mb-3">
-                                          <label class="form-label fs-14 fw-medium text-gray-7">Name</label>
-                                          <input class="form-control fs-14 text-gray-7" type="text">
-                                        </div>
-                                        </div>
-                                        <div class="col-sm-6">
-                                        <div class="mb-3">
-                                          <label class="form-label fs-14 fw-medium text-gray-7">Email</label>
-                                          <input class="form-control fs-14 text-gray-7" type="email">
-                                        </div>
-                                        </div>
-                                         <div class="col-12">
-                                        <div class="mb-3">
-                                          <label class="form-label fs-14 fw-medium text-gray-7">Subject</label>
-                                          <input class="form-control fs-14 text-gray-7" type="text">
-                                        </div>
-                                        </div>
-                                        <div class="col-12">
-                                        <div class="mb-3">
-                                          <label class="form-label fs-14 fw-medium text-gray-7">Comments</label>
-                                         <textarea class="form-control fs-14 text-gray-7"></textarea>
-                                        </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <button type="submit" class="btn post-btn">Submit</button>
-                                        </div>
-                                    </div>
-                                </form>
-                                </div>
-                              </div>
-                           </div>
-                        </div>
-                        <div class="col-lg-4">
-                            <div class="course-sidebar-sec">
-                              <div class="card">
-                                <div class="card-body">
-                                    <div class="position-relative mb-4">
-                                        <lightgallery [settings]="settings" [onInit]="onInit" size="1400-933"> 
-                                        <a href="https://www.youtube.com/embed/1trvO6dqQUI"  id="openVideoBtn" target="_blank">
-                                            <img class="img-fluid" src="assets/img/course/video-bg.jpg" alt="img">
-                                            <div class="play-icon">
-                                                <i class="ti ti-player-play-filled fs-28"></i>
-                                            </div>
-                                        </a>
-                                        </lightgallery>
-                                    </div>
-                                    <div id="videoModal">
-                                        <div class="modal-content1">
-                                          <span class="close-btn" id="closeModal">&times;</span>
-                                          <iframe id="youtubeIframe" allowfullscreen></iframe>
-                                        </div>
-                                      </div>
-                                    <div class="d-flex justify-content-between align-items-center mb-4">
-                                      <h2 class="text-success fs-30">FREE</h2>
-                                      <p class="mb-0"><span class="text-decoration-line-through me-2">$99.00</span>50% off</p>
-                                    </div>
-                                    <div class="d-flex justify-content-between gap-3 wishlist-btns">
-                                       <a class="btn d-flex btn-wish" [routerLink]="routes.studentWishlist"><i class="isax isax-heart me-1 fs-18"></i>Add to Wishlist</a>
-                                       <a class="btn d-flex btn-wish" href="javascript:void(0);"><i class="ti ti-share me-1 fs-18"></i>Share</a>
-                                    </div>
-                                    <a [routerLink]="routes.cart" class="btn btn-primary w-100 mt-4 btn-enroll">Enroll Now</a>
-                                </div>
-                              </div>
-                              <div class="card">
-                                <div class="card-body">
-                                    <h5 class="subs-title">Includes</h5>
-                                    <p><img class="me-2" src="./assets/img/icons/play.svg" alt="img">11 hours on-demand video</p>
-                                    <p><img class="me-2" src="./assets/img/icons/import.svg" alt="img">69 downloadable resources</p>
-                                    <p><img class="me-2" src="./assets/img/icons/key.svg" alt="img">Full lifetime access</p>
-                                    <p><img class="me-2" src="./assets/img/icons/monitor-mobbile.svg" alt="img">Access on mobile and TV</p>
-                                    <p><img class="me-2" src="./assets/img/icons/cloud-lightning.svg" alt="img">Assignments</p>
-                                    <p class="mb-0"><img class="me-2" src="./assets/img/icons/teacher.svg" alt="img">Certificate of Completion</p>
-                                </div>
-                              </div>
-                              <div class="cou-features-card">
-                                <div class="cou-features">
-                                    <h5 class="subs-title">Course Features</h5>
-                                    <ul>
-                                        <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/people2.svg" alt="img">Enrolled: 32 students</p></li>
-                                        <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/timer-start3.svg" alt="img">Duration: 20 hours</p></li>
-                                        <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/note.svg" alt="img">Chapters: 15</p></li>
-                                        <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/play3.svg" alt="img">Video: 12 hours</p></li>
-                                        <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/chart.svg" alt="img">Level: Beginner</p></li>
-                                    </ul>
-                                </div>
-                              </div>
-                            </div>
-                        </div>
+                          </li>
+                        </ul>
+                      </div>
                     </div>
-				</div>
-			</section>
-			<!-- /Course detail -->
+                  </div>
+                </div>
+                <ng-template #noSections>
+                  <p class="text-muted">Aucune section disponible.</p>
+                </ng-template>
+              </div>
+            </div>
+
+            <!-- About instructor -->
+            <div class="card">
+              <div class="card-body">
+                <h5 class="subs-title mb-3">À propos de l'instructeur</h5>
+                <div class="d-flex align-items-center justify-content-between mt-4 gap-2 flex-wrap">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-lg">
+                      <img class="rounded-circle" [src]="getAvatarUrl(course.instructorAvatar)" alt="instructor">
+                    </div>
+                    <div class="ms-2">
+                      <h5 class="fs-18 fw-semibold">{{ course.instructorName }}</h5>
+                      <p class="mb-0">Instructeur</p>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-center">
+                    <ng-container *ngFor="let s of stars">
+                      <i class="fa-solid fa-star me-1"
+                         [class.text-warning]="s <= (course.averageRating || 0)"></i>
+                    </ng-container>
+                    <p class="mb-0">{{ (course.averageRating || 0) | number:'1.1-1' }}</p>
+                  </div>
+                </div>
+                <div class="course-info align-items-center d-flex gap-2 gap-xl-3 mt-3 mb-3 flex-wrap">
+                  <p class="fw-medium d-flex align-items-center fs-14 mb-0">
+                    <img class="me-2" src="./assets/img/icons/book2.svg" alt="img">{{ getTotalLessons() }} leçons
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Reviews -->
+            <div class="card">
+              <div class="card-body">
+                <h5 class="subs-title mb-3">Avis ({{ reviews.length }})</h5>
+
+                <!-- existing reviews list -->
+                <div *ngIf="loadingReviews" class="text-center py-3">
+                  <div class="spinner-border spinner-border-sm text-primary"></div>
+                </div>
+                <ng-container *ngIf="!loadingReviews">
+                  <div *ngFor="let r of reviews" class="d-flex mb-4">
+                    <div class="avatar me-3">
+                      <img class="rounded-circle" [src]="getAvatarUrl(r.studentAvatar)" alt="avatar"
+                           style="width:40px;height:40px;object-fit:cover;">
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center gap-2 mb-1">
+                        <strong>{{ r.studentName || 'Étudiant' }}</strong>
+                        <span class="text-muted fs-12">{{ r.createdAt | date:'dd/MM/yyyy' }}</span>
+                      </div>
+                      <div class="mb-1">
+                        <ng-container *ngFor="let s of stars">
+                          <i class="fa-solid fa-star fs-12"
+                             [class.text-warning]="s <= r.rating"
+                             [class.text-muted]="s > r.rating"></i>
+                        </ng-container>
+                      </div>
+                      <p class="mb-0 fs-14">{{ r.comment }}</p>
+                    </div>
+                  </div>
+                  <p *ngIf="reviews.length === 0" class="text-muted">Aucun avis pour le moment.</p>
+                </ng-container>
+
+                <!-- Leave a review form (enrolled students only) -->
+                <ng-container *ngIf="isLoggedIn && isEnrolled">
+                  <hr>
+                  <h6 class="mb-3">Laisser un avis</h6>
+                  <div class="mb-2">
+                    <ng-container *ngFor="let s of stars">
+                      <i class="fa-solid fa-star fs-18 me-1 cursor-pointer"
+                         [class.text-warning]="s <= myRating"
+                         [class.text-muted]="s > myRating"
+                         (click)="myRating = s" style="cursor:pointer;"></i>
+                    </ng-container>
+                  </div>
+                  <textarea class="form-control mb-2 fs-14" rows="3"
+                            [(ngModel)]="myComment"
+                            placeholder="Votre commentaire..."></textarea>
+                  <p *ngIf="reviewMsg" [class.text-success]="reviewMsg.includes('!')" class="fs-14">{{ reviewMsg }}</p>
+                  <button class="btn btn-primary" (click)="submitReview()" [disabled]="submitingReview">
+                    <span *ngIf="submitingReview" class="spinner-border spinner-border-sm me-1"></span>
+                    Publier l'avis
+                  </button>
+                </ng-container>
+                <p *ngIf="isLoggedIn && !isEnrolled" class="text-muted fs-13 mt-2">
+                  Inscrivez-vous au cours pour laisser un avis.
+                </p>
+                <p *ngIf="!isLoggedIn" class="text-muted fs-13 mt-2">
+                  <a [routerLink]="routes.login">Connectez-vous</a> pour laisser un avis.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+          <div class="course-sidebar-sec">
+
+            <!-- Price & CTA card -->
+            <div class="card">
+              <div class="card-body">
+                <div class="position-relative mb-4">
+                  <lightgallery [settings]="settings" [onInit]="onInit" size="1400-933">
+                    <a href="https://www.youtube.com/embed/1trvO6dqQUI" id="openVideoBtn" target="_blank">
+                      <img class="img-fluid" [src]="getImageUrl(course.coverImage)" alt="course cover">
+                      <div class="play-icon">
+                        <i class="ti ti-player-play-filled fs-28"></i>
+                      </div>
+                    </a>
+                  </lightgallery>
+                </div>
+
+                <!-- Price display -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                  <h2 class="text-success fs-30">{{ formatPrice() }}</h2>
+                  <p *ngIf="course.onSale && course.price > 0" class="mb-0">
+                    <span class="text-decoration-line-through me-2">{{ course.price | number:'1.2-2' }} €</span>
+                    <span class="text-danger">En promo</span>
+                  </p>
+                </div>
+
+                <!-- CTA buttons -->
+                <!-- Already enrolled -->
+                <ng-container *ngIf="isEnrolled">
+                  <button class="btn btn-success w-100 mb-3 btn-enroll" (click)="watchCourse()">
+                    <i class="ti ti-player-play me-1"></i> Continuer le cours
+                  </button>
+                </ng-container>
+
+                <!-- Free course not enrolled -->
+                <ng-container *ngIf="!isEnrolled && isCourseFree() && isLoggedIn">
+                  <button class="btn btn-primary w-100 mb-3 btn-enroll"
+                          (click)="enrollFree()" [disabled]="buyingCourse">
+                    <span *ngIf="buyingCourse" class="spinner-border spinner-border-sm me-1"></span>
+                    S'inscrire gratuitement
+                  </button>
+                </ng-container>
+                <ng-container *ngIf="!isEnrolled && isCourseFree() && !isLoggedIn">
+                  <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-3 btn-enroll">
+                    <i class="ti ti-login me-1"></i>Se connecter pour s'inscrire
+                  </a>
+                </ng-container>
+
+                <!-- Paid course not enrolled -->
+                <ng-container *ngIf="!isEnrolled && !isCourseFree()">
+                  <div class="d-flex justify-content-between gap-3 wishlist-btns mb-3">
+                    <!-- Already in cart -->
+                    <a *ngIf="isInCart"
+                       [routerLink]="routes.cart"
+                       class="btn d-flex btn-wish flex-grow-1 text-success">
+                      <i class="ti ti-shopping-cart-check me-1 fs-18"></i>Voir le panier
+                    </a>
+                    <!-- Not yet in cart -->
+                    <button *ngIf="!isInCart"
+                            class="btn d-flex btn-wish flex-grow-1"
+                            (click)="addToCart()" [disabled]="addingToCart">
+                      <span *ngIf="addingToCart" class="spinner-border spinner-border-sm me-1"></span>
+                      <i *ngIf="!addingToCart" class="ti ti-shopping-cart me-1 fs-18"></i>Panier
+                    </button>
+                    <a class="btn d-flex btn-wish" href="javascript:void(0);">
+                      <i class="ti ti-share me-1 fs-18"></i>Partager
+                    </a>
+                  </div>
+                  <button *ngIf="isLoggedIn" class="btn btn-primary w-100 btn-enroll"
+                          (click)="buyCourse()" [disabled]="buyingCourse">
+                    <span *ngIf="buyingCourse" class="spinner-border spinner-border-sm me-1"></span>
+                    Acheter  {{ formatPrice() }}
+                  </button>
+                  <a *ngIf="!isLoggedIn" [routerLink]="routes.login" class="btn btn-primary w-100 btn-enroll">
+                    <i class="ti ti-login me-1"></i>Se connecter pour acheter {{ formatPrice() }}
+                  </a>
+                </ng-container>
+
+                <!-- Not logged in -->
+                <div *ngIf="!isLoggedIn" class="mt-2 text-center">
+                  <small class="text-muted">
+                    <a [routerLink]="routes.login">Connectez-vous</a> pour vous inscrire
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <!-- Includes card -->
+            <div class="card">
+              <div class="card-body">
+                <h5 class="subs-title">Inclus</h5>
+                <p><img class="me-2" src="./assets/img/icons/key.svg" alt="img">Accès à vie</p>
+                <p><img class="me-2" src="./assets/img/icons/monitor-mobbile.svg" alt="img">Accès mobile et TV</p>
+                <p class="mb-0"><img class="me-2" src="./assets/img/icons/teacher.svg" alt="img">Certificat de complétion</p>
+              </div>
+            </div>
+
+            <!-- Course Features card -->
+            <div class="cou-features-card">
+              <div class="cou-features">
+                <h5 class="subs-title">Caractéristiques</h5>
+                <ul>
+                  <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/people2.svg" alt="img">Inscrits : {{ course.enrollmentCount || 0 }}</p></li>
+                  <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/note.svg" alt="img">Sections : {{ course.sections?.length || 0 }}</p></li>
+                  <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/play3.svg" alt="img">Leçons : {{ getTotalLessons() }}</p></li>
+                  <li><p class="mb-0"><img class="me-2" src="./assets/img/icons/chart.svg" alt="img">Niveau : {{ getLevelLabel(course.level) }}</p></li>
+                  <li><p class="mb-0"><i class="fa-solid fa-globe me-2"></i>Langue : {{ course.language || 'Français' }}</p></li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- /Course detail -->
+
+</ng-container>

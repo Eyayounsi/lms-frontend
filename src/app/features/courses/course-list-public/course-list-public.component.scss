@@ -1,0 +1,19 @@
+.course-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12) !important;
+  }
+}
+
+.card-img-top {
+  transition: transform 0.3s;
+}
+
+.course-card:hover .card-img-top {
+  transform: scale(1.05);
+}

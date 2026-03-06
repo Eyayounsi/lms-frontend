@@ -244,6 +244,51 @@
             <span class="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">1</span>
           </a>
         </div>
+
+        <!-- Notification Bell -->
+        <div class="dropdown icon-btn me-3 notification-dropdown">
+          <a href="javascript:void(0);" class="position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="isax isax-notification"></i>
+            <span *ngIf="unreadCount > 0"
+                  class="count-icon bg-danger p-1 rounded-pill text-white fs-10 fw-bold"
+                  style="min-width:16px;text-align:center;">
+              {{ unreadCount > 9 ? '9+' : unreadCount }}
+            </span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-end p-0" style="width:320px;max-height:420px;overflow-y:auto;">
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light">
+              <h6 class="mb-0 fw-semibold">Notifications</h6>
+              <button *ngIf="unreadCount > 0"
+                      class="btn btn-link btn-sm p-0 text-primary text-decoration-none"
+                      (click)="markAllNotifsAsRead()">
+                Tout marquer lu
+              </button>
+            </div>
+            <div *ngIf="notifications.length === 0" class="text-center py-4 text-muted">
+              <i class="isax isax-notification" style="font-size:2rem;opacity:0.3"></i>
+              <p class="mt-2 mb-0 small">Aucune notification</p>
+            </div>
+            <a *ngFor="let notif of notifications"
+               href="javascript:void(0);"
+               (click)="markNotifAsRead(notif)"
+               class="d-flex align-items-start px-3 py-2 border-bottom text-decoration-none"
+               [style.background]="notif.read ? '' : 'rgba(var(--bs-primary-rgb),0.06)'">
+              <span class="me-3 mt-1" style="font-size:1.3rem;opacity:0.75;">
+                <i class="isax {{ getNotifIcon(notif.type) }}"></i>
+              </span>
+              <div class="flex-grow-1 overflow-hidden">
+                <p class="mb-0 fw-medium text-dark small" style="white-space:normal;line-height:1.3">{{ notif.title }}</p>
+                <p *ngIf="notif.message" class="mb-0 text-muted" style="font-size:11px;white-space:normal;">{{ notif.message }}</p>
+                <span class="text-muted" style="font-size:10px;">{{ formatNotifDate(notif.createdAt) }}</span>
+              </div>
+              <span *ngIf="!notif.read"
+                    class="rounded-circle bg-primary ms-2 flex-shrink-0"
+                    style="width:8px;height:8px;margin-top:6px;"></span>
+            </a>
+          </div>
+        </div>
+        <!-- /Notification Bell -->
+
         <div *ngIf="base==='instructor'" class="dropdown profile-dropdown">
                           <a href="javascript:void(0);" class="d-flex align-items-center" data-bs-toggle="dropdown">
                               <span class="avatar">

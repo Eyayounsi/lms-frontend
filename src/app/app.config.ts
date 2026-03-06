@@ -10,6 +10,7 @@ import { register as registerSwiper } from 'swiper/element';
 import { withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './shared/service/auth/auth.interceptor';
 import { blockedInterceptor } from './shared/service/auth/blocked.interceptor';
+import { provideToastr } from 'ngx-toastr';
 
 registerSwiper();
 export const appConfig: ApplicationConfig = {
@@ -19,7 +20,12 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     //provideHttpClient(),
     provideHttpClient(withInterceptors([authInterceptor, blockedInterceptor])),
-
+    provideToastr({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      progressBar: true,
+    }),
   ],
 
 };

@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { OwlOptions } from 'ngx-owl-carousel-o';
 import { DataService } from '../../../shared/service/data/data.service';
+import { CourseService } from '../../../shared/service/course/course.service';
 import * as AOS from 'aos';
 import { routes } from '../../../shared/service/routes/routes';
 import lgZoom from 'lightgallery/plugins/zoom';
@@ -27,13 +29,33 @@ interface data {
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
-    imports: [CommonModule,FooterComponent,RouterLink,SlickCarouselModule,LightgalleryModule],
+    imports: [CommonModule, FooterComponent, RouterLink, SlickCarouselModule, LightgalleryModule, FormsModule],
     encapsulation: ViewEncapsulation.None,
 })
 export class HomeComponent implements OnInit {
   public routes = routes;
   isSelected:boolean[]=[false];
-  constructor(private DataService: DataService, public router: Router) {
+  searchTerm = '';
+  categories: any[] = [];
+  selectedCategoryName = 'Sélectionner';
+  featuredCourses: any[] = [];
+  topInstructors: any[] = [];
+  bannerCourses: any[] = [];
+
+  constructor(private DataService: DataService, public router: Router, private courseService: CourseService) {}
+
+  onSubmit(): void {
+    const q = this.searchTerm.trim();
+    if (q) {
+      this.router.navigate(['/courses/course-list-public'], { queryParams: { search: q } });
+    } else {
+      this.router.navigate(['/courses/course-list-public']);
+    }
+  }
+
+  selectCategory(catId: number, catName: string): void {
+    this.selectedCategoryName = catName;
+    this.router.navigate(['/courses/course-list-public'], { queryParams: { categoryId: catId } });
   }
 //   config: SwiperOptions = {
 //     effect: 'cards',
@@ -41,41 +63,7 @@ export class HomeComponent implements OnInit {
 //     grabCursor: true,
 //     slidesPerView: 'auto',
 //   };
-  public bannercard=[
-    {
-      img:"course-22.jpg",
-      img1:"assets/img/icons/course-01.svg",
-      img2:"user-50.jpg",
-      name:"David Benitz",
-      department:"Productivity",
-      description:"The Complete Business and Management Course",
-      rating:"5.0 (210 Reviews)",
-      price:"$168",
-	  fav:0
-    },
-    {
-      img:"course-25.jpg",
-      img1:"assets/img/featured-courses/Clip-path-group.svg",
-      img2:"user-20.jpg",
-      name:"Edith Dorsey",
-      department:"Lifestyles",
-      description:"Build Creative Arts & media Course Completed",
-      rating:"4.9 (178 Reviews)",
-      price:"$190",
-	  fav:6
-    },
-    {
-      img:"course-24.jpg",
-      img1:"assets/img/featured-courses/react.svg",
-      img2:"user-23.jpg",
-      name:"Calvin Johnsen",
-      department:"Development",
-      description:"Learn & Create ReactJS Tech Fundamentals Apps",
-      rating:"5.0 (154 Reviews)",
-      price:"$147",
-	  fav:7
-    },
-  ]
+  public bannercard: any[] = [];
 
   public slideConfig ={
     lazyLoad: 'ondemand',
@@ -274,6 +262,39 @@ public testimonialSlider={
   };
   ngOnInit() {
     AOS.init({ duration: 1200, once: true });
+    this.courseService.getCategories().subscribe({
+      next: (cats) => { this.categories = cats; },
+      error: () => {}
+    });
+    this.courseService.getPublishedCourses().subscribe({
+      next: (courses) => {
+        // Featured courses (up to 8)
+        this.featuredCourses = courses.slice(0, 8);
+        // Banner courses (up to 3)
+        this.bannerCourses = courses.slice(0, 3);
+        // Top instructors derived from courses
+        const map = new Map<number, any>();
+        for (const c of courses) {
+          if (!c.instructorId) continue;
+          if (!map.has(c.instructorId)) {
+            map.set(c.instructorId, {
+              id: c.instructorId,
+              name: c.instructorName || 'Instructeur',
+              avatar: c.instructorAvatar,
+              totalRating: 0,
+              ratingCount: 0
+            });
+          }
+          const inst = map.get(c.instructorId)!;
+          if (c.averageRating) { inst.totalRating += c.averageRating; inst.ratingCount++; }
+        }
+        this.topInstructors = Array.from(map.values()).map(i => ({
+          ...i,
+          avgRating: i.ratingCount > 0 ? (i.totalRating / i.ratingCount).toFixed(1) : null
+        })).slice(0, 8);
+      },
+      error: () => {}
+    });
   }
   toggleClass(slide: data) {
     slide.active = !slide.active;
@@ -284,7 +305,23 @@ public testimonialSlider={
   iconSelect(index:number) : void{
 	this.isSelected[index]=!this.isSelected[index]
   }
-  onSubmit():void{
-	this.router.navigate([routes.courseList]);
+
+  getImageUrl(path: string): string {
+    if (!path) return 'assets/img/course/course-01.jpg';
+    return `http://localhost:8081/${path}`;
+  }
+
+  getAvatarUrl(path: string): string {
+    if (!path) return 'assets/img/avatar/avatar10.jpg';
+    return `http://localhost:8081/${path}`;
+  }
+
+  formatPrice(course: any): string {
+    const price = +(course.effectivePrice ?? course.price ?? 0);
+    return price === 0 ? 'Gratuit' : price.toFixed(2) + ' €';
+  }
+
+  goToCourseDetail(courseId: number): void {
+    this.router.navigate(['/courses/course-details-2'], { queryParams: { courseId } });
   }
 }

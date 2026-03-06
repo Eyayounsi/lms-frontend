@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent, RouterModule } from '@angular/router';
 import { routes } from '../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { FeatherIconModule } from '../../shared/module/feather.module';
 import { SharedModule } from 'primeng/api';
 import { InstructorSidebarComponent } from './common/instructor-sidebar/instructor-sidebar.component';
@@ -12,18 +13,44 @@ import { InstructorSidebarComponent } from './common/instructor-sidebar/instruct
     styleUrls: ['./instructor.component.scss'],
     imports: [
       CommonModule,
+      FormsModule,
       FeatherIconModule,
       RouterModule,
       SharedModule,
       InstructorSidebarComponent
     ],
 })
-export class InstructorComponent {
+export class InstructorComponent implements OnInit, OnDestroy {
   public routes = routes;
   last = '';
+
+  // ── Notes ──────────────────────────────────────────────────────────────────
+  showNotesPanel = false;
+  instructorNote = '';
+  noteSaved = false;
+  private noteSaveTimer: any;
  
 
   
+
+  ngOnInit(): void {
+    this.instructorNote = localStorage.getItem('instructor-general-note') ?? '';
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.noteSaveTimer);
+  }
+
+  toggleNotesPanel(): void {
+    this.showNotesPanel = !this.showNotesPanel;
+  }
+
+  saveNote(): void {
+    localStorage.setItem('instructor-general-note', this.instructorNote);
+    this.noteSaved = true;
+    clearTimeout(this.noteSaveTimer);
+    this.noteSaveTimer = setTimeout(() => { this.noteSaved = false; }, 2000);
+  }
 
   constructor(private router: Router) {
     this.updateLastFromUrl(this.router.url);
