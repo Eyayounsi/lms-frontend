@@ -1,0 +1,226 @@
+﻿<!-- ═══════════════════════════════════════════════════════════════════════
+     Étudiants Certifiés — Premium Redesign
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- Hero Banner -->
+<div class="rct-cs-hero mb-4">
+  <div class="rct-cs-glow rct-cs-glow-1"></div>
+  <div class="rct-cs-glow rct-cs-glow-2"></div>
+  <div class="rct-cs-hero-body">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="d-flex align-items-center gap-4">
+          <div class="rct-cs-av-wrap">
+            <div class="rct-cs-av-ring"></div>
+            <div class="rct-cs-av-border"></div>
+            <div class="rct-cs-av-circle">
+              <i class="ti ti-certificate" style="font-size:26px;color:#fff"></i>
+            </div>
+            <div class="rct-cs-av-pulse"></div>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="rct-cs-chip"><i class="ti ti-award me-1" style="font-size:9px"></i>Certifiés</span>
+              <span class="rct-cs-live"><span class="rct-cs-live-dot"></span>{{ filteredStudents.length }} étudiant(s)</span>
+            </div>
+            <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-0.3px">Étudiants Certifiés</h3>
+            <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Talents validés par des certifications officielles</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 mt-3 mt-lg-0">
+        <div class="rct-cs-search-glass">
+          <i class="ti ti-search rct-cs-search-ico"></i>
+          <input type="text" class="rct-cs-search-input"
+                 placeholder="Rechercher par nom, cours certifié..."
+                 [(ngModel)]="searchQuery" (ngModelChange)="onSearch()">
+          <button *ngIf="searchQuery" class="rct-cs-search-clear" (click)="searchQuery=''; onSearch()">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Skeleton -->
+<div *ngIf="loading" class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-4" *ngFor="let _ of [1,2,3,4,5,6]">
+    <div class="rct-cs-card">
+      <div class="rct-cs-card-body">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="rct-cs-sk-av"></div>
+          <div class="flex-grow-1">
+            <div class="rct-sk rct-sk-sm mb-2" style="width:60%"></div>
+            <div class="rct-sk rct-sk-sm" style="width:40%"></div>
+          </div>
+        </div>
+        <div class="rct-sk rct-sk-sm mb-2" style="width:45%"></div>
+        <div class="d-flex gap-2">
+          <div class="rct-sk rct-sk-xs" style="width:80px;height:22px;border-radius:20px"></div>
+          <div class="rct-sk rct-sk-xs" style="width:80px;height:22px;border-radius:20px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Erreur -->
+<div *ngIf="error && !loading" class="rct-cs-alert-warn mb-4">
+  <i class="ti ti-alert-circle me-2"></i>{{ error }}
+  <button class="btn btn-sm btn-outline-warning ms-3" (click)="loadStudents()">Réessayer</button>
+</div>
+
+<!-- Aucun résultat -->
+<div *ngIf="!loading && !error && filteredStudents.length === 0" class="rct-cs-empty">
+  <div class="rct-cs-empty-ico">
+    <i class="ti ti-certificate-off" style="font-size:40px;color:#F59E0B"></i>
+  </div>
+  <h5 class="fw-bold mb-1" style="color:#1e1b4b">Aucun étudiant certifié trouvé</h5>
+  <p class="text-muted mb-0 small" *ngIf="searchQuery">Essayez avec un autre terme de recherche.</p>
+  <p class="text-muted mb-0 small" *ngIf="!searchQuery">Aucun étudiant n'a encore obtenu de certificat.</p>
+</div>
+
+<!-- Grille -->
+<div class="row g-3" *ngIf="!loading && !error && filteredStudents.length > 0">
+  <div class="col-md-6 col-xl-4" *ngFor="let student of filteredStudents; let i = index"
+       [style.animation-delay]="(i * 0.05) + 's'">
+    <div class="rct-cs-card">
+      <!-- Accent bar top -->
+      <div class="rct-cs-card-accent"></div>
+      <div class="rct-cs-card-body">
+        <!-- Header -->
+        <div class="d-flex align-items-start gap-3 mb-3">
+          <div class="rct-cs-av-wrap-sm flex-shrink-0">
+            <img [src]="getAvatarUrl(student.avatarPath, student.fullName)" class="rct-cs-av-img" [alt]="student.fullName">
+            <span class="rct-cs-cert-badge">
+              <i class="ti ti-certificate" style="font-size:8px"></i>
+            </span>
+          </div>
+          <div class="flex-grow-1 min-width-0">
+            <h6 class="mb-0 fw-bold text-truncate" style="color:#1e1b4b">{{ student.fullName }}</h6>
+            <small class="text-muted d-block text-truncate">{{ student.email }}</small>
+            <span *ngIf="student.designation" class="rct-cs-desg-badge mt-1 d-inline-block">{{ student.designation }}</span>
+          </div>
+          <div class="rct-cs-cert-count-badge flex-shrink-0">
+            <i class="ti ti-award" style="font-size:12px"></i>
+            {{ student.certificates.length }}
+          </div>
+        </div>
+
+        <!-- Certificats -->
+        <div class="mb-3">
+          <p class="small fw-semibold mb-2" style="color:#6b7280">
+            <i class="ti ti-certificate me-1"></i>Certificats obtenus
+          </p>
+          <div class="d-flex flex-wrap gap-1">
+            <span *ngFor="let cert of student.certificates.slice(0,3); let j = index"
+                  class="rct-cs-cert-chip"
+                  [style]="getCertStyle(j)"
+                  [title]="cert.courseName + ' — ' + formatDate(cert.issuedAt)">
+              <i class="ti ti-certificate me-1" style="font-size:10px"></i>
+              <span class="text-truncate" style="max-width:130px">{{ cert.courseName }}</span>
+            </span>
+            <span *ngIf="student.certificates.length > 3" class="rct-cs-cert-chip rct-cs-cert-more">
+              +{{ student.certificates.length - 3 }} autres
+            </span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="rct-cs-actions">
+          <button class="rct-cs-btn-view" (click)="viewStudent(student)">
+            <i class="ti ti-eye me-1"></i>Voir profil
+          </button>
+          <button class="rct-cs-btn-contact"
+                  (click)="contactStudent(student)"
+                  [disabled]="contactingId === student.id">
+            <span *ngIf="contactingId !== student.id"><i class="ti ti-message me-1"></i>Contacter</span>
+            <span *ngIf="contactingId === student.id" class="spinner-border spinner-border-sm"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Étudiant Certifié ═══ -->
+<div *ngIf="selectedStudent" class="rct-cs-modal-backdrop" (click)="closeModal()"></div>
+<div *ngIf="selectedStudent" class="rct-cs-modal" (click)="$event.stopPropagation()">
+  <!-- Cover gradient -->
+  <div class="rct-cs-modal-cover">
+    <div class="rct-cs-modal-cover-bg"></div>
+    <div class="rct-cs-modal-av-ring">
+      <img [src]="getAvatarUrl(selectedStudent!.avatarPath, selectedStudent!.fullName)" class="rct-cs-modal-av" [alt]="selectedStudent!.fullName">
+    </div>
+    <button class="rct-cs-modal-close" (click)="closeModal()"><i class="ti ti-x"></i></button>
+    <!-- Crown badge -->
+    <div class="rct-cs-modal-crown">
+      <i class="ti ti-award" style="font-size: 14px; color: #fff;"></i>
+    </div>
+  </div>
+
+  <!-- Identity -->
+  <div class="text-center px-4 pt-5 pb-3 mt-2">
+    <h4 class="fw-bold mb-1" style="color:#1e1b4b">{{ selectedStudent!.fullName }}</h4>
+    <small class="text-muted d-block mb-2">{{ selectedStudent!.email }}</small>
+    <span *ngIf="selectedStudent!.designation" class="rct-cs-desg-badge me-2">{{ selectedStudent!.designation }}</span>
+    <span class="rct-cs-cert-count-badge">
+      <i class="ti ti-award me-1" style="font-size:12px"></i>
+      {{ selectedStudent!.certificates.length }} certificat(s)
+    </span>
+    <div class="mt-2" *ngIf="selectedStudent!.linkedinUrl">
+      <a [href]="selectedStudent!.linkedinUrl" target="_blank" class="rct-cs-li-btn">
+        <i class="ti ti-brand-linkedin me-1"></i>LinkedIn
+      </a>
+    </div>
+  </div>
+
+  <div class="rct-cs-modal-divider"></div>
+
+  <div class="rct-cs-modal-body">
+    <!-- Bio -->
+    <div *ngIf="selectedStudent!.bio" class="rct-cs-modal-bio">
+      <p class="fw-semibold small mb-1" style="color:#03C95A"><i class="ti ti-quote me-1"></i>À propos</p>
+      <p class="small mb-0">{{ selectedStudent!.bio }}</p>
+    </div>
+
+    <!-- Certificats liste -->
+    <div>
+      <p class="fw-semibold small mb-3" style="color:#1e1b4b">
+        <i class="ti ti-certificate me-1" style="color:#F59E0B"></i>
+        Certificats ({{ selectedStudent!.certificates.length }})
+      </p>
+      <div class="d-flex flex-column gap-2">
+        <div *ngFor="let cert of selectedStudent!.certificates; let i = index"
+             class="rct-cs-cert-item" [style]="getCertItemStyle(i)">
+          <div class="rct-cs-cert-item-ico">
+            <i class="ti ti-certificate" style="font-size:18px"></i>
+          </div>
+          <div class="flex-grow-1">
+            <p class="fw-semibold small mb-0">{{ cert.courseName }}</p>
+            <small class="text-muted font-monospace">{{ cert.certificateCode }}</small>
+          </div>
+          <small class="text-muted flex-shrink-0">{{ formatDate(cert.issuedAt) }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="rct-cs-modal-footer">
+    <button class="rct-cs-btn-contact-lg"
+            (click)="contactStudent(selectedStudent!); closeModal()"
+            [disabled]="contactingId === selectedStudent!.id">
+      <span *ngIf="contactingId !== selectedStudent!.id">
+        <i class="ti ti-message me-2"></i>Contacter cet étudiant
+      </span>
+      <span *ngIf="contactingId === selectedStudent!.id">
+        <span class="spinner-border spinner-border-sm me-2"></span>Ouverture...
+      </span>
+    </button>
+    <button class="rct-cs-btn-close" (click)="closeModal()">
+      <i class="ti ti-x me-1"></i>Fermer
+    </button>
+  </div>
+</div>

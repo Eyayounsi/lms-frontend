@@ -7,7 +7,11 @@
         <form (ngSubmit)="onUpdateProfile()" #profileFormRef="ngForm">
             <div class="profile-upload-group">									
                 <div class="d-flex align-items-center">
-                    <a [routerLink]="routes.studentProfile" class="avatar flex-shrink-0 avatar-xxxl avatar-rounded border me-3"><img src="assets/img/user/user-02.jpg" alt="Img" class="img-fluid"></a>
+                    <a [routerLink]="routes.studentProfile"
+                       class="avatar flex-shrink-0 avatar-xxxl avatar-rounded border me-3 d-inline-flex align-items-center justify-content-center"
+                       style="background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;font-size:40px;font-weight:800;text-transform:uppercase;">
+                        {{ avatarInitial }}
+                    </a>
                     <div class="profile-upload-head">
                         <h6><a [routerLink]="routes.studentProfile">Profile Photo</a></h6>
                         <p class="fs-14 mb-0">PNG or JPG no bigger than 800px width and height</p>

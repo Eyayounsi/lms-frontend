@@ -1,168 +1,376 @@
-
-    <div class="payouts">
-    <div class="alert alert-warning alert-dismissible d-flex fade show mb-4">
-        <i class="isax isax-information4 flex-shrink-0 me-2"></i>Your selected payout method was confirmed on Next Payout on 15 Jan, 2025 for "payout&#64;example.com"
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="isax isax-close-circle5"></i></button>
+﻿<div class="payouts ie-page-shell">
+  @if (loading) {
+    <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+  }
+  @if (!loading && revenue) {
+    <!-- KPI Slider -->
+    <div class="ie-kpi-slider mb-4">
+      <div class="ie-kpi-track">
+        <div class="card border-0 shadow-sm ie-kpi-card ie-kpi-card--revenue">
+          <div class="card-body">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar bg-primary-transparent rounded-circle p-3 ie-kpi-avatar">
+                <i class="fa-solid fa-euro-sign text-primary fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted mb-1 small">Revenu total</p>
+                <h4 class="fw-bold mb-0 ie-kpi-value-amount">{{ totalRevenueValue | number:'1.2-2' }} €</h4>
+                <span class="ie-kpi-hint">Performance globale</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm ie-kpi-card ie-kpi-card--month">
+          <div class="card-body">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar bg-success-transparent rounded-circle p-3 ie-kpi-avatar">
+                <i class="fa-solid fa-calendar-days text-success fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted mb-1 small">Ce mois-ci</p>
+                <h4 class="fw-bold mb-0 ie-kpi-value-amount">{{ monthlyRevenueValue | number:'1.2-2' }} €</h4>
+                <span class="ie-kpi-hint">Mise à jour mensuelle</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm ie-kpi-card ie-kpi-card--sales">
+          <div class="card-body">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar bg-warning-transparent rounded-circle p-3 ie-kpi-avatar">
+                <i class="fa-solid fa-users text-warning fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted mb-1 small">Ventes totales</p>
+                <h4 class="fw-bold mb-0 ie-kpi-value-amount">{{ totalSalesValue }}</h4>
+                <span class="ie-kpi-hint">Volume cumulé</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm ie-kpi-card ie-kpi-card--ticket">
+          <div class="card-body">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar bg-info-transparent rounded-circle p-3 ie-kpi-avatar">
+                <i class="fa-solid fa-receipt text-info fs-4"></i>
+              </div>
+              <div>
+                <p class="text-muted mb-1 small">Panier moyen</p>
+                <h4 class="fw-bold mb-0 ie-kpi-value-amount">{{ avgTicket | number:'1.2-2' }} €</h4>
+                <span class="ie-kpi-hint">Valeur par vente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
     <div class="row mb-4">
-        <div class="col-xl-5">
-        <div class="earning-this-month border">
-            <img src="./assets/img/shapes/withdraw-bg1.svg" class="earning-bg1" alt="img">
-            <img src="./assets/img/shapes/withdraw-bg2.svg" class="earning-bg2" alt="img">
-            <div class="flex-shrink-0 earn-img">
-                <img class="img-fluid" src="./assets/img/icons/icon-2.svg" alt="img">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm ie-sticky-card ie-withdraw-card mb-4">
+          <div class="card-body ie-withdraw-body d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-4">
+            <div class="d-flex align-items-center gap-3 ie-withdraw-title">
+              <div class="avatar bg-success-transparent rounded-circle p-3 ie-section-avatar">
+                <i class="fa-solid fa-money-bill-transfer text-success fs-4"></i>
+              </div>
+              <div>
+                <h5 class="fw-bold mb-1 d-flex align-items-center gap-2"><i class="fa-solid fa-wallet text-success"></i>Virements</h5>
+                <p class="text-muted mb-0 small">Solde disponible et demande de retrait</p>
+              </div>
             </div>
-        <div class="ps-3">
-            <h6 class="mb-2">Earning this month</h6>
-            <h5>$8,420</h5>
-            <p>Update your payout in settings</p>
+
+            <div class="ie-balance-box ie-balance-box--clean flex-grow-1">
+              <p class="text-muted mb-1 small d-flex align-items-center gap-1 ie-balance-caption"><i class="fa-solid fa-wallet"></i>Solde disponible pour virement</p>
+              <h3 class="fw-bold mb-1 text-success ie-balance-amount">{{ availableBalance | number:'1.2-2' }} €</h3>
+              <p class="text-muted small mb-0">
+                Votre part nette (40%) après deduction de la commission plateforme (60%)
+              </p>
+            </div>
+
+            <button class="btn btn-success ie-action-btn" (click)="openRequestModal()" [disabled]="availableBalance <= 0">
+              <i class="fa-solid fa-paper-plane me-2"></i>Demander un virement
+            </button>
+          </div>
         </div>
-        <a href="javascript:void(0);" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#withdraw-req">Withdraw</a>
-        </div>
-        </div>
-        <div class="col-xl-7">
-            <h6 class="mb-3">Select Payment Gateway for Payout</h6> 
-            <div class="payment-method">
-                <div class="row g-3">
-                    <div class="col-lg-6">
-                        <div>
-                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1" checked="">
-                            <label class="btn bg-white btn-check-label w-100 d-flex justify-content-between align-items-center" for="btnradio1">
-                                <span class="d-flex align-items-center"><span class="check-outer me-2"><i></i></span><img src="assets/img/icons/paypal.svg" alt="img"></span>
-                                
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div>
-                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2">
-                            <label class="btn btn-check-label bg-white w-100 d-flex justify-content-between align-items-center" for="btnradio2">
-                                <span class="d-flex align-items-center fs-16 fw-medium"><span class="check-outer me-2"><i></i></span>Bank Transfer</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>                           
-        </div>
+      </div>
     </div>
-    <h5 class="page-title">Payouts</h5>
-    <div class="table-top">
-    <div class="row align-items-center">
-        <div class="col-md-8">
-            <div class="d-flex align-items-center">
-                <div class="mb-3">
-                    <div class="dropdown me-3">
-                        <a href="javascript:void(0);" class="dropdown-toggle btn d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                            Payment Method
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Paypal</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Bank Transfer</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Stripe</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <div class="dropdown me-3">
-                        <a href="javascript:void(0);" class="dropdown-toggle btn d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                        Status
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Paid</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Pending</a>
-                            </li>
-                            <li>
-                                <a href="javascript:void(0);" class="dropdown-item rounded-1">Cancel</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-transparent border-0 pt-3 px-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h5 class="fw-bold mb-1 d-flex align-items-center gap-2"><i class="fa-regular fa-file-lines text-primary"></i>Demandes et historique</h5>
+              <p class="text-muted mb-0 small">Les dernières demandes de virement en un coup d'œil</p>
             </div>
+            <span class="badge bg-primary-transparent text-primary">{{ payouts.length }} opérations</span>
+          </div>
+          <div class="card-body pt-0">
+            @if (payouts.length === 0) {
+              <div class="text-center py-5 text-muted bg-light rounded-3">
+                <i class="fa-solid fa-receipt fs-1 d-block mb-2"></i>
+                Aucune demande de virement pour l'instant
+              </div>
+            } @else {
+              <div class="table-responsive custom-table ie-history-table">
+                <table class="table align-middle mb-0">
+                  <thead class="thead-light">
+                    <tr>
+                      <th><i class="fa-regular fa-calendar me-1"></i>Date</th>
+                      <th><i class="fa-regular fa-calendar-check me-1"></i>Période</th>
+                      <th><i class="fa-solid fa-euro-sign me-1"></i>Montant</th>
+                      <th><i class="fa-regular fa-circle-check me-1"></i>Statut</th>
+                      <th><i class="fa-regular fa-note-sticky me-1"></i>Notes admin</th>
+                      <th><i class="fa-regular fa-calendar me-1"></i>Date paiement</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (p of payouts; track p.id) {
+                      <tr>
+                        <td class="small text-muted">{{ p.requestedAt }}</td>
+                        <td><span class="badge bg-secondary">{{ p.period }}</span></td>
+                        <td class="fw-semibold">{{ p.amount | number:'1.2-2' }} €</td>
+                        <td><span [class]="getStatusClass(p.status)">{{ getStatusLabel(p.status) }}</span></td>
+                        <td class="small text-muted">{{ p.notes || '—' }}</td>
+                        <td class="small text-muted">{{ p.paidAt || '—' }}</td>
+                        <td>
+                          @if (p.status === 'PAID') {
+                            <button class="btn btn-sm btn-outline-primary" (click)="openInvoice(p)" title="Voir la facture">
+                              <i class="fa-solid fa-file-invoice-dollar me-1"></i>Facture
+                            </button>
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
         </div>
-        <div class="col-md-4">
-            <div class="input-icon mb-3">
-                <span class="input-icon-addon">
-                    <i class="isax isax-search-normal-14"></i>
-                </span>
-                <input  [(ngModel)]="searchDataValue" [ngModelOptions]="{ standalone: true }" type="search" (ngModelChange)="searchData(searchDataValue)" class="form-control form-control-md" placeholder="Search">
-            </div>
-        </div>
+      </div>
     </div>
-   </div>
-   <div class="table-responsive custom-table">
-    <table matSort (matSortChange)="sortData($event)" class="table">
-        <thead class="thead-light">
+
+    @if (revenue.byCourse && revenue.byCourse.length > 0) {
+      <div class="row mb-4 g-3">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm h-100 ie-analytics-card ie-animate-rise">
+            <div class="ie-analytics-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div>
+                <p class="ie-section-kicker mb-1">Analytics</p>
+                <h5 class="fw-bold mb-0 d-flex align-items-center gap-2"><i class="fa-solid fa-chart-column text-primary"></i>Top cours par revenu</h5>
+              </div>
+              <span class="badge ie-top8-badge">Top 8</span>
+            </div>
+            <div class="card-body pt-0">
+              <apx-chart
+                [series]="earningChart.series"
+                [chart]="earningChart.chart"
+                [xaxis]="earningChart.xaxis"
+                [yaxis]="earningChart.yaxis"
+                [dataLabels]="earningChart.dataLabels"
+                [plotOptions]="earningChart.plotOptions"
+                [colors]="earningChart.colors"
+                [tooltip]="earningChart.tooltip"
+                [grid]="earningChart.grid"
+              ></apx-chart>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 ie-bycourse-head">
+      <h5 class="fw-bold mb-0 d-flex align-items-center gap-2"><i class="fa-solid fa-coins text-success"></i>Revenus par cours (Relevés)</h5>
+      <div class="input-icon ie-search-wrap" style="min-width:280px;">
+        <span class="input-icon-addon"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <input
+          type="search"
+          class="form-control"
+          placeholder="Rechercher un cours..."
+          [(ngModel)]="searchValue"
+          (ngModelChange)="searchData($event)"
+        >
+      </div>
+    </div>
+    @if (filteredByCourse && filteredByCourse.length > 0) {
+      <div class="table-responsive custom-table ie-bycourse-table">
+        <table class="table align-middle">
+          <thead class="thead-light">
             <tr>
-                <th>ID</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Payment Method</th>
-                <th>Status</th>
+              <th>Cours</th>
+              <th>Ventes</th>
+              <th>Revenu brut</th>
+                  <th>Votre part (40%)</th>
             </tr>
-        </thead>
-        <tbody>
-            @for (data of tableData;track data){
-            <tr>
-                <td><a href="javascript:void(0);" class="text-primary">{{data.id}}</a></td>
-                <td>{{data.date}}</td>
-                <td>{{data.amount}}</td>
-                <td>{{data.paymentMethod}}</td>
-                <td><span class="badge badge-sm d-inline-flex align-items-center" [ngClass]="data.status==='Paid'?'bg-success':data.status==='Pending'?'bg-info':'bg-danger'"><i class="fa-solid fa-circle fs-5 me-1"></i>{{data.status}}</span></td>
-            </tr>
-        }
-        </tbody>
-    </table>
-</div>
-            <!-- /pagination -->
-    <app-custom-pagination/>
-    <!-- /pagination -->
+          </thead>
+          <tbody>
+            @for (c of filteredByCourse; track c.courseId) {
+              <tr>
+                <td>{{ c.courseTitle }}</td>
+                <td>{{ c.totalSales }}</td>
+                <td>{{ c.totalRevenue | number:'1.2-2' }} €</td>
+                <td class="fw-semibold text-success">{{ c.instructorRevenue | number:'1.2-2' }} €</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="text-muted">Aucun revenu disponible</p>
+    }
+  }
+  @if (!loading && !revenue) {
+    <div class="text-center py-5 text-muted">
+      <i class="fa-solid fa-wallet fs-1 d-block mb-2"></i>
+      Aucune donnée de paiement disponible
+    </div>
+  }
 </div>
 
-<div class="modal fade" id="withdraw-req">
-    <div class="modal-dialog modal-dialog-centered modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="fw-bold">Withdrawal Request</h5>
-                <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="isax isax-close-circle5"></i>
-                </button>
-            </div>
-            <form>
-                <div class="modal-body pb-0">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-6">
-                                    <p class="mb-2">Withdrawal Balance</p>
-                                    <h6 class="fs-16">$5340</h6>
-                                </div>
-                                <div class="col-6">
-                                    <p class="mb-2">Selected</p>
-                                    <h6 class="fs-16">PayPal</h6>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Amount<span class="text-danger ms-1">*</span></label>
-                        <input type="text" class="form-control" value="$ ">
-                        <p class="form-info"><i class="isax isax-info-circle"></i>Minimum withdraw amount is $50</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
-                    <button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Submit</button>
-                </div>
-            </form>
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MODAL CONFIRMATION VIREMENT                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+@if (showRequestModal) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">
+            <i class="fa-solid fa-paper-plane me-2 text-success"></i>Confirmer la demande de virement
+          </h5>
+          <button type="button" class="btn-close" (click)="cancelRequest()"></button>
         </div>
+        <div class="modal-body">
+          <p>Vous êtes sur le point de demander un virement de :</p>
+          <h3 class="fw-bold text-success text-center my-3">${{ availableBalance | number:'1.2-2' }}</h3>
+          <div class="alert alert-info small mb-0">
+            <i class="fa-solid fa-info-circle me-1"></i>
+            La demande sera traitée par l'administrateur et vous serez notifié lorsque le virement sera effectué
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cancelRequest()">Annuler</button>
+          <button class="btn btn-success" (click)="confirmRequest()" [disabled]="requesting">
+            @if (requesting) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+            }
+            Confirmer la demande
+          </button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+}
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MODAL FACTURE INSTRUCTOR                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+@if (invoicePayout) {
+  <div class="modal fade show d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.55);">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold">
+            <i class="fa-solid fa-file-invoice-dollar me-2 text-primary"></i>Ma facture de virement
+          </h5>
+          <div class="ms-auto d-flex gap-2">
+            <button class="btn btn-sm btn-primary" (click)="printInvoice()">
+              <i class="fa-solid fa-print me-1"></i>Imprimer / PDF
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" (click)="closeInvoice()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-body p-4" id="instructor-invoice-area" style="font-family:Arial,sans-serif;">
+          <!-- En-tête -->
+          <div style="border-bottom:2px solid #0d6efd;padding-bottom:16px;margin-bottom:24px;"
+               class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+              <h2 style="color:#0d6efd;margin:0;font-size:22px;font-weight:700;">REÇU DE VIREMENT</h2>
+              <p style="margin:4px 0 0;color:#6b7280;font-size:13px;">Réf. : PAY-{{ invoicePayout!.id }}</p>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-weight:700;font-size:16px;">E-Learning Platform</div>
+              <div style="color:#6b7280;font-size:13px;">eyayoounsi&#64;gmail.com</div>
+            </div>
+          </div>
+
+          <!-- Infos instructor -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div style="background:#f8fafc;border-radius:8px;padding:16px;">
+                <div style="font-weight:700;margin-bottom:8px;">Bénéficiaire</div>
+                <div style="font-size:15px;font-weight:600;">{{ invoicePayout!.instructorName }}</div>
+                <div style="color:#6b7280;font-size:13px;">{{ invoicePayout!.instructorEmail }}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div style="background:#f8fafc;border-radius:8px;padding:16px;">
+                <div style="font-weight:700;margin-bottom:8px;">Informations</div>
+                <table style="width:100%;font-size:13px;">
+                  <tr>
+                    <td style="color:#6b7280;padding:3px 0;">Période :</td>
+                    <td style="text-align:right;font-weight:600;">{{ invoicePayout!.period }}</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#6b7280;padding:3px 0;">Date demande :</td>
+                    <td style="text-align:right;">{{ invoicePayout!.requestedAt }}</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#6b7280;padding:3px 0;">Date paiement :</td>
+                    <td style="text-align:right;">{{ invoicePayout!.paidAt || '—' }}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Détail montant -->
+          <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:20px;margin-bottom:20px;">
+            <div style="font-weight:700;margin-bottom:12px;color:#0369a1;">Détail du virement</div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+              <thead>
+                <tr style="background:#0d6efd;color:#fff;">
+                  <th style="padding:10px 12px;text-align:left;">Description</th>
+                  <th style="padding:10px 12px;text-align:right;">Montant</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #e5e7eb;">
+                  <td style="padding:10px 12px;">Votre part nette (40% des ventes)</td>
+                  <td style="padding:10px 12px;text-align:right;font-weight:700;color:#16a34a;">
+                    {{ invoicePayout!.amount | number:'1.2-2' }} €
+                  </td>
+                </tr>
+                <tr style="border-top:2px solid #0d6efd;background:#eff6ff;">
+                  <td style="padding:12px;font-weight:700;color:#1e40af;">MONTANT REÇU</td>
+                  <td style="padding:12px;text-align:right;font-weight:700;font-size:18px;color:#1e40af;">
+                    {{ invoicePayout!.amount | number:'1.2-2' }} €
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          @if (invoicePayout!.notes) {
+            <div style="background:#fef9ec;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+              <span style="font-weight:600;color:#92400e;">Note : </span>
+              <span style="color:#78350f;">{{ invoicePayout!.notes }}</span>
+            </div>
+          }
+
+          <div style="text-align:center;color:#9ca3af;font-size:11px;border-top:1px solid #e5e7eb;padding-top:12px;">
+            Document généré automatiquement par E-Learning Platform.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
+

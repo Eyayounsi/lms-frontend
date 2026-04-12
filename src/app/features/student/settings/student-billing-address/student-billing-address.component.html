@@ -1,214 +1,208 @@
+﻿
+<div class="card mb-0">
+    <div class="card-body">
 
-    <div class="card mb-0">
-        <div class="card-body">
-            <form>
+        @if (loading) {
+            <div class="text-center py-4">
+                <div class="spinner-border text-secondary spinner-border-sm"></div>
+            </div>
+        } @else {
+
+            @if (successMsg) {
+                <div class="alert alert-success py-2 mb-3">{{ successMsg }}</div>
+            }
+
+            <!-- Liste des adresses -->
+            @if (addresses.length === 0) {
+                <div class="text-center py-4 text-muted">
+                    <i class="isax isax-location fs-36 d-block mb-2 opacity-50"></i>
+                    Aucune adresse enregistrÃ©e.
+                </div>
+            }
+
+            @for (addr of addresses; track $index) {
                 <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
                     <div class="d-flex align-items-center mb-2 mb-sm-0">
                         <div>
-                            <h6 class="mb-1">Home <span class="badge bg-soft-success ms-1 fs-12 fw-normal">Default</span></h6>
-                            <p>16 Lake Floyd Circle, Newark, DE 19714</p>
+                            <h6 class="mb-1">
+                                {{ addr.title }}
+                                @if (addr.isDefault) {
+                                    <span class="badge bg-soft-success ms-1 fs-12 fw-normal">Par dÃ©faut</span>
+                                }
+                            </h6>
+                            <p class="mb-0 text-muted fs-13">
+                                {{ addr.street }}
+                                @if (addr.city) { , {{ addr.city }} }
+                                @if (addr.postalCode) { {{ addr.postalCode }} }
+                                @if (addr.country) { , {{ addr.country }} }
+                            </p>
                         </div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <a href="javascript:void(0);" class="btn btn-light btn-sm border me-2" data-bs-toggle="modal" data-bs-target="#edit_billing"><i class="isax isax-edit-2 me-2"></i>Edit</a>
-                        <a href="javascript:void(0);" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="isax isax-trash me-1"></i>Delete</a>
+                        <a href="javascript:void(0);" class="btn btn-light btn-sm border me-2" (click)="openEditModal($index)">
+                            <i class="isax isax-edit-2 me-1"></i>Modifier
+                        </a>
+                        <a href="javascript:void(0);" class="btn btn-secondary btn-sm" (click)="openDeleteModal($index)">
+                            <i class="isax isax-trash me-1"></i>Supprimer
+                        </a>
                     </div>
                 </div>
-                <div class="d-sm-flex align-items-center justify-content-between border-bottom mb-3 pb-3">
-                    <div class="d-flex align-items-center mb-2 mb-sm-0">
-                        <div>
-                            <h6 class="mb-1">Work</h6>
-                            <p>33 Hart Country Lane, West Point, GA 31833</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <a href="javascript:void(0);" class="btn btn-light btn-sm border me-2" data-bs-toggle="modal" data-bs-target="#edit_billing"><i class="isax isax-edit-2 me-2"></i>Edit</a>
-                        <a href="javascript:void(0);" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="isax isax-trash me-1"></i>Delete</a>
-                    </div>
-                </div>
-            </form>	
+            }
+
             <div class="mt-4">
-                <a href="javascript:void(0);" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#add_billing">Add New Address</a>
+                <button class="btn btn-secondary" type="button" (click)="openAddModal()">
+                    <i class="isax isax-add-circle me-2"></i>Ajouter une adresse
+                </button>
+            </div>
+        }
+
+    </div>
+</div>
+
+<!-- Modal: Add Address -->
+<div class="modal fade" id="add_billing">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Ajouter une Adresse</h5>
+                <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="isax isax-close-circle5"></i>
+                </button>
+            </div>
+            <form (ngSubmit)="onAddAddress()">
+                <div class="modal-body pb-0">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Titre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.title" name="addTitle"
+                                   placeholder="Ex: Domicile, Bureau..." required>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.street" name="addStreet"
+                                   placeholder="NumÃ©ro et nom de rue" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ville</label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.city" name="addCity"
+                                   placeholder="Ville">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Code Postal</label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.postalCode" name="addPostal"
+                                   placeholder="Code postal">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Pays</label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.country" name="addCountry"
+                                   placeholder="Pays">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="addDefault"
+                                       [(ngModel)]="addressForm.isDefault" name="addDefault">
+                                <label class="form-check-label" for="addDefault">
+                                    DÃ©finir comme adresse par dÃ©faut
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-secondary rounded-pill" [disabled]="saving">
+                        @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Edit Address -->
+<div class="modal fade" id="edit_billing">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Modifier l'Adresse</h5>
+                <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="isax isax-close-circle5"></i>
+                </button>
+            </div>
+            <form (ngSubmit)="onEditAddress()">
+                <div class="modal-body pb-0">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Titre <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.title" name="editTitle" required>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Adresse <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.street" name="editStreet" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Ville</label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.city" name="editCity">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Code Postal</label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.postalCode" name="editPostal">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Pays</label>
+                            <input type="text" class="form-control"
+                                   [(ngModel)]="addressForm.country" name="editCountry">
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editDefault"
+                                       [(ngModel)]="addressForm.isDefault" name="editDefault">
+                                <label class="form-check-label" for="editDefault">
+                                    Adresse par dÃ©faut
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-secondary rounded-pill" [disabled]="saving">
+                        @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Delete Confirmation -->
+<div class="modal fade" id="delete_billing_modal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center custom-modal-body">
+                <span class="avatar avatar-lg bg-danger-transparent rounded-circle mb-2">
+                    <i class="isax isax-trash fs-24 text-danger"></i>
+                </span>
+                <div>
+                    <h4 class="mb-2">Supprimer l'adresse</h4>
+                    <p class="mb-3">ÃŠtes-vous sÃ»r de vouloir supprimer cette adresse ?</p>
+                    <div class="d-flex align-items-center justify-content-center">
+                        <a href="javascript:void(0);" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</a>
+                        <a href="javascript:void(0);" class="btn btn-secondary rounded-pill" (click)="confirmDelete()">Oui, Supprimer</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>	
-
-    			<!-- Add Billing -->
-			<div class="modal fade" id="add_billing">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5>Add Billing Address</h5>
-							<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-								<i class="isax isax-close-circle5"></i>
-							</button>
-						</div>
-						<form>
-							<div class="modal-body pb-0">
-								<div class="row">
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Title <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control">
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Address <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Country <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="Select">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">United states of America</mat-option>
-												<mat-option value="1">Canada</mat-option>
-												<mat-option value="1">Germany</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">State <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="Select">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">California</mat-option>
-												<mat-option value="1">New York</mat-option>
-												<mat-option value="1">Texas</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">City <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="Select">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">Los Angeles</mat-option>
-												<mat-option value="1">San Diego</mat-option>
-												<mat-option value="1">Fresno</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Postal Code <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control">
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
-								<button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Add Address</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<!-- /Add Billing -->
-
-			<!-- Edit Billing -->
-			<div class="modal fade" id="edit_billing">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5>Edit Billing Address</h5>
-							<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-								<i class="isax isax-close-circle5"></i>
-							</button>
-						</div>
-						<form>
-							<div class="modal-body pb-0">
-								<div class="row">
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Title <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control" value="Home">
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Address <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control" value="16 Lake Floyd Circle">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Country <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="United states of America">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">United states of America</mat-option>
-												<mat-option value="1">Canada</mat-option>
-												<mat-option value="1">Germany</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">State <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="California">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">California</mat-option>
-												<mat-option value="1">New York</mat-option>
-												<mat-option value="1">Texas</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">City <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="Los Angeles">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">Los Angeles</mat-option>
-												<mat-option value="1">San Diego</mat-option>
-												<mat-option value="1">Fresno</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Postal Code <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control" value="90001">
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="form-check form-check-md my-4">
-											<input class="form-check-input" type="checkbox" value="" id="defaultaccount">
-											<label class="form-check-label" for="defaultaccount">Yes, I'd like to delete my account</label>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
-								<button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Save Changes</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<!-- /Edit Billing -->
-
-			<!-- Delete Modal -->
-			<div class="modal fade" id="delete_modal">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-body text-center custom-modal-body">
-							<span class="avatar avatar-lg bg-secondary-transparent rounded-circle mb-2">
-								<i class="isax isax-trash fs-24 text-danger"></i>
-							</span>
-							<div>
-								<h4 class="mb-2">Delete Address</h4>
-								<p class="mb-3">Are you sure you want to delete address?</p>
-								<div class="d-flex align-items-center justify-content-center">
-									<a href="javascript:void(0);" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Cancel</a>
-									<a href="javascript:void(0);" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Yes, Remove All</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Delete Modal -->
+    </div>
+</div>

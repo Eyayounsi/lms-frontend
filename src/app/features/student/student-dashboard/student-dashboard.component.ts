@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { routes } from '../../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of, catchError } from 'rxjs';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
+
+declare var Swal: any;
 
 @Component({
     selector: 'app-student-dashboard',
@@ -13,25 +16,28 @@ import { CourseService } from '../../../shared/service/course/course.service';
 })
 export class StudentDashboardComponent implements OnInit {
   public routes = routes;
+  public Math = Math;
 
-  // Infos utilisateur depuis localStorage
+  // ────── User Info ────────────────────────────────────────────
   public userName: string = '';
   public userRole: string = '';
 
-  // Stats réelles
+  // ────── Stats ────────────────────────────────────────────────
   totalCourses = 0;
   activeCourses = 0;   // progression > 0% et < 100%
   completedCourses = 0; // progression = 100%
 
-  // Cours récents avec progression enrichie
+  // ────── Data ─────────────────────────────────────────────────
   recentCourses: any[] = [];
-
   loading = true;
 
-  constructor(private courseService: CourseService) {}
+  constructor(
+    private courseService: CourseService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.userName = localStorage.getItem('fullName') || 'Utilisateur';
+    this.userName = localStorage.getItem('fullName') || 'Student';
     this.userRole = localStorage.getItem('role') || '';
     this.loadDashboard();
   }
@@ -49,12 +55,13 @@ export class StudentDashboardComponent implements OnInit {
 
         this.totalCourses = courses.length;
 
-        // Construire une map courseId → progressionPct
+        // ────── Construire map courseId → progressionPct ────────
         const progressMap = new Map<number, number>();
         (progress as any[]).forEach(p => {
           progressMap.set(p.courseId, p.completionPercentage ?? 0);
         });
 
+        // ────── Calcul des stats ────────────────────────────────
         this.completedCourses = (progress as any[]).filter(
           p => (p.completionPercentage ?? 0) >= 100
         ).length;
@@ -64,32 +71,82 @@ export class StudentDashboardComponent implements OnInit {
           return pct > 0 && pct < 100;
         }).length;
 
-        // Cours récents (max 6) enrichis avec leur progression
+        // ────── Enrichir les cours avec progression ─────────────
         this.recentCourses = courses.slice(0, 6).map((c: any) => ({
           ...c,
-          progressPct: progressMap.get(c.id) ?? 0
+          progressPct: Math.round(progressMap.get(c.id) ?? 0)
         }));
 
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.loading = false;
+        this.cdr.markForCheck();
       }
     });
   }
 
+  /**
+   * Résoudre l'URL de l'image du cours
+   */
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return resolveCourseImage(path);
   }
 
-  /** Badge couleur en fonction de la progression */
+  /**
+   * Obtenir la classe Bootstrap pour le badge de progression
+   */
   getProgressClass(pct: number): string {
     if (pct >= 100) return 'bg-success';
     if (pct >= 50)  return 'bg-primary';
     if (pct > 0)    return 'bg-warning';
     return 'bg-secondary';
+  }
+
+  /**
+   * Afficher une notification douce pour continuer un cours
+   */
+  showContinueCourseAlert(courseName: string, courseId: number): void {
+    if (typeof Swal === 'undefined') return;
+    
+    Swal.fire({
+      title: 'Continue Learning?',
+      html: `<p>Ready to continue <strong>${courseName}</strong>?</p>`,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: '📚 Let\'s Go!',
+      cancelButtonText: 'Later',
+      confirmButtonColor: '#5625E8',
+      cancelButtonColor: '#888',
+      customClass: {
+        popup: 'sa-swal-popup',
+        container: 'sa-swal-container'
+      }
+    }).then((result: any) => {
+      if (result.isConfirmed) {
+        // Navigation handled by button click
+      }
+    });
+  }
+
+  /**
+   * Congratulations pour cours complété
+   */
+  showCongratulations(courseName: string): void {
+    if (typeof Swal === 'undefined') return;
+
+    Swal.fire({
+      title: '🎉 Congratulations!',
+      html: `<p>You have successfully completed <strong>${courseName}</strong>!</p><p class="mt-2">Great achievement! Keep learning! 💪</p>`,
+      icon: 'success',
+      confirmButtonText: 'Awesome!',
+      confirmButtonColor: '#03C95A',
+      customClass: {
+        popup: 'sa-swal-popup',
+        container: 'sa-swal-container'
+      }
+    });
   }
 }
 

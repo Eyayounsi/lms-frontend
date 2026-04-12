@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { welcomeLogin } from '../../shared/models/model';
 import { DataService } from '../../shared/service/data/data.service';
 import { routes } from '../../shared/service/routes/routes';
@@ -7,6 +7,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { AuthService } from '../../shared/service/auth/auth.service';
+import { environment } from '../../../environments/environment';
+
+declare const google: any;
 
 @Component({
   selector: 'app-register',
@@ -14,9 +17,11 @@ import { AuthService } from '../../shared/service/auth/auth.service';
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
-export class RegisterComponent {
+export class RegisterComponent implements AfterViewInit {
   routes = routes;
   public welcomeLogin: welcomeLogin[] = [];
+  readonly googleAuthEnabled = !!environment.enableGoogleAuth;
+  readonly intendedRole: string;
   password: boolean[] = [false]; // Add more as needed
 
   togglePassword(index: number): void {
@@ -53,13 +58,61 @@ export class RegisterComponent {
   constructor(
     private DataService: DataService, 
     public router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private route: ActivatedRoute
   ) {
     this.welcomeLogin = this.DataService.welcomeLogin;
+    const requestedRole = (this.route.snapshot.queryParamMap.get('role') || '').toUpperCase();
+    this.intendedRole = requestedRole === 'INSTRUCTOR' ? 'INSTRUCTOR' : '';
+  }
+
+  get roleQueryParams(): { role: string } | null {
+    return this.intendedRole ? { role: this.intendedRole } : null;
   }
 
   directIndex() {
     this.router.navigate([routes.login]);
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.googleAuthEnabled) {
+      return;
+    }
+
+    const initGoogle = () => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: environment.googleClientId,
+          callback: (response: any) => this.handleGoogleCredential(response)
+        });
+        google.accounts.id.renderButton(
+          document.getElementById('google-btn-register'),
+          { theme: 'outline', size: 'large', text: 'signup_with', shape: 'rectangular', width: 220 }
+        );
+      } else {
+        setTimeout(initGoogle, 300);
+      }
+    };
+    initGoogle();
+  }
+
+  handleGoogleCredential(response: any): void {
+    this.authService.loginWithGoogle(response.credential).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('id', res.id);
+        localStorage.setItem('email', res.email);
+        localStorage.setItem('fullName', res.fullName);
+        localStorage.setItem('role', res.role);
+        localStorage.setItem('firstLogin', 'false');
+        this.authService.setFullName(res.fullName || '');
+        this.authService.setCurrentRole(res.role || '');
+        this.router.navigate([routes.students_Dashboard]);
+      },
+      error: (err: any) => {
+        alert('Connexion Google échouée: ' + (err.error?.error || 'Réessayez'));
+      }
+    });
   }
 
   passwordValue: string = '';
@@ -149,7 +202,8 @@ export class RegisterComponent {
     const registerData = {
       fullName: form.value.fullName?.trim(),
       email: form.value.email?.trim(),
-      password: password
+      password: password,
+      role: this.intendedRole || undefined
     };
 
     console.log('Sending data:', registerData); // Debug
@@ -158,6 +212,8 @@ export class RegisterComponent {
       next: (res: any) => {
         console.log('Inscription réussie:', res);
         localStorage.setItem('token', res.token);
+        if (res.fullName) this.authService.setFullName(res.fullName);
+        if (res.role) this.authService.setCurrentRole(res.role);
         alert('Inscription réussie ! Redirection vers login...');
         this.router.navigate([routes.login]);
       },

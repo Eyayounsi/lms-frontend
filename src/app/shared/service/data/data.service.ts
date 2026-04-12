@@ -39,20 +39,6 @@ export class DataService {
       })
     );
   }
-  public getInstructorAnnouncement(): Observable<apiResultFormat> {
-    return this.http.get<apiResultFormat>('assets/JSON/instructor-announcements.json').pipe
-    (map((res: apiResultFormat) => {
-          return res;
-        })
-      );
-  }
-  public getInstructorAssignment(): Observable<apiResultFormat> {
-    return this.http.get<apiResultFormat>('assets/JSON/instructor-assignment.json').pipe(
-        map((res: apiResultFormat) => {
-          return res;
-        })
-      );
-  }
   public getInstructorQuizResult(): Observable<apiResultFormat> {
     return this.http.get<apiResultFormat>('assets/JSON/instructor-quiz-result.json').pipe(
         map((res: apiResultFormat) => {
@@ -463,8 +449,6 @@ export class DataService {
           base:'instructor-dashboard',
           base1:'instructor-profile',
           base2:'instructor-course',
-          base3:'instructor-announcements',
-          base4:'instructor-assignment',
           base5:'students-grid',
           base6:'instructor-quiz',
           base7:'instructor-quiz-results',
@@ -497,22 +481,6 @@ export class DataService {
               menuValue: "Course",
               route: routes.instructorCourse,
               page:'instructor-course',
-              hasSubRoute: false,
-              showSubRoute: false,
-              subMenus: [],
-            },
-            {
-              menuValue: "Announcements",
-             route: routes.instructorAnnouncements,
-             page:'instructor-announcements',
-              hasSubRoute: false,
-              showSubRoute: false,
-              subMenus: [],
-            },
-            {
-              menuValue: "Assignment",
-              route: routes.instructorAssignment,
-              page:'instructor-assignment',
               hasSubRoute: false,
               showSubRoute: false,
               subMenus: [],
@@ -561,7 +529,7 @@ export class DataService {
               subMenus: [],
             },
             {
-              menuValue: "Quiz Results",
+              menuValue: "Resultats Quiz",
              route: routes.instructorQuizResult,
              page:'instructor-quiz-results',
               hasSubRoute: false,
@@ -569,41 +537,25 @@ export class DataService {
               subMenus: [],
             },
             {
-              menuValue: "Certificate",
+              menuValue: "Certificats",
              route: routes.instructorCertificate,
              page:'instructor-certificate',
               hasSubRoute: false,
               showSubRoute: false,
               subMenus: [],
             },
-            {
-              menuValue: "Earning",
-             route: routes.instructorEarning,
-             page:'instructor-earnings',
-              hasSubRoute: false,
-              showSubRoute: false,
-              subMenus: [],
-            },
   
             {
-              menuValue: "Payout",
+              menuValue: "Revenus",
              route: routes.instructor_payouts,
              page:'instructor-payouts',
               hasSubRoute: false,
               showSubRoute: false,
               subMenus: [],
             },
-            {
-              menuValue: "Statement",
-             route: routes.instructorStatements,
-             page:'instructor-statements',
-              hasSubRoute: false,
-              showSubRoute: false,
-              subMenus: [],
-            },
   
             {
-              menuValue: "Support Ticket",
+              menuValue: "Tickets support",
               route: routes.instructorTickets,
               page:'instructor-tickets',
               hasSubRoute: false,
@@ -611,7 +563,7 @@ export class DataService {
               subMenus: [],
             },
             {
-              menuValue: "Settings",
+              menuValue: "Parametres",
               route: routes.instructorSettings,
               page:'settings',
               last:'instructor-settings', 

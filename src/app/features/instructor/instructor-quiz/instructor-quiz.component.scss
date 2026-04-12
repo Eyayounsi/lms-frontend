@@ -1,0 +1,118 @@
+:host {
+	display: block;
+}
+
+.iq-page {
+	animation: iqFadeIn .35s ease;
+}
+
+.iq-page-title {
+	margin-bottom: 16px;
+}
+
+.iq-add-btn {
+	border-radius: 12px;
+	box-shadow: 0 10px 18px rgba(99, 102, 241, .25);
+}
+
+.iq-empty-state {
+	border-color: #e5e7eb !important;
+	background: linear-gradient(180deg, #fbfdff, #ffffff);
+}
+
+.iq-quiz-card {
+	border-color: #e6eaf2 !important;
+	border-radius: 16px !important;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+	transition: all .25s ease;
+	background: #fff;
+
+	&:hover {
+		border-color: #c7d2fe !important;
+		box-shadow: 0 14px 28px rgba(79, 70, 229, .12);
+		transform: translateY(-2px);
+	}
+}
+
+.iq-quiz-title a {
+	color: #1e293b;
+	text-decoration: none;
+
+	&:hover {
+		color: #4338ca;
+	}
+}
+
+.iq-chip {
+	border: 1px solid #e2e8f0;
+	border-radius: 999px;
+	padding: 5px 10px;
+	background: #f8fafc;
+}
+
+.iq-actions-wrap .action-icon {
+	width: 32px;
+	height: 32px;
+	border-radius: 10px;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #dbe2f0;
+	color: #64748b;
+	transition: all .2s ease;
+
+	&:hover {
+		border-color: #a5b4fc;
+		background: #eef2ff;
+		color: #4338ca;
+	}
+}
+
+.iq-modal .modal-content {
+	border: 1px solid #e6eaf2;
+	border-radius: 18px;
+	overflow: hidden;
+	box-shadow: 0 20px 40px rgba(15, 23, 42, .18);
+}
+
+.iq-modal-header {
+	border-bottom: 1px solid #e9edf5;
+	background: linear-gradient(180deg, #fbfcff, #f8fafc);
+}
+
+.iq-modal-body {
+	background: #fff;
+}
+
+.iq-form-grid .form-control,
+.iq-form-grid .form-select,
+.iq-modal-body .form-control,
+.iq-modal-body .form-select {
+	border-radius: 12px;
+	border-color: #e2e8f0;
+	box-shadow: none;
+
+	&:focus {
+		border-color: #a5b4fc;
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+	}
+}
+
+.iq-divider {
+	border-color: #edf2f7;
+}
+
+.iq-question-card {
+	border-color: #e3e8f4 !important;
+	border-radius: 14px !important;
+	background: linear-gradient(180deg, #fbfdff, #f8fbff) !important;
+}
+
+.iq-modal .modal-footer {
+	border-top: 1px solid #e9edf5;
+	background: #fcfdff;
+}
+
+@keyframes iqFadeIn {
+	from { opacity: 0; transform: translateY(8px); }
+	to { opacity: 1; transform: translateY(0); }
+}

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { routes } from '../../../shared/service/routes/routes';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
 
 @Component({
   selector: 'app-course-resume',
@@ -51,8 +52,9 @@ export class CourseResumeComponent implements OnInit {
   }
 
   getImageUrl(image: string): string {
-    if (!image) return 'assets/img/course/default-course.jpg';
+    if (!image) return 'assets/img/course-img/courses-01.jpg';
+    if (image.startsWith('preset:')) return `assets/img/course-img/${image.replace('preset:', '')}`;
     if (image.startsWith('http')) return image;
-    return `http://localhost:8081/api/files/${image}`;
+    return resolveCourseImage(image);
   }
 }

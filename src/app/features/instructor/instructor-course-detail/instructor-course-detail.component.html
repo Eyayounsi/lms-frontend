@@ -1,11 +1,11 @@
-<div class="page-content">
+<div class="page-content icd-page">
 
   <!-- Bouton retour + titre -->
-  <div class="d-flex align-items-center gap-3 mb-4">
-    <button class="btn btn-outline-secondary btn-sm" (click)="goBack()">
+  <div class="d-flex align-items-center gap-3 mb-4 icd-topbar">
+    <button class="btn btn-outline-secondary btn-sm icd-back-btn" (click)="goBack()">
       <i class="fa-solid fa-arrow-left me-1"></i>Retour
     </button>
-    <h4 class="mb-0" *ngIf="course">
+    <h4 class="mb-0 icd-title" *ngIf="course">
       <i class="fa-solid fa-book me-2 text-primary"></i>{{ course.title }}
     </h4>
   </div>
@@ -27,13 +27,22 @@
     <!-- ══════════════════════════════════════════ -->
     <!--  EN-TÊTE DU COURS                         -->
     <!-- ══════════════════════════════════════════ -->
-    <div class="card mb-4 shadow-sm">
+    <div class="card mb-4 shadow-sm icd-card icd-hero-card">
       <div class="card-body">
         <div class="row">
           <!-- Image de couverture -->
           <div class="col-md-4">
-            <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded shadow-sm"
-                 style="width: 100%; height: 220px; object-fit: cover;" alt="cover">
+            <img *ngIf="hasCoverImage(course)"
+              [src]="getCourseCoverImage(course)"
+              (error)="onCoverImageError()"
+              class="img-fluid rounded shadow-sm icd-cover-image"
+              alt="cover">
+            <div *ngIf="!hasCoverImage(course)"
+              class="icd-cover-placeholder rounded shadow-sm"
+              [style.background]="getCoverPlaceholderGradient(course)">
+              <i class="fa-solid fa-book-open"></i>
+              <span>{{ (course.title || 'Cours').charAt(0) }}</span>
+            </div>
           </div>
           <!-- Infos principales -->
           <div class="col-md-8">
@@ -53,7 +62,7 @@
             <!-- Stats rapides -->
             <div class="row g-3 mb-3">
               <div class="col-auto">
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 icd-stat-chip">
                   <div class="bg-warning bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
                        style="width:40px; height:40px;">
                     <i class="fa-solid fa-star text-warning"></i>
@@ -65,7 +74,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 icd-stat-chip">
                   <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
                        style="width:40px; height:40px;">
                     <i class="fa-solid fa-euro-sign text-primary"></i>
@@ -81,7 +90,7 @@
                 </div>
               </div>
               <div class="col-auto">
-                <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 icd-stat-chip">
                   <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
                        style="width:40px; height:40px;">
                     <i class="fa-solid fa-clock text-success"></i>
@@ -114,7 +123,7 @@
             </div>
 
             <!-- Bouton modifier -->
-            <button class="btn btn-outline-primary btn-sm mt-2" (click)="editCourse()">
+            <button class="btn btn-outline-primary btn-sm mt-2 icd-edit-btn" (click)="editCourse()">
               <i class="fa-solid fa-pen me-1"></i>Modifier le cours
             </button>
           </div>
@@ -141,10 +150,10 @@
     <!-- ══════════════════════════════════════════ -->
     <!--  DESCRIPTION & OBJECTIFS                  -->
     <!-- ══════════════════════════════════════════ -->
-    <div class="row mb-4">
+    <div class="row mb-4 icd-grid-cards">
       <div class="col-md-6">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header bg-light">
+        <div class="card h-100 shadow-sm icd-card">
+          <div class="card-header bg-light icd-card-header">
             <h6 class="mb-0"><i class="fa-solid fa-align-left me-2"></i>Description</h6>
           </div>
           <div class="card-body">
@@ -153,8 +162,8 @@
         </div>
       </div>
       <div class="col-md-6">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header bg-light">
+        <div class="card h-100 shadow-sm icd-card">
+          <div class="card-header bg-light icd-card-header">
             <h6 class="mb-0"><i class="fa-solid fa-bullseye me-2"></i>Objectifs & Prérequis</h6>
           </div>
           <div class="card-body">
@@ -175,8 +184,8 @@
     <!-- ══════════════════════════════════════════ -->
     <!--  CONTENU DU COURS (SECTIONS / LEÇONS)     -->
     <!-- ══════════════════════════════════════════ -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <div class="card mb-4 shadow-sm icd-card">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center icd-card-header">
         <h6 class="mb-0"><i class="fa-solid fa-list-ol me-2"></i>Contenu du cours</h6>
         <span class="badge bg-info">{{ course.sections?.length || 0 }} section(s)</span>
       </div>
@@ -186,7 +195,7 @@
           Aucune section ajoutée.
         </div>
 
-        <div class="accordion" id="courseSectionsAccordion">
+        <div class="accordion icd-accordion" id="courseSectionsAccordion">
           <div class="accordion-item" *ngFor="let section of course.sections; let i = index">
             <h2 class="accordion-header">
               <button class="accordion-button" [class.collapsed]="i > 0" type="button"
@@ -201,7 +210,7 @@
             <div [id]="'section' + section.id" class="accordion-collapse collapse" [class.show]="i === 0">
               <div class="accordion-body p-0">
                 <div *ngFor="let lesson of section.lessons; let j = index"
-                     class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                   class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom icd-lesson-row">
                   <div class="d-flex align-items-center gap-2">
                     <i class="fa-solid fa-play-circle text-primary"></i>
                     <span><strong>{{ j + 1 }}.</strong> {{ lesson.title }}</span>
@@ -234,8 +243,8 @@
     <!-- ══════════════════════════════════════════ -->
     <!--  AVIS & ÉVALUATIONS                       -->
     <!-- ══════════════════════════════════════════ -->
-    <div class="card mb-4 shadow-sm">
-      <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <div class="card mb-4 shadow-sm icd-card">
+      <div class="card-header bg-light d-flex justify-content-between align-items-center icd-card-header">
         <h6 class="mb-0">
           <i class="fa-solid fa-star me-2 text-warning"></i>Avis & Évaluations
         </h6>
@@ -278,15 +287,14 @@
           <hr>
 
           <!-- Avis individuels -->
-          <div *ngFor="let review of reviews" class="d-flex gap-3 py-3 border-bottom">
+          <div *ngFor="let review of reviews" class="d-flex gap-3 py-3 border-bottom icd-review-row">
             <!-- Avatar -->
             <div class="flex-shrink-0">
-              <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
-                   style="width: 45px; height: 45px;">
-                <img *ngIf="review.studentAvatar" [src]="getImageUrl(review.studentAvatar)"
-                     class="rounded-circle" style="width:45px; height:45px; object-fit:cover;" alt="">
-                <i *ngIf="!review.studentAvatar" class="fa-solid fa-user text-primary"></i>
-              </div>
+              <app-avatar-fallback 
+                [imageUrl]="getImageUrl(review.studentAvatar)"
+                [name]="review.studentName"
+                size="md">
+              </app-avatar-fallback>
             </div>
             <!-- Contenu -->
             <div class="flex-grow-1">

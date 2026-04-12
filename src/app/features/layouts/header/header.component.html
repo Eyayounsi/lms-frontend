@@ -1,11 +1,11 @@
 <!-- Header Topbar-->
-<div *ngIf="base==='index-two' || base==='courses' || base==='pages'" class="header-topbar text-center">
+<div *ngIf="base==='index-two'" class="header-topbar text-center">
 <div class="container">
     <div class="row">
         <div class="col-lg-6">
             <div class="d-flex align-items-center justify-content-center justify-content-lg-start">
-                <p class="d-flex align-items-center fw-medium fs-14 mb-2 me-3"><i class="isax isax-location5 me-2"></i>1442 Crosswind Drive Madisonville</p>
-                <p class="d-flex align-items-center fw-medium fs-14 mb-2"><i class="isax isax-call-calling5 me-2"></i>+1 45887 77874</p>
+                <p class="d-flex align-items-center fw-medium fs-14 mb-2 me-3"><i class="isax isax-location5 me-2"></i>Tunis, Tunisie — Centre d'Innovation Digitale</p>
+                <p class="d-flex align-items-center fw-medium fs-14 mb-2"><i class="isax isax-call-calling5 me-2"></i>+216 71 XXX XXX</p>
             </div>
         </div>
         <div class="col-lg-6">
@@ -119,6 +119,34 @@
                <i class="fas fa-times"></i>
              </a>
            </div>
+           <!-- ── Nav publique unifiée (index, pages, courses, blog) ── -->
+           @if (base === 'index' || base === 'pages' || base === 'courses' || base === 'blog') {
+           <ul class="main-nav" [ngClass]="{ 'active': isHovered }">
+             <li [class.active]="isHomeRoute(routes.home) || isHomeRoute(routes.home2) || isHomeRoute(routes.home3) || isHomeRoute(routes.home4) || isHomeRoute(routes.home5) || isHomeRoute(routes.home6)">
+               <a [routerLink]="routes.home">Accueil</a>
+             </li>
+             <li [class.active]="base==='courses'">
+               <a [routerLink]="routes.courseListPublic">Cours</a>
+             </li>
+             <li [class.active]="page==='certificate-verify'">
+               <a [routerLink]="routes.verifyCertificate">Vérifier Certificat</a>
+             </li>
+             <li [class.active]="page==='become-an-instructor'">
+               <a [routerLink]="routes.becomeAnExpert">Become Instructor</a>
+             </li>
+             <li [class.active]="page==='about-us'">
+               <a [routerLink]="routes.aboutUs">À propos</a>
+             </li>
+             <li [class.active]="page==='contact-us'">
+               <a [routerLink]="routes.contactUs">Contact</a>
+             </li>
+             <li [class.active]="base==='blog'">
+               <a [routerLink]="routes.blog_grid">Blog</a>
+             </li>
+           </ul>
+           }
+           <!-- ── Nav complète pour les pages template demo ── -->
+           @if (base !== 'index' && base !== 'pages' && base !== 'courses' && base !== 'blog') {
            <ul class="main-nav" [ngClass]="{ 'active': isHovered }">
              <ng-container *ngFor="let mainMenus of sidebar, let i = index">
                @if(mainMenus.separateRoute === false && mainMenus.tittle === 'Home'){
@@ -149,12 +177,12 @@
                }
              @if (mainMenus.separateRoute === true) {
              <li class="has-submenu" [class.active]="base ===mainMenus.base">
-               <a [routerLink]="mainMenus.route">{{ mainMenus.tittle }} <i class="fas fa-chevron-down"></i></a>
+               <a [routerLink]="mainMenus.route">{{ translateNavItem(mainMenus.tittle) }} <i class="fas fa-chevron-down"></i></a>
              </li>
                }
                @if (mainMenus.separateRoute === false && mainMenus.tittle!=='Home') {
                  <li class="has-submenu" [class.active]="base === mainMenus.base || base=== mainMenus.base2">
-                   <a href="javascript:void(0);" [ngClass]="{'submenu':openDropdownIndex === i}" (click)="toggleSubMenu(i)">{{ mainMenus.tittle }} <i class="fas fa-chevron-down"></i></a>
+                   <a href="javascript:void(0);" [ngClass]="{'submenu':openDropdownIndex === i}" (click)="toggleSubMenu(i)">{{ translateNavItem(mainMenus.tittle) }} <i class="fas fa-chevron-down"></i></a>
                    <ul class="submenu" [ngStyle]="{ display: openDropdownIndex === i ? 'block' : '' }">
                      @for (menu of mainMenus.menu; track menu) {
                          @if (menu.hasSubRoute === false) {
@@ -190,14 +218,17 @@
                    </li>
                  }
                </ng-container>
+                 <li [class.active]="page==='certificate-verify'">
+                   <a [routerLink]="routes.verifyCertificate">Vérifier certificat</a>
+                 </li>
            </ul>
+           }
            <div class="menu-dropdown">
-             <div class="cart-item">
-               <h6>Cart & Wishlist</h6>                                
+             <div *ngIf="showCart" class="cart-item">
+               <h6>Panier</h6>                                
                <div class="icon-btn">
                  <a [routerLink]="routes.cart" class="position-relative">
                    <i class="isax isax-shopping-cart5"></i>
-                   <span class="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">1</span>
                  </a>
                </div>
              </div>
@@ -235,18 +266,18 @@
              </div>
              <div class="dropdown mb-2">
                <a href="javascript:void(0);" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                 Light
+                 Clair
                </a>
                <ul class="dropdown-menu p-2 mt-2">
-                 <li><a class="dropdown-item rounded" href="javascript:void(0);">Light</a></li>
-                 <li><a class="dropdown-item rounded" href="javascript:void(0);">Dark</a></li>
+                 <li><a class="dropdown-item rounded" href="javascript:void(0);">Clair</a></li>
+                 <li><a class="dropdown-item rounded" href="javascript:void(0);">Sombre</a></li>
                </ul>
              </div>
            </div>
            <div class="menu-login">
              <ng-container *ngIf="!isLoggedIn">
-               <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-2"><i class="isax isax-user me-2"></i>Sign In</a>
-               <a [routerLink]="routes.register" class="btn btn-secondary w-100"><i class="isax isax-user-edit me-2"></i>Register</a>
+               <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-2"><i class="isax isax-user me-2"></i>Connexion</a>
+               <a [routerLink]="routes.register" class="btn btn-secondary w-100"><i class="isax isax-user-edit me-2"></i>Inscription</a>
              </ng-container>
              <ng-container *ngIf="isLoggedIn">
                <div class="d-flex align-items-center gap-2 p-2 rounded-3 bg-light mb-2">
@@ -270,7 +301,7 @@
          </div>
          <div [hidden]="base ==='index-three'|| base==='index-four'">
            <div class="header-btn d-flex align-items-center">			
-         @if(base==='index' || base==='index-two' || base==='index-three' || base==='index-four' || base==='index-five' || base==='index-six'){
+         @if(base==='index-two' || base==='index-three' || base==='index-four' || base==='index-five' || base==='index-six'){
                <div class="dropdown flag-dropdown icon-btn me-2">
                  <a href="javascript:void(0);" class="d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
                    <img src="assets/img/flags/us-flag.svg" alt="flag">
@@ -312,13 +343,18 @@
                  <i class="isax isax-moon"></i>
                </a>
              </div>
-             <div class="icon-btn me-3" [ngClass]="{'custom-last':base==='index-six'}">
+             <div *ngIf="(base === 'index' || showCartOnPublicCoursePages) && showCart" class="icon-btn me-3">
+               <a [routerLink]="routes.cart" class="position-relative" title="Panier">
+                 <i class="isax isax-shopping-cart5"></i>
+               </a>
+             </div>
+             <div *ngIf="base !== 'index' && base !== 'pages' && base !== 'courses' && base !== 'blog' && !showCartOnPublicCoursePages && showCart" class="icon-btn me-3" [ngClass]="{'custom-last':base==='index-six'}">
                <a [routerLink]="routes.cart" class="position-relative">
                  <i class="isax isax-shopping-cart5"></i>
                  <span class="count-icon bg-success p-1 rounded-pill text-white fs-10 fw-bold">1</span>
                </a>
              </div>
-             <ng-container *ngIf="isLoggedIn">
+             <ng-container *ngIf="base !== 'index' && isLoggedIn">
                <div class="icon-btn me-3 position-relative">
                  <a [routerLink]="dashboardRoute" class="position-relative" title="Messages">
                    <i class="isax isax-messages-35 fs-20"></i>
@@ -329,7 +365,35 @@
                  </a>
                </div>
              </ng-container>
-           @if(base==='index' || base==='index-six'){
+           @if(base==='index' || base==='pages' || base==='courses' || base==='blog'){
+              <ng-container *ngIf="!isLoggedIn">
+                <a [routerLink]="routes.login" class="btn btn-primary d-inline-flex align-items-center me-2">
+                  Connexion
+                </a>
+                <a [routerLink]="routes.register" class="btn btn-secondary me-0">
+                  Inscription
+                </a>
+              </ng-container>
+              <ng-container *ngIf="isLoggedIn">
+                <div class="dropdown me-0" [class.show]="isProfileDropdownOpen">
+                  <button class="btn p-0 border-0 bg-transparent d-flex align-items-center gap-2" (click)="toggleProfileDropdown()" style="outline:none;">
+                    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;">{{ userInitials }}</div>
+                    <span class="d-none d-lg-inline fw-medium fs-14">{{ userName }}</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end p-2 mt-2" [class.show]="isProfileDropdownOpen" style="min-width:220px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.13);">
+                    <li class="px-3 py-2 border-bottom mb-1">
+                      <p class="mb-0 fw-semibold">{{ userName }}</p>
+                      <span class="badge bg-primary-subtle text-primary small">{{ roleLabel }}</span>
+                    </li>
+                    <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2" [routerLink]="profileRoute" (click)="isProfileDropdownOpen=false"><i class="isax isax-user-square fs-18 text-primary"></i>Mon Profil</a></li>
+                    <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2" [routerLink]="dashboardRoute" (click)="isProfileDropdownOpen=false"><i class="isax isax-home-2 fs-18 text-success"></i>Mon Dashboard</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item rounded d-flex align-items-center gap-2 py-2 text-danger" href="javascript:void(0);" (click)="doLogout()"><i class="isax isax-logout fs-18"></i>Déconnexion</a></li>
+                  </ul>
+                </div>
+              </ng-container>
+            }
+           @if(base==='index-six'){
               <ng-container *ngIf="!isLoggedIn">
                 <a [routerLink]="routes.login" class="btn btn-primary d-inline-flex align-items-center me-2">
                   Sign In
@@ -356,7 +420,7 @@
                 </div>
               </ng-container>
             }
-           @if(base === 'index-two' || base==='courses' || base==='pages'|| base==='blog'){
+           @if(base === 'index-two'){
             <ng-container *ngIf="!isLoggedIn">
               <a [routerLink]="routes.login" class="btn btn-light d-inline-flex align-items-center me-2">
                 <i class="isax isax-lock-circle me-2"></i>Sign In

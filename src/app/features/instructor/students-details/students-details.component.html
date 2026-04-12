@@ -1,328 +1,277 @@
-<div class="content instructor-detail-content">
-    <div class="container">
-        <div class="instructor-profile">
-            <div class="instructor-profile-bg">
-                <img src="assets/img/bg/card-bg-01.png" class="instructor-profile-bg-1" alt="">
+﻿<div class="students-details">
+  <div class="students-details-shell">
+  @if (!loading && student) {
+    <div class="students-details-hero card mb-3">
+      <div class="students-details-hero__glow students-details-hero__glow--one"></div>
+      <div class="students-details-hero__glow students-details-hero__glow--two"></div>
+
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 position-relative">
+        <div class="d-flex flex-wrap align-items-center gap-3 flex-grow-1">
+          <a [routerLink]="routes.studentsGrid" class="btn btn-light students-details-back">
+            <i class="isax isax-arrow-left me-2"></i>Retour à la liste
+          </a>
+
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="students-details-avatar-wrap">
+              <app-avatar-fallback
+                [imageUrl]="getAvatarUrl(student)"
+                [name]="getStudentName(student)"
+                size="xl"
+                class="students-details-avatar">
+              </app-avatar-fallback>
             </div>
-            <div class="row align-items-center row-gap-3">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center">
-                            <span class="avatar flex-shrink-0 avatar-xxl avatar-rounded me-3 border border-white border-3 position-relative">
-                                <img src="assets/img/user/user-01.jpg" alt="img">
-                                <span class="verify-tick"><i class="isax isax-verify5"></i></span>
-                            </span>
-                            <div>
-                                <h5 class="mb-1 text-white d-inline-flex align-items-center">Eugene Andre<a [routerLink]="routes.instructorProfile" class="link-light fs-16 ms-2"><i class="isax isax-edit-2"></i></a></h5>
-                                <p class="text-light">Instructor</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center flex-wrap gap-3 justify-content-md-end">
-                            <a [routerLink]="routes.addCourse" class="btn btn-white rounded-pill">Add New Course</a>
-                            <a [routerLink]="routes.students_Dashboard" class="btn btn-secondary rounded-pill">Student Dashboard</a>
-                        </div>
-                    </div>
+
+            <div class="students-details-headline">
+              <div class="students-details-kicker">Fiche étudiant</div>
+              <h3 class="students-details-title mb-2">{{ getStudentName(student) }}</h3>
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <span class="badge bg-primary-transparent text-primary students-details-badge">{{ getProgressLabel(student) }}</span>
+                <span class="badge bg-info-transparent text-info students-details-badge">{{ getCourseCount(student) }} cours</span>
+                <span class="badge bg-success-transparent text-success students-details-badge">{{ getCompletedCourseCount(student) }} terminés</span>
+              </div>
+              <div class="students-details-hero-insights mt-3">
+                <div class="students-details-hero-insight">
+                  <span class="students-details-hero-insight__label">Contact</span>
+                  <strong class="students-details-hero-insight__value">{{ getStudentEmail(student) }}</strong>
+                </div>
+                <div class="students-details-hero-insight">
+                  <span class="students-details-hero-insight__label">Progression</span>
+                  <strong class="students-details-hero-insight__value">{{ getAverageProgress(student) }}%</strong>
+                </div>
+                <div class="students-details-hero-insight">
+                  <span class="students-details-hero-insight__label">Dernière activité</span>
+                  <strong class="students-details-hero-insight__value">{{ getLastActivity(student) }}</strong>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        <a [routerLink]="routes.studentsList" class="d-flex align-items-center mb-3"><i class="isax isax-arrow-left me-1 fw-bold"></i>Back to List</a>
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="instructor-details-item1 mb-4">
-                        <div class="instructor-details">
-                            <div class="instructor-img">
-                                <a href="javascript:void(0);">
-                                    <img src="assets/img/students/student-01.jpg" alt="img" class="img-fluid">
-                                </a>
-                            </div>
-                            <div class="flex-fill">
-                                <div class="pb-3 border-bottom mb-3">
-                                    <div class="d-flex align-items-center justify-content-between mb-1">
-                                        <h6 class="fs-18 fw-bold"><a href="javascript:void(0);">Thompson Hicks</a></h6>
-                                    </div>
-                                    <div class="d-flex align-items-center mb-1">
-                                        <p>Joined on : 24 May 2024</p>
-                                    </div>
-                                    <div>
-                                        <p>Hello! I'm Thompson Hicks. I'm passionate about developing innovative software solutions, analyzing classic literature. </p>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between flex-wrap">
-                                    <div class="d-flex align-items-center counts-details mb-0">
-                                        <div class="d-flex align-items-center me-4">
-                                            <span class="d-flex align-items-center"><i class="isax isax-book5 text-primary me-1"></i>10 Courses</span>														
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center">
-                                        <span>
-                                            <a href="javascript:void(0);" class="rounded-circle d-inline-flex align-items-center justify-content-center p-1 me-2">
-                                                <i class="fa-brands fa-facebook-f"></i>
-                                            </a>
-                                        </span>
-                                        <span>
-                                            <a href="javascript:void(0);" class="rounded-circle d-inline-flex align-items-center justify-content-center p-1 me-2">
-                                                <i class="fa-brands fa-instagram"></i>
-                                            </a>
-                                        </span>
-                                        <span>
-                                            <a href="javascript:void(0);" class="rounded-circle d-inline-flex align-items-center justify-content-center p-1 me-2">
-                                                <i class="fa-brands fa-x-twitter"></i>
-                                            </a>
-                                        </span>
-                                        <span>
-                                            <a href="javascript:void(0);" class="rounded-circle d-inline-flex align-items-center justify-content-center p-1 me-2">
-                                                <i class="fa-brands fa-youtube"></i>
-                                            </a>
-                                        </span>
-                                        <span>
-                                            <a href="javascript:void(0);" class="rounded-circle d-inline-flex align-items-center justify-content-center">
-                                                <i class="fa-brands fa-linkedin-in"></i>
-                                            </a>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                </div>
 
-                <div class="about-me-card bg-white">
-                    <div class="about-me-body">
-                        <h6 class="page-title fs-18 fw-bold">About Me</h6>
-                        <p class="mb-2">Very well thought out and articulate communication. Clear milestones, deadlines and fast work. Patience. Infinite patience. No shortcuts. Even if the client is being careless. Some quick example text to build on the card title and bulk the card's content Moltin gives you platform.</p>
-                        <a href="javascript:void(0);" class="text-secondary text-decoration-underline fs-14">Read More</a>
-                    </div>
-                </div>
-
-                <div class="education-card">
-                    <div class="education-body">
-                        <h6 class="fs-18 fw-bold page-title">Education</h6>
-                        <div class="education-flow">
-                            <div class="ps-4 pb-3 timeline-flow">
-                                <div>
-                                    <h6 class="fs-16 mb-1">BCA - Bachelor of Computer Applications</h6>
-                                    <p>International University - (2004 - 2010)</p>
-                                </div>
-                            </div>
-                            <div class="ps-4 pb-3 timeline-flow">
-                                <div>
-                                    <h6 class="fs-16 mb-1">MCA - Master of Computer Application</h6>
-                                    <p>International University - (2010 - 2012)</p>
-                                </div>
-                            </div>
-                            <div class="ps-4 timeline-flow">
-                                <div>
-                                    <h6 class="mb-1">Design Communication Visual</h6>
-                                    <p>International University - (2012-2015)</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="enrolled-courses-card mb-4 mb-lg-0">
-                    <div class="enrolled-courses-body">
-                        <div class="page-title">
-                            <h6 class="mb-0 fs-18 fw-bold">Enrolled Courses</h6>
-                        </div>									
-                        <div class="course-carousal student-details-carousal">
-                            <ngx-slick-carousel [config]="courseCarousel">
-
-                                <div>
-                                    <div class="course-item-two course-item mx-2" ngxSlickItem>
-                                        <div class="course-img">
-                                            <a [routerLink]="routes.courseDetails">
-                                                <img src="assets/img/course/course-01.jpg" alt="img" class="img-fluid">  
-                                            </a>
-                                            <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                                                <div class="badge text-bg-danger">15% off</div>
-                                                <a href="javascript:void(0);" class="fav-icon ms-auto"><i class="isax isax-heart"></i></a>
-                                            </div>
-                                        </div>
-                                        <div class="course-content">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <div class="d-flex align-items-center">
-                                                    <a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-                                                        <img src="assets/img/user/user-29.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-                                                    </a>
-                                                    <div class="ms-2">
-                                                        <a [routerLink]="routes.instructorDetails" class="link-default fs-14">Brenda Slaton</a>
-                                                    </div>
-                                                </div>
-                                                <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                                                    Design
-                                                </span>
-                                            </div>
-                                            <h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Information About UI/UX Design Degree</a></h6>
-                                            <p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.9 (200 Reviews)</p>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h5 class="text-secondary mb-0">$120</h5>
-                                                <a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="course-item-two course-item mx-2" ngxSlickItem>
-                                        <div class="course-img">
-                                            <a [routerLink]="routes.courseDetails">
-                                                <img src="assets/img/course/course-02.jpg" alt="img" class="img-fluid">  
-                                            </a>
-                                            <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                                                <a href="javascript:void(0);" class="fav-icon ms-auto"><i class="isax isax-heart"></i></a>
-                                            </div>
-                                        </div>
-                                        <div class="course-content">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <div class="d-flex align-items-center">
-                                                    <a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-                                                        <img src="assets/img/user/user-30.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-                                                    </a>
-                                                    <div class="ms-2">
-                                                        <a [routerLink]="routes.instructorDetails" class="link-default fs-14">Ana Reyes</a>
-                                                    </div>
-                                                </div>
-                                                <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                                                    Wordpress
-                                                </span>
-                                            </div>
-                                            <h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Wordpress for Beginners - Master Wordpress Quickly</a></h6>
-                                            <p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (160 Reviews)</p>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h5 class="text-secondary mb-0">$140</h5>
-                                                <a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="course-item-two course-item mx-2" ngxSlickItem>
-                                        <div class="course-img">
-                                            <a [routerLink]="routes.courseDetails">
-                                                <img src="assets/img/course/course-03.jpg" alt="img" class="img-fluid">  
-                                            </a>
-                                            <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                                                <a href="javascript:void(0);" class="fav-icon ms-auto"><i class="isax isax-heart"></i></a>
-                                            </div>
-                                        </div>
-                                        <div class="course-content">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <div class="d-flex align-items-center">
-                                                    <a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-                                                        <img src="assets/img/user/user-31.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-                                                    </a>
-                                                    <div class="ms-2">
-                                                        <a [routerLink]="routes.instructorDetails" class="link-default fs-14">Andrew Pirtle</a>
-                                                    </div>
-                                                </div>
-                                                <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                                                    Design
-                                                </span>
-                                            </div>
-                                            <h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Sketch from A to Z (2024): Become an app designer</a></h6>
-                                            <p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.4 (160 Reviews)</p>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h5 class="text-secondary mb-0">$140</h5>
-                                                <a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="course-item-two course-item mx-2" ngxSlickItem>
-                                        <div class="course-img">
-                                            <a [routerLink]="routes.courseDetails">
-                                                <img src="assets/img/course/course-04.jpg" alt="img" class="img-fluid">  
-                                            </a>
-                                            <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
-                                                <a href="javascript:void(0);" class="fav-icon ms-auto"><i class="isax isax-heart"></i></a>
-                                            </div>
-                                        </div>
-                                        <div class="course-content">
-                                            <div class="d-flex justify-content-between mb-2">
-                                                <div class="d-flex align-items-center">
-                                                    <a [routerLink]="routes.instructorDetails" class="avatar avatar-sm">
-                                                        <img src="assets/img/user/user-32.jpg" alt="img" class="img-fluid avatar avatar-sm rounded-circle">
-                                                    </a>
-                                                    <div class="ms-2">
-                                                        <a [routerLink]="routes.instructorDetails" class="link-default fs-14">Christy Garner</a>
-                                                    </div>
-                                                </div>
-                                                <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                                                    Programming
-                                                </span>
-                                            </div>
-                                            <h6 class="title mb-2"><a [routerLink]="routes.courseDetails">Build Responsive Real World Websites with Crash Course</a></h6>
-                                            <p class="d-flex align-items-center mb-3"><i class="fa-solid fa-star text-warning me-2"></i>4.2 (220 Reviews)</p>
-                                            <div class="d-flex align-items-center justify-content-between">
-                                                <h5 class="text-secondary mb-0">$200</h5>
-                                                <a [routerLink]="routes.courseDetails" class="btn btn-dark btn-sm d-inline-flex align-items-center">View Course<i class="isax isax-arrow-right-3 ms-1"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </ngx-slick-carousel>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="col-lg-4">
-                <div class="certification-card">
-                    <div class="certification-body">
-                        <h5 class="mb-3 fw-bold">Certifications</h5>
-                        <div class="d-flex align-items-center">
-                            <div class="certificate-img rounded-circle me-2">
-                                <img src="assets/img/certificates/certificate-01.svg" alt="img" class="img-fluid">
-                            </div>
-                            <div class="certificate-img rounded-circle me-2">
-                                <img src="assets/img/certificates/certificate-02.svg" alt="img" class="img-fluid">
-                            </div>
-                            <div class="certificate-img rounded-circle me-2">
-                                <img src="assets/img/certificates/certificate-03.svg" alt="img" class="img-fluid">
-                            </div>
-                            <div class="certificate-img rounded-circle">
-                                <img src="assets/img/certificates/certificate-01.svg" alt="img" class="img-fluid">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="contact-card border-0 mb-0">
-                    <div class="contact-details-body">
-                        <h5 class="mb-3 fw-bold">Contact Details</h5>
-                        <div class="d-flex align-items-center mb-4">
-                            <span class="contact-icon flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center me-3">
-                                <i class="fa-regular fa-envelope"></i>
-                            </span>
-                            <div>
-                                <h6 class="mb-0">Email</h6>
-                                <p class="fs-14 mb-0">jennywilson&#64;example.com</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-4">
-                            <span class="contact-icon flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center me-3">
-                                <i class="isax isax-location"></i>
-                            </span>
-                            <div>
-                                <h6 class="mb-0">Address</h6>
-                                <p class="fs-14 mb-0 text-truncate">877 Ferry Street, Huntsville, Alabama</p>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="contact-icon flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center me-3">
-                                <i class="isax isax-call"></i>
-                            </span>
-                            <div>
-                                <h6 class="mb-0">Phone</h6>
-                                <p class="fs-14 mb-0">+1(452) 125-6789</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <div class="d-flex flex-wrap gap-2 position-relative">
+          <button type="button" class="btn btn-primary students-details-action" (click)="sendMessage()">
+            <i class="isax isax-messages me-2"></i>Envoyer un message
+          </button>
+          <a [routerLink]="routes.studentsGrid" class="btn btn-outline-secondary students-details-action">
+            <i class="isax isax-grid-1 me-2"></i>Explorer la liste
+          </a>
         </div>
+      </div>
     </div>
+  }
+
+  <!-- Loading State -->
+  @if (loading) {
+    <div class="students-details-loading card py-5 text-center">
+      <div class="students-details-loading__spinner spinner-border text-primary" role="status"></div>
+      <h5 class="mt-3 mb-1">Chargement des détails</h5>
+      <p class="text-muted mb-0">Récupération du profil et des parcours de l'étudiant.</p>
+    </div>
+  }
+
+  <!-- Not Found State -->
+  @if (!loading && !student) {
+    <div class="students-details-empty card text-center py-5">
+      <div class="students-details-empty__icon mx-auto mb-3">
+        <i class="isax isax-info-circle"></i>
+      </div>
+      <h5 class="text-danger mb-2">Étudiant non trouvé</h5>
+      <p class="text-muted mb-4">Cet étudiant n'existe pas ou a été supprimé.</p>
+      <a [routerLink]="routes.studentsGrid" class="btn btn-primary students-details-action mx-auto">
+        <i class="isax isax-arrow-left me-2"></i>Retour à la liste
+      </a>
+    </div>
+  }
+
+  <!-- Student Details Card -->
+  @if (!loading && student) {
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="row g-3">
+          <div class="col-md-3 col-sm-6">
+            <div class="students-details-metric card h-100">
+              <div class="card-body">
+                <div class="students-details-metric__icon students-details-metric__icon--blue"><i class="isax isax-book"></i></div>
+                <p class="students-details-metric__label mb-1">Cours</p>
+                <h4 class="students-details-metric__value mb-0">{{ getCourseCount(student) }}</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="students-details-metric card h-100">
+              <div class="card-body">
+                <div class="students-details-metric__icon students-details-metric__icon--green"><i class="isax isax-chart-2"></i></div>
+                <p class="students-details-metric__label mb-1">Progression moyenne</p>
+                <h4 class="students-details-metric__value mb-0">{{ getAverageProgress(student) }}%</h4>
+                <div class="progress students-details-metric-progress mt-2" role="progressbar" [attr.aria-valuenow]="getAverageProgress(student)" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar bg-primary" [style.width.%]="getAverageProgress(student)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="students-details-metric card h-100">
+              <div class="card-body">
+                <div class="students-details-metric__icon students-details-metric__icon--cyan"><i class="isax isax-tick-circle"></i></div>
+                <p class="students-details-metric__label mb-1">Terminés</p>
+                <h4 class="students-details-metric__value mb-0">{{ getCompletedCourseCount(student) }}</h4>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-sm-6">
+            <div class="students-details-metric card h-100">
+              <div class="card-body">
+                <div class="students-details-metric__icon students-details-metric__icon--pink"><i class="isax isax-calendar-1"></i></div>
+                <p class="students-details-metric__label mb-1">Dernière activité</p>
+                <h4 class="students-details-metric__value mb-0 students-details-metric__value--small">{{ getLastActivity(student) }}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-4 col-lg-5 mb-3">
+        <div class="card students-details-panel h-100">
+          <div class="card-body">
+            <div class="students-details-panel__section">
+              <div class="students-details-mini-header">
+                <span class="students-details-mini-header__kicker">Profil</span>
+                <h6 class="mb-0 fw-bold">Coordonnées et contexte</h6>
+              </div>
+
+              <div class="students-details-contact-list">
+                <div class="students-details-contact-item">
+                  <span class="students-details-contact-item__label">Email</span>
+                  <span class="students-details-contact-item__value">{{ getStudentEmail(student) }}</span>
+                </div>
+                <div class="students-details-contact-item">
+                  <span class="students-details-contact-item__label">ID étudiant</span>
+                  <span class="students-details-contact-item__value">{{ student?.studentId || student?.enrollmentId || '-' }}</span>
+                </div>
+                <div class="students-details-contact-item">
+                  <span class="students-details-contact-item__label">Statut</span>
+                  <span class="students-details-contact-item__value students-details-contact-item__value--pill">
+                    <span class="badge bg-{{ getProgressTone(student) }}-transparent text-{{ getProgressTone(student) }}">{{ getProgressLabel(student) }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="students-details-side-actions d-grid gap-2 mt-3">
+                <button type="button" class="btn btn-primary students-details-action" (click)="sendMessage()">
+                  <i class="isax isax-messages me-2"></i>Envoyer un message
+                </button>
+                <a [routerLink]="routes.studentsGrid" class="btn btn-outline-secondary students-details-action">
+                  <i class="isax isax-arrow-left me-2"></i>Retour à la liste
+                </a>
+              </div>
+            </div>
+
+            <div class="students-details-panel__section mt-4">
+              <div class="students-details-mini-header">
+                <span class="students-details-mini-header__kicker">Insights</span>
+                <h6 class="mb-0 fw-bold">Résumé rapide</h6>
+              </div>
+
+              <div class="students-details-summary">
+                <div class="students-details-summary__item">
+                  <span class="students-details-summary__label">Cours achetés</span>
+                  <strong>{{ getCourseCount(student) }}</strong>
+                </div>
+                <div class="students-details-summary__item">
+                  <span class="students-details-summary__label">Cours terminés</span>
+                  <strong>{{ getCompletedCourseCount(student) }}</strong>
+                </div>
+                <div class="students-details-summary__item">
+                  <span class="students-details-summary__label">Moyenne</span>
+                  <strong>{{ getAverageProgress(student) }}%</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-8 col-lg-7 mb-3">
+        <div class="card students-details-panel mb-3">
+          <div class="card-body">
+            <div class="students-details-mini-header mb-3">
+              <span class="students-details-mini-header__kicker">Parcours</span>
+              <h6 class="mb-0 fw-bold">Cours achetés et progression</h6>
+            </div>
+
+            @if (getCourseItems(student).length > 0) {
+              <div class="students-details-course-stack">
+                @for (course of getCourseItems(student); track course.title) {
+                  <div class="students-details-course-item">
+                    <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+                      <div class="students-details-course-main">
+                        <span class="students-details-course-rank">#{{ $index + 1 }}</span>
+                        <h6 class="mb-1 fw-semibold">{{ course.title }}</h6>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                          @if (course.status === 'Termine') {
+                            <span class="badge bg-success-transparent text-success">Terminé</span>
+                          } @else {
+                            <span class="badge bg-info-transparent text-info">En cours</span>
+                          }
+                          <span class="text-muted fs-13">{{ course.progress }}% complété</span>
+                        </div>
+                      </div>
+                      <div class="students-details-course-score">{{ course.progress }}%</div>
+                    </div>
+
+                    <div class="progress students-details-progress">
+                      <div class="progress-bar"
+                           [class.bg-success]="course.progress >= 100"
+                           [class.bg-primary]="course.progress < 100"
+                           [style.width.%]="course.progress"
+                           role="progressbar">
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="students-details-course-empty">
+                <i class="isax isax-book-empty"></i>
+                <p class="mb-0 text-muted">Aucun cours trouvé pour cet étudiant.</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="card students-details-panel">
+          <div class="card-body">
+            <div class="students-details-mini-header mb-3">
+              <span class="students-details-mini-header__kicker">Chronologie</span>
+              <h6 class="mb-0 fw-bold">Repères d'inscription</h6>
+            </div>
+
+            <div class="students-details-timeline">
+              <div class="students-details-timeline__item">
+                <div class="students-details-timeline__dot students-details-timeline__dot--blue"></div>
+                <div>
+                  <p class="mb-1 text-muted fs-14">Date d'inscription</p>
+                  <p class="mb-0 fw-semibold">{{ formatDate(student.enrolledAt || student.createdAt || student.joinedAt) }}</p>
+                </div>
+              </div>
+              <div class="students-details-timeline__item">
+                <div class="students-details-timeline__dot students-details-timeline__dot--green"></div>
+                <div>
+                  <p class="mb-1 text-muted fs-14">Dernière activité connue</p>
+                  <p class="mb-0 fw-semibold">{{ getLastActivity(student) }}</p>
+                </div>
+              </div>
+              <div class="students-details-timeline__item">
+                <div class="students-details-timeline__dot students-details-timeline__dot--pink"></div>
+                <div>
+                  <p class="mb-1 text-muted fs-14">Progression globale</p>
+                  <p class="mb-0 fw-semibold">{{ getAverageProgress(student) }}% - {{ getProgressLabel(student) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+  </div>
 </div>

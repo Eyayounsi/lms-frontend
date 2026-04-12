@@ -1,0 +1,278 @@
+﻿<div class="page-content">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Terminal / Logs                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="lg-hero mb-4">
+    <div class="lg-glow lg-glow-1"></div>
+    <div class="lg-glow lg-glow-2"></div>
+    <div class="lg-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="lg-av-wrap">
+              <div class="lg-av-ring"></div>
+              <div class="lg-av-border"></div>
+              <div class="lg-av-circle">
+                <i class="ti ti-terminal-2" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="lg-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="lg-chip"><i class="ti ti-database me-1" style="font-size:9px"></i>MongoDB</span>
+                <span class="lg-live"><span class="lg-live-dot"></span>STREAMING</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Journal des activités</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.5);font-size:13px">Logs authentification · Recommandations · Sessions IA</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="lg-glass d-none d-md-flex align-items-center">
+              <div class="lg-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ mongoTotalElements }}</span>
+                <small style="color:rgba(255,255,255,.5);font-size:10px">Entrées</small>
+              </div>
+              <div class="lg-stat-div"></div>
+              <div class="lg-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ mongoTotalPages }}</span>
+                <small style="color:rgba(255,255,255,.5);font-size:10px">Pages</small>
+              </div>
+              <div class="lg-stat-div"></div>
+              <div class="lg-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ mongoSize }}</span>
+                <small style="color:rgba(255,255,255,.5);font-size:10px">Par page</small>
+              </div>
+            </div>
+            <button class="lg-refresh d-flex align-items-center gap-2" (click)="loadMongoLogs()">
+              <i class="ti ti-refresh" style="font-size:14px"></i>Actualiser
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Tab Navigation ══════════════════════════════════════════════════════ -->
+  <div class="lg-tabs mb-4">
+    <button class="lg-tab" [class.active]="mongoKind === 'auth'" (click)="onMongoKindChange('auth')">
+      <i class="ti ti-lock me-2"></i>Authentification
+      <span *ngIf="mongoKind === 'auth'" class="lg-tab-pill">{{ mongoTotalElements }}</span>
+    </button>
+    <button class="lg-tab" [class.active]="mongoKind === 'recommendations'" (click)="onMongoKindChange('recommendations')">
+      <i class="ti ti-bulb me-2"></i>Recommandations
+      <span *ngIf="mongoKind === 'recommendations'" class="lg-tab-pill">{{ mongoTotalElements }}</span>
+    </button>
+    <button class="lg-tab" [class.active]="mongoKind === 'ai'" (click)="onMongoKindChange('ai')">
+      <i class="ti ti-robot me-2"></i>Sessions IA
+      <span *ngIf="mongoKind === 'ai'" class="lg-tab-pill">{{ mongoTotalElements }}</span>
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="mongoLoading" class="text-center py-5">
+    <div class="spinner-border" style="color:#0ea5e9;width:2rem;height:2rem" role="status"></div>
+    <p class="mt-2 text-muted small">Chargement des logs…</p>
+  </div>
+
+  <!-- ═══ AUTH LOGS ════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="!mongoLoading && mongoKind === 'auth'">
+    <div class="ac-card p-3 mb-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+          <label class="lg-filter-label">Provider</label>
+          <input type="text" class="form-control lg-filter-input" placeholder="google, local…" [(ngModel)]="authProviderFilter">
+        </div>
+        <div class="col-md-4">
+          <label class="lg-filter-label">Email</label>
+          <input type="text" class="form-control lg-filter-input" placeholder="user@email.com" [(ngModel)]="authEmailFilter">
+        </div>
+        <div class="col-md-4">
+          <button class="lg-btn-filter w-100" (click)="applyMongoFilters()">
+            <i class="ti ti-filter-search me-1"></i>Appliquer le filtre
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ac-card mb-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="lg-thead">
+            <tr>
+              <th class="ps-4">Email</th>
+              <th>Provider</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>Raison</th>
+              <th class="pe-4">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of authLogs" class="lg-row">
+              <td class="ps-4 fw-semibold" style="color:#0f172a">{{ log.email }}</td>
+              <td>
+                <span class="lg-badge-provider">
+                  <i class="ti" [ngClass]="log.provider === 'google' ? 'ti-brand-google' : log.provider === 'github' ? 'ti-brand-github' : 'ti-user'" style="font-size:10px"></i>
+                  {{ log.provider }}
+                </span>
+              </td>
+              <td class="text-muted small">{{ log.role }}</td>
+              <td>
+                <span class="ac-status" [ngClass]="log.success ? 'published' : 'rejected'">
+                  {{ log.success ? 'Succès' : 'Échec' }}
+                </span>
+              </td>
+              <td class="text-muted small" style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ log.reason || '—' }}</td>
+              <td class="text-muted small pe-4">{{ log.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+            </tr>
+            <tr *ngIf="authLogs.length === 0">
+              <td colspan="6">
+                <div class="ac-empty py-5"><div class="ac-empty-icon"><i class="ti ti-lock-off"></i></div><p class="text-muted">Aucun log d'authentification trouvé</p></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══ RECOMMENDATION LOGS ══════════════════════════════════════════════════ -->
+  <ng-container *ngIf="!mongoLoading && mongoKind === 'recommendations'">
+    <div class="ac-card p-3 mb-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-8">
+          <label class="lg-filter-label">Type de recommandation</label>
+          <input type="text" class="form-control lg-filter-input" placeholder="ex: SCORE_BASED, COLLABORATIVE…" [(ngModel)]="recommendationTypeFilter">
+        </div>
+        <div class="col-md-4">
+          <button class="lg-btn-filter w-100" (click)="applyMongoFilters()">
+            <i class="ti ti-filter-search me-1"></i>Appliquer le filtre
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ac-card mb-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="lg-thead">
+            <tr>
+              <th class="ps-4">Cours ID</th>
+              <th>Type</th>
+              <th>Badge</th>
+              <th class="text-end">Engagement</th>
+              <th class="text-end">Détections</th>
+              <th class="text-end">Inscriptions</th>
+              <th class="text-end pe-4">Moy. Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of recommendationLogs" class="lg-row">
+              <td class="ps-4 fw-semibold" style="color:#0f172a">#{{ log.courseId }}</td>
+              <td><span class="lg-badge-type">{{ log.recommendationType }}</span></td>
+              <td>
+                <span class="lg-badge-badge" [ngClass]="{
+                  'lg-badge-gold': log.recommendationBadge === 'GOLD',
+                  'lg-badge-silver': log.recommendationBadge === 'SILVER',
+                  'lg-badge-bronze': log.recommendationBadge === 'BRONZE'
+                }">{{ log.recommendationBadge }}</span>
+              </td>
+              <td class="text-end">
+                <div class="lg-score-bar-wrap">
+                  <span class="small fw-semibold mx-1">{{ log.engagementScore | number:'1.0-0' }}</span>
+                  <div class="lg-score-bar-track"><div class="lg-score-bar-fill" [style.width.%]="log.engagementScore < 100 ? log.engagementScore : 100" [style.background]="log.engagementScore > 70 ? '#16a34a' : log.engagementScore > 40 ? '#f59e0b' : '#dc2626'"></div></div>
+                </div>
+              </td>
+              <td class="text-end fw-semibold" style="color:#0ea5e9">{{ log.totalDetections }}</td>
+              <td class="text-end fw-semibold" style="color:#7c3aed">{{ log.enrollmentCount }}</td>
+              <td class="text-end pe-4 text-muted small">{{ log.avgRating != null ? (log.avgRating | number:'1.1-1') + ' ★' : '—' }}</td>
+            </tr>
+            <tr *ngIf="recommendationLogs.length === 0">
+              <td colspan="7">
+                <div class="ac-empty py-5"><div class="ac-empty-icon"><i class="ti ti-bulb-off"></i></div><p class="text-muted">Aucun log de recommandation trouvé</p></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══ AI SESSION LOGS ══════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="!mongoLoading && mongoKind === 'ai'">
+    <div class="ac-card p-3 mb-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+          <label class="lg-filter-label">Session ID</label>
+          <input type="text" class="form-control lg-filter-input" placeholder="ID de session…" [(ngModel)]="aiSessionIdFilter">
+        </div>
+        <div class="col-md-4">
+          <label class="lg-filter-label">Email utilisateur</label>
+          <input type="text" class="form-control lg-filter-input" placeholder="user@email.com" [(ngModel)]="aiUserEmailFilter">
+        </div>
+        <div class="col-md-4">
+          <button class="lg-btn-filter w-100" (click)="applyMongoFilters()">
+            <i class="ti ti-filter-search me-1"></i>Appliquer le filtre
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ac-card mb-3">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="lg-thead">
+            <tr>
+              <th class="ps-4">Email</th>
+              <th>Modèle</th>
+              <th>Prompt</th>
+              <th class="text-end">Latence</th>
+              <th>Statut</th>
+              <th class="pe-4">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of aiLogs" class="lg-row">
+              <td class="ps-4 fw-semibold" style="color:#0f172a">{{ log.userEmail }}</td>
+              <td><span class="lg-badge-model"><i class="ti ti-robot" style="font-size:10px"></i> {{ log.model }}</span></td>
+              <td class="text-muted small" style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" [title]="log.prompt">{{ log.prompt }}</td>
+              <td class="text-end">
+                <span class="lg-latency" [ngClass]="log.latencyMs && log.latencyMs > 2000 ? 'lg-latency-slow' : log.latencyMs && log.latencyMs > 1000 ? 'lg-latency-med' : 'lg-latency-fast'">
+                  {{ log.latencyMs != null ? log.latencyMs + ' ms' : '—' }}
+                </span>
+              </td>
+              <td>
+                <span class="ac-status" [ngClass]="log.success ? 'published' : 'rejected'">
+                  {{ log.success ? 'Succès' : 'Erreur' }}
+                </span>
+              </td>
+              <td class="text-muted small pe-4">{{ log.createdAt | date:'dd/MM/yy HH:mm' }}</td>
+            </tr>
+            <tr *ngIf="aiLogs.length === 0">
+              <td colspan="6">
+                <div class="ac-empty py-5"><div class="ac-empty-icon"><i class="ti ti-robot-off"></i></div><p class="text-muted">Aucune session IA trouvée</p></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ═══ Pagination ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="!mongoLoading && mongoTotalPages > 1" class="lg-pagination d-flex justify-content-between align-items-center mt-2 mb-4">
+    <span class="text-muted small">Page <strong>{{ mongoPage + 1 }}</strong> sur <strong>{{ mongoTotalPages }}</strong> — <strong>{{ mongoTotalElements }}</strong> entrée(s)</span>
+    <div class="d-flex gap-2">
+      <button class="lg-page-btn" [disabled]="mongoPage === 0" (click)="changeMongoPage(-1)">
+        <i class="ti ti-chevron-left"></i> Précédent
+      </button>
+      <button class="lg-page-btn lg-page-btn-next" [disabled]="mongoPage >= mongoTotalPages - 1" (click)="changeMongoPage(1)">
+        Suivant <i class="ti ti-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+</div>

@@ -24,7 +24,7 @@
   </div>
 
   <!-- banner -->
-  <section class="inner-banner">
+  <section class="inner-banner" [class.inner-banner--with-cover]="hasCourseCover()" [ngStyle]="getBannerStyle()">
     <div class="container">
       <div class="row">
         <div class="col-lg-8">
@@ -43,7 +43,14 @@
           <div class="d-sm-flex align-items-center justify-content-sm-between mt-5">
             <div class="d-flex text-start align-items-center justify-content-sm-start justify-content-center">
               <div class="avatar avatar-lg">
-                <img class="rounded-circle" [src]="getAvatarUrl(course.instructorAvatar)" alt="instructor">
+                <img *ngIf="hasInstructorAvatar()"
+                     class="rounded-circle"
+                     [src]="getCourseInstructorAvatar()"
+                     (error)="onInstructorAvatarError($event, course.instructorName)"
+                     alt="instructor">
+                <div *ngIf="!hasInstructorAvatar()" class="course-instructor-avatar-fallback">
+                  {{ getInstructorInitial() }}
+                </div>
               </div>
               <div class="ms-2">
                 <h6 class="fs-18 text-white">{{ course.instructorName }}</h6>
@@ -159,7 +166,14 @@
                 <div class="d-flex align-items-center justify-content-between mt-4 gap-2 flex-wrap">
                   <div class="d-flex align-items-center">
                     <div class="avatar avatar-lg">
-                      <img class="rounded-circle" [src]="getAvatarUrl(course.instructorAvatar)" alt="instructor">
+                      <img *ngIf="hasInstructorAvatar()"
+                           class="rounded-circle"
+                           [src]="getCourseInstructorAvatar()"
+                           (error)="onInstructorAvatarError($event, course.instructorName)"
+                           alt="instructor">
+                      <div *ngIf="!hasInstructorAvatar()" class="course-instructor-avatar-fallback course-instructor-avatar-fallback--light">
+                        {{ getInstructorInitial() }}
+                      </div>
                     </div>
                     <div class="ms-2">
                       <h5 class="fs-18 fw-semibold">{{ course.instructorName }}</h5>
@@ -258,7 +272,15 @@
                 <div class="position-relative mb-4">
                   <lightgallery [settings]="settings" [onInit]="onInit" size="1400-933">
                     <a href="https://www.youtube.com/embed/1trvO6dqQUI" id="openVideoBtn" target="_blank">
-                      <img class="img-fluid" [src]="getImageUrl(course.coverImage)" alt="course cover">
+                      <img *ngIf="hasCourseCover()"
+                           class="img-fluid"
+                           [src]="getCourseCoverImage()"
+                           (error)="onCourseCoverError($event)"
+                           alt="course cover">
+                      <div *ngIf="!hasCourseCover()" class="course-sidebar-cover-placeholder" [style.background]="getCourseCoverPlaceholderGradient()">
+                        <i class="ti ti-book-2"></i>
+                        <span>{{ getCourseCoverInitial() }}</span>
+                      </div>
                       <div class="play-icon">
                         <i class="ti ti-player-play-filled fs-28"></i>
                       </div>
@@ -293,7 +315,7 @@
                 </ng-container>
                 <ng-container *ngIf="!isEnrolled && isCourseFree() && !isLoggedIn">
                   <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-3 btn-enroll">
-                    <i class="ti ti-login me-1"></i>Se connecter pour s'inscrire
+                    <i class="ti ti-login me-1"></i>Se connecter pour acheter
                   </a>
                 </ng-container>
 
@@ -330,7 +352,7 @@
                 <!-- Not logged in -->
                 <div *ngIf="!isLoggedIn" class="mt-2 text-center">
                   <small class="text-muted">
-                    <a [routerLink]="routes.login">Connectez-vous</a> pour vous inscrire
+                    <a [routerLink]="routes.login">Connectez-vous</a> pour acheter
                   </small>
                 </div>
               </div>

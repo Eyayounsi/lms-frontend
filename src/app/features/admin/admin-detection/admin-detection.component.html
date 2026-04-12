@@ -1,0 +1,180 @@
+﻿<div class="page-content">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Purple AI                                                          -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="det-hero mb-4">
+    <div class="det-glow det-glow-1"></div>
+    <div class="det-glow det-glow-2"></div>
+    <div class="det-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="det-av-wrap">
+              <div class="det-av-ring"></div>
+              <div class="det-av-border"></div>
+              <div class="det-av-circle">
+                <i class="ti ti-eye" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="det-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="det-chip"><i class="ti ti-cpu me-1" style="font-size:9px"></i>Computer Vision</span>
+                <span class="det-live"><span class="det-live-dot"></span>IA ACTIVE</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Suivi d'Attention — Caméra</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Remarques de détection caméra par étudiant et par cours</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="det-glass d-none d-md-flex align-items-center" *ngIf="!loading">
+              <div class="det-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ totalMonitored }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Surveillés</small>
+              </div>
+              <div class="det-stat-div"></div>
+              <div class="det-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ avgScore ?? '—' }}{{ avgScore !== null ? '%' : '' }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Score moy.</small>
+              </div>
+              <div class="det-stat-div"></div>
+              <div class="det-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ criticalStudents }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Critiques</small>
+              </div>
+            </div>
+            <button class="det-refresh d-flex align-items-center gap-2" (click)="loadSummary()">
+              <i class="ti ti-refresh" style="font-size:14px"></i>Actualiser
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" style="color:#7c3aed" role="status"></div>
+    <p class="mt-2 text-muted">Chargement des données…</p>
+  </div>
+
+  <!-- Search bar -->
+  <div *ngIf="!loading" class="ac-card mb-4 p-3">
+    <div class="input-group">
+      <span class="input-group-text bg-transparent border-end-0" style="border-color:#e2e8f0">
+        <i class="ti ti-search text-muted"></i>
+      </span>
+      <input type="text" class="form-control border-start-0 ps-0" style="border-color:#e2e8f0"
+             [(ngModel)]="searchTerm" (input)="filterSummaries()"
+             placeholder="Rechercher par nom d'étudiant, email ou cours…">
+    </div>
+  </div>
+
+  <!-- Detail Panel -->
+  <div *ngIf="selectedRemarks.length > 0 || detailLoading" class="ac-card mb-4">
+    <div class="det-detail-header">
+      <div class="d-flex align-items-center gap-2">
+        <div class="det-detail-icon"><i class="ti ti-user"></i></div>
+        <div>
+          <div class="fw-bold" style="color:#0f172a">{{ selectedStudentName }}</div>
+          <div class="text-muted small">{{ selectedCourseTitle }}</div>
+        </div>
+      </div>
+      <button class="det-btn-close" (click)="closeDetail()">
+        <i class="ti ti-x"></i>Fermer
+      </button>
+    </div>
+    <div class="p-0">
+      <div *ngIf="detailLoading" class="text-center py-3">
+        <div class="spinner-border spinner-border-sm" style="color:#7c3aed"></div>
+      </div>
+      <div class="table-responsive" *ngIf="!detailLoading">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-bottom:1px solid rgba(124,58,237,.15)">
+            <tr>
+              <th class="ps-4 py-3 text-muted small fw-semibold" style="width:160px">Date</th>
+              <th class="py-3 text-muted small fw-semibold" style="width:130px">Type</th>
+              <th class="py-3 text-muted small fw-semibold">Message</th>
+              <th class="py-3 text-muted small fw-semibold pe-4" style="width:90px">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of selectedRemarks">
+              <td class="ps-4 small text-nowrap text-muted">{{ r.detectedAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td><span class="det-badge" [ngClass]="getTypeBadgeClass(r.remarkType)">{{ getTypeLabel(r.remarkType) }}</span></td>
+              <td class="small">{{ r.remarkMessage }}</td>
+              <td class="pe-4">
+                <span *ngIf="r.attentionScore != null" class="fw-bold" [style.color]="getScoreColor(r.attentionScore)">{{ r.attentionScore }}%</span>
+                <span *ngIf="r.attentionScore == null" class="text-muted">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && filteredSummaries.length === 0" class="ac-empty">
+    <div class="ac-empty-icon"><i class="ti ti-eye-off"></i></div>
+    <h6 class="fw-semibold text-secondary mb-1">Aucune donnée</h6>
+    <p class="text-muted small mb-0">Aucune donnée de détection caméra disponible.</p>
+  </div>
+
+  <!-- Summary Table -->
+  <div class="ac-card" *ngIf="!loading && filteredSummaries.length > 0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);border-bottom:2px solid rgba(124,58,237,.15)">
+          <tr>
+            <th class="ps-4 py-3 text-muted small fw-semibold">Étudiant</th>
+            <th class="py-3 text-muted small fw-semibold">Cours</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:70px">Total</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:85px">🙈 Fermés</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:85px">😴 Bâill.</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:85px">👀 Regard</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:85px">🚫 Absent</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:85px">✅ Positif</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:110px">Score moy.</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:140px">Dernière détecc.</th>
+            <th class="py-3 text-muted small fw-semibold text-end pe-4" style="width:80px"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of filteredSummaries" class="det-row">
+            <td class="ps-4">
+              <div class="fw-semibold small" style="color:#0f172a">{{ s.studentName }}</div>
+              <div class="text-muted" style="font-size:11px">{{ s.studentEmail }}</div>
+            </td>
+            <td class="small text-muted">{{ s.courseTitle }}</td>
+            <td><span class="det-badge det-badge-dark">{{ s.totalRemarks }}</span></td>
+            <td><span class="det-badge det-badge-warn">{{ s.typeCounts['EYES_CLOSED'] || 0 }}</span></td>
+            <td><span class="det-badge det-badge-purple">{{ s.typeCounts['YAWNING'] || 0 }}</span></td>
+            <td><span class="det-badge det-badge-red">{{ s.typeCounts['LOOKING_AWAY'] || 0 }}</span></td>
+            <td><span class="det-badge det-badge-gray">{{ s.typeCounts['ABSENT'] || 0 }}</span></td>
+            <td><span class="det-badge det-badge-green">{{ (s.typeCounts['SMILING'] || 0) + (s.typeCounts['CONCENTRATED'] || 0) }}</span></td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="det-score-bar-track flex-grow-1">
+                  <div class="det-score-bar-fill" [style.width]="(s.avgAttentionScore ?? 0) + '%'" [style.background]="getScoreColor(s.avgAttentionScore ?? 0)"></div>
+                </div>
+                <span *ngIf="s.avgAttentionScore != null" class="fw-bold small" style="min-width:36px" [style.color]="getScoreColor(s.avgAttentionScore)">{{ s.avgAttentionScore }}%</span>
+                <span *ngIf="s.avgAttentionScore == null" class="text-muted small">—</span>
+              </div>
+            </td>
+            <td class="small text-nowrap text-muted">{{ s.lastDetectedAt | date:'dd/MM/yy HH:mm' }}</td>
+            <td class="text-end pe-4">
+              <button class="det-btn-detail" (click)="viewDetail(s)" title="Voir détails">
+                <i class="ti ti-eye"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

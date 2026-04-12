@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
 
 @Component({
   selector: 'app-instructor-my-courses',
@@ -391,7 +392,13 @@ export class InstructorMyCoursesComponent implements OnInit {
   }
 
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    return `http://localhost:8081/${path}`;
+    return resolveCourseImage(path);
+  }
+
+  private normalizeLegacyPresetFileName(name: string): string {
+    const trimmed = (name || '').trim();
+    const m = trimmed.match(/^course-img(\d+)\.(jpg|jpeg|png|webp|svg)$/i);
+    if (!m) return trimmed;
+    return `course-img-${m[1]}.${m[2]}`;
   }
 }

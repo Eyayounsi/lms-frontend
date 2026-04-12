@@ -37,6 +37,11 @@ export class QaService {
     return this.http.put(`${this.apiUrl}/user/qa/questions/${questionId}`, data);
   }
 
+  /** Toutes les questions posées par l'utilisateur connecté */
+  getMyQuestions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/qa/my-questions`);
+  }
+
   // Réponses
   answerQuestion(questionId: number, data: { body: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/user/qa/questions/${questionId}/answers`, data);

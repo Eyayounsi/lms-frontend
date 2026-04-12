@@ -1,52 +1,102 @@
-<!-- Header -->
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card border-0 sa-header-banner">
-      <div class="card-body d-flex align-items-center gap-3 py-3">
-        <span class="icon-box bg-white bg-opacity-25 flex-shrink-0">
-          <i class="ti ti-users fs-20 text-white"></i>
-        </span>
-        <div class="flex-grow-1">
-          <h5 class="mb-0 text-white">Gestion Globale des Utilisateurs</h5>
-          <small class="text-white opacity-75">Super-Admin — Gérer tous les comptes, y compris les administrateurs</small>
+﻿<!-- ══════════════════════════════════════════════════════════════════════════
+     SUPERADMIN — Gestion des Utilisateurs
+     Design system : Dreams LMS (Inter, icon-box, bg-*-transparent)
+     Couleur signature SuperAdmin : Amber #FF9500 → #FF6B00
+     ══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ░░ HERO BANNER ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<div class="sa-hero mb-4">
+  <div class="sa-hero-glow sa-glow-1"></div>
+  <div class="sa-hero-glow sa-glow-2"></div>
+  <div class="row align-items-center position-relative z-1">
+    <div class="col-lg-7 mb-3 mb-lg-0">
+      <div class="d-flex align-items-center gap-3">
+        <!-- Avatar premium SuperAdmin -->
+        <div class="sa-hero-av-wrap">
+          <div class="sa-hero-av-ring1"></div>
+          <div class="sa-hero-av-border"></div>
+          <div class="sa-hero-av-circle">
+            <i class="ti ti-users" style="font-size:26px;color:#a5f3fc;"></i>
+          </div>
+          <div class="sa-hero-av-crown"><i class="ti ti-shield-bolt"></i></div>
+          <div class="sa-hero-av-pulse"></div>
         </div>
-        <button class="btn btn-light btn-sm" (click)="loadUsers()">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="sa-tier-chip"><i class="ti ti-shield-star me-1"></i>Super Administrateur</span>
+          </div>
+          <h3 class="mb-0 text-white fw-bold lh-sm">Gestion des Utilisateurs</h3>
+          <p class="mb-0 text-white-50 small">Gérer, bloquer et administrer les comptes</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="d-flex align-items-center justify-content-lg-end gap-2 flex-wrap">
+        <!-- Mini stats -->
+        <div *ngIf="!loading" class="d-none d-md-flex align-items-center gap-1 sa-stats-row me-1">
+          <div class="sa-stat-pill">
+            <i class="ti ti-users me-1"></i>
+            <span class="fw-bold">{{ users.length }}</span>
+            <span class="sa-stat-label">Total</span>
+          </div>
+          <div class="sa-stat-pill sa-stat-green">
+            <i class="ti ti-circle-check me-1"></i>
+            <span class="fw-bold">{{ countActive() }}</span>
+            <span class="sa-stat-label">Actifs</span>
+          </div>
+          <div class="sa-stat-pill sa-stat-red">
+            <i class="ti ti-ban me-1"></i>
+            <span class="fw-bold">{{ countBlocked() }}</span>
+            <span class="sa-stat-label">Bloqués</span>
+          </div>
+        </div>
+        <button class="sa-hero-btn sa-hero-btn-ghost" (click)="loadUsers()">
           <i class="ti ti-refresh me-1"></i>Actualiser
+        </button>
+        <button class="sa-hero-btn sa-hero-btn-solid" (click)="openCreateModal()">
+          <i class="ti ti-user-plus me-1"></i>Créer un compte
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Alertes -->
+<!-- ░░ ALERTES ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
 @if (successMessage) {
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    <i class="ti ti-circle-check me-2"></i>{{ successMessage }}
-    <button type="button" class="btn-close" (click)="successMessage=''"></button>
+  <div class="alert sa-toast sa-toast-success d-flex align-items-center gap-2 mb-3" role="alert">
+    <span class="sa-toast-icon"><i class="ti ti-circle-check"></i></span>
+    <span class="flex-grow-1 small fw-medium">{{ successMessage }}</span>
+    <button type="button" class="btn-close btn-close-sm" (click)="successMessage=''"></button>
   </div>
 }
 @if (errorMessage) {
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <i class="ti ti-alert-circle me-2"></i>{{ errorMessage }}
-    <button type="button" class="btn-close" (click)="errorMessage=''"></button>
+  <div class="alert sa-toast sa-toast-danger d-flex align-items-center gap-2 mb-3" role="alert">
+    <span class="sa-toast-icon sa-toast-icon-danger"><i class="ti ti-alert-circle"></i></span>
+    <span class="flex-grow-1 small fw-medium">{{ errorMessage }}</span>
+    <button type="button" class="btn-close btn-close-sm" (click)="errorMessage=''"></button>
   </div>
 }
 
-<!-- Filtres -->
-<div class="card mb-3 border-0">
-  <div class="card-body">
+<!-- ░░ FILTRES ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<div class="card border-0 sa-filter-card mb-3">
+  <div class="card-body py-3">
     <div class="row g-3 align-items-end">
-      <div class="col-md-4">
-        <label class="form-label fw-semibold">Rechercher</label>
-        <div class="input-group">
-          <span class="input-group-text"><i class="ti ti-search"></i></span>
-          <input type="text" class="form-control" placeholder="Nom ou email..."
+      <div class="col-lg-5 col-md-4">
+        <label class="form-label small fw-semibold text-muted mb-1">
+          <i class="ti ti-search me-1"></i>Rechercher
+        </label>
+        <div class="sa-search-wrap">
+          <i class="ti ti-search sa-search-ico"></i>
+          <input type="text" class="form-control form-control-sm sa-input sa-input-search"
+            placeholder="Nom, email ou téléphone..."
             [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
         </div>
       </div>
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">Rôle</label>
-        <select class="form-select" [(ngModel)]="filterRole" (ngModelChange)="onFilterChange()">
+      <div class="col-lg-3 col-md-3">
+        <label class="form-label small fw-semibold text-muted mb-1">
+          <i class="ti ti-users me-1"></i>Rôle
+        </label>
+        <select class="form-select form-select-sm sa-input" [(ngModel)]="filterRole" (ngModelChange)="onFilterChange()">
           <option value="">Tous les rôles</option>
           <option value="SUPERADMIN">Super Admin</option>
           <option value="ADMIN">Admin</option>
@@ -55,96 +105,144 @@
           <option value="RECRUITER">Recruteur</option>
         </select>
       </div>
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">Statut</label>
-        <select class="form-select" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+      <div class="col-lg-2 col-md-3">
+        <label class="form-label small fw-semibold text-muted mb-1">
+          <i class="ti ti-toggle-right me-1"></i>Statut
+        </label>
+        <select class="form-select form-select-sm sa-input" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
           <option value="">Tous</option>
           <option value="ACTIVE">Actif</option>
           <option value="BLOCKED">Bloqué</option>
         </select>
       </div>
-      <div class="col-md-2">
-        <button class="btn btn-outline-secondary w-100" (click)="loadUsers()">
-          <i class="ti ti-refresh me-1"></i>Refresh
+      <div class="col-lg-2 col-md-2 d-flex align-items-end">
+        <button class="btn btn-outline-warning btn-sm rounded-pill w-100 d-flex align-items-center justify-content-center gap-1"
+          (click)="searchTerm=''; filterRole=''; filterStatus=''; applyFilters()">
+          <i class="ti ti-filter-off"></i>Réinitialiser
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Table -->
-<div class="card border-0">
-  <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
-    <h6 class="card-title mb-0 fw-bold">Liste Complète des Utilisateurs</h6>
-    <span class="badge bg-warning text-dark">{{ filteredUsers.length }} utilisateur(s)</span>
+<!-- ░░ TABLE ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<div class="card border-0 sa-table-card">
+  <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3">
+    <h6 class="card-title mb-0 d-flex align-items-center gap-2">
+      <span class="icon-box bg-warning-transparent" style="width:30px;height:30px">
+        <i class="ti ti-list text-warning" style="font-size:15px"></i>
+      </span>
+      Liste Complète des Utilisateurs
+    </h6>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-warning-transparent text-warning fw-semibold px-3 py-2 rounded-pill">
+        <i class="ti ti-users me-1"></i>{{ filteredUsers.length }} utilisateur(s)
+      </span>
+    </div>
   </div>
   <div class="card-body p-0">
 
+    <!-- Loading -->
     @if (loading) {
       <div class="text-center py-5">
-        <div class="spinner-border text-warning" role="status"></div>
-        <p class="mt-2 text-muted">Chargement...</p>
+        <div class="sa-spinner-wrap mb-3">
+          <div class="spinner-border text-warning" style="width:2.5rem;height:2.5rem" role="status"></div>
+        </div>
+        <p class="text-muted small">Chargement des utilisateurs...</p>
       </div>
     }
 
+    <!-- Vide -->
     @if (!loading && filteredUsers.length === 0) {
-      <div class="text-center py-5">
-        <i class="ti ti-users-off fs-40 text-muted d-block mb-2"></i>
-        <p class="text-muted">Aucun utilisateur trouvé</p>
+      <div class="text-center py-5 px-3">
+        <div class="sa-empty-icon mx-auto mb-3">
+          <i class="ti ti-users-minus"></i>
+        </div>
+        <h6 class="fw-semibold mb-1">Aucun utilisateur trouvé</h6>
+        <p class="text-muted small mb-3">Modifiez vos filtres de recherche</p>
+        <button class="btn btn-outline-warning btn-sm rounded-pill"
+          (click)="searchTerm=''; filterRole=''; filterStatus=''; applyFilters()">
+          <i class="ti ti-filter-off me-1"></i>Voir tous les utilisateurs
+        </button>
       </div>
     }
 
+    <!-- Data -->
     @if (!loading && filteredUsers.length > 0) {
       <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
+        <table class="table align-middle mb-0 sa-table">
+          <thead>
             <tr>
-              <th class="ps-3">#</th>
+              <th class="ps-4" style="width:44px">#</th>
               <th>Utilisateur</th>
               <th>Email</th>
-              <th>Rôle</th>
-              <th>Statut</th>
-              <th>Inscription</th>
-              <th class="text-center">Bloquer</th>
-              <th class="text-center">Actions</th>
+              <th style="min-width:180px">Rôle</th>
+              <th style="width:110px">Statut</th>
+              <th style="width:120px">Inscription</th>
+              <th class="text-center" style="width:80px">Bloquer</th>
+              <th class="text-center" style="width:64px"></th>
             </tr>
           </thead>
           <tbody>
-            @for (user of filteredUsers; let i = $index; track user.id) {
-              <tr [class.table-warning-subtle]="user.role === 'SUPERADMIN'"
-                  [class.table-danger-subtle]="user.role === 'ADMIN'">
-                <td class="ps-3 text-muted small">{{ i + 1 }}</td>
+            @for (user of pagedUsers; let i = $index; track user.id) {
+              <tr [class.sa-row-superadmin]="user.role === 'SUPERADMIN'"
+                  [class.sa-row-admin]="user.role === 'ADMIN'"
+                  [class.sa-row-blocked]="user.accountStatus === 'BLOCKED'">
+
+                <!-- # -->
+                <td class="ps-4">
+                  <span class="sa-row-num">{{ (currentPage - 1) * pageSize + i + 1 }}</span>
+                </td>
+
+                <!-- Utilisateur -->
                 <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="user-avatar d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
-                         [class.bg-warning]="user.role === 'SUPERADMIN'"
-                         [class.bg-danger-transparent]="user.role === 'ADMIN'"
-                         [class.bg-primary-transparent]="user.role !== 'SUPERADMIN' && user.role !== 'ADMIN'">
-                      @if (user.role === 'SUPERADMIN') {
-                        <i class="ti ti-crown text-white"></i>
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="sa-avatar flex-shrink-0"
+                         [class.sa-av-superadmin]="user.role === 'SUPERADMIN'"
+                         [class.sa-av-admin]="user.role === 'ADMIN'"
+                         [class.sa-av-instructor]="user.role === 'INSTRUCTOR'"
+                         [class.sa-av-student]="user.role === 'STUDENT'"
+                         [class.sa-av-recruiter]="user.role === 'RECRUITER'">
+                      @if (hasAvatar(user)) {
+                        <img [src]="getAvatarUrl(user)"
+                             [alt]="user.fullName"
+                             (error)="onAvatarError(user)"
+                             style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;">
+                      } @else if (user.role === 'SUPERADMIN') {
+                        <i class="ti ti-shield-bolt"></i>
                       } @else {
-                        <span class="fw-bold text-uppercase"
-                          [class.text-danger]="user.role === 'ADMIN'"
-                          [class.text-primary]="user.role !== 'ADMIN'">
-                          {{ user.fullName.charAt(0) }}
-                        </span>
+                        <span>{{ user.fullName.charAt(0).toUpperCase() }}</span>
                       }
                     </div>
                     <div>
-                      <p class="mb-0 fw-semibold">{{ user.fullName }}</p>
-                      <small class="text-muted">{{ user.phone || 'Pas de tél.' }}</small>
+                      <p class="mb-0 fw-semibold text-truncate" style="max-width:140px">{{ user.fullName }}</p>
+                      <small class="text-muted d-flex align-items-center gap-1">
+                        <i class="ti ti-phone" style="font-size:11px"></i>
+                        {{ user.phone || 'Non renseigné' }}
+                      </small>
                     </div>
                   </div>
                 </td>
-                <td class="text-muted small">{{ user.email }}</td>
+
+                <!-- Email -->
+                <td>
+                  <span class="text-muted small d-flex align-items-center gap-1">
+                    <i class="ti ti-mail" style="font-size:13px;opacity:.45"></i>{{ user.email }}
+                  </span>
+                </td>
+
+                <!-- Rôle principal + secondaires -->
                 <td>
                   @if (user.role === 'SUPERADMIN') {
-                    <!-- SuperAdmin : non modifiable -->
-                    <span class="badge bg-warning text-dark">
-                      <i class="ti ti-crown me-1"></i>Super Admin
+                    <span class="badge sa-badge-superadmin">
+                      <i class="ti ti-shield-bolt me-1"></i>Super Admin
                     </span>
                   } @else {
-                    <select class="form-select form-select-sm role-select"
+                    <select class="form-select form-select-sm sa-role-select"
+                      [class.sa-rs-admin]="user.role === 'ADMIN'"
+                      [class.sa-rs-instructor]="user.role === 'INSTRUCTOR'"
+                      [class.sa-rs-student]="user.role === 'STUDENT'"
+                      [class.sa-rs-recruiter]="user.role === 'RECRUITER'"
                       [ngModel]="user.role"
                       (ngModelChange)="changeRole(user, $event)">
                       <option value="STUDENT">Étudiant</option>
@@ -154,39 +252,92 @@
                       <option value="SUPERADMIN">Super Admin</option>
                     </select>
                   }
-                </td>
-                <td>
-                  @if (user.accountStatus === 'ACTIVE') {
-                    <span class="badge bg-success-transparent text-success">
-                      <i class="ti ti-circle-check me-1"></i>Actif
-                    </span>
-                  } @else if (user.accountStatus === 'BLOCKED') {
-                    <span class="badge bg-danger-transparent text-danger">
-                      <i class="ti ti-ban me-1"></i>Bloqué
-                    </span>
-                  } @else {
-                    <span class="badge bg-warning-transparent text-warning">
-                      <i class="ti ti-clock me-1"></i>En attente
-                    </span>
+
+                  @if (user.role !== 'SUPERADMIN') {
+                    <div class="d-flex flex-wrap align-items-center gap-1 mt-1">
+                      @for (sr of (user.secondaryRoles || []); track sr) {
+                        <span class="sa-sr-pill"
+                          [class.sa-sr-instructor]="sr === 'INSTRUCTOR'"
+                          [class.sa-sr-student]="sr === 'STUDENT'"
+                          [class.sa-sr-recruiter]="sr === 'RECRUITER'"
+                          [class.sa-sr-admin]="sr === 'ADMIN'">
+                          <i class="ti"
+                             [class.ti-school]="sr === 'INSTRUCTOR'"
+                             [class.ti-user-graduate]="sr === 'STUDENT'"
+                             [class.ti-briefcase]="sr === 'RECRUITER'"
+                             [class.ti-shield]="sr === 'ADMIN'"></i>
+                          {{ sr === 'INSTRUCTOR' ? 'Instruct.' : sr === 'STUDENT' ? 'Étudiant' : sr === 'RECRUITER' ? 'Recruteur' : 'Admin' }}
+                          <button class="sa-sr-remove" (click)="removeSecondaryRole(user, sr)" title="Retirer">×</button>
+                        </span>
+                      }
+                      @if (availableSecondaryRoles(user).length > 0) {
+                        <div class="position-relative sa-add-wrapper">
+                          <button class="sa-sr-add" (click)="toggleAddRoleDropdown(user.id)" title="Ajouter un rôle">
+                            <i class="ti ti-plus"></i>
+                          </button>
+                          @if (addingSecondaryRoleFor === user.id) {
+                            <div class="sa-dropdown">
+                              @for (r of availableSecondaryRoles(user); track r) {
+                                <button class="sa-dd-item"
+                                  [class.sa-ddi-instructor]="r === 'INSTRUCTOR'"
+                                  [class.sa-ddi-student]="r === 'STUDENT'"
+                                  [class.sa-ddi-recruiter]="r === 'RECRUITER'"
+                                  [class.sa-ddi-admin]="r === 'ADMIN'"
+                                  (click)="addSecondaryRole(user, r)">
+                                  <i class="ti"
+                                     [class.ti-school]="r === 'INSTRUCTOR'"
+                                     [class.ti-user-graduate]="r === 'STUDENT'"
+                                     [class.ti-briefcase]="r === 'RECRUITER'"
+                                     [class.ti-shield]="r === 'ADMIN'"></i>
+                                  {{ getRoleLabel(r) }}
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
                   }
                 </td>
-                <td class="text-muted small">{{ formatDate(user.createdAt) }}</td>
+
+                <!-- Statut -->
+                <td>
+                  @if (user.accountStatus === 'ACTIVE') {
+                    <span class="sa-status sa-status-active"><span class="sa-dot bg-success"></span>Actif</span>
+                  } @else if (user.accountStatus === 'BLOCKED') {
+                    <span class="sa-status sa-status-blocked"><span class="sa-dot bg-danger"></span>Bloqué</span>
+                  } @else {
+                    <span class="sa-status sa-status-pending"><span class="sa-dot bg-warning"></span>En attente</span>
+                  }
+                </td>
+
+                <!-- Date -->
+                <td>
+                  <span class="text-muted small d-flex align-items-center gap-1">
+                    <i class="ti ti-calendar" style="font-size:12px;opacity:.45"></i>
+                    {{ formatDate(user.createdAt) }}
+                  </span>
+                </td>
+
+                <!-- Toggle bloquer -->
                 <td class="text-center">
                   <div class="form-check form-switch d-flex justify-content-center mb-0">
-                    <input class="form-check-input" type="checkbox" role="switch"
+                    <input class="form-check-input sa-switch" type="checkbox" role="switch"
                       [checked]="user.accountStatus === 'BLOCKED'"
                       [disabled]="user.role === 'SUPERADMIN'"
                       [title]="user.role === 'SUPERADMIN' ? 'Impossible de bloquer un Super Admin' : (user.accountStatus === 'BLOCKED' ? 'Débloquer' : 'Bloquer')"
-                      (change)="toggleBlock(user)">
+                      (change)="confirmToggleBlock(user)">
                   </div>
                 </td>
+
+                <!-- Supprimer -->
                 <td class="text-center">
                   @if (user.role !== 'SUPERADMIN') {
-                    <button class="btn btn-sm btn-outline-danger" (click)="confirmDelete(user)" title="Supprimer">
+                    <button class="sa-btn-del" (click)="confirmAndDelete(user)" title="Supprimer">
                       <i class="ti ti-trash"></i>
                     </button>
                   } @else {
-                    <span class="text-muted small">—</span>
+                    <span class="text-muted">—</span>
                   }
                 </td>
               </tr>
@@ -195,29 +346,139 @@
         </table>
       </div>
     }
-
   </div>
 </div>
 
-<!-- Modal de suppression -->
-@if (userToDelete) {
+<!-- ░░ PAGINATION ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+@if (filteredUsers.length > pageSize) {
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mt-4 px-1">
+    <p class="mb-0 text-muted small">
+      Affichage <strong>{{ pageStart }}–{{ pageEnd }}</strong>
+      sur <strong>{{ filteredUsers.length }}</strong> utilisateurs
+    </p>
+    <nav aria-label="Pagination utilisateurs">
+      <ul class="sa-pagination mb-0">
+        <li [class.disabled]="currentPage === 1">
+          <button class="sa-page-btn sa-page-nav" (click)="prevPage()" [disabled]="currentPage === 1" title="Précédent">
+            <i class="ti ti-chevron-left"></i>
+          </button>
+        </li>
+        @if (pageNumbers[0] > 1) {
+          <li><button class="sa-page-btn" (click)="goToPage(1)">1</button></li>
+          @if (pageNumbers[0] > 2) { <li class="sa-page-dots">…</li> }
+        }
+        @for (n of pageNumbers; track n) {
+          <li>
+            <button class="sa-page-btn" [class.sa-page-active]="n === currentPage" (click)="goToPage(n)">{{ n }}</button>
+          </li>
+        }
+        @if (pageNumbers[pageNumbers.length - 1] < totalPages) {
+          @if (pageNumbers[pageNumbers.length - 1] < totalPages - 1) { <li class="sa-page-dots">…</li> }
+          <li><button class="sa-page-btn" (click)="goToPage(totalPages)">{{ totalPages }}</button></li>
+        }
+        <li [class.disabled]="currentPage === totalPages">
+          <button class="sa-page-btn sa-page-nav" (click)="nextPage()" [disabled]="currentPage === totalPages" title="Suivant">
+            <i class="ti ti-chevron-right"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+}
+
+<!-- ░░ MODAL CRÉATION ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+@if (showCreateModal) {
   <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow-sm">
-        <div class="modal-header border-0 pb-0">
-          <h5 class="modal-title">
-            <i class="ti ti-alert-triangle text-danger me-2"></i>Confirmer la suppression
-          </h5>
-          <button type="button" class="btn-close" (click)="cancelDelete()"></button>
+      <div class="modal-content border-0 sa-modal">
+        <div class="modal-header border-0 pb-0 px-4 pt-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="sa-modal-ico sa-modal-ico-warning">
+              <i class="ti ti-user-plus"></i>
+            </div>
+            <div>
+              <h6 class="modal-title fw-bold mb-0">Créer un compte</h6>
+              <small class="text-muted">Admin ou Recruteur</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" (click)="closeCreateModal()"></button>
         </div>
-        <div class="modal-body">
-          <p>Êtes-vous sûr de vouloir supprimer le compte de <strong>{{ userToDelete.fullName }}</strong> ?</p>
-          <p class="text-muted small mb-0">Cette action est irréversible.</p>
+        <div class="modal-body px-4 pt-3">
+          @if (createError) {
+            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-3 rounded-3">
+              <i class="ti ti-alert-circle flex-shrink-0"></i>{{ createError }}
+            </div>
+          }
+
+          <!-- Sélection du rôle -->
+          <div class="mb-3">
+            <label class="form-label small fw-semibold mb-2">Rôle du compte <span class="text-danger">*</span></label>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm flex-fill sa-role-pick"
+                [class.active]="createForm.role === 'RECRUITER'"
+                [class.sa-pick-recruiter]="true"
+                (click)="createForm.role = 'RECRUITER'">
+                <i class="ti ti-briefcase d-block mb-1" style="font-size:18px"></i>Recruteur
+              </button>
+              <button class="btn btn-sm flex-fill sa-role-pick"
+                [class.active]="createForm.role === 'ADMIN'"
+                [class.sa-pick-admin]="true"
+                (click)="createForm.role = 'ADMIN'">
+                <i class="ti ti-shield-check d-block mb-1" style="font-size:18px"></i>Administrateur
+              </button>
+            </div>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold mb-1">Nom complet <span class="text-danger">*</span></label>
+              <input type="text" class="form-control form-control-sm sa-field" [(ngModel)]="createForm.fullName"
+                placeholder="Jean Dupont">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold mb-1">Email <span class="text-danger">*</span></label>
+              <input type="email" class="form-control form-control-sm sa-field" [(ngModel)]="createForm.email"
+                placeholder="jean@email.com">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold mb-1">Téléphone <span class="text-muted">(opt.)</span></label>
+              <input type="text" class="form-control form-control-sm sa-field" [(ngModel)]="createForm.phone"
+                placeholder="+33 6 12 34 56 78">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label small fw-semibold mb-1">Société <span class="text-muted">(opt.)</span></label>
+              <input type="text" class="form-control form-control-sm sa-field" [(ngModel)]="createForm.companyName"
+                placeholder="Acme Corp">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold mb-1">Mot de passe <span class="text-muted">(opt.)</span></label>
+              <div class="input-group input-group-sm">
+                <input [type]="showCreatePassword ? 'text' : 'password'" class="form-control sa-field"
+                  [(ngModel)]="createForm.password" placeholder="Vide = génération automatique">
+                <button class="btn btn-outline-secondary" type="button" (click)="showCreatePassword = !showCreatePassword">
+                  <i [class]="showCreatePassword ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+                </button>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="sa-info-note d-flex align-items-start gap-2">
+                <i class="ti ti-info-circle text-warning mt-1 flex-shrink-0" style="font-size:15px"></i>
+                <small class="text-muted lh-sm">
+                  Si le mot de passe est vide, un mot de passe temporaire sera généré automatiquement.
+                  Les identifiants seront envoyés par email.
+                </small>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-outline-secondary" (click)="cancelDelete()">Annuler</button>
-          <button type="button" class="btn btn-danger" (click)="deleteUser()">
-            <i class="ti ti-trash me-1"></i>Supprimer
+        <div class="modal-footer border-0 pt-2 pb-4 px-4 gap-2">
+          <button type="button" class="btn btn-light btn-sm rounded-pill px-4" (click)="closeCreateModal()" [disabled]="creating">Annuler</button>
+          <button type="button" class="btn btn-warning btn-sm rounded-pill px-4 d-flex align-items-center gap-2" (click)="createAccount()" [disabled]="creating">
+            @if (creating) {
+              <span class="spinner-border spinner-border-sm"></span>Création...
+            } @else {
+              <i class="ti ti-user-plus"></i>Créer le compte
+            }
           </button>
         </div>
       </div>

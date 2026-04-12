@@ -1,0 +1,157 @@
+<div class="content">
+  <div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+      <div>
+        <h4 class="fw-bold mb-1">
+          <i class="isax isax-eye me-2 text-primary"></i>Suivi d'attention — Mes cours
+        </h4>
+        <p class="text-muted mb-0">Détections caméra des étudiants inscrits à vos cours</p>
+      </div>
+    </div>
+
+    <!-- Course selector -->
+    <div *ngIf="coursesLoading" class="text-center py-4">
+      <div class="spinner-border spinner-border-sm text-primary"></div>
+      <span class="ms-2 text-muted">Chargement des cours...</span>
+    </div>
+
+    <div *ngIf="!coursesLoading && myCourses.length === 0" class="alert alert-info">
+      Vous n'avez aucun cours pour le moment.
+    </div>
+
+    <div *ngIf="!coursesLoading && myCourses.length > 0" class="mb-4">
+      <label class="form-label fw-semibold">Sélectionner un cours</label>
+      <div class="d-flex flex-wrap gap-2">
+        <button *ngFor="let c of myCourses"
+                class="btn btn-sm"
+                [ngClass]="selectedCourseId === c.id ? 'btn-primary' : 'btn-outline-primary'"
+                (click)="selectCourse(c)">
+          {{ c.title }}
+        </button>
+      </div>
+    </div>
+
+    <!-- No course selected -->
+    <div *ngIf="!selectedCourseId && !coursesLoading && myCourses.length > 0"
+         class="text-center py-5 text-muted">
+      <i class="isax isax-video-play fs-48 d-block mb-2"></i>
+      <p>Sélectionnez un cours pour voir les détections.</p>
+    </div>
+
+    <!-- Loading remarks -->
+    <div *ngIf="loading" class="text-center py-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <!-- Course detail -->
+    <ng-container *ngIf="selectedCourseId && !loading">
+
+      <!-- Stats -->
+      <div class="row mb-4" *ngIf="remarks.length > 0">
+        <div class="col-md-2 col-sm-4 mb-2">
+          <div class="card border-0 bg-light text-center p-3">
+            <h3 class="fw-bold mb-0">{{ remarks.length }}</h3>
+            <small class="text-muted">Total remarques</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-4 mb-2">
+          <div class="card border-0 bg-light text-center p-3">
+            <h3 class="fw-bold mb-0">{{ uniqueStudents.length }}</h3>
+            <small class="text-muted">Étudiants concernés</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-4 mb-2">
+          <div class="card border-0 text-center p-3" style="background:#f0fdf4;">
+            <h3 class="fw-bold mb-0" [style.color]="attentionScoreColor">
+              <ng-container *ngIf="avgAttentionScore != null">{{ avgAttentionScore }}%</ng-container>
+              <ng-container *ngIf="avgAttentionScore == null">—</ng-container>
+            </h3>
+            <small class="text-muted">Attention moyenne</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-4 mb-2">
+          <div class="card border-0 text-center p-3" style="background:#fefce8;">
+            <h3 class="fw-bold mb-0 text-warning">{{ countByType('EYES_CLOSED') }}</h3>
+            <small class="text-muted">Yeux fermés</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-4 mb-2">
+          <div class="card border-0 text-center p-3" style="background:#fef2f2;">
+            <h3 class="fw-bold mb-0 text-danger">{{ countByType('LOOKING_AWAY') }}</h3>
+            <small class="text-muted">Regard ailleurs</small>
+          </div>
+        </div>
+        <div class="col-md-2 col-sm-4 mb-2">
+          <div class="card border-0 text-center p-3" style="background:#f0fdf4;">
+            <h3 class="fw-bold mb-0 text-success">{{ positiveCount }}</h3>
+            <small class="text-muted">Moments positifs</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dominant issue banner -->
+      <div class="alert alert-warning d-flex align-items-center gap-2 py-2 px-3 mb-3"
+           *ngIf="mostCommonIssue && remarks.length > 5">
+        <i class="isax isax-info-circle"></i>
+        <span class="small">
+          Problème le plus fréquent dans ce cours :
+          <strong>{{ mostCommonIssue.label }}</strong>
+          ({{ mostCommonIssue.count }} occurrence{{ mostCommonIssue.count > 1 ? 's' : '' }}).
+          Pensez à renforcer l'interactivité à ces moments.
+        </span>
+      </div>
+
+      <!-- Search -->
+      <div class="mb-3" *ngIf="remarks.length > 0">
+        <input type="text" class="form-control" [(ngModel)]="searchTerm" (input)="filterRemarks()"
+               placeholder="Rechercher par nom d'étudiant ou type...">
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="remarks.length === 0" class="text-center py-5 text-muted">
+        <i class="isax isax-tick-circle fs-48 d-block mb-2 text-success"></i>
+        <p>Aucune détection d'inattention pour ce cours.</p>
+      </div>
+
+      <!-- Table -->
+      <div class="card border-0 shadow-sm" *ngIf="filteredRemarks.length > 0">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Étudiant</th>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Message</th>
+                  <th>Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let r of filteredRemarks">
+                  <td class="fw-medium small">{{ r.studentName }}</td>
+                  <td class="small text-nowrap">{{ r.detectedAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                  <td>
+                    <span class="badge rounded-pill" [ngClass]="getTypeBadgeClass(r.remarkType)">
+                      {{ getTypeLabel(r.remarkType) }}
+                    </span>
+                  </td>
+                  <td class="small">{{ r.remarkMessage }}</td>
+                  <td>
+                    <span *ngIf="r.attentionScore != null" class="fw-bold" [style.color]="getScoreColor(r.attentionScore)">
+                      {{ r.attentionScore }}%
+                    </span>
+                    <span *ngIf="r.attentionScore == null" class="text-muted">—</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

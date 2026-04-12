@@ -1,115 +1,205 @@
-﻿<div class="page-content">
+﻿<div class="cart-page">
+  <section class="cart-body">
+    <div class="container">
+      <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show cart-alert" role="alert">
+        <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
+        <button type="button" class="btn-close" (click)="successMessage = ''"></button>
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show cart-alert" role="alert">
+        <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+      </div>
 
-  <!-- Messages -->
-  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show mb-3">
-    <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
-    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
-  </div>
-  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show mb-3">
-    <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
-    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
-  </div>
+      <div *ngIf="loading" class="cart-loading card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+          <div class="spinner-border text-primary mb-3" role="status"></div>
+          <h5 class="mb-2">Chargement du panier</h5>
+          <p class="text-muted mb-0">Préparation de vos cours et promotions...</p>
+        </div>
+      </div>
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Mon Panier</h4>
-    <span class="badge bg-secondary fs-6">{{ items.length }} cours</span>
-  </div>
+      <div *ngIf="!loading && items.length === 0" class="cart-empty card border-0 shadow-sm">
+        <div class="card-body text-center py-5 py-lg-6">
+          <div class="cart-empty__icon mx-auto mb-4">
+            <i class="fa-solid fa-cart-shopping"></i>
+          </div>
+          <h3 class="mb-3">Votre panier est vide</h3>
+          <p class="text-muted mb-4">Ajoutez des cours pour voir le récapitulatif, les remises et le paiement sécurisé.</p>
+          <a [routerLink]="routes.courseListPublic" class="btn btn-primary rounded-pill px-4">
+            <i class="fa-solid fa-compass me-2"></i>Parcourir les cours
+          </a>
+        </div>
+      </div>
 
-  <!-- Loading -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2 text-muted">Chargement...</p>
-  </div>
+      <div *ngIf="!loading && items.length > 0" class="row g-4 align-items-start">
+        <div class="col-lg-8">
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+            <div>
+              <h2 class="cart-section-title mb-1">Cours sélectionnés</h2>
+              <p class="text-muted mb-0">{{ items.length }} article{{ items.length > 1 ? 's' : '' }} dans le panier</p>
+            </div>
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+              Paiement via Stripe
+            </span>
+          </div>
 
-  <!-- Vide -->
-  <div *ngIf="!loading && items.length === 0" class="text-center py-5">
-    <i class="fa-solid fa-cart-shopping fa-3x text-muted mb-3"></i>
-    <h5 class="text-muted">Votre panier est vide</h5>
-    <a [routerLink]="routes.courseListPublic" class="btn btn-primary mt-2">
-      <i class="fa-solid fa-search me-1"></i>Parcourir les cours
-    </a>
-  </div>
+          <div class="cart-item-card card border-0 shadow-sm mb-3" *ngFor="let item of items; trackBy: trackByCourseId">
+            <div class="card-body">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-4 col-xl-3">
+                  <div class="cart-item-cover position-relative">
+                    <img [src]="getImageUrl(item.courseImage)" class="w-100 h-100 object-fit-cover" alt="cours" loading="lazy" decoding="async">
+                    <span *ngIf="hasActivePromotion(item)" class="badge cart-item-badge">
+                      -{{ getPromotionPercent(item) }}%
+                    </span>
+                  </div>
+                </div>
 
-  <!-- Contenu du panier -->
-  <div *ngIf="!loading && items.length > 0">
-    <div class="row">
-      <!-- Articles -->
-      <div class="col-lg-8">
-        <div class="card mb-3 shadow-sm" *ngFor="let item of items">
-          <div class="card-body">
-            <div class="row align-items-center">
-              <div class="col-md-3">
-                <img [src]="getImageUrl(item.courseImage)" class="img-fluid rounded"
-                     style="height: 90px; object-fit: cover; width:100%;" alt="">
-              </div>
-              <div class="col-md-7">
-                <h6 class="mb-1">{{ item.courseTitle }}</h6>
-                <p class="text-muted small mb-1">
-                  <i class="fa-solid fa-user-tie me-1"></i>{{ item.instructorName }}
-                </p>
-              </div>
-              <div class="col-md-2 text-end">
-                <div class="fw-bold text-primary mb-2">{{ item.coursePrice | number:'1.2-2' }} €</div>
-                <button class="btn btn-danger btn-sm" (click)="removeFromCart(item.courseId)">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                <div class="col-md-8 col-xl-9">
+                  <div class="d-flex flex-column flex-xl-row justify-content-between gap-3">
+                    <div class="flex-grow-1">
+                      <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                        <span *ngIf="hasActivePromotion(item)" class="badge bg-danger-subtle text-danger rounded-pill">Promo active</span>
+                        <span class="badge bg-secondary-subtle text-secondary rounded-pill">Cours</span>
+                      </div>
+                      <h5 class="mb-2 cart-item-title">{{ item.courseTitle }}</h5>
+                      <p class="text-muted mb-3 d-flex align-items-center gap-2 flex-wrap">
+                        <span class="cart-instructor-avatar">
+                          <app-avatar-fallback [name]="item.instructorName || 'Formateur'" size="sm"></app-avatar-fallback>
+                        </span>
+                        <span>{{ item.instructorName || 'Formateur' }}</span>
+                        <span *ngIf="hasActivePromotion(item)" class="text-primary fw-semibold">{{ getItemSubtitle(item) }}</span>
+                      </p>
+
+                      <div class="d-flex flex-wrap align-items-center gap-2">
+                        <span class="cart-price">{{ getCurrentPrice(item) | number:'1.2-2' }} €</span>
+                        <span *ngIf="hasActivePromotion(item)" class="text-muted text-decoration-line-through">
+                          {{ item.originalPrice | number:'1.2-2' }} €
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="cart-item-actions text-xl-end">
+                      <button class="btn btn-outline-danger btn-sm rounded-pill px-3" (click)="removeFromCart(item.courseId)">
+                        <i class="fa-solid fa-trash me-1"></i>Retirer
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Récapitulatif -->
-      <div class="col-lg-4">
-        <div class="card shadow-sm">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fa-solid fa-receipt me-2"></i>Récapitulatif</h5>
-          </div>
-          <div class="card-body">
-            <div *ngFor="let item of items" class="d-flex justify-content-between mb-2">
-              <span class="text-muted small text-truncate me-2" style="max-width:180px;">{{ item.courseTitle }}</span>
-              <span class="fw-medium">{{ item.coursePrice | number:'1.2-2' }} €</span>
-            </div>
-            <hr>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <span class="fw-bold">Total</span>
-              <span class="fw-bold fs-5 text-primary">{{ total | number:'1.2-2' }} €</span>
-            </div>
-
-            <!-- Guest: login to checkout -->
-            <ng-container *ngIf="isGuest">
-              <div class="alert alert-info text-center py-3 mb-2">
-                <i class="fa-solid fa-lock me-2"></i>
-                <strong>Connectez-vous</strong> pour finaliser votre achat.<br>
-                Vos articles seront conservés.
+        <div class="col-lg-4">
+          <div class="cart-summary card border-0 shadow-sm position-sticky">
+            <div class="card-body">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                  <h3 class="cart-section-title mb-1">Récapitulatif</h3>
+                  <p class="text-muted mb-0">Vue synthétique du paiement</p>
+                </div>
+                <i class="fa-solid fa-receipt cart-summary__icon"></i>
               </div>
-              <a [routerLink]="routes.login" class="btn btn-primary w-100 mb-2">
-                <i class="fa-solid fa-right-to-bracket me-1"></i>Se connecter / S'inscrire
-              </a>
-            </ng-container>
 
-            <!-- Logged-in: buy each course separately -->
-            <ng-container *ngIf="!isGuest">
-              <div *ngFor="let item of items">
-                <button class="btn btn-primary w-100 mb-2"
-                        (click)="checkout(item.courseId)"
-                        [disabled]="checkingOutId === item.courseId">
-                  <span *ngIf="checkingOutId === item.courseId"
-                        class="spinner-border spinner-border-sm me-1"></span>
-                  <i *ngIf="checkingOutId !== item.courseId" class="fa-solid fa-bolt me-1"></i>
-                  {{ checkingOutId === item.courseId ? 'Redirection...' : 'Payer ' + (item.coursePrice | number:'1.2-2') + ' \u20ac' }}
-                </button>
+              <div class="cart-summary__list mb-3">
+                <div *ngFor="let item of items; trackBy: trackByCourseId" class="cart-summary__row">
+                  <span class="text-muted text-truncate me-3">{{ item.courseTitle }}</span>
+                  <strong>{{ getCurrentPrice(item) | number:'1.2-2' }} €</strong>
+                </div>
               </div>
-            </ng-container>
 
-            <p class="text-muted small text-center mt-2">
-              <i class="fa-solid fa-shield-halved me-1 text-success"></i>
-              Paiement sécurisé via Stripe
-            </p>
+              <div class="cart-summary__totals mb-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted">Total</span>
+                    <strong class="cart-summary__total-price">{{ total | number:'1.2-2' }} €</strong>
+                </div>
+                <p class="small text-muted mb-0">Paiement sécurisé et redirection Stripe après validation.</p>
+              </div>
+
+              <ng-container *ngIf="!isGuest">
+                <div class="coupon-box mb-3">
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h6 class="mb-0">Code promo</h6>
+                    <span class="badge bg-warning-subtle text-warning">Réduction</span>
+                  </div>
+
+                  <div *ngIf="!couponValid">
+                    <div class="input-group">
+                      <span class="input-group-text bg-white"><i class="fa-solid fa-tag text-warning"></i></span>
+                      <input type="text" class="form-control" placeholder="Ex: CPE-XXXXXXXX"
+                             [(ngModel)]="couponCode" [disabled]="validatingCoupon"
+                         maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                         (input)="onCouponInput()"
+                             (keyup.enter)="applyCoupon()">
+                      <button class="btn btn-warning" (click)="applyCoupon()" [disabled]="validatingCoupon || !couponCode.trim()">
+                        <span *ngIf="validatingCoupon" class="spinner-border spinner-border-sm"></span>
+                        <span *ngIf="!validatingCoupon">Appliquer</span>
+                      </button>
+                    </div>
+                    <p *ngIf="couponError" class="text-danger small mt-2 mb-0">
+                      <i class="fa-solid fa-circle-xmark me-1"></i>{{ couponError }}
+                    </p>
+                  </div>
+
+                  <div *ngIf="couponValid" class="coupon-valid d-flex align-items-center justify-content-between gap-2">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                      <span class="badge bg-success rounded-pill"><i class="fa-solid fa-check me-1"></i>{{ couponCode }}</span>
+                      <strong class="text-success">-{{ couponDiscount }}%</strong>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger rounded-pill" (click)="removeCoupon()">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="isGuest">
+                <div class="guest-box mb-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <div class="guest-box__icon">
+                      <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-1">Connexion requise</h6>
+                      <p class="text-muted mb-0">Connectez-vous pour finaliser votre achat. Vos articles seront conservés.</p>
+                    </div>
+                  </div>
+                  <a [routerLink]="routes.login" class="btn btn-primary w-100 rounded-pill mt-3">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Se connecter / S'inscrire
+                  </a>
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="!isGuest">
+                <div class="checkout-box">
+                  <div *ngFor="let item of items; trackBy: trackByCourseId" class="mb-2">
+                    <button class="btn btn-primary w-100 rounded-pill py-3 fw-semibold"
+                            (click)="checkout(item.courseId)"
+                            [disabled]="checkingOutId === item.courseId">
+                      <span *ngIf="checkingOutId === item.courseId" class="spinner-border spinner-border-sm me-2"></span>
+                      <i *ngIf="checkingOutId !== item.courseId" class="fa-solid fa-bolt me-2"></i>
+                      <ng-container *ngIf="checkingOutId === item.courseId">Redirection...</ng-container>
+                      <ng-container *ngIf="checkingOutId !== item.courseId">
+                        <ng-container *ngIf="couponValid">
+                          Payer <span class="text-decoration-line-through opacity-75">{{ getCurrentPrice(item) | number:'1.2-2' }} €</span>
+                          {{ getDiscountedPrice(getCurrentPrice(item)) | number:'1.2-2' }} €
+                        </ng-container>
+                        <ng-container *ngIf="!couponValid">Payer {{ getCurrentPrice(item) | number:'1.2-2' }} €</ng-container>
+                      </ng-container>
+                    </button>
+                  </div>
+                </div>
+              </ng-container>
+
+              <div class="d-flex align-items-center justify-content-center gap-2 mt-3 text-muted small">
+                <i class="fa-solid fa-shield-halved text-success"></i>
+                Paiement sécurisé via Stripe
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
+  </section>
 </div>

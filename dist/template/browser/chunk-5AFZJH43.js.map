@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/shared/pipe/safe-url.pipe.ts"],
-  "sourcesContent": ["import { Pipe, PipeTransform } from '@angular/core';\r\nimport { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';\r\n\r\n@Pipe({\r\n  name: 'safeUrl',\r\n  standalone: true\r\n})\r\nexport class SafeUrlPipe implements PipeTransform {\r\n  constructor(private sanitizer: DomSanitizer) {}\r\n\r\n  transform(url: string): SafeResourceUrl {\r\n    return this.sanitizer.bypassSecurityTrustResourceUrl(url);\r\n  }\r\n}\r\n"],
-  "mappings": ";;;;;;;;;;;AAOM,IAAO,cAAP,MAAO,aAAW;EACF;EAApB,YAAoB,WAAuB;AAAvB,SAAA,YAAA;EAA0B;EAE9C,UAAU,KAAW;AACnB,WAAO,KAAK,UAAU,+BAA+B,GAAG;EAC1D;;qCALW,cAAW,4BAAA,cAAA,EAAA,CAAA;EAAA;sFAAX,cAAW,MAAA,KAAA,CAAA;;;sEAAX,aAAW,CAAA;UAJvB;WAAK;MACJ,MAAM;MACN,YAAY;KACb;;;",
-  "names": []
-}

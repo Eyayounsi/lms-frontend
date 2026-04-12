@@ -1,133 +1,117 @@
-<form>
-    <!-- Title -->
+﻿<form>
+    <!-- Titre + badge sauvegardÃ© -->
     <div class="d-flex justify-content-between align-items-center border-bottom pb-4 mb-4">
-        <h5 class="fs-18 mb-0">General Notifications</h5>
-        <button class="btn btn-sm btn-dark" type="button">Toggle all</button>
+        <h5 class="fs-18 mb-0">
+            General Notifications
+            @if (saved) {
+                <span class="badge bg-soft-success ms-2 fs-12 fw-normal">SauvegardÃ© âœ“</span>
+            }
+        </h5>
+        <button class="btn btn-sm btn-dark" type="button" (click)="toggleAllGeneral()">Toggle all</button>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Student Questions</h6>
-            <small>Notify me when a student asks a question in the Q&A section</small>
+            <small>Notify me when a student asks a question in the Q&amp;A section</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="checkPrivacy1" checked="">
+            <input class="form-check-input" type="checkbox" id="pref_studentQuestions"
+                   [(ngModel)]="prefs.studentQuestions" name="studentQuestions"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Feedback Received</h6>
-            <small>Notify me when receive feedback from students</small>
+            <small>Notify me when I receive feedback from students</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="7" checked="">
+            <input class="form-check-input" type="checkbox" id="pref_feedbackReceived"
+                   [(ngModel)]="prefs.feedbackReceived" name="feedbackReceived"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Quiz/Exam Results Submission</h6>
             <small>Notify me when quiz or exam results are submitted</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="4">
+            <input class="form-check-input" type="checkbox" id="pref_quizResults"
+                   [(ngModel)]="prefs.quizResults" name="quizResults"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Forum Activity</h6>
             <small>Notify me about new posts or replies in course discussion forums.</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="5">
+            <input class="form-check-input" type="checkbox" id="pref_forumActivity"
+                   [(ngModel)]="prefs.forumActivity" name="forumActivity"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
-    
 </form>
+
 <div class="text-center my-5"></div>
+
 <form>
-    <!-- Title -->
     <div class="d-flex justify-content-between align-items-center border-bottom pb-4 mb-4">
         <h5 class="fs-18 mb-0">Email Notifications</h5>
-        <button class="btn btn-sm btn-dark" type="button">Toggle all</button>
+        <button class="btn btn-sm btn-dark" type="button" (click)="toggleAllEmail()">Toggle all</button>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Course Enrolment</h6>
-            <small>Send me emails when a new student enrolls the course</small>
+            <small>Send me emails when I enroll in a new course</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="checkPrivacy6" checked="">
+            <input class="form-check-input" type="checkbox" id="pref_courseEnrolment"
+                   [(ngModel)]="prefs.courseEnrolment" name="courseEnrolment"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Assignment Submission</h6>
-            <small>Send me email whenever an assignment is submitted by a student</small>
+            <small>Send me email whenever an assignment is submitted</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="checkPrivacy7" checked="">
+            <input class="form-check-input" type="checkbox" id="pref_assignmentSubmission"
+                   [(ngModel)]="prefs.assignmentSubmission" name="assignmentSubmission"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Course Comments</h6>
-            <small>Get notified about comments on your posts and replies to your comments.</small>
+            <small>Get notified about comments and replies to your comments.</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="8">
+            <input class="form-check-input" type="checkbox" id="pref_courseComments"
+                   [(ngModel)]="prefs.courseComments" name="courseComments"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
 
-    <!-- Item -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
         <div>
             <h6>Course Reminders</h6>
-            <small>Receive booking assistance reminders to stay updated on your scheduled sessions.</small>
+            <small>Receive reminders to stay updated on your scheduled sessions.</small>
         </div>
-        <!-- Switch -->
         <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="9">
-        </div>
-    </div>
-
-    <!-- Item -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <!-- Content -->
-        <div>
-            <h6>System Updates</h6>
-            <small>Send me emails about updates to the LMS platform </small>
-        </div>
-        <!-- Switch -->
-        <div class="form-check form-switch form-check-md mb-0 ms-3">
-            <input class="form-check-input" type="checkbox" id="17">
+            <input class="form-check-input" type="checkbox" id="pref_courseReminders"
+                   [(ngModel)]="prefs.courseReminders" name="courseReminders"
+                   (ngModelChange)="onToggle()">
         </div>
     </div>
 </form>

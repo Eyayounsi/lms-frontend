@@ -3,15 +3,31 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "rootDir": "./src",
     "outDir": "./out-tsc/app",
     "types": [
       "node"
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.d.ts"
   ],
   "exclude": [
-    "src/**/*.spec.ts"
+    "src/**/*.spec.ts",
+    "src/test.ts",
+    "src/polyfills.ts",
+    "src/environments/environment.prod.ts",
+    "src/app/features/admin/admin-reports/**",
+    "src/app/features/courses/course-details/**",
+    "src/app/features/home-list/home3/components/data.ts",
+    "src/app/features/instructor/instructor-earnings/**",
+    "src/app/features/instructor/instructor-my-courses/**",
+    "src/app/features/instructor/instructor-statements/**",
+    "src/app/features/instructor/settings/instructor-integrations/**",
+    "src/app/features/instructor/settings/instructor-linked-accounts/**",
+    "src/app/features/instructor/settings/instructor-plans/**",
+    "src/app/features/layouts/date-range-picker/**",
+    "src/app/shared/models/register.model.ts"
   ]
 }

@@ -1,0 +1,230 @@
+﻿<div class="page-content">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Slate                                                              -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="rpt-hero mb-4">
+    <div class="rpt-glow rpt-glow-1"></div>
+    <div class="rpt-glow rpt-glow-2"></div>
+    <div class="rpt-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="rpt-av-wrap">
+              <div class="rpt-av-ring"></div>
+              <div class="rpt-av-border"></div>
+              <div class="rpt-av-circle">
+                <i class="ti ti-chart-bar" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="rpt-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="rpt-chip"><i class="ti ti-report me-1" style="font-size:9px"></i>Rapports</span>
+                <span class="rpt-live"><span class="rpt-live-dot"></span>TEMPS RÉEL</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Rapports &amp; Analytics</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Vue d'ensemble de la plateforme en temps réel</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="rpt-glass d-none d-md-flex align-items-center" *ngIf="overview">
+              <div class="rpt-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ overview.totalUsers }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Utilisateurs</small>
+              </div>
+              <div class="rpt-stat-div"></div>
+              <div class="rpt-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ overview.publishedCourses }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Cours</small>
+              </div>
+              <div class="rpt-stat-div"></div>
+              <div class="rpt-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ overview.totalRevenue | number:'1.0-0' }}€</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Revenus</small>
+              </div>
+            </div>
+            <button class="rpt-refresh d-flex align-items-center gap-2" (click)="loadAll()">
+              <i class="ti ti-refresh" style="font-size:14px"></i>Actualiser
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" style="color:#475569" role="status"></div>
+    <p class="mt-2 text-muted">Chargement des données…</p>
+  </div>
+
+  <!-- ═══ KPI cards ══════════════════════════════════════════════════════════ -->
+  <div *ngIf="!loading && overview" class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi ac-kpi-blue">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1"><div class="ac-kpi-icon"><i class="ti ti-users"></i></div></div>
+          <div class="ac-kpi-val">{{ overview.totalUsers }}</div>
+          <p class="ac-kpi-label">Utilisateurs</p>
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi ac-kpi-green">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1"><div class="ac-kpi-icon"><i class="ti ti-book"></i></div></div>
+          <div class="ac-kpi-val">{{ overview.publishedCourses }}</div>
+          <p class="ac-kpi-label">Cours publiés</p>
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi ac-kpi-yellow">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1"><div class="ac-kpi-icon"><i class="ti ti-school"></i></div></div>
+          <div class="ac-kpi-val">{{ overview.totalEnrollments }}</div>
+          <p class="ac-kpi-label">Inscriptions</p>
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi ac-kpi-violet">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1"><div class="ac-kpi-icon"><i class="ti ti-currency-euro"></i></div></div>
+          <div class="ac-kpi-val">{{ overview.totalRevenue | number:'1.0-0' }}€</div>
+          <p class="ac-kpi-label">Revenus totaux</p>
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi ac-kpi-slate">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1"><div class="ac-kpi-icon"><i class="ti ti-certificate"></i></div></div>
+          <div class="ac-kpi-val">{{ overview.totalCertificates }}</div>
+          <p class="ac-kpi-label">Certificats</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi" style="--kpi-r:239;--kpi-g:68;--kpi-b:68">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1" style="--kpi-r:239;--kpi-g:68;--kpi-b:68"><div class="ac-kpi-icon" style="background:rgba(239,68,68,.1);color:#dc2626"><i class="ti ti-headset"></i></div></div>
+          <div class="ac-kpi-val" style="color:#dc2626">{{ overview.openTickets }}</div>
+          <p class="ac-kpi-label">Tickets ouverts</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi ac-kpi-blue">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1"><div class="ac-kpi-icon"><i class="ti ti-user-plus"></i></div></div>
+          <div class="ac-kpi-val">{{ overview.newUsersThisMonth }}</div>
+          <p class="ac-kpi-label">Nouveaux ce mois</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+      <div class="ac-kpi ac-kpi-green">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1"><div class="ac-kpi-icon"><i class="ti ti-trending-up"></i></div></div>
+          <div class="ac-kpi-val">{{ overview.newEnrollmentsThisMonth }}</div>
+          <p class="ac-kpi-label">Inscriptions ce mois</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Charts ══════════════════════════════════════════════════════════════ -->
+  <div *ngIf="chartsReady" class="row g-3 mb-4">
+    <div class="col-12">
+      <div class="ac-card p-4">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(99,102,241,.1);display:flex;align-items:center;justify-content:center">
+            <i class="ti ti-chart-line" style="color:#6366f1;font-size:16px"></i>
+          </div>
+          <div>
+            <div class="fw-bold" style="color:#0f172a">Revenus &amp; Ventes — 12 derniers mois</div>
+          </div>
+        </div>
+        <apx-chart [series]="revenueSeries" [chart]="revenueOptions.chart" [colors]="revenueOptions.colors"
+          [fill]="revenueOptions.fill" [stroke]="revenueOptions.stroke" [markers]="revenueOptions.markers"
+          [xaxis]="revenueOptions.xaxis" [yaxis]="revenueOptions.yaxis" [grid]="revenueOptions.grid"
+          [dataLabels]="revenueOptions.dataLabels" [legend]="revenueOptions.legend" [tooltip]="revenueOptions.tooltip">
+        </apx-chart>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="chartsReady" class="row g-3 mb-4">
+    <div class="col-md-8">
+      <div class="ac-card p-4 h-100">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(29,78,216,.1);display:flex;align-items:center;justify-content:center">
+            <i class="ti ti-user-plus" style="color:#1d4ed8;font-size:16px"></i>
+          </div>
+          <div class="fw-bold" style="color:#0f172a">Inscriptions — 12 derniers mois</div>
+        </div>
+        <apx-chart [series]="userSeries" [chart]="userChartOptions.chart" [plotOptions]="userChartOptions.plotOptions"
+          [colors]="userChartOptions.colors" [dataLabels]="userChartOptions.dataLabels"
+          [xaxis]="userChartOptions.xaxis" [yaxis]="userChartOptions.yaxis"
+          [grid]="userChartOptions.grid" [tooltip]="userChartOptions.tooltip">
+        </apx-chart>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ac-card p-4 h-100 d-flex flex-column">
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.1);display:flex;align-items:center;justify-content:center">
+            <i class="ti ti-chart-donut" style="color:#16a34a;font-size:16px"></i>
+          </div>
+          <div class="fw-bold" style="color:#0f172a">Cours par statut</div>
+        </div>
+        <div class="d-flex align-items-center justify-content-center flex-grow-1">
+          <apx-chart [series]="courseDonutSeries" [chart]="courseDonutOptions.chart"
+            [labels]="courseDonutOptions.labels" [colors]="courseDonutOptions.colors"
+            [legend]="courseDonutOptions.legend" [dataLabels]="courseDonutOptions.dataLabels"
+            [plotOptions]="courseDonutOptions.plotOptions">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top courses table -->
+  <div *ngIf="courseStats && courseStats.topCourses.length > 0" class="ac-card mb-4">
+    <div class="d-flex align-items-center gap-2 p-4 pb-2">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(234,179,8,.1);display:flex;align-items:center;justify-content:center">
+        <i class="ti ti-trophy" style="color:#a16207;font-size:16px"></i>
+      </div>
+      <div class="fw-bold" style="color:#0f172a">Top cours par inscriptions</div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead style="background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-bottom:1px solid #e2e8f0">
+          <tr>
+            <th class="ps-4 py-3 text-muted small fw-semibold" style="width:40px">#</th>
+            <th class="py-3 text-muted small fw-semibold">Titre</th>
+            <th class="py-3 text-muted small fw-semibold text-end" style="width:130px">Inscriptions</th>
+            <th class="py-3 text-muted small fw-semibold text-end pe-4" style="width:130px">Revenus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of courseStats.topCourses; let i = index">
+            <td class="ps-4 text-muted small">{{ i + 1 }}</td>
+            <td class="fw-semibold" style="color:#0f172a">{{ c.title }}</td>
+            <td class="text-end"><span class="ac-status pending">{{ c.enrollments }}</span></td>
+            <td class="text-end fw-semibold pe-4" style="color:#16a34a">{{ c.revenue | number:'1.2-2' }} €</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

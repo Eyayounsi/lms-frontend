@@ -20,8 +20,20 @@ export class StudentSidebarComponent implements OnInit, OnDestroy {
   public base = '';
   public page = '';
   public last = '';
+  userName = localStorage.getItem('fullName') || 'Etudiant';
+  userAvatarUrl = '';
   unreadMsgCount = 0;
   private pollSub?: Subscription;
+  private identitySub?: Subscription;
+
+  get userInitials(): string {
+    return (this.userName || 'E')
+      .split(' ')
+      .map(part => part.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  }
 
   constructor(private common: CommonService, private authService: AuthService, private messageService: MessageService) {
     this.common.base.subscribe((base: string) => { this.base = base; });
@@ -30,6 +42,20 @@ export class StudentSidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.authService.ensureProfileIdentityLoaded();
+    this.userAvatarUrl = this.authService.resolveAvatarUrl(localStorage.getItem('avatarPath'));
+    this.identitySub = new Subscription();
+    this.identitySub.add(
+      this.authService.currentFullName$.subscribe(name => {
+        if (name) this.userName = name;
+      })
+    );
+    this.identitySub.add(
+      this.authService.currentAvatarPath$.subscribe(path => {
+        this.userAvatarUrl = this.authService.resolveAvatarUrl(path);
+      })
+    );
+
     this.refreshCount();
     this.pollSub = interval(30000).pipe(
       switchMap(() => this.messageService.getUnreadCount())
@@ -41,6 +67,7 @@ export class StudentSidebarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.pollSub?.unsubscribe();
+    this.identitySub?.unsubscribe();
   }
 
   private refreshCount(): void {

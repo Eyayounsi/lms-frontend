@@ -90,9 +90,19 @@ export class CourseService {
     return this.http.put<any>(`${this.apiUrl}/instructor/courses/${courseId}/archive`, {});
   }
 
+  /** Désarchiver un cours (ARCHIVED → PUBLISHED) */
+  unarchiveCourse(courseId: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/instructor/courses/${courseId}/unarchive`, {});
+  }
+
   /** Ajouter une section à un cours */
   addSection(courseId: number, data: { title: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/instructor/courses/${courseId}/sections`, data);
+  }
+
+  /** Mettre à jour le titre d'une section */
+  updateSection(courseId: number, sectionId: number, data: { title: string }): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/instructor/courses/${courseId}/sections/${sectionId}`, data);
   }
 
   /** Ajouter une leçon à une section */
@@ -110,6 +120,13 @@ export class CourseService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<any>(`${this.apiUrl}/instructor/courses/${courseId}/cover`, formData);
+  }
+
+  setPresetCover(courseId: number, imageName: string): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiUrl}/instructor/courses/${courseId}/cover-preset?imageName=${encodeURIComponent(imageName)}`,
+      {}
+    );
   }
 
   /** Uploader une vidéo pour une leçon */
@@ -316,6 +333,16 @@ export class CourseService {
     return this.http.put<any>(`${this.apiUrl}/admin/courses/${courseId}/archive`, {});
   }
 
+  /** Admin: désarchiver un cours (ARCHIVED → PUBLISHED) */
+  adminUnarchiveCourse(courseId: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/admin/courses/${courseId}/unarchive`, {});
+  }
+
+  /** Admin: liste des cours archivés */
+  getArchivedCoursesForAdmin(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/admin/courses/archived`);
+  }
+
   /** Admin: modifier le prix d'un cours */
   adminUpdatePrice(courseId: number, price: number): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/admin/courses/${courseId}/price`, { price });
@@ -390,10 +417,12 @@ export class CourseService {
   // ═══════════════════════════════════════════════════════════════════════
 
   /** Créer une session de paiement Stripe → retourne l'URL de redirection */
-  createCheckoutSession(courseId: number): Observable<{ sessionId: string; url: string }> {
+  createCheckoutSession(courseId: number, couponCode?: string): Observable<{ sessionId: string; url: string }> {
+    const body: any = { courseId };
+    if (couponCode) { body.couponCode = couponCode; }
     return this.http.post<{ sessionId: string; url: string }>(
       `${this.apiUrl}/payment/create-session`,
-      { courseId }
+      body
     );
   }
 

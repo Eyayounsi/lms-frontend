@@ -1,41 +1,102 @@
-<div class="settings-sidebar mb-lg-0">
-    <div>
-        <h6 class="mb-3">Menu Principal</h6>
-        <ul class="mb-3 pb-1">
-            <li>
-                <a [routerLink]="routes.admin_dashboard" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-grid-35 me-2"></i>Tableau de bord
-                </a>
-            </li>
-            <li>
-                <a [routerLink]="routes.admin_users" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-profile-2user5 me-2"></i>Gestion des Utilisateurs
-                </a>
-            </li>
-            <li>
-                <a [routerLink]="routes.admin_courses" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-teacher5 me-2"></i>Validation des Cours
-                </a>
-            </li>
-            <li>
-                <a [routerLink]="routes.admin_categories" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-category5 me-2"></i>Catégories
-                </a>
-            </li>
-        </ul>
-        <hr>
-        <h6 class="mb-3">Paramètres</h6>
-        <ul>
-            <li>
-                <a [routerLink]="routes.adminSettings" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-setting-25 me-2"></i>Mon Profil
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" (click)="onLogout()" class="d-inline-flex align-items-center">
-                    <i class="isax isax-logout5 me-2"></i>Déconnexion
-                </a>
-            </li>
-        </ul>
+﻿<!-- ══════════════════════════════════════════════════════
+     Admin Sidebar  —  Dreams LMS Design System
+     Primary #392C7D | Secondary #FF4667
+     ══════════════════════════════════════════════════════ -->
+<nav class="adm-sidebar">
+
+  <!-- ── PROFILE CARD ───────────────────────────────────── -->
+  <div class="adm-profile-card">
+    <div class="adm-profile-glow"></div>
+    <div class="d-flex align-items-center gap-3 position-relative">
+      <div class="adm-profile-shield-wrap">
+        <div class="adm-profile-shield-ring">
+          <div class="adm-profile-shield-box">
+            <i class="ti ti-shield-check adm-profile-shield-icon"></i>
+          </div>
+        </div>
+        <div class="adm-profile-shield-pulse"></div>
+      </div>
+      <div class="overflow-hidden">
+        <p class="mb-0 fw-bold text-truncate" style="max-width:140px;font-size:14px;color:#1e293b">{{ userName }}</p>
+        <span class="adm-role-badge"><i class="ti ti-shield-half me-1" style="font-size:9px"></i>Administrateur</span>
+      </div>
     </div>
-</div>
+  </div>
+
+  <!-- ── MENU PRINCIPAL ─────────────────────────────────── -->
+  <div class="adm-nav-section">
+    <span class="adm-nav-label">Menu Principal</span>
+    <ul class="adm-nav-list">
+      <li>
+        <a [routerLink]="routes.admin_dashboard" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-blue"><i class="ti ti-layout-dashboard"></i></span>
+          <span class="adm-nav-text">Tableau de bord</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="routes.admin_users" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-sky"><i class="ti ti-users"></i></span>
+          <span class="adm-nav-text">Gestion des Utilisateurs</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="routes.admin_courses" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-amber"><i class="ti ti-school"></i></span>
+          <span class="adm-nav-text">Gestion des Cours</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="routes.admin_categories" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-teal"><i class="ti ti-category"></i></span>
+          <span class="adm-nav-text">Catégories</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="routes.admin_blog" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-rose"><i class="ti ti-news"></i></span>
+          <span class="adm-nav-text">Gestion Blog</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="routes.admin_tickets" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-orange"><i class="ti ti-headset"></i></span>
+          <span class="adm-nav-text">Support Tickets</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="routes.admin_payouts" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-green"><i class="ti ti-transfer"></i></span>
+          <span class="adm-nav-text">Virements</span>
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="routes.adminAnalytics" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-indigo"><i class="ti ti-brain"></i></span>
+          <span class="adm-nav-text">Analytics IA</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="adm-nav-divider"></div>
+
+  <!-- ── PARAMÈTRES ─────────────────────────────────────── -->
+  <div class="adm-nav-section">
+    <span class="adm-nav-label">Paramètres</span>
+    <ul class="adm-nav-list">
+      <li>
+        <a [routerLink]="routes.adminSettings" routerLinkActive="adm-active" class="adm-nav-item">
+          <span class="adm-nav-ico adm-ico-secondary"><i class="ti ti-user-circle"></i></span>
+          <span class="adm-nav-text">Mon Profil</span>
+        </a>
+      </li>
+      <li>
+        <a href="javascript:void(0)" (click)="onLogout()" class="adm-nav-item adm-nav-item-danger">
+          <span class="adm-nav-ico adm-ico-danger"><i class="ti ti-logout-2"></i></span>
+          <span class="adm-nav-text">Déconnexion</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+</nav>

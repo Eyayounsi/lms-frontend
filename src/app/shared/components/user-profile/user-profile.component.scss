@@ -1,1 +1,201 @@
-// User profile styles
+﻿/* ═══════════════════════════════════════════════════════════════════════════
+   Profil Utilisateur - Dreams LMS
+   Style : student/instructor layout + SA/Admin adaptations
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── IDENTITY HEADER CARD ──────────────────────────────────────────────── */
+.prof-id-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 20px;
+  border-left: 4px solid #392C7D;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+/* ─── AVATAR ─────────────────────────────────────────────────────────────── */
+.prof-av-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+}
+
+.prof-av-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.18);
+}
+
+.prof-av-initial {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.prof-av-crown {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FF9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(255,149,0,.5);
+  .ti { font-size: 10px; color: #fff; }
+}
+
+/* ─── ROLE BADGE ─────────────────────────────────────────────────────────── */
+.prof-role-badge {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  padding: 4px 10px;
+  color: #fff;
+}
+
+/* ─── SETTINGS NAV OVERRIDES (role-specific active color) ───────────────── */
+.prof-settings-nav li a.active {
+  color: var(--prof-accent, #392C7D) !important;
+  &:after {
+    background: var(--prof-accent, #392C7D) !important;
+    opacity: 1 !important;
+  }
+}
+
+.prof-tab-danger-link {
+  color: var(--prof-accent, #392C7D) !important;
+  &.active:after {
+    background: var(--prof-accent, #392C7D) !important;
+  }
+}
+
+/* ─── CONTENT CARD (left accent border on top) ───────────────────────────── */
+.prof-content-card {
+  border-top: 3px solid var(--prof-accent, #392C7D) !important;
+  border-radius: 8px !important;
+}
+
+.prof-danger-card {
+  border-top: 3px solid var(--prof-accent, #392C7D) !important;
+  border-radius: 8px !important;
+}
+
+/* ─── SAVE BUTTON ────────────────────────────────────────────────────────── */
+.prof-save-btn {
+  border: none;
+  color: #fff !important;
+  &:hover { filter: brightness(1.1); }
+  &:disabled { opacity: .7; }
+}
+
+/* ─── PASSWORD RULES ─────────────────────────────────────────────────────── */
+.prof-pw-rule {
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  .ti { font-size: 13px; }
+}
+
+.prof-pw-rule-ok {
+  color: #03C95A;
+}
+
+.prof-photo-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 2px 0;
+}
+
+.prof-photo-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #e5e7eb;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.prof-photo-avatar--initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.prof-photo-content {
+  min-width: 0;
+}
+
+.prof-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+
+.prof-photo-btn--upload {
+  background: #e5e7eb;
+  color: #111827;
+
+  &:hover {
+    background: #d1d5db;
+  }
+}
+
+.prof-photo-btn--delete {
+  background: #ff4667;
+  color: #fff;
+
+  &:hover:enabled {
+    background: #e83b5b;
+  }
+
+  &:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+  }
+}
+
+.prof-photo-btn.disabled {
+  opacity: .75;
+  pointer-events: none;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .prof-id-card { padding: 14px 16px; }
+  .prof-av-circle,
+  .prof-av-wrap { width: 46px; height: 46px; }
+  .prof-av-initial { font-size: 18px; }
+
+  .prof-photo-row {
+    align-items: flex-start;
+  }
+
+  .prof-photo-avatar {
+    width: 76px;
+    height: 76px;
+  }
+}

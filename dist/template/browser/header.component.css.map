@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/layouts/header/header.component.scss"],
-  "sourcesContent": [".disply-none{\n    display: none;\n}\n.disply-block{\n    display: block;\n}"],
-  "mappings": ";AAAA,CAAA;AACI,WAAA;;AAEJ,CAAA;AACI,WAAA;;",
-  "names": []
-}

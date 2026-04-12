@@ -10,10 +10,11 @@ import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { BlockedService } from '../shared/service/auth/blocked.service';
 import { AuthService } from '../shared/service/auth/auth.service';
 import { Subscription } from 'rxjs';
+import { VisitorChatbotComponent } from '../shared/components/visitor-chatbot/visitor-chatbot.component';
 
 @Component({
   selector: 'app-features',
-  imports: [CommonModule,RouterModule,HeaderComponent,AdminHeaderComponent,SlickCarouselModule],
+  imports: [CommonModule,RouterModule,HeaderComponent,AdminHeaderComponent,SlickCarouselModule,VisitorChatbotComponent],
   templateUrl: './features.component.html',
   styleUrl: './features.component.scss'
 })
@@ -37,6 +38,7 @@ export class FeaturesComponent implements OnInit, OnDestroy {
   blockedMessage: string | null = null;
   private blockedSub!: Subscription;
   private pingInterval: any = null;
+  showVisitorChatbot = false;
   @HostListener('window:scroll', [])
   onWindowScroll(): void {
     // Show the button after scrolling 200px down
@@ -124,16 +126,37 @@ export class FeaturesComponent implements OnInit, OnDestroy {
       this.routeStatus == 'instructor' ||
       this.routeStatus == 'student' ||
       this.routeStatus == 'admin' ||
-      this.routeStatus == 'recruiter'
+      this.routeStatus == 'recruiter' ||
+      this.routeStatus == 'superadmin'
     ) {
       this.common.isuserHeader.next(false);
       this.common.isAdminHeader.next(true);
-    }else{
+    } else {
       this.common.isuserHeader.next(true);
       this.common.isAdminHeader.next(false);
     }
+
+    this.updateVisitorChatbotVisibility();
    
   }
+
+  private updateVisitorChatbotVisibility(): void {
+    const excludedRoutes = new Set([
+      'auth',
+      'student',
+      'instructor',
+      'admin',
+      'recruiter',
+      'superadmin',
+      'error-404',
+      'error-500',
+      'under-construction',
+      'coming-soon'
+    ]);
+
+    this.showVisitorChatbot = !this.authService.isLoggedIn() && !excludedRoutes.has(this.routeStatus);
+  }
+
   ngOnInit(): void {
     this.blockedSub = this.blockedService.blocked$.subscribe(msg => {
       this.blockedMessage = msg;
@@ -146,6 +169,8 @@ export class FeaturesComponent implements OnInit, OnDestroy {
         });
       }
     }, 30000);
+
+    this.updateVisitorChatbotVisibility();
   }
 
   onBlockedLogout(): void {

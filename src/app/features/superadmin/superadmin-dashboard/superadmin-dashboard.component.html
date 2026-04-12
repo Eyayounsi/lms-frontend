@@ -1,18 +1,68 @@
-<!-- Bannière SuperAdmin -->
-<div class="row mb-4">
-  <div class="col-12">
-    <div class="card border-0 sa-banner">
-      <div class="card-body d-flex align-items-center gap-3 py-4">
-        <div class="sa-avatar-ring flex-shrink-0">
-          <div class="sa-avatar">
-            <i class="ti ti-crown fs-28 text-white"></i>
+﻿<!-- ══════════════════════════════════════════════════════════════════════════
+     SUPERADMIN — Tableau de Bord
+     Design system : Dreams LMS (Inter, icon-box, bg-*-transparent)
+     Couleur signature SuperAdmin : Amber #FF9500 → #FF6B00
+     ══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- ░░ HERO BANNER ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+<div class="sa-hero mb-4">
+  <div class="sa-hero-glow sa-glow-1"></div>
+  <div class="sa-hero-glow sa-glow-2"></div>
+  <div class="row align-items-center position-relative" style="z-index:2">
+    <div class="col-lg-7 mb-3 mb-lg-0">
+      <div class="d-flex align-items-center gap-3">
+        <!-- Avatar premium SuperAdmin -->
+        <div class="sa-hero-av-wrap">
+          <div class="sa-hero-av-ring1"></div>
+          <div class="sa-hero-av-border"></div>
+          <div class="sa-hero-av-circle">
+            <span class="sa-hero-av-initial">{{ userHeroInitials }}</span>
           </div>
+          <div class="sa-hero-av-crown"><i class="ti ti-shield-bolt"></i></div>
+          <div class="sa-hero-av-pulse"></div>
         </div>
-        <div class="flex-grow-1">
-          <h4 class="mb-1 text-white fw-bold">Bienvenue, {{ userName }} 👑</h4>
-          <p class="mb-0 text-white opacity-75 small">Tableau de bord Super-Administrateur — Vue globale de la plateforme</p>
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="sa-tier-chip"><i class="ti ti-shield-star me-1"></i>Super Administrateur</span>
+            <span class="sa-live-badge"><span class="sa-live-dot"></span>EN DIRECT</span>
+          </div>
+          <h3 class="mb-0 text-white fw-bold lh-sm">Bienvenue, {{ userName }}</h3>
+          <p class="mb-0 text-white-50 small">
+            Vue globale de la plateforme
+            @if (lastUpdated) {
+              <span class="opacity-60">&middot; MAJ {{ lastUpdated }}</span>
+            }
+          </p>
         </div>
-        <button class="btn btn-light btn-sm" (click)="loadStats()">
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="d-flex align-items-center justify-content-lg-end gap-2 flex-wrap">
+        <!-- Stats pills -->
+        @if (stats) {
+          <div class="d-none d-md-flex align-items-center gap-1 sa-stats-row me-1">
+            <div class="sa-stat-pill">
+              <i class="ti ti-users me-1"></i>
+              <span class="fw-bold">{{ stats.totalUsers }}</span>
+              <span class="sa-stat-label">Total</span>
+            </div>
+            <div class="sa-stat-pill sa-stat-green">
+              <i class="ti ti-circle-check me-1"></i>
+              <span class="fw-bold">{{ stats.activeUsers }}</span>
+              <span class="sa-stat-label">Actifs</span>
+            </div>
+            <div class="sa-stat-pill sa-stat-red">
+              <i class="ti ti-ban me-1"></i>
+              <span class="fw-bold">{{ stats.blockedUsers }}</span>
+              <span class="sa-stat-label">Bloqués</span>
+            </div>
+          </div>
+        }
+        <!-- Horloge -->
+        @if (currentTime) {
+          <span class="sa-time-badge"><i class="ti ti-clock me-1"></i>{{ currentTime }}</span>
+        }
+        <button class="sa-hero-btn sa-hero-btn-solid" (click)="confirmRefresh()">
           <i class="ti ti-refresh me-1"></i>Actualiser
         </button>
       </div>
@@ -20,114 +70,134 @@
   </div>
 </div>
 
-<!-- Skeleton Loader -->
+<!-- ░░ SKELETON ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
 @if (loading) {
   <div class="row g-3 mb-4">
     @for (i of [1,2,3,4]; track i) {
       <div class="col-sm-6 col-xl-3">
-        <div class="card border-0">
+        <div class="card border-0 shadow-sm">
           <div class="card-body">
-            <div class="skeleton skeleton-line w-50 mb-2"></div>
-            <div class="skeleton skeleton-line w-75 mb-3" style="height:32px"></div>
-            <div class="skeleton skeleton-line w-100"></div>
+            <div class="sa-skeleton sa-skeleton-line w-50 mb-2"></div>
+            <div class="sa-skeleton sa-skeleton-line w-75 mb-3" style="height:28px"></div>
+            <div class="sa-skeleton sa-skeleton-line w-100"></div>
           </div>
         </div>
       </div>
     }
   </div>
+  <div class="row g-3 mb-4">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm" style="height:340px">
+        <div class="card-body d-flex align-items-center justify-content-center">
+          <div class="text-center text-muted">
+            <i class="ti ti-chart-area-line d-block mb-2" style="font-size:36px;opacity:.12"></i>
+            <small>Chargement...</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm" style="height:340px">
+        <div class="card-body d-flex align-items-center justify-content-center">
+          <div class="sa-skeleton" style="width:180px;height:180px;border-radius:50%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 }
 
 @if (!loading && stats) {
-  <!-- ─── Cartes de Statistics ─────────────────────────────────────────────── -->
+
+  <!-- ░░ BARRE DE SANTÉ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="sa-health-alert card border-0" [style.--sa-health-c]="healthColor">
+        <div class="card-body py-3 px-4 d-flex align-items-center gap-3">
+          <span class="sa-pulse-dot"></span>
+          <div class="flex-grow-1">
+            <span class="fw-bold small" [style.color]="healthColor">Santé plateforme&nbsp;: {{ platformHealth }}</span>
+            <span class="text-muted small ms-2">&mdash; {{ stats.activeUsers }}&nbsp;comptes actifs sur {{ stats.totalUsers }}&nbsp;enregistrés</span>
+          </div>
+          <span class="badge rounded-pill fw-semibold" [style.background]="healthColor + '18'" [style.color]="healthColor">{{ activeRate }}% actifs</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ KPI ROW 1 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
   <div class="row g-3 mb-4">
 
-    <!-- Total Utilisateurs -->
+    <!-- Total utilisateurs -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card stat-card--primary">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-primary">
         <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between mb-3">
-            <div class="stat-icon-box bg-primary-transparent">
-              <i class="ti ti-users fs-22 text-primary"></i>
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box bg-primary-transparent">
+              <i class="ti ti-users fs-20 text-primary"></i>
             </div>
-            <span class="badge bg-primary-transparent text-primary small">Total</span>
+            <span class="badge bg-primary-transparent text-primary rounded-pill">Total</span>
           </div>
-          <h2 class="fw-bold mb-1" [class.counter-animate]="!loading">{{ stats.totalUsers }}</h2>
-          <p class="text-muted mb-0 small">Utilisateurs enregistrés</p>
-          <div class="mt-2">
-            <div class="progress" style="height:4px">
-              <div class="progress-bar bg-primary" style="width:100%"></div>
-            </div>
+          <h2 class="fw-bold mb-1">{{ stats.totalUsers }}</h2>
+          <p class="text-muted small mb-2">Utilisateurs enregistrés</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar bg-primary" style="width:100%"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Utilisateurs Actifs -->
+    <!-- Comptes actifs -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card stat-card--success">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-success">
         <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between mb-3">
-            <div class="stat-icon-box bg-success-transparent">
-              <i class="ti ti-circle-check fs-22 text-success"></i>
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box" style="background:rgba(56,189,248,.15)">
+              <i class="ti ti-circle-check fs-20" style="color:#0284c7"></i>
             </div>
-            <span class="badge bg-success-transparent text-success small">
-              {{ stats.totalUsers > 0 ? ((stats.activeUsers / stats.totalUsers) * 100 | number:'1.0-0') : 0 }}%
-            </span>
+            <span class="badge rounded-pill" style="background:rgba(56,189,248,.15);color:#0284c7">{{ activeRate }}%</span>
           </div>
-          <h2 class="fw-bold mb-1 text-success">{{ stats.activeUsers }}</h2>
-          <p class="text-muted mb-0 small">Comptes actifs</p>
-          <div class="mt-2">
-            <div class="progress" style="height:4px">
-              <div class="progress-bar bg-success"
-                [style.width]="(stats.totalUsers > 0 ? (stats.activeUsers / stats.totalUsers * 100) : 0) + '%'">
-              </div>
-            </div>
+          <h2 class="fw-bold mb-1" style="color:#0284c7">{{ stats.activeUsers }}</h2>
+          <p class="text-muted small mb-2">Comptes actifs</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar" style="background:linear-gradient(90deg,#38bdf8,#0284c7)" [style.width]="activeRate + '%'"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Utilisateurs Bloqués -->
+    <!-- Comptes bloqués -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card stat-card--danger">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-danger">
         <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between mb-3">
-            <div class="stat-icon-box bg-danger-transparent">
-              <i class="ti ti-ban fs-22 text-danger"></i>
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box" style="background:rgba(155,91,182,.12)">
+              <i class="ti ti-ban fs-20" style="color:#9b59b6"></i>
             </div>
-            <span class="badge bg-danger-transparent text-danger small">
-              {{ stats.totalUsers > 0 ? ((stats.blockedUsers / stats.totalUsers) * 100 | number:'1.0-0') : 0 }}%
-            </span>
+            <span class="badge rounded-pill" style="background:rgba(155,91,182,.12);color:#9b59b6">{{ blockedRate }}%</span>
           </div>
-          <h2 class="fw-bold mb-1 text-danger">{{ stats.blockedUsers }}</h2>
-          <p class="text-muted mb-0 small">Comptes bloqués</p>
-          <div class="mt-2">
-            <div class="progress" style="height:4px">
-              <div class="progress-bar bg-danger"
-                [style.width]="(stats.totalUsers > 0 ? (stats.blockedUsers / stats.totalUsers * 100) : 0) + '%'">
-              </div>
-            </div>
+          <h2 class="fw-bold mb-1" style="color:#9b59b6">{{ stats.blockedUsers }}</h2>
+          <p class="text-muted small mb-2">Comptes bloqués</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar" style="background:#9b59b6" [style.width]="blockedRate + '%'"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Nouveaux ce mois -->
+    <!-- Nouvelles inscriptions -->
     <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card stat-card--warning">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-warning">
         <div class="card-body">
-          <div class="d-flex align-items-start justify-content-between mb-3">
-            <div class="stat-icon-box bg-warning-transparent">
-              <i class="ti ti-user-plus fs-22 text-warning"></i>
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box" style="background:rgba(13,202,240,.12)">
+              <i class="ti ti-user-plus fs-20" style="color:#0284c7"></i>
             </div>
-            <span class="badge bg-warning-transparent text-warning small">Ce mois</span>
+            <span class="badge rounded-pill" style="background:rgba(13,202,240,.12);color:#0284c7">Ce mois</span>
           </div>
-          <h2 class="fw-bold mb-1 text-warning">{{ newThisMonth }}</h2>
-          <p class="text-muted mb-0 small">Nouvelles inscriptions</p>
-          <div class="mt-2">
-            <div class="progress" style="height:4px">
-              <div class="progress-bar bg-warning" style="width:60%"></div>
-            </div>
+          <h2 class="fw-bold mb-1" style="color:#0284c7">{{ newThisMonth }}</h2>
+          <p class="text-muted small mb-2">Nouvelles inscriptions</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar" style="background:linear-gradient(90deg,#5625E8,#0DCAF0);width:65%"></div>
           </div>
         </div>
       </div>
@@ -135,24 +205,140 @@
 
   </div>
 
-  <!-- ─── Ligne 2 : Donut + Répartition par rôle ─────────────────────────── -->
+  <!-- ░░ KPI ROW 2 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
   <div class="row g-3 mb-4">
 
-    <!-- Donut Chart : Statuts -->
-    <div class="col-lg-5">
-      <div class="card border-0 h-100">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="fw-bold mb-1">Statut des Comptes</h6>
-              <p class="text-muted small mb-0">Actifs vs Bloqués</p>
+    <!-- Santé plateforme -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-health">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box" [style.background]="healthColor + '18'">
+              <i class="ti ti-activity fs-20" [style.color]="healthColor"></i>
             </div>
-            <span class="icon-box bg-primary-transparent">
-              <i class="ti ti-chart-pie text-primary"></i>
-            </span>
+            <span class="badge rounded-pill" [style.background]="healthColor + '18'" [style.color]="healthColor">{{ platformHealth }}</span>
+          </div>
+          <h2 class="fw-bold mb-1" [style.color]="healthColor">{{ activeRate }}%</h2>
+          <p class="text-muted small mb-2">Santé de la plateforme</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar" [style.background]="healthColor" [style.width]="activeRate + '%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Types de comptes -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-violet">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box" style="background:rgba(86,37,232,.1)">
+              <i class="ti ti-shield-bolt fs-20" style="color:#5625E8"></i>
+            </div>
+            <span class="badge rounded-pill" style="background:rgba(86,37,232,.1);color:#5625E8">Rôles</span>
+          </div>
+          <h2 class="fw-bold mb-1" style="color:#5625E8">{{ roleEntries.length }}</h2>
+          <p class="text-muted small mb-2">Types de comptes</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar" style="background:linear-gradient(90deg,#5625E8,#0DCAF0);width:100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admins délégués -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-teal">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box" style="background:rgba(13,58,102,.1)">
+              <i class="ti ti-user-shield fs-20" style="color:#0d3a66"></i>
+            </div>
+            <span class="badge rounded-pill" style="background:rgba(13,58,102,.1);color:#0d3a66">Admins</span>
+          </div>
+          <h2 class="fw-bold mb-1" style="color:#0d3a66">{{ stats.usersByRole['ADMIN'] || 0 }}</h2>
+          <p class="text-muted small mb-2">Admins délégués</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar" style="background:#0d3a66"
+              [style.width]="stats.totalUsers > 0 ? ((stats.usersByRole['ADMIN'] || 0) / stats.totalUsers * 100) + '%' : '0%'"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Croissance -->
+    <div class="col-sm-6 col-xl-3">
+      <div class="card border-0 shadow-sm sa-kpi sa-kpi-pink">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="icon-box" style="background:rgba(86,37,232,.1)">
+              <i class="ti ti-trending-up fs-20" style="color:#5625E8"></i>
+            </div>
+            <span class="badge rounded-pill" style="background:rgba(86,37,232,.1);color:#5625E8">Croissance</span>
+          </div>
+          <h2 class="fw-bold mb-1" style="color:#5625E8">+{{ newThisMonth }}</h2>
+          <p class="text-muted small mb-2">Inscriptions ce mois</p>
+          <div class="progress sa-kpi-bar">
+            <div class="progress-bar" style="background:linear-gradient(90deg,#5625E8,#0DCAF0);width:65%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ░░ CHARTS ROW 1 — Courbe + Donut ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+  <div class="row g-3 mb-4">
+
+    <!-- Courbe inscriptions -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm sa-chart-card">
+        <div class="card-header bg-transparent border-0 pb-0 pt-3 px-3">
+          <div class="d-flex align-items-center gap-2">
+              <div class="icon-box" style="background:rgba(86,37,232,.1);width:36px;height:36px">
+              <i class="ti ti-trending-up fs-18" style="color:#5625E8"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-0">Évolution des Inscriptions</h6>
+              <p class="text-muted small mb-0">Nouvelles inscriptions par mois</p>
+            </div>
           </div>
         </div>
         <div class="card-body pt-2">
+          @if (lineSeries.length > 0) {
+            <apx-chart
+              [series]="lineSeries"
+              [chart]="lineOptions.chart"
+              [colors]="lineOptions.colors"
+              [fill]="lineOptions.fill"
+              [stroke]="lineOptions.stroke"
+              [markers]="lineOptions.markers"
+              [xaxis]="lineOptions.xaxis"
+              [yaxis]="lineOptions.yaxis"
+              [grid]="lineOptions.grid"
+              [tooltip]="lineOptions.tooltip"
+              [dataLabels]="lineOptions.dataLabels">
+            </apx-chart>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Donut statut -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm h-100 sa-chart-card">
+        <div class="card-header bg-transparent border-0 pb-0 pt-3 px-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="icon-box bg-primary-transparent" style="width:36px;height:36px">
+              <i class="ti ti-chart-donut text-primary fs-18"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-0">Statut des Comptes</h6>
+              <p class="text-muted small mb-0">Actifs vs Bloqués</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body pt-2 d-flex align-items-center justify-content-center flex-column">
           @if (donutSeries.length > 0) {
             <apx-chart
               [series]="donutSeries"
@@ -166,85 +352,27 @@
               [responsive]="donutOptions.responsive">
             </apx-chart>
           }
-          <!-- Légende manuelle -->
-          <div class="d-flex justify-content-center gap-4 mt-2">
-            <div class="d-flex align-items-center gap-2">
-              <span class="legend-dot bg-success"></span>
-              <small class="text-muted">Actifs ({{ stats.activeUsers }})</small>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-              <span class="legend-dot bg-danger"></span>
-              <small class="text-muted">Bloqués ({{ stats.blockedUsers }})</small>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Cartes Rôles -->
-    <div class="col-lg-7">
-      <div class="card border-0 h-100">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="fw-bold mb-1">Répartition par Rôle</h6>
-              <p class="text-muted small mb-0">Distribution des utilisateurs</p>
-            </div>
-            <span class="icon-box bg-warning-transparent">
-              <i class="ti ti-category text-warning"></i>
-            </span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="row g-3">
-            @for (entry of stats.usersByRole | keyvalue; track entry.key) {
-              <div class="col-6">
-                <div class="role-stat-card p-3 rounded-3 border"
-                     [style.border-color]="getRoleColor(entry.key) + '!important'">
-                  <div class="d-flex align-items-center gap-2 mb-2">
-                    <div class="role-icon-mini rounded-2 d-flex align-items-center justify-content-center"
-                         [style.background]="getRoleColor(entry.key) + '20'">
-                      <i [class]="getRoleIcon(entry.key)" [style.color]="getRoleColor(entry.key)"></i>
-                    </div>
-                    <span class="small fw-semibold">{{ getRoleLabel(entry.key) }}</span>
-                  </div>
-                  <div class="d-flex align-items-end justify-content-between">
-                    <h4 class="fw-bold mb-0" [style.color]="getRoleColor(entry.key)">{{ entry.value }}</h4>
-                    <small class="text-muted">
-                      {{ stats.totalUsers > 0 ? ((+entry.value / stats.totalUsers) * 100 | number:'1.0-0') : 0 }}%
-                    </small>
-                  </div>
-                  <div class="progress mt-2" style="height:3px">
-                    <div class="progress-bar"
-                         [style.width]="(stats.totalUsers > 0 ? (+entry.value / stats.totalUsers * 100) : 0) + '%'"
-                         [style.background-color]="getRoleColor(entry.key)">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- ─── Ligne 3 : Bar chart + Line chart ─────────────────────────────────── -->
+  <!-- ░░ CHARTS ROW 2 — Bar + Accès rapides ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
   <div class="row g-3 mb-4">
 
-    <!-- Bar Chart : Par rôle -->
-    <div class="col-lg-5">
-      <div class="card border-0">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="fw-bold mb-1">Histogramme des Rôles</h6>
-              <p class="text-muted small mb-0">Nombre d'utilisateurs par rôle</p>
+    <!-- Bar rôles -->
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm sa-chart-card">
+        <div class="card-header bg-transparent border-0 pb-0 pt-3 px-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="icon-box bg-primary-transparent" style="width:36px;height:36px">
+              <i class="ti ti-chart-bar text-primary fs-18"></i>
             </div>
-            <span class="icon-box bg-indigo-transparent">
-              <i class="ti ti-chart-bar text-indigo"></i>
-            </span>
+            <div>
+              <h6 class="fw-bold mb-0">Utilisateurs par Rôle</h6>
+              <p class="text-muted small mb-0">Répartition par type de compte</p>
+            </div>
           </div>
         </div>
         <div class="card-body pt-2">
@@ -260,94 +388,105 @@
             [tooltip]="barOptions.tooltip"
             [legend]="barOptions.legend">
           </apx-chart>
-        </div>
-      </div>
-    </div>
-
-    <!-- Line/Area Chart : Inscriptions par mois -->
-    <div class="col-lg-7">
-      <div class="card border-0">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="fw-bold mb-1">Inscriptions (12 derniers mois)</h6>
-              <p class="text-muted small mb-0">Évolution des nouvelles inscriptions</p>
-            </div>
-            <span class="icon-box bg-warning-transparent">
-              <i class="ti ti-trending-up text-warning"></i>
-            </span>
-          </div>
-        </div>
-        <div class="card-body pt-2">
-          <apx-chart
-            [series]="lineSeries"
-            [chart]="lineOptions.chart"
-            [colors]="lineOptions.colors"
-            [fill]="lineOptions.fill"
-            [stroke]="lineOptions.stroke"
-            [markers]="lineOptions.markers"
-            [xaxis]="lineOptions.xaxis"
-            [yaxis]="lineOptions.yaxis"
-            [grid]="lineOptions.grid"
-            [tooltip]="lineOptions.tooltip"
-            [dataLabels]="lineOptions.dataLabels">
-          </apx-chart>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ─── Accès rapides ─────────────────────────────────────────────────────── -->
-  <div class="row g-3">
-    <div class="col-12">
-      <div class="card border-0">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <h6 class="fw-bold mb-0">Accès Rapides</h6>
-        </div>
-        <div class="card-body">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <a [routerLink]="routes.superadmin_users"
-                 class="quick-action-card d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none">
-                <div class="stat-icon-box bg-primary-transparent">
-                  <i class="ti ti-users fs-22 text-primary"></i>
+          <!-- Résumé textuel -->
+          <div class="mt-3 pt-2 border-top">
+            @for (entry of roleEntries; track entry.role) {
+              <div class="d-flex align-items-center justify-content-between py-1">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="sa-role-dot" [style.background]="getRoleColor(entry.role)"></span>
+                  <small class="fw-semibold">{{ getRoleLabel(entry.role) }}</small>
                 </div>
-                <div>
-                  <p class="fw-semibold mb-0 text-dark">Gérer les Utilisateurs</p>
-                  <small class="text-muted">Bloquer, promouvoir, supprimer</small>
+                <div class="d-flex align-items-center gap-2">
+                  <small class="text-muted">{{ entry.count }} utilisateurs</small>
+                  <span class="badge rounded-pill"
+                    [style.background]="getRoleColor(entry.role) + '18'"
+                    [style.color]="getRoleColor(entry.role)">{{ entry.percent }}%</span>
                 </div>
-                <i class="ti ti-arrow-right ms-auto text-muted"></i>
-              </a>
-            </div>
-            <div class="col-md-4">
-              <a [routerLink]="routes.superadminSettings"
-                 class="quick-action-card d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none">
-                <div class="stat-icon-box bg-warning-transparent">
-                  <i class="ti ti-settings fs-22 text-warning"></i>
-                </div>
-                <div>
-                  <p class="fw-semibold mb-0 text-dark">Mon Profil</p>
-                  <small class="text-muted">Modifier mes informations</small>
-                </div>
-                <i class="ti ti-arrow-right ms-auto text-muted"></i>
-              </a>
-            </div>
-            <div class="col-md-4">
-              <div class="quick-action-card d-flex align-items-center gap-3 p-3 rounded-3" (click)="loadStats()" style="cursor:pointer">
-                <div class="stat-icon-box bg-success-transparent">
-                  <i class="ti ti-refresh fs-22 text-success"></i>
-                </div>
-                <div>
-                  <p class="fw-semibold mb-0 text-dark">Actualiser les Stats</p>
-                  <small class="text-muted">Recharger les données</small>
-                </div>
-                <i class="ti ti-arrow-right ms-auto text-muted"></i>
               </div>
-            </div>
+            }
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Accès rapides + Santé -->
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm h-100 sa-chart-card">
+        <div class="card-header bg-transparent border-0 pb-0 pt-3 px-3">
+          <div class="d-flex align-items-center gap-2">
+            <div class="icon-box" style="background:rgba(13,202,240,.1);width:36px;height:36px">
+              <i class="ti ti-bolt fs-18" style="color:#0284c7"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-0">Accès Rapides</h6>
+              <p class="text-muted small mb-0">Fonctionnalités principales</p>
+            </div>
+          </div>
+        </div>
+        <div class="card-body pt-3">
+          <div class="d-flex flex-column gap-2">
+
+            <a [routerLink]="routes.superadmin_users" class="sa-quick-link">
+              <div class="sa-quick-icon" style="background:rgba(99,102,241,.1)">
+                <i class="ti ti-users" style="color:#6366f1"></i>
+              </div>
+              <div class="flex-grow-1">
+                <p class="fw-semibold mb-0 small">Gérer les Utilisateurs</p>
+                <small class="text-muted">Accès, blocage, promotion</small>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                @if (stats) {
+                  <span class="badge rounded-pill" style="background:rgba(99,102,241,.1);color:#6366f1;font-size:11px">{{ stats.totalUsers }}</span>
+                }
+                <i class="ti ti-chevron-right text-muted small"></i>
+              </div>
+            </a>
+
+            <a [routerLink]="routes.superadmin_logs" class="sa-quick-link">
+              <div class="sa-quick-icon" style="background:rgba(139,92,246,.1)">
+                <i class="ti ti-file-analytics" style="color:#8b5cf6"></i>
+              </div>
+              <div class="flex-grow-1">
+                <p class="fw-semibold mb-0 small">Logs Système</p>
+                <small class="text-muted">Journaux techniques</small>
+              </div>
+              <i class="ti ti-chevron-right text-muted small"></i>
+            </a>
+
+            <a [routerLink]="routes.superadminSettings" class="sa-quick-link">
+              <div class="sa-quick-icon" style="background:rgba(13,202,240,.1)">
+                <i class="ti ti-user-circle" style="color:#0284c7"></i>
+              </div>
+              <div class="flex-grow-1">
+                <p class="fw-semibold mb-0 small">Mon Profil</p>
+                <small class="text-muted">Paramètres du compte</small>
+              </div>
+              <i class="ti ti-chevron-right text-muted small"></i>
+            </a>
+
+          </div>
+
+          <!-- Encart santé -->
+          <div class="sa-health-box mt-3">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <i class="ti ti-activity" [style.color]="healthColor"></i>
+              <span class="fw-semibold small">Santé de la plateforme</span>
+            </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <span class="fw-bold" style="font-size:1.5rem" [style.color]="healthColor">{{ activeRate }}%</span>
+              <span class="badge rounded-pill" [style.background]="healthColor + '18'" [style.color]="healthColor">
+                {{ platformHealth }}
+              </span>
+            </div>
+            <div class="progress mt-2" style="height:6px;border-radius:4px">
+              <div class="progress-bar" [style.background]="healthColor" [style.width]="activeRate + '%'"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </div>
+
 }

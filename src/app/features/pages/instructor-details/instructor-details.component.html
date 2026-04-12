@@ -114,15 +114,26 @@
                         <div class="row">
                             <div class="col-md-6 mb-3" *ngFor="let c of courses">
                                 <div class="course-item course-item-three">
-                                    <div class="course-carousal-img position-relative overflow-hidden rounded-3 mb-3">
-                                        <a [routerLink]="['/course/course-details', c.id]"><img class="img-fluid rounded-3" [src]="getThumbnailUrl(c.thumbnail)" alt="img"></a>
+                                    <div class="course-carousal-img position-relative overflow-hidden rounded-3 mb-3" [class.has-image]="hasCourseImage(c)">
+                                        <a [routerLink]="[routes.courseDetails]" [queryParams]="{ courseId: c.id }" *ngIf="hasCourseImage(c); else courseMediaFallback">
+                                            <img class="img-fluid rounded-3"
+                                                 [src]="getCourseImage(c)"
+                                                 [alt]="c.title || 'Cours'"
+                                                 (error)="onCourseImageError(c)">
+                                        </a>
+                                        <ng-template #courseMediaFallback>
+                                            <div class="ins-details-course-placeholder" [style.background]="getCoursePlaceholderGradient(c)">
+                                                <i class="ti ti-book-2"></i>
+                                                <span>{{ c.title || 'Cours' }}</span>
+                                            </div>
+                                        </ng-template>
                                     </div>
                                     <div class="d-flex flex-wrap align-items-center justify-content-between">
                                         <span class="tag-btn" *ngIf="c.categoryName">{{ c.categoryName }}</span>
                                         <span class="tag-btn" *ngIf="c.level">{{ c.level }}</span>
                                     </div>
                                     <h5 class="mt-3 mb-2 text-truncate line-clamb-2">
-                                        <a [routerLink]="['/course/course-details', c.id]">{{ c.title }}</a>
+                                        <a [routerLink]="[routes.courseDetails]" [queryParams]="{ courseId: c.id }">{{ c.title }}</a>
                                     </h5>
                                     <div class="d-flex align-items-center">
                                         <i class="isax isax-profile-2user5 fs-14 text-muted me-1"></i>
@@ -133,7 +144,7 @@
                                     <div class="d-flex justify-content-between mt-3 align-items-center">
                                         <h6 class="fs-16 text-secondary" *ngIf="c.price > 0">${{ c.price }}</h6>
                                         <h6 class="fs-16 text-success" *ngIf="c.price === 0">Free</h6>
-                                        <a [routerLink]="['/course/course-details', c.id]" class="btn view-course-btn">View Course<i class="fs-8 fas fa-angle-right ms-2"></i></a>
+                                        <a [routerLink]="[routes.courseDetails]" [queryParams]="{ courseId: c.id }" class="btn view-course-btn">View Course<i class="fs-8 fas fa-angle-right ms-2"></i></a>
                                     </div>
                                 </div>
                             </div>

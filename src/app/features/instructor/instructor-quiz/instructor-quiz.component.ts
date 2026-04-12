@@ -6,6 +6,8 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms'; 
 import { QuizService } from '../../../shared/service/quiz/quiz.service';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { forkJoin, Observable, of } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 declare var bootstrap: any;
 
@@ -37,12 +39,16 @@ export class InstructorQuizComponent implements OnInit {
 
   // â”€â”€â”€ Inline questions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   formQuestions: Array<{
+    id?: number;
     questionText: string;
     marks: number;
     choices: Array<{ text: string; isCorrect: boolean }>;
   }> = [];
 
   formError = '';
+  questionsLoading = false;
+  savingQuiz = false;
+  editingOriginalQuestionIds: number[] = [];
 
   editingQuiz: any = null;
   deletingQuizId: number | null = null;
@@ -156,6 +162,9 @@ export class InstructorQuizComponent implements OnInit {
     this.formQuestions = [];
     this.formError = '';
     this.editingQuiz = null;
+    this.questionsLoading = false;
+    this.savingQuiz = false;
+    this.editingOriginalQuestionIds = [];
   }
 
   openAddModal(): void {
@@ -164,6 +173,7 @@ export class InstructorQuizComponent implements OnInit {
   }
 
   openEditModal(quiz: any): void {
+    this.resetForm();
     this.editingQuiz = quiz;
     this.formCourseId = quiz.courseId;
     this.formTitle = quiz.title;
@@ -171,19 +181,48 @@ export class InstructorQuizComponent implements OnInit {
     this.formPassMark = quiz.passMark;
     this.formDuration = quiz.durationMinutes;
     this.formError = '';
+    this.questionsLoading = true;
+
+    this.quizService.getQuestions(quiz.id).subscribe({
+      next: (questions: any[]) => {
+        const list = Array.isArray(questions) ? questions : [];
+        this.formQuestions = list.map((q: any) => ({
+          id: q.id,
+          questionText: q.questionText || '',
+          marks: Number(q.marks || 1),
+          choices: (q.choices || []).map((c: any) => ({
+            text: c.text || '',
+            isCorrect: !!c.isCorrect
+          }))
+        }));
+        this.editingOriginalQuestionIds = this.formQuestions
+          .map((q) => q.id)
+          .filter((id): id is number => typeof id === 'number');
+
+        if (this.formQuestions.length === 0) {
+          this.addQuestion();
+        }
+        this.questionsLoading = false;
+      },
+      error: () => {
+        this.formQuestions = [];
+        this.addQuestion();
+        this.questionsLoading = false;
+      }
+    });
   }
 
-  validateCreate(): boolean {
+  private validateForm(requireCourse: boolean): boolean {
     this.formError = '';
     if (!this.formTitle.trim()) { this.formError = 'Le titre est requis.'; return false; }
-    if (!this.formCourseId) { this.formError = 'Veuillez sÃ©lectionner un cours.'; return false; }
+    if (requireCourse && !this.formCourseId) { this.formError = 'Veuillez sélectionner un cours.'; return false; }
     if (this.formQuestions.length === 0) { this.formError = 'Au moins une question est requise.'; return false; }
 
     for (let i = 0; i < this.formQuestions.length; i++) {
       const q = this.formQuestions[i];
       if (!q.questionText.trim()) { this.formError = `Question ${i+1} : le texte est requis.`; return false; }
       const hasCorrect = q.choices.some(c => c.isCorrect);
-      if (!hasCorrect) { this.formError = `Question ${i+1} : marquer une rÃ©ponse correcte.`; return false; }
+      if (!hasCorrect) { this.formError = `Question ${i+1} : marquer une réponse correcte.`; return false; }
       const emptyChoice = q.choices.some(c => !c.text.trim());
       if (emptyChoice) { this.formError = `Question ${i+1} : tous les choix doivent avoir un texte.`; return false; }
     }
@@ -191,38 +230,90 @@ export class InstructorQuizComponent implements OnInit {
   }
 
   submitQuiz(): void {
+    if (this.savingQuiz) return;
+
     if (this.editingQuiz) {
+      if (!this.validateForm(false)) return;
+
       const data = {
         title: this.formTitle,
         totalMarks: this.formTotalMarks,
         passMark: this.formPassMark,
         durationMinutes: this.formDuration
       };
-      this.quizService.updateQuiz(this.editingQuiz.id, data).subscribe({
-        next: () => { this.loadQuizzes(); this.closeModal('edit_quiz'); }
+
+      this.savingQuiz = true;
+      this.quizService.updateQuiz(this.editingQuiz.id, data).pipe(
+        switchMap(() => this.syncEditQuestionsRequests())
+      ).subscribe({
+        next: () => {
+          this.savingQuiz = false;
+          this.loadQuizzes();
+          this.closeModal('edit_quiz');
+        },
+        error: (err: any) => {
+          this.savingQuiz = false;
+          this.formError = err?.error?.message || err?.error || 'Erreur lors de la mise à jour du quiz.';
+        }
       });
     } else {
-      if (!this.validateCreate()) return;
+      if (!this.validateForm(true)) return;
       const data: any = {
         title: this.formTitle,
         totalMarks: this.formTotalMarks,
         passMark: this.formPassMark,
         durationMinutes: this.formDuration,
         courseId: this.formCourseId,
-        questions: this.formQuestions
+        questions: this.formQuestions.map((q) => this.toQuestionPayload(q))
       };
       if (this.formLessonId) data['lessonId'] = this.formLessonId;
 
+      this.savingQuiz = true;
       this.quizService.createQuiz(data).subscribe({
         next: (created: any) => {
+          this.savingQuiz = false;
           this.closeModal('add_quiz');
           this.router.navigate(['/instructor/instructor-quiz-questions', created.id]);
         },
         error: (err: any) => {
-          this.formError = err?.error?.message || err?.error || 'Erreur lors de la crÃ©ation du quiz.';
+          this.savingQuiz = false;
+          this.formError = err?.error?.message || err?.error || 'Erreur lors de la création du quiz.';
         }
       });
     }
+  }
+
+  private syncEditQuestionsRequests(): Observable<any> {
+    const currentExistingIds = this.formQuestions
+      .map((q) => q.id)
+      .filter((id): id is number => typeof id === 'number');
+
+    const toDelete = this.editingOriginalQuestionIds.filter((id) => !currentExistingIds.includes(id));
+    const deleteRequests = toDelete.map((id) => this.quizService.deleteQuestion(id));
+
+    const upsertRequests = this.formQuestions.map((q) => {
+      const payload = this.toQuestionPayload(q);
+      if (q.id) {
+        return this.quizService.updateQuestion(q.id, payload);
+      }
+      return this.quizService.addQuestion(this.editingQuiz.id, payload);
+    });
+
+    const allRequests = [...deleteRequests, ...upsertRequests];
+    if (allRequests.length === 0) return of(null);
+    return forkJoin(allRequests);
+  }
+
+  private toQuestionPayload(q: { questionText: string; marks: number; choices: Array<{ text: string; isCorrect: boolean }> }): any {
+    return {
+      questionText: q.questionText,
+      questionType: 'MULTIPLE_CHOICE',
+      marks: q.marks,
+      choices: q.choices.map((c) => ({
+        text: c.text,
+        isCorrect: c.isCorrect
+      }))
+    };
   }
 
   confirmDelete(quizId: number): void {

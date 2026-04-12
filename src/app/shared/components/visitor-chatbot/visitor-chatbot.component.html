@@ -1,0 +1,98 @@
+<div class="visitor-chatbot-shell">
+  <button
+    *ngIf="!isOpen"
+    type="button"
+    class="btn btn-primary rounded-pill d-flex align-items-center gap-2 shadow visitor-chatbot-toggle"
+    (click)="toggle()">
+    <span class="visitor-chatbot-toggle-icon d-inline-flex align-items-center justify-content-center">
+      <i class="ti ti-message-circle"></i>
+    </span>
+    <span>Assistant IA</span>
+    <span *ngIf="unreadCount > 0" class="badge rounded-pill bg-light text-dark visitor-chatbot-unread-badge">
+      {{ unreadCount }}
+    </span>
+  </button>
+
+  <div *ngIf="isOpen" class="card shadow-lg mt-2 visitor-chatbot-panel visitor-chatbot-panel-enter">
+    <div class="card-header visitor-chatbot-header d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <span class="visitor-chatbot-avatar d-inline-flex align-items-center justify-content-center">
+          <i class="ti ti-robot"></i>
+        </span>
+        <div class="d-flex flex-column">
+          <div class="fw-semibold d-flex align-items-center gap-2">
+            <span>Assistant LMS</span>
+            <span class="visitor-chatbot-status">EN LIGNE</span>
+          </div>
+          <small class="visitor-chatbot-subtitle">Conseils clairs et rapides pour vos actions sur la plateforme</small>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary visitor-chatbot-header-btn" (click)="toggle()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body visitor-chatbot-messages">
+      <div class="visitor-chatbot-empty" *ngIf="messages.length <= 1 && !isLoading">
+        <div class="visitor-chatbot-empty-icon">✨</div>
+        <div class="visitor-chatbot-empty-title">Parlez avec votre assistant LMS</div>
+        <div class="visitor-chatbot-empty-sub">Paiement Stripe, recommandation de cours et orientation rapide.</div>
+      </div>
+
+      <div *ngFor="let item of messages; trackBy: trackByIndex"
+          class="mb-2"
+          [class.text-end]="item.sender === 'user'">
+        <div class="visitor-chatbot-meta" [class.visitor-chatbot-meta-user]="item.sender === 'user'">
+          <span class="visitor-chatbot-msg-avatar">{{ item.sender === 'user' ? 'V' : 'IA' }}</span>
+          <span>{{ item.sender === 'user' ? 'Vous' : 'Assistant LMS' }}</span>
+        </div>
+        <span class="badge p-2 text-wrap visitor-chatbot-bubble"
+              [class.bg-primary]="item.sender === 'user'"
+              [class.bg-light]="item.sender === 'assistant'"
+              [class.text-dark]="item.sender === 'assistant'"
+              [class.visitor-chatbot-bubble-user]="item.sender === 'user'"
+              [class.visitor-chatbot-bubble-assistant]="item.sender === 'assistant'"
+              [innerHTML]="item.sender === 'assistant' ? formatAssistantText(item.text) : item.text">
+        </span>
+      </div>
+
+      <div *ngIf="isLoading" class="text-muted small d-flex align-items-center gap-2 visitor-chatbot-typing-wrap">
+        <span class="visitor-chatbot-typing-dots">
+          <span></span><span></span><span></span>
+        </span>
+        <span>L'assistant écrit...</span>
+      </div>
+
+      <div *ngIf="!isLoading" class="d-flex flex-wrap gap-2 mt-2">
+        <button
+          *ngFor="let suggestion of suggestedPrompts; trackBy: trackByIndex"
+          type="button"
+          class="btn btn-sm btn-outline-secondary visitor-chatbot-chip"
+          (click)="sendSuggestion(suggestion)">
+          {{ suggestion }}
+        </button>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <div class="visitor-chatbot-composer d-flex align-items-center gap-2">
+        <input
+          type="text"
+          class="form-control"
+          [disabled]="isLoading"
+          [(ngModel)]="draftMessage"
+          (keydown)="handleEnter($event)"
+          placeholder="Ex: cours Python débutant, paiement, certificat..." />
+        <button class="btn btn-outline-secondary visitor-chatbot-copy" type="button" [disabled]="isLoading || messages.length < 2" (click)="copyLastAssistantReply()">
+          <i class="ti ti-copy"></i>
+        </button>
+        <button class="btn btn-primary visitor-chatbot-send" type="button" [disabled]="isLoading" (click)="send()">
+          <i class="ti ti-send"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

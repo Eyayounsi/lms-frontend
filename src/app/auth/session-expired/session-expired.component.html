@@ -1,0 +1,21 @@
+<section class="session-expired-wrap d-flex align-items-center justify-content-center min-vh-100">
+  <div class="session-expired-card p-4 p-md-5">
+    <div class="d-flex align-items-center mb-3">
+      <div class="session-expired-icon me-3">!</div>
+      <div>
+        <h4 class="mb-1">Session expiree</h4>
+        <p class="mb-0 text-muted">Votre session a depasse la duree autorisee.</p>
+      </div>
+    </div>
+
+    <p class="mb-2">Redirection vers la connexion dans <strong>{{ countdown }}s</strong>.</p>
+
+    <div class="progress mb-4" role="progressbar" aria-label="Logout countdown" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="progressPct">
+      <div class="progress-bar progress-bar-striped progress-bar-animated" [style.width.%]="progressPct"></div>
+    </div>
+
+    <button type="button" class="btn btn-dark w-100" (click)="confirmLogout()">
+      Se deconnecter maintenant
+    </button>
+  </div>
+</section>

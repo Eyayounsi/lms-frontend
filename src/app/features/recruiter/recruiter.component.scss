@@ -1,1 +1,20 @@
-/* Recruiter Component Styles */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Recruiter Layout
+   ─ Ensures sidebar sticks and content scrolls correctly beside it
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+// Make the sidebar host a proper block so sticky works inside it
+:host {
+  display: contents;          // let GridSystem handle column widths
+}
+
+// On the .row that wraps sidebar + content, ensure items start at top
+// (Bootstrap .row default is align-items: stretch which keeps the sticky space)
+app-recruiter-sidebar.col-lg-3 {
+  align-self: flex-start;
+}
+
+// Extra top clearance for the fixed admin-header (~72px)
+.content {
+  padding-top: 80px !important;
+}

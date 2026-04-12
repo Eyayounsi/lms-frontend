@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import lgZoom from 'lightgallery/plugins/zoom';
 import lgVideo from 'lightgallery/plugins/video';
 import { LightGallery } from 'lightgallery/lightgallery';
@@ -9,6 +9,8 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { LightgalleryModule } from 'lightgallery/angular';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
+import { resolveAvatarImage } from '../../../shared/utils/avatar-image.util';
 
 @Component({
   selector: 'app-course-details-2',
@@ -19,6 +21,9 @@ import { CourseService } from '../../../shared/service/course/course.service';
 export class CourseDetails2Component implements OnInit {
   routes = routes;
   readonly stars = [1, 2, 3, 4, 5];
+  private coverImageFailed = false;
+  private instructorAvatarFailed = false;
+  private coverCandidateIndex = 0;
 
   // LightGallery
   settings = { counter: false, plugins: [lgZoom, lgVideo] };
@@ -68,7 +73,7 @@ export class CourseDetails2Component implements OnInit {
         this.loadCourse(+courseId);
       } else {
         this.loading = false;
-        this.errorMessage = 'Aucun cours spécifié.';
+        this.errorMessage = 'Aucun cours specifie.';
       }
     });
   }
@@ -78,6 +83,9 @@ export class CourseDetails2Component implements OnInit {
     this.courseService.getCourseDetail(courseId).subscribe({
       next: (data) => {
         this.course = data;
+        this.coverImageFailed = false;
+        this.instructorAvatarFailed = false;
+        this.coverCandidateIndex = 0;
         this.loading = false;
         this.needRefresh = true;
         this.loadReviews(courseId);
@@ -114,7 +122,7 @@ export class CourseDetails2Component implements OnInit {
     this.courseService.upsertReview(this.course.id, { rating: this.myRating, comment: this.myComment }).subscribe({
       next: () => {
         this.submitingReview = false;
-        this.reviewMsg = 'Avis publié !';
+        this.reviewMsg = 'Avis publie !';
         this.myComment = '';
         this.loadReviews(this.course.id);
         setTimeout(() => this.reviewMsg = '', 3000);
@@ -146,7 +154,7 @@ export class CourseDetails2Component implements OnInit {
       next: () => {
         this.buyingCourse = false;
         this.isEnrolled = true;
-        this.showSuccess('Inscription réussie ! Vous pouvez maintenant accéder au cours.');
+        this.showSuccess('Inscription reussie ! Vous pouvez maintenant acceder au cours.');
       },
       error: (e: any) => {
         this.buyingCourse = false;
@@ -183,13 +191,13 @@ export class CourseDetails2Component implements OnInit {
           instructorName: this.course.instructorName
         });
         localStorage.setItem('guest_cart', JSON.stringify(cart));
-        this.showSuccess('Ajouté au panier ! Connectez-vous pour finaliser l\'achat.');
+        this.showSuccess('Ajoute au panier ! Connectez-vous pour finaliser l\'achat.');
       } else {
-        this.showSuccess('Ce cours est déjà dans votre panier.');
+        this.router.navigate([this.routes.cart]);
       }
       return;
     }
-    // Non-student (instructor, admin) → redirect to login as student
+    // Non-student (instructor, admin) ? redirect to login as student
     const role = localStorage.getItem('role') || '';
     if (!role.includes('STUDENT')) {
       this.router.navigate([this.routes.login]);
@@ -204,7 +212,7 @@ export class CourseDetails2Component implements OnInit {
       next: () => {
         this.addingToCart = false;
         this.isInCart = true;
-        this.showSuccess('Ajouté au panier !');
+        this.showSuccess('Ajoute au panier !');
       },
       error: (e: any) => {
         this.addingToCart = false;
@@ -226,18 +234,149 @@ export class CourseDetails2Component implements OnInit {
   }
 
   getLevelLabel(l: string): string {
-    const m: Record<string, string> = { BEGINNER: 'Débutant', INTERMEDIATE: 'Intermédiaire', ADVANCED: 'Avancé' };
+    const m: Record<string, string> = { BEGINNER: 'Debutant', INTERMEDIATE: 'Intermediaire', ADVANCED: 'Avance' };
     return m[l] ?? l;
   }
 
+  hasCourseCover(): boolean {
+    return this.getCourseCoverCandidates().length > 0 && !this.coverImageFailed;
+  }
+
+  getBannerStyle(): Record<string, string> {
+    return {};
+  }
+
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    return `http://localhost:8081/${path}`;
+    return resolveCourseImage(path, 'assets/img/course-img/courses-01.jpg');
   }
 
   getAvatarUrl(path: string): string {
-    if (!path) return 'assets/img/avatar/avatar10.jpg';
-    return `http://localhost:8081/${path}`;
+    return resolveAvatarImage(path, 'assets/img/avatar/avatar10.jpg');
+  }
+
+  getCourseCoverImage(): string {
+    const candidates = this.getCourseCoverCandidates();
+    const raw = candidates[this.coverCandidateIndex] || '';
+    return this.getImageUrl(raw);
+  }
+
+  getCourseCoverPlaceholderGradient(): string {
+    const gradients = [
+      'linear-gradient(135deg, #5625E8 0%, #02a8b5 100%)',
+      'linear-gradient(135deg, #FD3995 0%, #9b59b6 100%)',
+      'linear-gradient(135deg, #02a8b5 0%, #5625E8 100%)',
+      'linear-gradient(135deg, #9b59b6 0%, #FD3995 100%)'
+    ];
+    const key = String(this.course?.id || this.course?.slug || this.course?.title || 'course');
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      hash = ((hash << 5) - hash) + key.charCodeAt(i);
+      hash |= 0;
+    }
+    return gradients[Math.abs(hash) % gradients.length];
+  }
+
+  getCourseCoverInitial(): string {
+    const value = String(this.course?.title || 'Cours').trim();
+    return (value.charAt(0) || 'C').toUpperCase();
+  }
+
+  hasInstructorAvatar(): boolean {
+    return !!this.getCourseInstructorAvatarRaw() && !this.instructorAvatarFailed;
+  }
+
+  getCourseInstructorAvatar(): string {
+    return resolveAvatarImage(this.getCourseInstructorAvatarRaw(), '');
+  }
+
+  getInstructorInitial(): string {
+    const value = String(this.course?.instructorName || 'I').trim();
+    return (value.charAt(0) || 'I').toUpperCase();
+  }
+
+  onCourseCoverError(event: Event): void {
+    const img = event?.target as HTMLImageElement | null;
+    if (!img) return;
+
+    const candidates = this.getCourseCoverCandidates();
+    if (this.coverCandidateIndex < candidates.length - 1) {
+      this.coverCandidateIndex += 1;
+      img.src = this.getImageUrl(candidates[this.coverCandidateIndex]);
+      return;
+    }
+
+    this.coverImageFailed = true;
+  }
+
+  onInstructorAvatarError(event: Event, name?: string): void {
+    const img = event?.target as HTMLImageElement | null;
+    if (!img) return;
+    this.instructorAvatarFailed = true;
+    img.src = this.generateInitialAvatar(name || 'F');
+  }
+
+  private getCourseCoverRaw(): string {
+    return this.getCourseCoverCandidates()[0] || '';
+  }
+
+  private getCourseCoverCandidates(): string[] {
+    const pending = this.course?.pendingEditData || this.course?.pendingEdit || {};
+
+    const values = [
+      this.course?.coverImage,
+      this.course?.coverImagePath,
+      this.course?.cover,
+      this.course?.courseCoverImage,
+      this.course?.courseCoverImagePath,
+      this.course?.thumbnailUrl,
+      this.course?.coverImageUrl,
+      this.course?.thumbnail,
+      this.course?.imageUrl,
+      this.course?.image,
+      this.course?.courseImageUrl,
+      this.course?.courseImage,
+      this.course?.courseImagePath,
+      pending?.coverImage,
+      pending?.coverImagePath,
+      pending?.courseCoverImage,
+      pending?.thumbnailUrl,
+      pending?.coverImageUrl,
+      pending?.imageUrl,
+      pending?.image
+    ];
+
+    const normalized = values
+      .map((v) => String(v || '').trim())
+      .filter((v) => {
+        if (!v) return false;
+        const low = v.toLowerCase();
+        return low !== 'null' && low !== 'undefined' && low !== 'none' && low !== 'n/a';
+      });
+
+    return Array.from(new Set(normalized));
+  }
+
+  private getCourseInstructorAvatarRaw(): string {
+    const raw =
+      this.course?.instructorAvatar ||
+      this.course?.instructorAvatarPath ||
+      this.course?.instructorImage ||
+      this.course?.instructorPhoto ||
+      this.course?.instructorPhotoUrl ||
+      this.course?.avatarPath ||
+      this.course?.instructor?.avatarPath ||
+      this.course?.instructor?.avatar ||
+      this.course?.instructor?.profileImage ||
+      this.course?.instructor?.photo ||
+      this.course?.instructor?.photoUrl ||
+      '';
+    return String(raw || '').trim();
+  }
+
+  private generateInitialAvatar(name: string): string {
+    const initial = String(name || 'F').trim().charAt(0).toUpperCase() || 'F';
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs><rect width="80" height="80" rx="40" fill="url(#g)"/><text x="40" y="52" text-anchor="middle" font-size="32" font-family="Arial, sans-serif" font-weight="700" fill="#ffffff">${initial}</text></svg>`;
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
 
   private showSuccess(msg: string): void {

@@ -1,4 +1,6 @@
-<!-- banner -->
+﻿<!-- ═══════════════════════════════════════════════════════════════════════
+     HERO BANNER
+     ═══════════════════════════════════════════════════════════════════════ -->
 <section class="banner-section">
   <img class="img-fluid d-none d-lg-flex banner-bg1" src="assets/img/bg/bg-15.png" alt="img" />
   <img class="img-fluid d-none d-lg-flex banner-bg2" src="assets/img/bg/bg-16.png" alt="img" />
@@ -8,25 +10,47 @@
     <div class="row align-items-center justify-content-between">
       <div class="col-xl-7 col-lg-7">
         <div class="banner-content pe-xxl-5">
-          <span class="hero-title">The Leader in Online Learning</span>
-          <h1 class="mb-4 text-white">
-            Find the Best <span>Courses</span> from the Best
-            <span>Mentors</span> Around the World
+          <!-- Eyebrow badge -->
+          <span class="hero-title hero-eyebrow-enhanced">
+            <i class="fa-solid fa-graduation-cap me-2"></i> La plateforme e-learning de référence
+          </span>
+          <h1 class="mb-3 text-white">
+            Développez vos <span>Compétences</span><br class="d-none d-lg-block">
+            avec les meilleurs <span>Formateurs</span>
           </h1>
-          <p class="fs-lg text-center text-md-start pb-2 pb-md-3 mb-4">
-            Our specialized online courses are designed to bring the classroom
-            experience to you, no matter where you are.
+          <p class="hero-subtitle pb-2 pb-md-3 mb-3">
+            Des cours en ligne conçus par des experts pour vous accompagner dans votre parcours professionnel, où que vous soyez.
           </p>
+          <!-- Social proof -->
+          <div class="hero-social-proof mb-4">
+            <div class="hero-sp-avatars">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&q=80&auto=format&fit=crop&crop=face" alt="Apprenante" />
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&q=80&auto=format&fit=crop&crop=face" alt="Apprenant" />
+              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&q=80&auto=format&fit=crop&crop=face" alt="Apprenante" />
+              <span class="hero-sp-more">+5k</span>
+            </div>
+            <div class="hero-sp-text">
+              <div class="hero-sp-stars">
+                <i class="fa-solid fa-star text-warning"></i>
+                <i class="fa-solid fa-star text-warning"></i>
+                <i class="fa-solid fa-star text-warning"></i>
+                <i class="fa-solid fa-star text-warning"></i>
+                <i class="fa-solid fa-star text-warning"></i>
+              </div>
+              <span>+5 000 apprenants satisfaits</span>
+            </div>
+          </div>
           <form class="banner-search" (ngSubmit)="onSubmit()">
             <div class="dropdown">
               <a class="hero-dropdown" href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
                 {{ selectedCategoryName }} <i class="isax isax-arrow-down5 fs-12"></i>
               </a>
               <ul class="dropdown-menu p-1">
-                <li *ngFor="let cat of categories">
+                <li *ngFor="let cat of categories; trackBy: trackByCategoryId">
                   <a class="dropdown-item" href="javascript:void(0);"
                      (click)="selectCategory(cat.id, cat.name)">
-                    <i *ngIf="cat.icon" [class]="cat.icon" class="me-2"></i>{{ cat.name }}
+                    <i [class]="getCategoryIconClass(cat.icon, cat.name)" class="me-2"></i>
+                    {{ cat.name }}
                   </a>
                 </li>
                 <li *ngIf="categories.length === 0">
@@ -35,466 +59,509 @@
               </ul>
             </div>
             <input type="text" name="search" [(ngModel)]="searchTerm" class="border-0 form-control p-0"
-              placeholder="Search for Courses, Instructors" />
+              placeholder="Rechercher un cours, un formateur..." />
             <button type="submit" class="btn btn-secondary ms-auto">
-              <i class="isax isax-arrow-right-1"></i>
+              <i class="isax isax-search-normal-1"></i>
             </button>
           </form>
-          <div class="d-flex align-items-center gap-4 justify-content-lg-between justify-content-center flex-wrap">
-            <div class="counter-item">
-              <div class="counter-icon flex-shrink-0">
-                <img src="assets/img/icons/icon-32.svg" alt="img" />
-              </div>
-              <div class="count-content">
-                <h5 class="text-purple">
-                  <span class="count-digit">10</span>K
-                </h5>
-                <p>Online Courses</p>
-              </div>
+          <div class="hero-counters-row mt-3">
+            <div class="hero-counter-chip hero-counter-purple">
+              <span class="hero-counter-val">{{ featuredCourses.length || '50' }}+</span>
+              <span class="hero-counter-label">Cours</span>
             </div>
-            <div class="counter-item">
-              <div class="counter-icon flex-shrink-0">
-                <img src="assets/img/icons/icon-33.svg" alt="img" />
-              </div>
-              <div class="count-content">
-                <h5 class="text-skyblue">
-                  <span class="count-digit">6</span>K
-                </h5>
-                <p>Certified Courses</p>
-              </div>
+            <div class="hero-counter-divider"></div>
+            <div class="hero-counter-chip hero-counter-sky">
+              <span class="hero-counter-val">{{ categories.length || '10' }}</span>
+              <span class="hero-counter-label">Catégories</span>
             </div>
-            <div class="counter-item">
-              <div class="counter-icon flex-shrink-0">
-                <img src="assets/img/icons/icon-34.svg" alt="img" />
-              </div>
-              <div class="count-content">
-                <h5 class="text-success">
-                  <span class="count-digit">2</span>K
-                </h5>
-                <p>Experienced Tutors</p>
-              </div>
+            <div class="hero-counter-divider"></div>
+            <div class="hero-counter-chip hero-counter-green">
+              <span class="hero-counter-val">{{ topInstructors.length }}</span>
+              <span class="hero-counter-label">Formateurs</span>
+            </div>
+            <div class="hero-counter-divider"></div>
+            <div class="hero-counter-chip hero-counter-amber">
+              <span class="hero-counter-val">98%</span>
+              <span class="hero-counter-label">Satisfaction</span>
             </div>
           </div>
         </div>
       </div>
       <div class="col-xl-4 col-lg-5">
-        <div class="banner-image pe-0">
-          <div class="swiper swiper-slider-banner w-auto">
-            <div class="swiper-wrapper">
-              <div class="swiper swiper-cards swiper-3d swiper-initialized swiper-horizontal swiper-pointer-events swiper-watch-progress" >
-                <div class="swiper-wrapper">
-                  <div *ngFor="let course of bannerCourses; let i = index"
-                    class="swiper-slide ng-star-inserted swiper-slide-visible"
-                    [class.swiper-slide-active]="i === 0"
-                    [class.swiper-slide-next]="i === 1"
-                    [style.z-index]="3 - i">
-
-                    <div class="swiper-slide">
-                      <div class="course-item-two course-item mb-0">
-                        <div class="course-img">
-                          <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" />
-                          <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                            <a href="javascript:void(0);" class="fav-icon">
-                              <i class="isax isax-heart"></i>
-                            </a>
-                          </div>
-                        </div>
-                        <div class="course-content">
-                          <div class="d-flex justify-content-between mb-2">
-                            <div class="d-flex align-items-center">
-                              <a href="javascript:void(0);" class="avatar avatar-sm">
-                                <img [src]="getAvatarUrl(course.instructorAvatar)" alt="img"
-                                  class="img-fluid avatar avatar-sm rounded-circle" />
-                              </a>
-                              <div class="ms-2">
-                                <a href="javascript:void(0);" class="link-default fs-14">{{ course.instructorName }}</a>
-                              </div>
+        <div class="hero-right-wrap">
+          <!-- Halo lumineux derrière les cartes -->
+          <div class="hero-glow-orb d-none d-lg-block"></div>
+          <!-- Carte flottante : note moyenne -->
+          <div class="hero-float-card hero-float-rating d-none d-xl-flex">
+            <div class="hero-float-icon hero-float-icon-gold"><i class="fa-solid fa-star"></i></div>
+            <div>
+              <div class="hero-float-val">4.9<span class="hero-float-unit">/5</span></div>
+              <div class="hero-float-sub">Note moyenne</div>
+            </div>
+          </div>
+          <!-- Carte flottante : certifié -->
+          <div class="hero-float-card hero-float-cert d-none d-xl-flex">
+            <div class="hero-float-icon hero-float-icon-green"><i class="fa-solid fa-certificate"></i></div>
+            <div>
+              <div class="hero-float-val">Certifié</div>
+              <div class="hero-float-sub">Vérifiable en ligne</div>
+            </div>
+          </div>
+          <div class="banner-image hero-card-stage pe-0">
+            <div class="swiper swiper-slider-banner w-auto">
+              <div class="swiper-wrapper">
+                <div class="swiper swiper-cards swiper-3d swiper-initialized swiper-horizontal swiper-pointer-events swiper-watch-progress">
+                  <div class="swiper-wrapper">
+                    <div *ngFor="let course of bannerCourses; let i = index; trackBy: trackByCourseId"
+                      class="swiper-slide ng-star-inserted swiper-slide-visible"
+                      [class.swiper-slide-active]="i === activeHeroCardIndex"
+                      [class.swiper-slide-next]="i === ((activeHeroCardIndex + 1) % bannerCourses.length)"
+                      [class.hero-card-primary]="i === activeHeroCardIndex"
+                      [class.hero-card-secondary]="i === ((activeHeroCardIndex + 1) % bannerCourses.length)"
+                      [class.hero-card-tertiary]="i === ((activeHeroCardIndex + 2) % bannerCourses.length)"
+                      [style.z-index]="bannerCourses.length - i">
+                      <div class="swiper-slide hero-card-shell">
+                        <div class="course-item-two course-item hero-course-card mb-0">
+                          <div class="course-img hero-card-media">
+                            <img [src]="getCourseImage(course)" (error)="onCourseCoverError($event)" alt="{{ course.title }}" class="img-fluid" loading="lazy" decoding="async" />
+                            <div class="hero-card-overlay"></div>
+                            <div class="hero-card-floating-badge">
+                              <i class="fa-solid fa-layer-group"></i>
+                              <span>{{ course.categoryName || 'Cours' }}</span>
                             </div>
-                            <span
-                              class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium">
-                              {{ course.categoryName || 'Cours' }}
-                            </span>
                           </div>
-                          <h6 class="mb-2">
-                            <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">{{ course.title }}</a>
-                          </h6>
-                          <p class="d-flex align-items-center mb-3" *ngIf="course.averageRating">
-                            <i class="ti ti-star-filled text-warning me-2"></i>
-                            {{ course.averageRating | number:'1.1-1' }} ({{ course.reviewCount || 0 }} avis)
-                          </p>
-                          <div class="d-flex align-items-center justify-content-between">
-                            <h6 class="text-secondary fs-16 fw-semi-bold mb-0">
-                             {{ formatPrice(course) }}
+                          <div class="course-content hero-card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3 hero-card-topline">
+                              <div class="d-flex align-items-center hero-card-instructor">
+                                <a href="javascript:void(0);" class="avatar avatar-sm hero-avatar-ring">
+                                  <img [src]="getCourseInstructorAvatar(course)" (error)="onCourseInstructorAvatarError($event, course.instructorName)" alt="instructeur" class="img-fluid avatar avatar-sm rounded-circle" loading="lazy" decoding="async" />
+                                </a>
+                                <div class="ms-2">
+                                  <span class="hero-card-label">Formateur</span>
+                                  <a href="javascript:void(0);" class="link-default fs-14 hero-card-instructor-name">{{ course.instructorName }}</a>
+                                </div>
+                              </div>
+                              <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium hero-card-chip">
+                                <i class="fa-solid fa-star me-1"></i>
+                                {{ course.reviewCount || 0 }} avis
+                              </span>
+                            </div>
+                            <h6 class="mb-2 hero-course-title">
+                              <span *ngIf="hasActivePromotion(course)" class="badge bg-danger text-white me-2 mb-2 d-inline-block">
+                                {{ getPromotionPercent(course) }}% off
+                              </span>
+                              <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">{{ course.title }}</a>
                             </h6>
-                            <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)" class="btn btn-dark btn-sm d-inline-flex align-items-center">Voir le cours<i
-                                class="isax isax-arrow-right-3 ms-1"></i></a>
-                          </div>
+                            <div class="hero-card-meta mb-3">
+                              <p class="d-flex align-items-center mb-0 hero-rating-pill" *ngIf="course.averageRating">
+                                <i class="fa-solid fa-star text-warning me-2"></i>
+                                {{ course.averageRating | number:'1.1-1' }}
+                                <span class="hero-meta-sep"></span>
+                                {{ course.reviewCount || 0 }} avis
+                              </p>
+                              <p class="d-flex align-items-center mb-0 hero-rating-pill hero-rating-pill-muted" *ngIf="!course.averageRating && isCourseNew(course)">
+                                <i class="fa-regular fa-star me-2"></i>
+                                Nouveau cours
+                              </p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between hero-card-footer">
+                              <div class="d-flex flex-column align-items-start">
+                                <h6 class="text-secondary fs-16 fw-semi-bold mb-0 hero-price-tag">{{ formatPrice(course) }}</h6>
+                                <small *ngIf="hasActivePromotion(course)" class="text-muted">
+                                  <span class="text-decoration-line-through me-1">{{ course.price | number:'1.2-2' }} €</span>
+                                  <span class="badge bg-danger">PROMO</span>
+                                </small>
+                              </div>
+                              <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)" class="btn btn-dark btn-sm d-inline-flex align-items-center hero-card-action">
+                                Découvrir <i class="isax isax-arrow-right-3 ms-1"></i>
+                              </a>
+                            </div>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
               </div>
-                
-              </div>
-             
-              
-              
             </div>
+          </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-<!-- banner -->
 
-<!-- benefits -->
+<!-- ═══════════════════════════════════════════════════════════════════════
+     NOS AVANTAGES
+     ═══════════════════════════════════════════════════════════════════════ -->
 <section class="benefit-section">
   <div class="container">
     <div class="section-header text-center">
-      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Our Benefits</span>
-      <h2>Master the Skills to Drive your Career</h2>
-      <p>
-        The right course, guided by an expert mentor, can provide invaluable
-        insights, practical skills.
-      </p>
+      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Nos Avantages</span>
+      <h2>Pourquoi choisir notre plateforme ?</h2>
+      <p>Une expérience d'apprentissage moderne, flexible et certifiante.</p>
     </div>
     <div class="row">
-      <div class="col-lg-4 col-md-6">
-        <div class="card shadow-sm">
+      <div class="col-lg-4 col-md-6" data-aos="fade-up">
+        <div class="card shadow-sm border-0 h-100">
           <div class="card-body p-4">
-            <div class="position-absolute top-0 end-0 mt-n3 me-n4">
-              <img src="./assets/img/shapes/bg-1.png" alt="img" />
-            </div>
+            <div class="position-absolute top-0 end-0 mt-n3 me-n4"><img src="./assets/img/shapes/bg-1.png" alt="img" /></div>
             <div class="p-4 rounded-pill bg-primary-transparent d-inline-flex">
-              <i class="isax isax-book-1 fs-24"></i>
+              <i class="fa-solid fa-laptop-code fs-24 text-primary"></i>
             </div>
-            <h5 class="mt-3 mb-1">Flexible Learning</h5>
-            <p>
-              We believe that high-quality education should be accessible to
-              everyone. Our pricing form in models are designed.
-            </p>
+            <h5 class="mt-3 mb-1">Apprentissage flexible</h5>
+            <p>Accédez à vos cours à tout moment, depuis n'importe quel appareil. Progressez à votre rythme.</p>
           </div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="card shadow-sm">
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="150">
+        <div class="card shadow-sm border-0 h-100">
           <div class="card-body p-4">
-            <div class="position-absolute top-0 end-0 mt-n3 me-n4">
-              <img src="assets/img/shapes/bg-2.png" alt="img" />
-            </div>
+            <div class="position-absolute top-0 end-0 mt-n3 me-n4"><img src="assets/img/shapes/bg-2.png" alt="img" /></div>
             <div class="p-4 rounded-pill bg-secondary-transparent d-inline-flex">
-              <i class="isax isax-bookmark5 fs-24"></i>
+              <i class="fa-solid fa-certificate fs-24 text-secondary"></i>
             </div>
-            <h5 class="mt-3 mb-1">Lifetime Access</h5>
-            <p>
-              When you enroll in our courses, you’re not just signing up for a
-              temporary learning to experience you’re making.
-            </p>
+            <h5 class="mt-3 mb-1">Certificats vérifiables</h5>
+            <p>Obtenez un certificat à la fin de chaque formation, vérifiable en ligne par les recruteurs.</p>
           </div>
         </div>
       </div>
-      <div class="col-lg-4 col-md-6">
-        <div class="card shadow-sm">
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="card shadow-sm border-0 h-100">
           <div class="card-body p-4">
-            <div class="position-absolute top-0 end-0 mt-n3 me-n4">
-              <img src="assets/img/shapes/bg-3.png" alt="img" />
-            </div>
+            <div class="position-absolute top-0 end-0 mt-n3 me-n4"><img src="assets/img/shapes/bg-3.png" alt="img" /></div>
             <div class="p-4 rounded-pill bg-skyblue-transparent d-inline-flex">
-              <i class="isax isax-chart-26 fs-24"></i>
+              <i class="fa-solid fa-user-tie fs-24 text-info"></i>
             </div>
-            <h5 class="mt-3 mb-1">Expert Instruction</h5>
-            <p>
-              Our instructors are seasoned professionals with years of
-              experience in their respective fields & Experts advice
-            </p>
+            <h5 class="mt-3 mb-1">Formateurs qualifiés</h5>
+            <p>Nos instructeurs sont des professionnels expérimentés, passionnés par la transmission de leur savoir.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
-<!-- benefits -->
 
-<!-- institutions -->
-<section class="client-section">
+<!-- institutions / recruiters strip -->
+<section class="client-section recruiter-strip">
   <div class="container">
-    <h6 class="fw-medium text-center mb-4">
-      Trusted by
-      <span class="text-decoration-underline text-secondary">20+</span>
-      Institutions Around the World
+    <p class="text-center recruiter-copy mb-4" data-aos="fade-up" data-aos-delay="80">
+      Sur Dreams LMS, vous ne faites pas que monter en compétences : vous accédez à un
+      <strong>lien direct avec des recruteurs</strong> pour transformer votre apprentissage en
+      <strong>expérience terrain</strong> et en <strong>opportunités professionnelles</strong>.
+    </p>
+
+    <h6 class="text-center recruiter-trusted mb-3" data-aos="fade-up" data-aos-delay="120">
+      Trusted by <span>20+</span> Institutions Around the World
     </h6>
-    <div class="institutions-slider lazy slider">
+
+    <div class="institutions-slider lazy slider" data-aos="fade-up" data-aos-delay="140">
       <ngx-slick-carousel #slickModal="slick-carousel" [config]="slideConfig">
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/01.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/02.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/03.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/04.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/05.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/06.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/07.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/02.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/03.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/04.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/05.svg" alt="img" />
-        </div>
-        <div class="institutions-items p-1" ngxSlickItem>
-          <img class="img-fluid" src="./assets/img/client/06.svg" alt="img" />
+        <div class="institutions-items p-1" ngxSlickItem *ngFor="let partner of recruiterPartners; trackBy: trackByPartnerName">
+          <img class="img-fluid" [src]="partner.logo" [alt]="partner.name" loading="lazy" decoding="async" />
         </div>
       </ngx-slick-carousel>
-     
     </div>
   </div>
 </section>
-<!-- institutions -->
 
-<!-- top courses -->
-<section class="top-courses-sec">
+<!-- ═══════════════════════════════════════════════════════════════════════
+     CATÉGORIES
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="top-courses-sec" *ngIf="categories.length > 0">
   <img class="top-courses-bg" src="./assets/img/bg/bg-20.png" alt="img" />
   <div class="container">
     <div class="section-header text-center">
-      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Our Categories</span>
-      <h2>Top Courses & Categories</h2>
-      <p>
-        The right course, guided by an expert mentor, can provide invaluable
-        insights, practical skills
-      </p>
+      <span class="cat-section-badge mb-3 d-inline-flex align-items-center gap-2">
+        <i class="fa-solid fa-compass"></i> Explorer
+      </span>
+      <h2>Nos catégories de cours</h2>
+      <p>Trouvez le domaine qui vous passionne et commencez dès aujourd'hui.</p>
     </div>
     <div class="top-courses-slider lazy">
       <ngx-slick-carousel #slickModal="slick-carousel" [config]="topCourseSlider">
-        <div ngxSlickItem *ngFor="let cat of categories">
-          <div class="categories-item categories-item-three mb-0">
-            <div class="category-icon mx-auto d-flex align-items-center justify-content-center rounded-circle bg-light" style="width:72px;height:72px" *ngIf="cat.icon">
-              <i [class]="cat.icon" style="font-size:32px"></i>
-            </div>
-            <img class="mx-auto" src="assets/img/category/icons/icon-6.svg" alt="img" *ngIf="!cat.icon" />
-            <h6 class="title">
-              <a href="javascript:void(0);" (click)="selectCategory(cat.id, cat.name)">{{ cat.name }}</a>
-            </h6>
+        <div ngxSlickItem *ngFor="let cat of categories; trackBy: trackByCategoryId">
+          <div class="cat-card" [ngClass]="getCategoryColorClass(cat.name)" data-aos="fade-up">
+            <a href="javascript:void(0);" class="cat-card-link" (click)="selectCategory(cat.id, cat.name)">
+              <div class="cat-icon-wrap">
+                <i [class]="getCategoryIconClass(cat.icon, cat.name)"></i>
+              </div>
+              <h6 class="cat-label">{{ cat.name }}</h6>
+              <span class="cat-cta">Explorer <i class="fa-solid fa-arrow-right ms-1"></i></span>
+            </a>
           </div>
         </div>
       </ngx-slick-carousel>
-      
     </div>
-    <a [routerLink]="'/courses/course-list-public'" class="btn btn-primary btn-md">Voir toutes les catégories</a>
-  </div>
-</section>
-<!-- /top courses -->
-
-<!-- trust -->
-<section class="trust-sec">
-  <div class="container">
-    <div class="video-showcase">
-      <img src="assets/img/feature/feature-1.jpg" class="img-fluid w-100 rounded-2" alt="banner" />
-      <div class="video-play">
-        <lightgallery [settings]="settings" [onInit]="onInit" size="1400-933">   
-          <a src="https://www.youtube.com/embed/1trvO6dqQUI"><i class="isax isax-play5"></i></a>
-      </lightgallery>
-      </div>
-    </div>
-    <div class="trust-content">
-      <img src="./assets/img/bg/bg-19.png" alt="img" class="w-100 trust-bg" />
-      <div class="row justify-content-between">
-        <div class="col-md-4">
-          <h4>
-            Trusted by the 15,000+ happy students and online users since 2000
-          </h4>
-          <div class="d-flex align-items-center flex-wrap mt-5 gap-2">
-            <a [routerLink]="routes.login" class="btn btn-secondary">Enroll as Student</a>
-            <a [routerLink]="routes.becomeAnExpert" class="btn btn-dark">Apply as Tutor</a>
-          </div>
-        </div>
-        <div class="col-md-7">
-          <div class="row">
-            <div class="col-md-6">
-              <h4 class="text-white mb-2">9.8/10</h4>
-              <h5 class="text-white mb-2">Course Approval Score</h5>
-              <p class="text-white mb-5">
-                Achieving a complete course approval score is a significant.
-              </p>
-            </div>
-            <div class="col-md-6">
-              <h4 class="text-white mb-2">13k</h4>
-              <h5 class="text-white mb-2">Satisfied Students Worldwide</h5>
-              <p class="text-white mb-5">
-                Satisfied students worldwide share a common thread of happiness.
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-items-center bg-white user-goal p-2">
-            <div class="avatar avatar-lg flex-shrink-0">
-              <img class="rounded-pill" src="./assets/img/user/user-28.jpg" alt="img" />
-            </div>
-            <p class="text-gray-9 mb-0">
-              “All courses are incredibly help people to achieve their goals”
-            </p>
-          </div>
-        </div>
-      </div>
+    <div class="text-center mt-4">
+      <a [routerLink]="routes.courseCategory" class="btn btn-primary btn-md d-inline-flex align-items-center gap-2">
+        <i class="fa-solid fa-th-large"></i> Voir toutes les catégories
+      </a>
     </div>
   </div>
 </section>
-<!-- /trust -->
 
-<!-- featured course -->
-<section class="featured-courses-section">
+<!-- ═══════════════════════════════════════════════════════════════════════
+     COURS EN VEDETTE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="featured-courses-section" *ngIf="featuredCourses.length > 0">
   <div class="container">
     <div class="section-header text-center">
-      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Featured Courses</span>
-      <h2>What’s New in DreamsLMS</h2>
-      <p>
-        Discover our featured courses, specially curated to help you gain
-        in-demand skills
-      </p>
+      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">
+        <i class="fa-solid fa-fire me-1"></i> Cours populaires
+      </span>
+      <h2>Les formations du moment</h2>
+      <p>Découvrez nos cours les plus demandés, sélectionnés pour booster votre carrière.</p>
     </div>
     <div class="feature-course-slider-2">
       <ngx-slick-carousel #slickModal="slick-carousel" [config]="featureCourseSlider2">
-        <div ngxSlickItem *ngFor="let course of featuredCourses; let i = index">
-          <div class="course-item">
-            <div class="course-img">
-              <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">
-                <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" />
+        <div ngxSlickItem *ngFor="let course of featuredCourses; let i = index; trackBy: trackByCourseId">
+          <div class="fc-card" data-aos="fade-up" [attr.data-aos-delay]="i * 80">
+
+            <!-- Image wrapper -->
+            <div class="fc-img-wrap">
+              <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)" class="fc-img-link">
+                <img [src]="getCourseImage(course)" (error)="onCourseCoverError($event)" alt="{{ course.title }}" class="fc-img" loading="lazy" decoding="async" />
+                <div class="fc-img-overlay"></div>
               </a>
-              <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
-                <span class="price-badge ms-auto">{{ formatPrice(course) }}</span>
+              <!-- Prix top-right -->
+              <span class="fc-price-badge">{{ formatPrice(course) }}</span>
+              <!-- Actions top-left: panier -->
+              <div class="fc-action-stack">
+                <a href="javascript:void(0);" class="fc-fav-btn fc-cart-btn" [ngClass]="{'active': isInCart(course.id)}" (click)="toggleCartFromCard(course.id)">
+                  <i class="isax isax-shopping-cart"></i>
+                </a>
               </div>
+              <!-- Catégorie bottom-left -->
+              <span class="fc-cat-chip">{{ course.categoryName || 'Cours' }}</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between">
-              <span class="badge badge-md badge-soft-info rounded-pill">{{ course.categoryName || 'Cours' }}</span>
-              <a href="javascript:void(0);" class="fav-icon" [ngClass]="{'selected':isSelected[i+1]}" (click)="iconSelect(i+1)"><i class="isax isax-heart"></i></a>
-            </div>
-            <div class="pb-3 border-bottom mb-3">
-              <h5>
-                <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">{{ course.title }}</a>
-              </h5>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-4">
-              <div class="course-rating">
-                <span class="course-user"><a href="javascript:void(0);"><img [src]="getAvatarUrl(course.instructorAvatar)" alt="img"
-                      class="img-fluid" /></a></span>
-                <a href="javascript:void(0);">{{ course.instructorName }}</a>
+
+            <!-- Corps -->
+            <div class="fc-body">
+              <div class="fc-body-top">
+                <h6 class="fc-title mb-0">
+                  <span *ngIf="hasActivePromotion(course)" class="badge bg-danger text-white me-2 mb-2 d-inline-block">
+                    {{ getPromotionPercent(course) }}% off
+                  </span>
+                  <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)">{{ course.title }}</a>
+                </h6>
+                <a href="javascript:void(0);"
+                   class="fc-fav-btn fc-body-fav"
+                   [ngClass]="{'active': isSelected[i+1], 'fc-fav-disabled': !canUseWishlist}"
+                   (click)="iconSelect(i+1)">
+                  <i class="isax isax-heart"></i>
+                </a>
               </div>
-              <div class="d-flex" *ngIf="course.averageRating">
-                <span class="d-flex align-items-center rating"><i
-                    class="fa-solid fa-star text-warning me-2"></i>{{ course.averageRating | number:'1.1-1' }}</span>
+
+              <div class="fc-instructor-row">
+                <img [src]="getCourseInstructorAvatar(course)" (error)="onCourseInstructorAvatarError($event, course.instructorName)" alt="instructeur" class="fc-avatar" loading="lazy" decoding="async" />
+                <span class="fc-inst-name">{{ course.instructorName }}</span>
+                <span class="fc-rating ms-auto" *ngIf="course.averageRating">
+                  <i class="fa-solid fa-star"></i>
+                  {{ course.averageRating | number:'1.1-1' }}
+                </span>
+                <span class="fc-new-tag ms-auto" *ngIf="!course.averageRating && isCourseNew(course)">Nouveau</span>
               </div>
+
+              <div *ngIf="hasActivePromotion(course)" class="mb-2 text-muted small">
+                <span class="text-decoration-line-through me-1">{{ course.price | number:'1.2-2' }} €</span>
+                <span class="badge bg-danger">PROMO</span>
+              </div>
+
+              <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)" class="fc-cta-btn">
+                <i class="fa-solid fa-play-circle me-2"></i> Voir le cours
+              </a>
             </div>
-            <a href="javascript:void(0);" (click)="goToCourseDetail(course.id)" class="btn buy-course-btn">Voir le cours</a>
+
           </div>
         </div>
       </ngx-slick-carousel>
     </div>
     <div class="d-flex align-items-center justify-content-center">
-      <a [routerLink]="'/courses/course-list-public'" class="btn btn-primary btn-md">Voir tous les cours</a>
+      <a [routerLink]="'/courses/course-list-public'" class="btn btn-primary btn-md">
+        <i class="fa-solid fa-arrow-right me-2"></i> Voir tous les cours
+      </a>
     </div>
   </div>
 </section>
-<!-- /featured course -->
 
-<!-- community-to-learn -->
+<!-- ═══════════════════════════════════════════════════════════════════════
+     COMMENT ÇA MARCHE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="how-it-works-sec-two">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6">
+        <div class="me-5" data-aos="fade-up" style="position:relative">
+          <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=800&q=85&auto=format&fit=crop"
+               class="img-fluid rounded-5"
+               style="width:100%;object-fit:cover;max-height:520px"
+               alt="Apprentissage en ligne" />
+          <div style="position:absolute;bottom:24px;left:24px;background:rgba(255,255,255,.95);border-radius:16px;padding:14px 20px;box-shadow:0 8px 32px rgba(99,102,241,.18);display:flex;align-items:center;gap:12px">
+            <span style="background:linear-gradient(135deg,#6366f1,#7c3aed);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-play text-white fs-14"></i></span>
+            <div>
+              <div style="font-weight:700;font-size:.95rem;color:#1e1b4b">4 étapes simples</div>
+              <div style="font-size:.8rem;color:#6b7280">Pour démarrer votre parcours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="how-it-works-content aos" data-aos="fade-up">
+          <div class="section-header">
+            <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Comment ça marche</span>
+            <h2 class="mb-1">Commencez votre parcours en 4 étapes</h2>
+            <p>Rejoignez notre communauté d'apprenants et donnez un nouvel élan à votre carrière.</p>
+          </div>
+          <div class="d-flex align-items-center works-items">
+            <span class="count">01</span>
+            <div>
+              <h5 class="mb-1"><i class="fa-solid fa-user-plus me-2 text-primary"></i> Créez votre compte</h5>
+              <p>Inscrivez-vous gratuitement en quelques secondes avec votre email.</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center works-items">
+            <span class="count">02</span>
+            <div>
+              <h5 class="mb-1"><i class="fa-solid fa-compass me-2 text-info"></i> Explorez les cours</h5>
+              <p>Parcourez notre catalogue et choisissez la formation qui vous correspond.</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center works-items">
+            <span class="count">03</span>
+            <div>
+              <h5 class="mb-1"><i class="fa-solid fa-play-circle me-2 text-success"></i> Apprenez à votre rythme</h5>
+              <p>Suivez les leçons vidéo, complétez les quiz et progressez selon vos disponibilités.</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center works-items mb-0 pb-0 border-0">
+            <span class="count">04</span>
+            <div>
+              <h5 class="mb-1"><i class="fa-solid fa-award me-2 text-warning"></i> Obtenez votre certificat</h5>
+              <p>Validez vos acquis et recevez un certificat vérifiable que vous pouvez partager.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FORMATEURS EN VEDETTE
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div class="featured-instructor-sec" *ngIf="topInstructors.length > 0">
+  <div class="container">
+    <div class="section-header text-center" data-aos="fade-up">
+      <span class="fw-medium text-light text-decoration-underline mb-2 d-inline-block">
+        <i class="fa-solid fa-star me-1"></i> Nos formateurs
+      </span>
+      <h2 class="text-white">Des experts passionnés à votre service</h2>
+      <p class="text-light">Apprenez directement auprès de professionnels reconnus dans leur domaine.</p>
+    </div>
+    <div class="featured-instructor-slider lazy">
+      <ngx-slick-carousel #slickModal="slick-carousel" [config]="instructorSlider">
+        <div ngxSlickItem *ngFor="let inst of topInstructors; trackBy: trackByInstructorId">
+          <div class="instructor-item instructor-item-three mb-0" data-aos="flip-left">
+            <div class="instructors-img" [class.has-image]="hasInstructorAvatar(inst)">
+              <a [routerLink]="[routes.instructorDetails, inst.id]" tabindex="0" *ngIf="hasInstructorAvatar(inst); else instructorAvatarFallback">
+                 <img class="img-fluid"
+                     [alt]="inst.name"
+                     [src]="getInstructorAvatarUrl(inst)"
+                   loading="lazy" decoding="async"
+                     (error)="onInstructorAvatarError(inst)" />
+              </a>
+              <ng-template #instructorAvatarFallback>
+                <a [routerLink]="[routes.instructorDetails, inst.id]" tabindex="0" class="featured-inst-avatar-fallback-link">
+                  <div class="featured-inst-avatar-fallback">
+                    <i class="ti ti-user"></i>
+                    <span>{{ getInstructorInitial(inst) }}</span>
+                  </div>
+                </a>
+              </ng-template>
+            </div>
+            <div class="instructor-content">
+              <div>
+                <h3 class="title"><a [routerLink]="[routes.instructorDetails, inst.id]">{{ inst.name }}</a></h3>
+                <span class="designation">Formateur</span>
+              </div>
+              <p class="rating" *ngIf="inst.avgRating"><i class="fa-solid fa-star me-1"></i>{{ inst.avgRating }}</p>
+            </div>
+          </div>
+        </div>
+      </ngx-slick-carousel>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     VÉRIFIER UN CERTIFICAT — CTA
+     ═══════════════════════════════════════════════════════════════════════ -->
 <section class="community-to-learn">
   <div class="container">
     <div class="row align-items-center">
       <div class="col-lg-6">
-        <div class="section-header">
-          <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Advanced Learning</span>
-          <h2>Creating a community of learners.</h2>
-          <p>
-            We're dedicated to transforming education by providing a diverse
-            range of high-quality courses that cater to learners of all levels.
-          </p>
+        <div class="section-header" data-aos="fade-right">
+          <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">
+            <i class="fa-solid fa-shield-halved me-1"></i> Confiance & Transparence
+          </span>
+          <h2>Vérifiez l'authenticité d'un certificat</h2>
+          <p>Chaque certificat possède un code unique vérifiable en ligne. Recruteurs, employeurs : confirmez la validité d'une certification en un clic.</p>
         </div>
         <div class="community-item d-flex align-items-center">
-          <span class="community-icon-1">
-            <i class="isax isax-book-saved5"></i>
-          </span>
+          <span class="community-icon-1"><i class="fa-solid fa-qrcode"></i></span>
           <div>
-            <h5 class="mb-2">Learn from anywhere</h5>
-            <p class="mb-0">
-              Learning from anywhere has become a transform aspect of modern
-              education, allowing individuals.
-            </p>
+            <h5 class="mb-2">Code unique par certificat</h5>
+            <p class="mb-0">Chaque apprenant reçoit un code de vérification unique lié à sa formation.</p>
           </div>
         </div>
         <div class="community-item d-flex align-items-center">
-          <span class="community-icon-2">
-            <i class="isax isax-bookmark5"></i>
-          </span>
+          <span class="community-icon-2"><i class="fa-solid fa-globe"></i></span>
           <div>
-            <h5 class="mb-2">Expert Mentors</h5>
-            <p class="mb-0">
-              Learning from anywhere has become a transform aspect of modern
-              education, allowing individuals.
-            </p>
+            <h5 class="mb-2">Accessible partout dans le monde</h5>
+            <p class="mb-0">La vérification est disponible 24h/24, sans connexion requise.</p>
           </div>
         </div>
         <div class="community-item d-flex align-items-center">
-          <span class="community-icon-3">
-            <i class="isax isax-chart-26"></i>
-          </span>
+          <span class="community-icon-3"><i class="fa-solid fa-lock"></i></span>
           <div>
-            <h5 class="mb-2">Learn in demand skills</h5>
-            <p class="mb-0">
-              In today's rapidly evolving job market, learning in demand skills
-              is crucial for career advancement.
-            </p>
+            <h5 class="mb-2">Sécurité garantie</h5>
+            <p class="mb-0">Les certificats sont infalsifiables et liés au profil de l'apprenant.</p>
           </div>
         </div>
         <div class="d-flex align-items-center gap-2">
-          <a [routerLink]="routes.login" class="btn btn-secondary btn-md">Enroll as Student</a>
-          <a [routerLink]="routes.becomeAnExpert" class="btn btn-dark btn-md">Apply as Tutor</a>
+          <a [routerLink]="routes.verifyCertificate" class="btn btn-secondary btn-md">
+            <i class="fa-solid fa-search me-2"></i> Vérifier un certificat
+          </a>
+          <a [routerLink]="routes.register" class="btn btn-dark btn-md">
+            <i class="fa-solid fa-rocket me-2"></i> S'inscrire gratuitement
+          </a>
         </div>
       </div>
       <div class="col-lg-6">
         <div class="community-img d-none d-lg-flex">
           <img src="assets/img/shapes/shape-5.png" alt="img" class="img-fluid community-img-01" />
           <img src="assets/img/shapes/shape-6.png" alt="img" class="img-fluid community-img-02" />
-          <img src="assets/img/feature/feature-2.jpg" alt="img" class="img-fluid community-img-03" />
-          <img src="assets/img/feature/feature-3.jpg" alt="img" class="img-fluid community-img-04" />
-          <img src="assets/img/shapes/shape-7.svg" alt="img" class="img-fluid community-img-05" />
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=501&h=667&q=85&auto=format&fit=crop"
+               alt="Professionnelle certifiée" class="img-fluid community-img-03" />
+          <img src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=700&h=880&q=85&auto=format&fit=crop"
+               alt="Étudiant en ligne" class="img-fluid community-img-04" />
+          <div class="cert-float-badge">
+            <div class="cert-float-icon"><i class="fa-solid fa-trophy"></i></div>
+            <div>
+              <div class="cert-float-val">+500</div>
+              <div class="cert-float-sub">Diplômés</div>
+            </div>
+          </div>
           <div class="community-count p-2">
             <div class="enrolled-list">
               <div class="avatar-list-stacked mb-2">
-                <span class="avatar avatar-rounded">
-                  <img class="border border-white" src="assets/img/user/user-01.jpg" alt="img" />
-                </span>
-                <span class="avatar avatar-rounded">
-                  <img class="border border-white" src="assets/img/user/user-03.jpg" alt="img" />
-                </span>
-                <span class="avatar avatar-rounded">
-                  <img class="border border-white" src="assets/img/user/user-07.jpg" alt="img" />
-                </span>
-                <span class="avatar avatar-rounded">
-                  <img class="border border-white" src="assets/img/user/user-08.jpg" alt="img" />
-                </span>
-                <span class="avatar avatar-rounded">
-                  <img src="assets/img/user/user-06.jpg" alt="img" />
-                </span>
+                <span class="avatar avatar-rounded"><img class="border border-white" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&q=80&auto=format&fit=crop&crop=face" alt="Apprenante" /></span>
+                <span class="avatar avatar-rounded"><img class="border border-white" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&q=80&auto=format&fit=crop&crop=face" alt="Apprenant" /></span>
+                <span class="avatar avatar-rounded"><img class="border border-white" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&q=80&auto=format&fit=crop&crop=face" alt="Apprenante" /></span>
+                <span class="avatar avatar-rounded"><img class="border border-white" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&q=80&auto=format&fit=crop&crop=face" alt="Apprenant" /></span>
               </div>
-              <p class="mb-0">
-                <span class="text-secondary">35K+</span> Students Enrolled
-              </p>
+              <p class="mb-0"><span class="text-secondary fw-bold">Certifié</span> & Vérifiable</p>
             </div>
           </div>
         </div>
@@ -502,260 +569,10 @@
     </div>
   </div>
 </section>
-<!-- /community-to-learn -->
 
-<!-- client -->
-<div class="cliets-section-one">
-  <div class="brand-slide">
-    <ngx-slick-carousel #slickModal="slick-carousel" [config]="brandSlide">
-
-      <div ngxSlickItem>
-        <img src="assets/img/client/08.svg" alt="img" />
-      </div>
-      <div>
-        <img src="assets/img/client/09.svg" alt="img" />
-      </div>
-      <div ngxSlickItem>
-        <img src="assets/img/client/10.svg" alt="img" />
-      </div>
-      <div ngxSlickItem>
-        <img src="assets/img/client/11.svg" alt="img" />
-      </div>
-      <div ngxSlickItem>
-        <img src="assets/img/client/12.svg" alt="img" />
-      </div>
-      <div ngxSlickItem>
-        <img src="assets/img/client/13.svg" alt="img" />
-      </div>
-      <div ngxSlickItem>
-        <img src="assets/img/client/08.svg" alt="img" />
-      </div>
-      <div ngxSlickItem>
-        <img src="assets/img/client/09.svg" alt="img" />
-      </div>
-    </ngx-slick-carousel>
-  </div>
-</div>
-<!-- /client -->
-
-<!-- how it works -->
-<div class="how-it-works-sec-two">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-6">
-        <div class="me-5" data-aos="fade-up">
-          <img src="assets/img/feature/feature-27.jpg" class="img-fluid rounded-5" alt="img" />
-        </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="how-it-works-content aos" data-aos="fade-up">
-          <div class="section-header">
-            <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">How it Works</span>
-            <h2 class="mb-1">Start your Learning Journey Today!</h2>
-            <p>
-              Unlock Your Potential and Achieve Your Dreams with Our
-              Comprehensive Learning Resources!
-            </p>
-          </div>
-          <div class="d-flex align-items-center works-items">
-            <span class="count">01</span>
-            <div>
-              <h5 class="mb-1">Sign-Up or Register</h5>
-              <p>
-                Once you're on the website's homepage, look for the Sign-Up,
-                Register, or Create Account button.
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-items-center works-items">
-            <span class="count">02</span>
-            <div>
-              <h5 class="mb-1">Complete Your Profile</h5>
-              <p>
-                After verifying your email, you may be asked to complete
-                additional profile information.
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-items-center works-items">
-            <span class="count">03</span>
-            <div>
-              <h5 class="mb-1">Choose Courses or Programs</h5>
-              <p>
-                Depending on the website, after registration, you might be able
-                to browse and choose courses or programs to enroll in.
-              </p>
-            </div>
-          </div>
-          <div class="d-flex align-items-center works-items mb-0 pb-0 border-0">
-            <span class="count">04</span>
-            <div>
-              <h5 class="mb-1">Access Your Account</h5>
-              <p>
-                Should have access to the website’s features, such as enrolling
-                in courses, materials, or tracking progress.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- how it works -->
-
-<!-- featured instructor -->
-<div class="featured-instructor-sec">
-  <div class="container">
-    <div class="section-header text-center" data-aos="fade-up">
-      <span class="fw-medium text-light text-decoration-underline mb-2 d-inline-block">Featured Instructors</span>
-      <h2 class="text-white">Top Class & Professional Instructors</h2>
-      <p class="text-light">
-        Empowering Change: Stories from Those Who Took the Leap
-      </p>
-    </div>
-    <div class="featured-instructor-slider lazy">
-      <ngx-slick-carousel #slickModal="slick-carousel" [config]="instructorSlider">
-        <div ngxSlickItem *ngFor="let inst of topInstructors">
-          <div class="instructor-item instructor-item-three mb-0" data-aos="flip-left">
-            <div class="instructors-img">
-              <a [routerLink]="[routes.instructorDetails, inst.id]" tabindex="0">
-                <img class="img-fluid" [alt]="inst.name" [src]="getAvatarUrl(inst.avatar)" />
-              </a>
-            </div>
-            <div class="instructor-content">
-              <div>
-                <h3 class="title">
-                  <a [routerLink]="[routes.instructorDetails, inst.id]">{{ inst.name }}</a>
-                </h3>
-                <span class="designation">Instructeur</span>
-              </div>
-              <p class="rating" *ngIf="inst.avgRating"><i class="fas fa-star me-1"></i>{{ inst.avgRating }}</p>
-            </div>
-          </div>
-        </div>
-      </ngx-slick-carousel>
-    </div>
-  </div>
-</div>
-<!-- featured instructor -->
-
-<!-- testimonials -->
-<div class="testimonials-section testimonials-sec-one text-center">
-  <div class="container">
-    <div class="section-header text-center" data-aos="fade-up">
-      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Featured Instructors</span>
-      <h2>Top Class & Professional Instructors</h2>
-      <p>Words from Those Who’ve Experienced Real Growth</p>
-    </div>
-    <div >
-      <ngx-slick-carousel class="testimonials-slider lazy mt-4" #slickModal="slick-carousel" [config]="testimonialSlider">
-        <div ngxSlickItem>
-          <div class="testimonials-item rounded-3 bg-white" data-aos="flip-right">
-            <div class="position-relative d-inline-flex m-auto">
-              <div class="avatar rounded-circle avatar-xxl border border-white border-3">
-                <a [routerLink]="routes.studentsDetails"><img class="img-fluid rounded-circle" src="./assets/img/user/user-41.jpg"
-                    alt="img" /></a>
-              </div>
-              <i class="isax isax-quote-up5 bg-secondary quote rounded-pill fs-16 p-1"></i>
-            </div>
-            <h6 class="mb-1"><a [routerLink]="routes.studentsDetails">Brenda Slaton</a></h6>
-            <p class="designation">Designer</p>
-            <p class="mb-3 text-truncate line-clamb-2">
-              This mentor helped me understand concepts that I had been struggling
-              with for weeks.
-            </p>
-            <div>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </div>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="testimonials-item rounded-3 bg-white" data-aos="flip-right">
-            <div class="position-relative d-inline-flex m-auto">
-              <div class="avatar rounded-circle avatar-xxl border border-white border-3">
-                <a [routerLink]="routes.studentsDetails"><img class="img-fluid rounded-circle" src="./assets/img/user/user-42.jpg"
-                    alt="img" /></a>
-              </div>
-              <i class="isax isax-quote-up5 bg-secondary quote rounded-pill fs-16 p-1"></i>
-            </div>
-            <h6 class="mb-1"><a [routerLink]="routes.studentsDetails">Adrian Dennis</a></h6>
-            <p class="designation">Developer</p>
-            <p class="mb-3 text-truncate line-clamb-2">
-              I’ve learned so much from my mentor’s personal experience.
-            </p>
-            <div>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </div>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="testimonials-item rounded-3 bg-white" data-aos="flip-right">
-            <div class="position-relative d-inline-flex m-auto">
-              <div class="avatar rounded-circle avatar-xxl border border-white border-3">
-                <a [routerLink]="routes.studentsDetails"><img class="img-fluid rounded-circle" src="./assets/img/user/user-43.jpg"
-                    alt="img" /></a>
-              </div>
-              <i class="isax isax-quote-up5 bg-secondary quote rounded-pill fs-16 p-1"></i>
-            </div>
-            <h6 class="mb-1">
-              <a [routerLink]="routes.studentsDetails">Adrian Coztanza</a>
-            </h6>
-            <p class="designation">Architect</p>
-            <p class="mb-3 text-truncate line-clamb-2">
-              The advice was useful, but I wish my mentor had been more available
-              for follow-up discussions.
-            </p>
-            <div>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </div>
-          </div>
-        </div>
-        <div ngxSlickItem>
-          <div class="testimonials-item rounded-3 bg-white">
-            <div class="position-relative d-inline-flex m-auto">
-              <div class="avatar rounded-circle avatar-xxl border border-white border-3">
-                <a [routerLink]="routes.studentsDetails"><img class="img-fluid rounded-circle" src="./assets/img/user/user-43.jpg"
-                    alt="img" /></a>
-              </div>
-              <i class="isax isax-quote-up5 bg-secondary quote rounded-pill fs-16 p-1"></i>
-            </div>
-            <h6 class="mb-1">
-              <a [routerLink]="routes.studentsDetails">Adrian Coztanza</a>
-            </h6>
-            <p class="designation">Architect</p>
-            <p class="mb-3 text-truncate line-clamb-2">
-              The advice was useful, but I wish my mentor had been more available
-              for follow-up discussions.
-            </p>
-            <div>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-              <i class="fa-solid fa-star text-warning"></i>
-            </div>
-          </div>
-        </div>
-      </ngx-slick-carousel>
-    </div>
-  </div>
-</div>
-<!-- testimonials -->
-
-<!-- faq -->
+<!-- ═══════════════════════════════════════════════════════════════════════
+     FAQ
+     ═══════════════════════════════════════════════════════════════════════ -->
 <div class="faq-section faq-banner-bg">
   <img src="assets/img/bg/bg-21.svg" alt="img" class="d-lg-flex d-none faq-bg2" />
   <img src="assets/img/bg/bg-22.svg" alt="img" class="d-lg-flex d-none faq-bg3" />
@@ -763,136 +580,78 @@
     <div class="row align-items-center">
       <div class="col-lg-6">
         <div class="faq-img" data-aos="fade-up">
-          <img class="img-fluid rounded-5" src="assets/img/feature/feature-4.jpg" alt="img" />
-          <span><i class="isax isax-message-question5"></i></span>
+          <img class="img-fluid rounded-5"
+               src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=900&q=85&auto=format&fit=crop&crop=center"
+               style="width:100%;object-fit:cover;min-height:420px;max-height:560px;display:block"
+               alt="Questions fréquentes - e-learning" />
+          <span><i class="fa-solid fa-circle-question"></i></span>
         </div>
       </div>
       <div class="col-lg-6">
         <div class="faq-content">
           <div class="section-header" data-aos="fade-up">
-            <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Your Questions are
-              Answered</span>
-            <h2 class="mb-1">Frequently Asked Questions</h2>
-            <p>
-              Explore detailed answers to the most common questions about our
-              platform.
-            </p>
+            <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">FAQ</span>
+            <h2 class="mb-1">Questions fréquentes</h2>
+            <p>Tout ce que vous devez savoir sur notre plateforme.</p>
           </div>
           <div class="accordion accordion-customicon1 accordions-items-seperate" id="accordioncustomicon1Example">
             <div class="accordion-item" data-aos="fade-up">
-              <h2 class="accordion-header" id="headingcustomicon1One">
-                <a href="javascript:void(0);" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon1One"
-                  aria-expanded="true" aria-controls="collapsecustomicon1One">
-                  How do I enroll in a course?
-                  <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
+              <h2 class="accordion-header" id="headFaq1">
+                <a href="javascript:void(0);" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collFaq1" aria-expanded="true">
+                  Comment m'inscrire à un cours ? <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
                 </a>
               </h2>
-              <div id="collapsecustomicon1One" class="accordion-collapse collapse show"
-                aria-labelledby="headingcustomicon1One" data-bs-parent="#accordioncustomicon1Example">
+              <div id="collFaq1" class="accordion-collapse collapse show" aria-labelledby="headFaq1" data-bs-parent="#accordioncustomicon1Example">
                 <div class="accordion-body pt-0">
-                  <p>
-                    Many websites offer a Certificate of Completion for paid
-                    courses. Free courses may or may not include a certificate,
-                    depending on the platform’s policies.
-                  </p>
+                  <p>Créez un compte gratuit, parcourez notre catalogue, et cliquez sur « S'inscrire ». Vous pouvez commencer immédiatement.</p>
                 </div>
               </div>
             </div>
-            <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
-              <h2 class="accordion-header" id="headingcustomicon1Two">
-                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse"
-                  data-bs-target="#collapsecustomicon1Two" aria-expanded="false" aria-controls="collapsecustomicon1One">
-                  How long do I have access to a course?
-                  <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="100">
+              <h2 class="accordion-header" id="headFaq2">
+                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collFaq2" aria-expanded="false">
+                  Combien de temps ai-je accès à un cours ? <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
                 </a>
               </h2>
-              <div id="collapsecustomicon1Two" class="accordion-collapse collapse"
-                aria-labelledby="headingcustomicon1Two" data-bs-parent="#accordioncustomicon1Example">
+              <div id="collFaq2" class="accordion-collapse collapse" aria-labelledby="headFaq2" data-bs-parent="#accordioncustomicon1Example">
                 <div class="accordion-body pt-0">
-                  <p>
-                    Many websites offer a Certificate of Completion for paid
-                    courses. Free courses may or may not include a certificate,
-                    depending on the platform’s policies.
-                  </p>
+                  <p>Une fois inscrit, vous avez un accès illimité au cours. Revenez quand vous le souhaitez.</p>
                 </div>
               </div>
             </div>
-            <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
-              <h2 class="accordion-header" id="headingcustomicon1Three">
-                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse"
-                  data-bs-target="#collapsecustomicon1Three" aria-expanded="false"
-                  aria-controls="collapsecustomicon1One">
-                  What payment methods are accepted?
-                  <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="200">
+              <h2 class="accordion-header" id="headFaq3">
+                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collFaq3" aria-expanded="false">
+                  Quels moyens de paiement acceptez-vous ? <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
                 </a>
               </h2>
-              <div id="collapsecustomicon1Three" class="accordion-collapse collapse"
-                aria-labelledby="headingcustomicon1Three" data-bs-parent="#accordioncustomicon1Example">
+              <div id="collFaq3" class="accordion-collapse collapse" aria-labelledby="headFaq3" data-bs-parent="#accordioncustomicon1Example">
                 <div class="accordion-body pt-0">
-                  <p>
-                    Many websites offer a Certificate of Completion for paid
-                    courses. Free courses may or may not include a certificate,
-                    depending on the platform’s policies.
-                  </p>
+                  <p>Nous acceptons les cartes bancaires (Visa, Mastercard) via Stripe. Paiement sécurisé et instantané.</p>
                 </div>
               </div>
             </div>
-            <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
-              <h2 class="accordion-header" id="headingcustomicon1Four">
-                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse"
-                  data-bs-target="#collapsecustomicon1Four" aria-expanded="false"
-                  aria-controls="collapsecustomicon1One">
-                  Will I receive a certificate after completing a course?
-                  <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="300">
+              <h2 class="accordion-header" id="headFaq4">
+                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collFaq4" aria-expanded="false">
+                  Vais-je obtenir un certificat ? <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
                 </a>
               </h2>
-              <div id="collapsecustomicon1Four" class="accordion-collapse collapse"
-                aria-labelledby="headingcustomicon1Four" data-bs-parent="#accordioncustomicon1Example">
+              <div id="collFaq4" class="accordion-collapse collapse" aria-labelledby="headFaq4" data-bs-parent="#accordioncustomicon1Example">
                 <div class="accordion-body pt-0">
-                  <p>
-                    Many websites offer a Certificate of Completion for paid
-                    courses. Free courses may or may not include a certificate,
-                    depending on the platform’s policies.
-                  </p>
+                  <p>Oui ! À la fin de chaque formation, vous recevez un certificat avec un code de vérification unique.</p>
                 </div>
               </div>
             </div>
-            <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
-              <h2 class="accordion-header" id="headingcustomicon1Five">
-                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse"
-                  data-bs-target="#collapsecustomicon1Five" aria-expanded="false"
-                  aria-controls="collapsecustomicon1One">
-                  What is the purpose of this DreamLMS ?
-                  <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
+            <div class="accordion-item" data-aos="fade-up" data-aos-delay="400">
+              <h2 class="accordion-header" id="headFaq5">
+                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collFaq5" aria-expanded="false">
+                  Comment vérifier un certificat ? <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
                 </a>
               </h2>
-              <div id="collapsecustomicon1Five" class="accordion-collapse collapse"
-                aria-labelledby="headingcustomicon1Five" data-bs-parent="#accordioncustomicon1Example">
+              <div id="collFaq5" class="accordion-collapse collapse" aria-labelledby="headFaq5" data-bs-parent="#accordioncustomicon1Example">
                 <div class="accordion-body pt-0">
-                  <p>
-                    Many websites offer a Certificate of Completion for paid
-                    courses. Free courses may or may not include a certificate,
-                    depending on the platform’s policies.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="accordion-item" data-aos="fade-up" data-aos-delay="250">
-              <h2 class="accordion-header" id="headingcustomicon1Six">
-                <a href="javascript:void(0);" class="accordion-button collapsed" data-bs-toggle="collapse"
-                  data-bs-target="#collapsecustomicon1Six" aria-expanded="false" aria-controls="collapsecustomicon1One">
-                  What can I do with my certificate?
-                  <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
-                </a>
-              </h2>
-              <div id="collapsecustomicon1Six" class="accordion-collapse collapse"
-                aria-labelledby="headingcustomicon1Six" data-bs-parent="#accordioncustomicon1Example">
-                <div class="accordion-body pt-0">
-                  <p>
-                    Many websites offer a Certificate of Completion for paid
-                    courses. Free courses may or may not include a certificate,
-                    depending on the platform’s policies.
-                  </p>
+                  <p>Rendez-vous sur « Vérifier Certificat » dans le menu, entrez le code unique et consultez les informations validées.</p>
                 </div>
               </div>
             </div>
@@ -902,164 +661,222 @@
     </div>
   </div>
 </div>
-<!-- faq -->
 
-<!-- Latest Blog -->
-<section class="latest-blog-three latest-blog-five">
+<!-- ═══════════════════════════════════════════════════════════════════════
+     BECOME AN INSTRUCTOR - COMMERCIAL SECTION
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="become-instructor-sec">
   <div class="container">
-    <div class="section-header text-center" data-aos="fade-up">
-      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Articles & Updates</span>
-      <h2>Our Recent Blog & Articles</h2>
-      <p>
-        Explore curated content to enlighten, entertain and engage global
-        readers.
-      </p>
-    </div>
-    <div class="latest-blog-main">
-      <div class="row">
-        <div class="col-lg-4">
-          <div class="event-blog-three blog-three-one" data-aos="fade-up">
-            <div class="blog-img-three">
-              <a [routerLink]="routes.blog_grid">
-                <img class="img-fluid" alt="Img" src="assets/img/blog/blog-35.jpg" />
-              </a>
+    <!-- Decorative blobs -->
+    <div class="bi-blob bi-blob-1"></div>
+    <div class="bi-blob bi-blob-2"></div>
+    <div class="bi-blob bi-blob-3"></div>
+
+    <div class="row align-items-center justify-content-between g-4 g-lg-5 position-relative" style="z-index:2">
+      <!-- Left Column: Illustration & Features -->
+      <div class="col-lg-5" data-aos="fade-up">
+        <div class="bi-illustration-wrapper">
+          <!-- Main illustration -->
+          <div class="bi-illustration-card">
+            <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=85&auto=format&fit=crop&crop=center"
+                 alt="Devenir formateur"
+                 class="img-fluid rounded-4"
+                style="width:100%;object-fit:cover;height:380px;display:block;box-shadow:0 20px 60px rgba(86,37,232,.2)" />
+            <div class="bi-float-badge bi-float-badge-1">
+              <i class="fa-solid fa-video"></i>
+              <span>Créez vos cours</span>
             </div>
-            <div class="latest-blog-content">
-              <div class="event-three-title">
-                <div class="event-span-three d-flex align-items-center">
-                  <span class="category">Lifestyle</span>
-                  <div class="blog-date">
-                    <i class="fa-solid fa-calendar"></i><span>09 Aug 2025</span>
-                  </div>
-                </div>
-                <a [routerLink]="routes.blog_grid">
-                  <h5>Why an LMS is Essential for Modern Education</h5>
-                </a>
-              </div>
+            <div class="bi-float-badge bi-float-badge-2">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Gagnez plus</span>
             </div>
-            <div class="blog-user-top">
-              <a href="javascript:void(0);"><img src="assets/img/user/user-01.jpg" alt="" />David
-                Benitez</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-8">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="event-blog-three blog-three-one" data-aos="fade-up">
-                <div class="blog-img-three">
-                  <a [routerLink]="routes.blog_details">
-                    <img class="img-fluid" alt="Img" src="assets/img/blog/blog-36.jpg" />
-                  </a>
-                </div>
-                <div class="latest-blog-content">
-                  <div class="event-three-title">
-                    <div class="event-span-three d-flex align-items-center">
-                      <span class="category">Productivity</span>
-                      <div class="blog-date">
-                        <i class="fa-solid fa-calendar"></i>
-                        <span>09 Aug 2025</span>
-                      </div>
-                    </div>
-                    <h5>
-                      <a [routerLink]="routes.blog_grid">The Impact of LMS on Academic Journey Education</a>
-                    </h5>
-                  </div>
-                </div>
-                <div class="blog-user-top">
-                  <a href="javascript:void(0);"><img src="assets/img/user/user-01.jpg" alt="" />David
-                    Benitez</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="event-blog-three blog-three-one" data-aos="fade-up">
-                <div class="blog-img-three">
-                  <a [routerLink]="routes.blog_grid">
-                    <img class="img-fluid" alt="Img" src="assets/img/blog/blog-38.jpg" />
-                  </a>
-                </div>
-                <div class="latest-blog-content">
-                  <div class="event-three-title">
-                    <div class="event-span-three d-flex align-items-center">
-                      <span class="category">Productivity</span>
-                      <div class="blog-date">
-                        <i class="fa-solid fa-calendar"></i><span>09 Aug 2025</span>
-                      </div>
-                    </div>
-                    <h5>
-                      <a [routerLink]="routes.blog_grid">Maximizing Academic Success with the Right LMS</a>
-                    </h5>
-                  </div>
-                </div>
-                <div class="blog-user-top">
-                  <a href="javascript:void(0);"><img src="assets/img/user/user-01.jpg" alt="" />David
-                    Benitez</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="event-blog-three blog-three-one" data-aos="fade-up">
-                <div class="blog-img-three">
-                  <a [routerLink]="routes.blog_grid">
-                    <img class="img-fluid" alt="Img" src="assets/img/blog/blog-37.jpg" />
-                  </a>
-                </div>
-                <div class="latest-blog-content">
-                  <div class="event-three-title">
-                    <div class="event-span-three d-flex align-items-center">
-                      <span class="category">UI /UX</span>
-                      <div class="blog-date">
-                        <i class="fa-solid fa-calendar"></i><span>09 Aug 2025</span>
-                      </div>
-                    </div>
-                    <h5>
-                      <a [routerLink]="routes.blog_grid">Promoting Health & Well being in Schools</a>
-                    </h5>
-                  </div>
-                </div>
-                <div class="blog-user-top">
-                  <a href="javascript:void(0);"><img src="assets/img/user/user-01.jpg" alt="" />David
-                    Benitez</a>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="event-blog-three blog-three-one" data-aos="fade-up">
-                <div class="blog-img-three">
-                  <a [routerLink]="routes.blog_grid">
-                    <img class="img-fluid" alt="Img" src="assets/img/blog/blog-39.jpg" />
-                  </a>
-                </div>
-                <div class="latest-blog-content">
-                  <div class="event-three-title">
-                    <div class="event-span-three d-flex align-items-center">
-                      <span class="category">Development</span>
-                      <div class="blog-date">
-                        <i class="fa-solid fa-calendar"></i><span>09 Aug 2025</span>
-                      </div>
-                    </div>
-                    <h5>
-                      <a [routerLink]="routes.blog_grid">How to Build and Run a Pilot Mentoring Program</a>
-                    </h5>
-                  </div>
-                </div>
-                <div class="blog-user-top">
-                  <a href="javascript:void(0);"><img src="assets/img/user/user-01.jpg" alt="" />David
-                    Benitez</a>
-                </div>
-              </div>
+            <div class="bi-float-badge bi-float-badge-3">
+              <i class="fa-solid fa-users"></i>
+              <span>Impactez 1000s</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="text-center">
-      <a class="btn btn-view-all" data-aos="fade-up" [routerLink]="routes.blog_grid">View All Articles</a>
+
+      <!-- Right Column: Content & CTA -->
+      <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+        <div class="bi-content-wrapper">
+          <!-- Eyebrow badge -->
+          <span class="bi-eyebrow">
+            <i class="fa-solid fa-star"></i> Opportunité pour experts
+          </span>
+
+          <!-- Main heading -->
+          <h2 class="bi-title">
+            Devenez <span class="bi-accent">formateur</span> et<br>partagez votre expertise
+          </h2>
+
+          <!-- Description -->
+          <p class="bi-description">
+            Rejoignez des milliers d'experts qui transforment leurs connaissances en revenus durables. 
+            Sur Dreams LMS, vous contrôlez votre contenu, fixez vos tarifs et touchez une audience mondiale.
+          </p>
+
+          <!-- Features Grid -->
+          <div class="bi-features-grid">
+            <div class="bi-feature-item">
+              <div class="bi-feature-icon">
+                <i class="fa-solid fa-rocket"></i>
+              </div>
+              <div class="bi-feature-content">
+                <h4>Lancez rapidement</h4>
+                <p>Outils simples et intuitifs pour créer votre premier cours en heures, pas en semaines.</p>
+              </div>
+            </div>
+
+            <div class="bi-feature-item">
+              <div class="bi-feature-icon">
+                <i class="fa-solid fa-chart-bar"></i>
+              </div>
+              <div class="bi-feature-content">
+                <h4>Analysez vos résultats</h4>
+                <p>Tableaux de bord détaillés pour suivre les inscriptions, le taux de satisfaction et vos revenus.</p>
+              </div>
+            </div>
+
+            <div class="bi-feature-item">
+              <div class="bi-feature-icon">
+                <i class="fa-solid fa-shield-check"></i>
+              </div>
+              <div class="bi-feature-content">
+                <h4>Paiements sécurisés</h4>
+                <p>Recevez vos gains mensuels via virement bancaire sécurisé sans frais surprises.</p>
+              </div>
+            </div>
+
+            <div class="bi-feature-item">
+              <div class="bi-feature-icon">
+                <i class="fa-solid fa-headset"></i>
+              </div>
+              <div class="bi-feature-content">
+                <h4>Support 24/7</h4>
+                <p>Équipe dédiée pour vous accompagner à chaque étape de votre parcours de formateur.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="bi-stats-row">
+            <div class="bi-stat">
+              <span class="bi-stat-value">500+</span>
+              <span class="bi-stat-label">Formateurs actifs</span>
+            </div>
+            <div class="bi-stat">
+              <span class="bi-stat-value">50K+</span>
+              <span class="bi-stat-label">Apprenants atteints</span>
+            </div>
+            <div class="bi-stat">
+              <span class="bi-stat-value">$2M+</span>
+              <span class="bi-stat-label">Revenus distribués</span>
+            </div>
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="bi-cta-buttons">
+            <a [routerLink]="routes.becomeAnExpert" class="btn bi-btn-primary btn-lg">
+              <i class="fa-solid fa-play-circle me-2"></i> Devenir formateur
+            </a>
+            <a [routerLink]="routes.register" [queryParams]="{ role: 'INSTRUCTOR' }" class="btn bi-btn-secondary btn-lg">
+              <i class="fa-solid fa-user-plus me-2"></i> Register Now
+            </a>
+          </div>
+
+          <!-- Trust text -->
+          <p class="bi-trust-text">
+            <i class="fa-solid fa-lock"></i> Inscription gratuite • Aucune carte bancaire requise
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
-<!-- /Latest Blog -->
 
+<!-- ═══════════════════════════════════════════════════════════════════════
+     CTA FINAL
+     ═══════════════════════════════════════════════════════════════════════ -->
+<section class="cta-final-sec">
+  <div class="container">
+    <div class="cta-final-card" data-aos="fade-up">
 
-  <app-footer></app-footer>
+      <!-- Blobs décoratifs -->
+      <div class="cta-blob cta-blob-1"></div>
+      <div class="cta-blob cta-blob-2"></div>
+      <div class="cta-blob cta-blob-3"></div>
+
+      <!-- Contenu principal -->
+      <div class="row align-items-center justify-content-between g-4 position-relative" style="z-index:2">
+        <div class="col-lg-7 text-center text-lg-start">
+          <span class="cta-eyebrow mb-3 d-inline-flex align-items-center gap-2">
+            <i class="fa-solid fa-fire-flame-curved"></i> Rejoignez la communauté
+          </span>
+          <h2 class="text-white mb-3 cta-title">
+            Développez vos compétences.<br>
+            <span class="cta-title-accent">Changez votre carrière.</span>
+          </h2>
+          <p class="text-white cta-desc mb-4">
+            Des milliers d'apprenants ont déjà transformé leur vie professionnelle grâce à Dreams LMS. Et vous ?
+          </p>
+
+          <!-- Social proof avatars -->
+          <div class="cta-social-proof mb-4">
+            <div class="cta-avatars">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&h=60&q=80&auto=format&fit=crop&crop=face" alt="Apprenante" />
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&q=80&auto=format&fit=crop&crop=face" alt="Apprenant" />
+              <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&q=80&auto=format&fit=crop&crop=face" alt="Apprenante" />
+              <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=60&h=60&q=80&auto=format&fit=crop&crop=face" alt="Apprenant" />
+              <span class="cta-avatars-more">+5k</span>
+            </div>
+            <p class="cta-social-text mb-0">
+              <i class="fa-solid fa-star text-warning me-1"></i>
+              <strong>4.9/5</strong> · Plus de 5 000 apprenants satisfaits
+            </p>
+          </div>
+
+          <!-- Boutons -->
+          <div class="d-flex align-items-center gap-3 flex-wrap justify-content-center justify-content-lg-start">
+            <a [routerLink]="routes.register" class="btn cta-btn-primary btn-lg">
+              <i class="fa-solid fa-user-plus me-2"></i> Commencer gratuitement
+            </a>
+            <a [routerLink]="'/courses/course-list-public'" class="btn cta-btn-ghost btn-lg">
+              <i class="fa-solid fa-compass me-2"></i> Voir les cours
+            </a>
+          </div>
+        </div>
+
+        <!-- Stats column -->
+        <div class="col-lg-4">
+          <div class="cta-stats-grid">
+            <div class="cta-stat-card" data-aos="zoom-in" data-aos-delay="100">
+              <div class="cta-stat-icon"><i class="fa-solid fa-users"></i></div>
+              <div class="cta-stat-value">5 000+</div>
+              <div class="cta-stat-label">Apprenants actifs</div>
+            </div>
+            <div class="cta-stat-card" data-aos="zoom-in" data-aos-delay="200">
+              <div class="cta-stat-icon"><i class="fa-solid fa-book-open"></i></div>
+              <div class="cta-stat-value">{{ featuredCourses.length || '50' }}+</div>
+              <div class="cta-stat-label">Cours disponibles</div>
+            </div>
+            <div class="cta-stat-card" data-aos="zoom-in" data-aos-delay="300">
+              <div class="cta-stat-icon"><i class="fa-solid fa-certificate"></i></div>
+              <div class="cta-stat-value">98%</div>
+              <div class="cta-stat-label">Taux de satisfaction</div>
+            </div>
+            <div class="cta-stat-card" data-aos="zoom-in" data-aos-delay="400">
+              <div class="cta-stat-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+              <div class="cta-stat-value">{{ topInstructors.length || '20' }}+</div>
+              <div class="cta-stat-label">Formateurs experts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<app-footer></app-footer>

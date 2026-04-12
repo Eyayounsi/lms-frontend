@@ -1,31 +1,98 @@
-<!-- Bannière Admin -->
+﻿<!-- ═══ Hero Admin ══════════════════════════════════════════════════════════ -->
 <div class="row mb-4">
   <div class="col-12">
-    <div class="card border-0 admin-banner">
-      <div class="card-body d-flex align-items-center gap-3 py-4">
-        <div class="admin-avatar-ring flex-shrink-0">
-          <div class="admin-avatar">
-            <i class="ti ti-shield-check fs-24 text-white"></i>
+    <div class="admin-hero">
+      <!-- Glow orbs décoratifs -->
+      <div class="adm-hero-glow adm-glow-1"></div>
+      <div class="adm-hero-glow adm-glow-2"></div>
+
+      <div class="admin-hero-body">
+        <div class="row align-items-center">
+          <div class="col-lg-7">
+            <div class="d-flex align-items-center gap-4 mb-1">
+              <!-- Avatar premium -->
+              <div class="admin-hero-av-wrap">
+                <div class="admin-hero-av-ring1"></div>
+                <div class="admin-hero-av-border"></div>
+                <div class="admin-hero-av-circle">
+                  <span class="admin-hero-av-initial">{{ userHeroInitials }}</span>
+                </div>
+                <div class="admin-hero-av-pulse"></div>
+              </div>
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="admin-hero-chip"><i class="ti ti-shield-check me-1" style="font-size:9px"></i>Administrateur</span>
+                  <span class="adm-hero-live"><span class="adm-hero-live-dot"></span>EN LIGNE</span>
+                </div>
+                <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px;">Bienvenue, {{ userName }}</h3>
+                <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px;">Tableau de bord Administrateur — Vue complète de la plateforme</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+              <!-- Glass stat panel -->
+              <div *ngIf="overview" class="adm-hero-glass-panel d-none d-md-flex align-items-center">
+                <div class="admin-hero-stat text-center">
+                  <span class="d-block fw-bold text-white fs-18">{{ overview.totalUsers }}</span>
+                  <small style="color:rgba(255,255,255,.55);font-size:10px;">Utilisateurs</small>
+                </div>
+                <div class="admin-hero-stat-divider"></div>
+                <div class="admin-hero-stat text-center">
+                  <span class="d-block fw-bold text-white fs-18">{{ overview.publishedCourses }}</span>
+                  <small style="color:rgba(255,255,255,.55);font-size:10px;">Cours publiés</small>
+                </div>
+                <div class="admin-hero-stat-divider"></div>
+                <div class="admin-hero-stat text-center">
+                  <span class="d-block fw-bold text-white fs-18">{{ overview.totalRevenue | number:'1.0-0' }}&euro;</span>
+                  <small style="color:rgba(255,255,255,.55);font-size:10px;">Revenus</small>
+                </div>
+              </div>
+              <button class="admin-hero-refresh d-flex align-items-center gap-2" (click)="loadStats()">
+                <i class="ti ti-refresh" style="font-size:14px"></i>Actualiser
+              </button>
+            </div>
           </div>
         </div>
-        <div class="flex-grow-1">
-          <h4 class="mb-1 text-white fw-bold">Bienvenue, {{ userName }} 🛡️</h4>
-          <p class="mb-0 text-white opacity-75 small">Tableau de bord Administrateur — Gestion de la plateforme</p>
-        </div>
-        <button class="btn btn-light btn-sm" (click)="loadStats()">
-          <i class="ti ti-refresh me-1"></i>Actualiser
-        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Skeleton -->
+<!-- ═══ Alertes rapides (si tickets ou cours en attente) ═══════════════════ -->
+<div *ngIf="!loading && overview && (pendingCourses > 0 || overview.openTickets > 0)" class="row mb-3">
+  <div class="col-12">
+    <div class="alert alert-light border d-flex align-items-center gap-3 py-2 px-3 mb-0 admin-alert">
+      <i class="ti ti-alert-triangle fs-20 text-warning"></i>
+      <div class="d-flex flex-wrap gap-3 small">
+        <span *ngIf="pendingCourses > 0" class="d-flex align-items-center gap-1">
+          <span class="badge bg-warning-transparent text-warning fw-semibold">{{ pendingCourses }}</span>
+          cours en attente de validation
+        </span>
+        <span *ngIf="overview.openTickets > 0" class="d-flex align-items-center gap-1">
+          <span class="badge" style="background:rgba(86,37,232,.1);color:#5625E8;font-weight:700">{{ overview.openTickets }}</span>
+          ticket(s) support ouvert(s)
+        </span>
+      </div>
+      <div class="ms-auto d-none d-sm-flex gap-2">
+        <a *ngIf="pendingCourses > 0" [routerLink]="routes.admin_courses" class="btn btn-warning btn-sm py-1 px-2">
+          <i class="ti ti-eye me-1"></i>Voir les cours
+        </a>
+        <a *ngIf="overview.openTickets > 0" [routerLink]="routes.admin_tickets"
+           class="btn btn-sm py-1 px-2" style="background:linear-gradient(135deg,#FD3995,#9b59b6);color:#fff;border:none">
+          <i class="ti ti-headset me-1"></i>Voir les tickets
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Skeleton ══════════════════════════════════════════════════════════════ -->
 @if (loading) {
   <div class="row g-3 mb-4">
-    @for (i of [1,2,3,4]; track i) {
+    @for (i of [1,2,3,4,5,6,7,8]; track i) {
       <div class="col-sm-6 col-xl-3">
-        <div class="card border-0">
+        <div class="card border-0 shadow-sm">
           <div class="card-body">
             <div class="skeleton skeleton-line w-50 mb-2"></div>
             <div class="skeleton skeleton-line w-75 mb-3" style="height:28px"></div>
@@ -35,108 +102,195 @@
       </div>
     }
   </div>
+  <div class="row g-3">
+    <div class="col-lg-8"><div class="card border-0 shadow-sm"><div class="card-body"><div class="skeleton" style="height:260px;border-radius:8px"></div></div></div></div>
+    <div class="col-lg-4"><div class="card border-0 shadow-sm"><div class="card-body"><div class="skeleton" style="height:260px;border-radius:8px"></div></div></div></div>
+  </div>
 }
 
-@if (!loading && stats) {
-  <!-- ─── Cartes Stats ───────────────────────────────────────────────────────── -->
-  <div class="row g-3 mb-4">
+@if (!loading && overview) {
+
+  <!-- ═══ Ligne 1 — KPIs urgences / actionnables ════════════════════════════ -->
+  <div class="row g-3 mb-3">
     <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <div class="stat-icon bg-primary-transparent">
-              <i class="ti ti-users fs-20 text-primary"></i>
-            </div>
-            <span class="badge bg-primary-transparent text-primary">Total</span>
+      <div class="adm-kpi adm-kpi-blue" [routerLink]="routes.admin_users" style="cursor:pointer">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-users"></i></div>
+            <span class="adm-kpi-badge">Total</span>
           </div>
-          <h2 class="fw-bold mb-1">{{ stats.totalUsers }}</h2>
-          <p class="text-muted small mb-2">Utilisateurs enregistrés</p>
-          <div class="progress" style="height:4px"><div class="progress-bar bg-primary" style="width:100%"></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <div class="stat-icon bg-success-transparent">
-              <i class="ti ti-circle-check fs-20 text-success"></i>
-            </div>
-            <span class="badge bg-success-transparent text-success">
-              {{ stats.totalUsers > 0 ? ((stats.activeUsers / stats.totalUsers) * 100 | number:'1.0-0') : 0 }}%
+          <div class="adm-kpi-value">{{ overview.totalUsers }}</div>
+          <p class="adm-kpi-label mb-0">Utilisateurs enregistrés</p>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <div class="adm-kpi-bar-track flex-grow-1 me-2"><div class="adm-kpi-bar-fill" style="width:100%"></div></div>
+            <span *ngIf="overview.newUsersThisMonth > 0" class="adm-kpi-trend text-success">
+              <i class="ti ti-trending-up"></i>+{{ overview.newUsersThisMonth }}
             </span>
           </div>
-          <h2 class="fw-bold mb-1 text-success">{{ stats.activeUsers }}</h2>
-          <p class="text-muted small mb-2">Comptes actifs</p>
-          <div class="progress" style="height:4px">
-            <div class="progress-bar bg-success"
-              [style.width]="(stats.totalUsers > 0 ? stats.activeUsers/stats.totalUsers*100 : 0) + '%'"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="adm-kpi adm-kpi-red" [routerLink]="routes.admin_courses" style="cursor:pointer">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-clock-hour-4"></i></div>
+            <span class="adm-kpi-badge">À valider</span>
+          </div>
+          <div class="adm-kpi-value">{{ pendingCourses }}</div>
+          <p class="adm-kpi-label mb-0">Cours en attente</p>
+          <div class="adm-kpi-bar-track mt-2">
+            <div class="adm-kpi-bar-fill"
+              [style.width]="(overview.totalCourses > 0 ? pendingCourses / overview.totalCourses * 100 : 0) + '%'">
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <div class="stat-icon bg-danger-transparent">
-              <i class="ti ti-ban fs-20 text-danger"></i>
-            </div>
-            <span class="badge bg-danger-transparent text-danger">
-              {{ stats.totalUsers > 0 ? ((stats.blockedUsers / stats.totalUsers) * 100 | number:'1.0-0') : 0 }}%
-            </span>
+      <div class="adm-kpi adm-kpi-danger" [routerLink]="routes.admin_tickets" style="cursor:pointer">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-headset"></i></div>
+            <span class="adm-kpi-badge">Support</span>
           </div>
-          <h2 class="fw-bold mb-1 text-danger">{{ stats.blockedUsers }}</h2>
-          <p class="text-muted small mb-2">Comptes bloqués</p>
-          <div class="progress" style="height:4px">
-            <div class="progress-bar bg-danger"
-              [style.width]="(stats.totalUsers > 0 ? stats.blockedUsers/stats.totalUsers*100 : 0) + '%'"></div>
-          </div>
+          <div class="adm-kpi-value">{{ overview.openTickets }}</div>
+          <p class="adm-kpi-label mb-0">Tickets ouverts</p>
+          <div class="adm-kpi-bar-track mt-2"><div class="adm-kpi-bar-fill" style="width:100%"></div></div>
         </div>
       </div>
     </div>
     <div class="col-sm-6 col-xl-3">
-      <div class="card border-0 stat-card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-start mb-3">
-            <div class="stat-icon bg-warning-transparent">
-              <i class="ti ti-user-plus fs-20 text-warning"></i>
-            </div>
-            <span class="badge bg-warning-transparent text-warning">Ce mois</span>
+      <div class="adm-kpi adm-kpi-green">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-currency-euro"></i></div>
+            <span class="adm-kpi-badge">Revenus</span>
           </div>
-          <h2 class="fw-bold mb-1 text-warning">{{ newThisMonth }}</h2>
-          <p class="text-muted small mb-2">Nouvelles inscriptions</p>
-          <div class="progress" style="height:4px"><div class="progress-bar bg-warning" style="width:60%"></div></div>
+          <div class="adm-kpi-value">{{ overview.totalRevenue | number:'1.0-0' }}&nbsp;€</div>
+          <p class="adm-kpi-label mb-0">Revenus totaux</p>
+          <div class="adm-kpi-bar-track mt-2"><div class="adm-kpi-bar-fill" style="width:100%"></div></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ─── Donut + Bar ──────────────────────────────────────────────────────── -->
+  <!-- ═══ Ligne 2 — KPIs contexte / suivi ══════════════════════════════════ -->
   <div class="row g-3 mb-4">
-    <div class="col-lg-5">
-      <div class="card border-0">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <h6 class="fw-bold mb-1"><i class="ti ti-chart-pie me-2 text-danger"></i>Statut des Comptes</h6>
+    <div class="col-sm-6 col-xl-3">
+      <div class="adm-kpi adm-kpi-cyan">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-user-check"></i></div>
+            <span class="adm-kpi-badge">Cours</span>
+          </div>
+          <div class="adm-kpi-value">{{ overview.totalEnrollments }}</div>
+          <p class="adm-kpi-label mb-0">Inscriptions totales</p>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <div class="adm-kpi-bar-track flex-grow-1 me-2"><div class="adm-kpi-bar-fill" style="width:100%"></div></div>
+            <span *ngIf="overview.newEnrollmentsThisMonth > 0" class="adm-kpi-trend text-success">
+              <i class="ti ti-trending-up"></i>+{{ overview.newEnrollmentsThisMonth }}
+            </span>
+          </div>
         </div>
-        <div class="card-body pt-2">
-          @if (donutSeries.length > 0) {
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="adm-kpi adm-kpi-violet">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-certificate"></i></div>
+            <span class="adm-kpi-badge">Diplômes</span>
+          </div>
+          <div class="adm-kpi-value">{{ overview.totalCertificates }}</div>
+          <p class="adm-kpi-label mb-0">Certificats délivrés</p>
+          <div class="adm-kpi-bar-track mt-2"><div class="adm-kpi-bar-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="adm-kpi adm-kpi-teal">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-user-plus"></i></div>
+            <span class="adm-kpi-badge">Ce mois</span>
+          </div>
+          <div class="adm-kpi-value">{{ overview.newUsersThisMonth }}</div>
+          <p class="adm-kpi-label mb-0">Nouveaux utilisateurs</p>
+          <div class="adm-kpi-bar-track mt-2"><div class="adm-kpi-bar-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+      <div class="adm-kpi adm-kpi-pink">
+        <div class="adm-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="adm-kpi-icon"><i class="ti ti-trending-up"></i></div>
+            <span class="adm-kpi-badge">Ce mois</span>
+          </div>
+          <div class="adm-kpi-value">{{ overview.newEnrollmentsThisMonth }}</div>
+          <p class="adm-kpi-label mb-0">Nouvelles inscriptions</p>
+          <div class="adm-kpi-bar-track mt-2"><div class="adm-kpi-bar-fill" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Ligne 3 — Revenue chart + Donut cours par statut ════════════════ -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-8">
+      <div class="adm-chart-card card border-0 shadow-sm h-100">
+        <div class="adm-chart-header">
+          <h6><i class="ti ti-chart-line me-2" style="color:#03C95A"></i>Revenus &amp; Ventes</h6>
+          <span class="adm-chart-badge">12 derniers mois</span>
+        </div>
+        <div class="adm-chart-body">
+          @if (revenueSeries.length > 0) {
             <apx-chart
-              [series]="donutSeries" [chart]="donutOptions.chart" [labels]="donutOptions.labels"
-              [colors]="donutOptions.colors" [legend]="donutOptions.legend"
-              [dataLabels]="donutOptions.dataLabels" [plotOptions]="donutOptions.plotOptions"
-              [tooltip]="donutOptions.tooltip">
+              [series]="revenueSeries" [chart]="revenueOptions.chart" [colors]="revenueOptions.colors"
+              [fill]="revenueOptions.fill" [stroke]="revenueOptions.stroke" [markers]="revenueOptions.markers"
+              [xaxis]="revenueOptions.xaxis" [yaxis]="revenueOptions.yaxis"
+              [grid]="revenueOptions.grid" [dataLabels]="revenueOptions.dataLabels"
+              [legend]="revenueOptions.legend" [tooltip]="revenueOptions.tooltip">
             </apx-chart>
           }
         </div>
       </div>
     </div>
-    <div class="col-lg-7">
-      <div class="card border-0">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <h6 class="fw-bold mb-1"><i class="ti ti-chart-bar me-2 text-primary"></i>Utilisateurs par Rôle</h6>
+    <div class="col-lg-4">
+      <div class="adm-chart-card card border-0 shadow-sm h-100">
+        <div class="adm-chart-header">
+          <h6><i class="ti ti-chart-donut me-2" style="color:#392C7D"></i>Cours par statut</h6>
         </div>
-        <div class="card-body pt-2">
+        <div class="adm-chart-body d-flex flex-column align-items-center justify-content-center">
+          @if (courseDonutSeries.length > 0) {
+            <apx-chart
+              [series]="courseDonutSeries" [chart]="courseDonutOptions.chart"
+              [labels]="courseDonutOptions.labels" [colors]="courseDonutOptions.colors"
+              [legend]="courseDonutOptions.legend" [dataLabels]="courseDonutOptions.dataLabels"
+              [plotOptions]="courseDonutOptions.plotOptions">
+            </apx-chart>
+          }
+          <div *ngIf="courseStats" class="d-flex flex-wrap justify-content-center gap-3 mt-2">
+            <small class="d-flex align-items-center gap-1"><span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#94a3b8;"></span> Brouillon: {{ courseStats.byStatus.DRAFT }}</small>
+            <small class="d-flex align-items-center gap-1"><span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#f59e0b;"></span> Attente: {{ courseStats.byStatus.PENDING }}</small>
+            <small class="d-flex align-items-center gap-1"><span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#22c55e;"></span> Publié: {{ courseStats.byStatus.PUBLISHED }}</small>
+            <small class="d-flex align-items-center gap-1"><span class="d-inline-block rounded-circle" style="width:8px;height:8px;background:#FD3995;"></span> Rejeté: {{ courseStats.byStatus.REJECTED }}</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Ligne 4 — Bar utilisateurs par rôle + Actions Rapides ═══════════ -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-7">
+      <div class="adm-chart-card card border-0 shadow-sm h-100">
+        <div class="adm-chart-header">
+          <h6><i class="ti ti-chart-bar me-2" style="color:#392C7D"></i>Utilisateurs par Rôle</h6>
+          <span class="adm-chart-badge">{{ overview.totalUsers }} total</span>
+        </div>
+        <div class="adm-chart-body">
           @if (barSeries.length > 0) {
             <apx-chart
               [series]="barSeries" [chart]="barOptions.chart" [plotOptions]="barOptions.plotOptions"
@@ -145,19 +299,107 @@
               [grid]="barOptions.grid" [legend]="barOptions.legend" [tooltip]="barOptions.tooltip">
             </apx-chart>
           }
+          <div class="mt-3 pt-2 border-top">
+            @for (entry of (userStats?.byRole ?? {}) | keyvalue; track entry.key) {
+              <div class="d-flex align-items-center justify-content-between py-1">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="role-dot" [style.background]="getRoleColor(entry.key)"></span>
+                  <small class="fw-semibold">{{ getRoleLabel(entry.key) }}</small>
+                </div>
+                <span class="badge" [style.background]="getRoleColor(entry.key) + '20'"
+                      [style.color]="getRoleColor(entry.key)">{{ entry.value }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="adm-chart-card card border-0 shadow-sm h-100">
+        <div class="adm-chart-header">
+          <h6><i class="ti ti-bolt me-2" style="color:#FFC107"></i>Actions Rapides</h6>
+        </div>
+        <div class="adm-chart-body d-flex flex-column gap-2">
+          <a [routerLink]="routes.admin_users"
+             class="adm-quick-link d-flex align-items-center gap-3 p-3 text-decoration-none">
+            <div class="adm-ql-icon" style="background:rgba(29,78,216,.1);color:#1d4ed8">
+              <i class="ti ti-users"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Gérer les Utilisateurs</p>
+              <small class="text-muted">Bloquer, supprimer, modifier</small>
+            </div>
+            <i class="ti ti-chevron-right adm-ql-arrow"></i>
+          </a>
+          <a [routerLink]="routes.admin_courses"
+             class="adm-quick-link d-flex align-items-center gap-3 p-3 text-decoration-none">
+            <div class="adm-ql-icon" style="background:rgba(245,158,11,.1);color:#f59e0b">
+              <i class="ti ti-clock-hour-4"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Valider les Cours</p>
+              <small class="text-muted">{{ pendingCourses }} cours en attente</small>
+            </div>
+            <i class="ti ti-chevron-right adm-ql-arrow"></i>
+          </a>
+          <a [routerLink]="routes.admin_tickets"
+             class="adm-quick-link d-flex align-items-center gap-3 p-3 text-decoration-none">
+            <div class="adm-ql-icon" style="background:rgba(86,37,232,.1);color:#5625E8">
+              <i class="ti ti-headset"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Tickets Support</p>
+              <small class="text-muted">{{ overview.openTickets }} ticket(s) ouvert(s)</small>
+            </div>
+            <i class="ti ti-chevron-right adm-ql-arrow"></i>
+          </a>
+          <a [routerLink]="routes.admin_payouts"
+             class="adm-quick-link d-flex align-items-center gap-3 p-3 text-decoration-none">
+            <div class="adm-ql-icon" style="background:rgba(3,201,90,.1);color:#03C95A">
+              <i class="ti ti-coin"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Virements</p>
+              <small class="text-muted">Vérifier les paiements instructeurs</small>
+            </div>
+            <i class="ti ti-chevron-right adm-ql-arrow"></i>
+          </a>
+          <a [routerLink]="routes.admin_categories"
+             class="adm-quick-link d-flex align-items-center gap-3 p-3 text-decoration-none">
+            <div class="adm-ql-icon" style="background:rgba(124,58,237,.1);color:#7c3aed">
+              <i class="ti ti-category"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Catégories</p>
+              <small class="text-muted">Organiser les cours par thème</small>
+            </div>
+            <i class="ti ti-chevron-right adm-ql-arrow"></i>
+          </a>
+          <a [routerLink]="routes.adminAnalytics"
+             class="adm-quick-link d-flex align-items-center gap-3 p-3 text-decoration-none">
+            <div class="adm-ql-icon" style="background:rgba(14,165,233,.1);color:#0ea5e9">
+              <i class="ti ti-chart-area-line"></i>
+            </div>
+            <div class="flex-grow-1">
+              <p class="fw-semibold mb-0 text-dark small">Analytics IA</p>
+              <small class="text-muted">Analyses avancées</small>
+            </div>
+            <i class="ti ti-chevron-right adm-ql-arrow"></i>
+          </a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ─── Line + Actions ───────────────────────────────────────────────────── -->
+  <!-- ═══ Ligne 5 — Inscriptions + Top Cours ══════════════════════════════ -->
   <div class="row g-3">
     <div class="col-lg-7">
-      <div class="card border-0">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <h6 class="fw-bold mb-1"><i class="ti ti-trending-up me-2 text-danger"></i>Inscriptions (12 derniers mois)</h6>
+      <div class="adm-chart-card card border-0 shadow-sm h-100">
+        <div class="adm-chart-header">
+          <h6><i class="ti ti-trending-up me-2" style="color:#5625E8"></i>Inscriptions</h6>
+          <span class="adm-chart-badge">12 derniers mois</span>
         </div>
-        <div class="card-body pt-2">
+        <div class="adm-chart-body">
           @if (lineSeries.length > 0) {
             <apx-chart
               [series]="lineSeries" [chart]="lineOptions.chart" [colors]="lineOptions.colors"
@@ -170,46 +412,42 @@
       </div>
     </div>
     <div class="col-lg-5">
-      <div class="card border-0 h-100">
-        <div class="card-header bg-transparent border-0 pb-0">
-          <h6 class="fw-bold mb-1"><i class="ti ti-bolt me-2 text-warning"></i>Actions Rapides</h6>
+      <div class="adm-chart-card card border-0 shadow-sm h-100">
+        <div class="adm-chart-header">
+          <h6><i class="ti ti-trophy me-2" style="color:#FFC107"></i>Top Cours</h6>
+          <span class="adm-chart-badge">Par inscriptions</span>
         </div>
-        <div class="card-body">
-          <a [routerLink]="routes.admin_users"
-             class="quick-link d-flex align-items-center gap-3 p-3 rounded-3 mb-3 text-decoration-none">
-            <div class="stat-icon bg-primary-transparent">
-              <i class="ti ti-users fs-20 text-primary"></i>
-            </div>
-            <div class="flex-grow-1">
-              <p class="fw-semibold mb-0 text-dark small">Gérer les Utilisateurs</p>
-              <small class="text-muted">Bloquer, supprimer, modifier</small>
-            </div>
-            <i class="ti ti-chevron-right text-muted"></i>
-          </a>
-          <div class="quick-link d-flex align-items-center gap-3 p-3 rounded-3 mb-3"
-               (click)="loadStats()" style="cursor:pointer">
-            <div class="stat-icon bg-success-transparent">
-              <i class="ti ti-refresh fs-20 text-success"></i>
-            </div>
-            <div class="flex-grow-1">
-              <p class="fw-semibold mb-0 text-dark small">Rafraîchir les Données</p>
-              <small class="text-muted">Recharger les statistiques</small>
-            </div>
-            <i class="ti ti-chevron-right text-muted"></i>
+        @if (courseStats && courseStats.topCourses.length > 0) {
+          <div class="table-responsive">
+            <table class="table adm-top-table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="width:32px">#</th>
+                  <th>Titre</th>
+                  <th class="text-end" style="width:80px">Inscrits</th>
+                  <th class="text-end" style="width:90px">Revenus</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (c of courseStats.topCourses; track c.title; let i = $index) {
+                  <tr>
+                    <td><span class="rank-badge" [class]="'rank-' + (i + 1)">{{ i + 1 }}</span></td>
+                    <td class="small text-truncate fw-semibold" style="max-width:160px">{{ c.title }}</td>
+                    <td class="text-end">
+                      <span class="badge" style="background:rgba(57,44,125,.1);color:#392C7D;border-radius:20px">{{ c.enrollments }}</span>
+                    </td>
+                    <td class="text-end fw-semibold text-success small">{{ c.revenue | number:'1.0-0' }}&nbsp;€</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
-          <hr class="my-2">
-          <!-- Résumé par rôle -->
-          @for (entry of stats.usersByRole | keyvalue; track entry.key) {
-            <div class="d-flex align-items-center justify-content-between py-2 border-bottom">
-              <div class="d-flex align-items-center gap-2">
-                <span class="role-dot" [style.background]="getRoleColor(entry.key)"></span>
-                <small class="fw-semibold">{{ getRoleLabel(entry.key) }}</small>
-              </div>
-              <span class="badge" [style.background]="getRoleColor(entry.key) + '20'"
-                    [style.color]="getRoleColor(entry.key)">{{ entry.value }}</span>
-            </div>
-          }
-        </div>
+        } @else {
+          <div class="adm-chart-body text-center text-muted py-4">
+            <i class="ti ti-chart-bar fs-24 d-block mb-2 opacity-50"></i>
+            <small>Aucun cours disponible</small>
+          </div>
+        }
       </div>
     </div>
   </div>

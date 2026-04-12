@@ -1,93 +1,402 @@
+﻿<!-- ══════════════════════════════════════════════════════════════════════════
+     Profil Utilisateur — Dreams LMS
+     Structure : student/instructor style + adaptations SA/Admin
+     ══════════════════════════════════════════════════════════════════════════ -->
+
 <div class="content">
   <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
 
-        <!-- En-tête -->
-        <div class="mb-4">
-          <h4>Mon Profil</h4>
-          <p class="text-muted">Gérez vos informations personnelles</p>
+    <!-- ░░ COMPACT IDENTITY HEADER ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <div class="prof-id-card mb-4" [style.borderLeftColor]="accentColor">
+      <div class="d-flex align-items-center gap-3">
+
+        <!-- Avatar -->
+        <div class="prof-av-wrap" *ngIf="!loading">
+          <div class="prof-av-circle" [style.background]="heroBg">
+            <span class="prof-av-initial">{{ userInitial }}</span>
+          </div>
+          <div *ngIf="isSuperAdmin" class="prof-av-crown">
+            <i class="ti ti-shield-bolt"></i>
+          </div>
+        </div>
+        <div class="prof-av-wrap" *ngIf="loading">
+          <div class="prof-av-circle" style="background:rgba(57,44,125,.12)"></div>
         </div>
 
-        <!-- Carte Edit profil -->
-        <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="mb-3 fs-18">Informations personnelles</h5>
-            <form (ngSubmit)="onUpdateProfile()" #profileFormRef="ngForm">
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Nom complet <span class="text-danger">*</span></label>
-                  <input type="text" class="form-control"
-                         [(ngModel)]="profileForm.fullName" name="fullName" required>
+        <!-- Info -->
+        <div class="flex-grow-1 overflow-hidden">
+          <h5 class="mb-1 fw-bold text-truncate" *ngIf="!loading">
+            {{ profileForm.fullName || 'Mon Profil' }}
+          </h5>
+          <div *ngIf="loading" class="placeholder-glow mb-1">
+            <span class="placeholder rounded col-5" style="height:18px"></span>
+          </div>
+
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <span class="badge rounded-pill d-inline-flex align-items-center gap-1 prof-role-badge"
+                  [style.background]="accentColor">
+              <i class="ti" [ngClass]="roleIcon"></i>{{ roleLabel }}
+            </span>
+            <span *ngIf="isSuperAdmin"
+                  class="badge rounded-pill d-inline-flex align-items-center gap-1"
+                  style="background:linear-gradient(135deg,#020c18,#5625E8,#0DCAF0);color:#fff;box-shadow:0 2px 8px rgba(13,202,240,.35)">
+              <i class="ti ti-shield-star"></i>Accès Total
+            </span>
+          </div>
+        </div>
+
+        <!-- Email (md+) -->
+        <div class="d-none d-md-block text-end flex-shrink-0" *ngIf="!loading">
+          <small class="text-muted"><i class="ti ti-mail me-1"></i>{{ profileForm.email }}</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- ░░ SETTINGS NAV ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <ul class="settings-nav prof-settings-nav d-flex align-items-center flex-wrap border bg-light-900 rounded"
+        [style.--prof-accent]="accentColor">
+      <li>
+        <a href="javascript:void(0)"
+           [class.active]="activeTab==='profil'"
+           (click)="activeTab='profil'">
+          <i class="ti ti-user-edit me-1"></i>Modifier le profil
+        </a>
+      </li>
+      <li>
+        <a href="javascript:void(0)"
+           [class.active]="activeTab==='securite'"
+           (click)="activeTab='securite'">
+          <i class="ti ti-lock me-1"></i>Securite
+        </a>
+      </li>
+      <li>
+        <a href="javascript:void(0)"
+           [class.active]="activeTab==='danger'"
+           (click)="activeTab='danger'"
+           class="prof-tab-danger-link">
+          <i class="ti ti-alert-triangle me-1"></i>Zone Danger
+        </a>
+      </li>
+    </ul>
+
+    <!-- ░░ TAB — Informations personnelles ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <div *ngIf="activeTab==='profil'">
+      <div class="card border-0 shadow-sm prof-content-card" [style.--prof-accent]="accentColor">
+        <div class="card-body p-4">
+
+          <div class="edit-profile-info mb-4">
+            <h5 class="mb-1 fs-18">Informations Personnelles</h5>
+            <p class="text-muted mb-0">Modifiez vos donnees de profil</p>
+          </div>
+
+          @if (successMessage) {
+            <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+              <i class="ti ti-circle-check fs-16 flex-shrink-0"></i>
+              <span>{{ successMessage }}</span>
+            </div>
+          }
+          @if (errorMessage && activeTab === 'profil') {
+            <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+              <i class="ti ti-alert-circle fs-16 flex-shrink-0"></i>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
+          <div class="prof-photo-row mb-4">
+            <img *ngIf="avatarDisplayUrl" [src]="avatarDisplayUrl" class="prof-photo-avatar" alt="Profile Photo">
+            <div *ngIf="!avatarDisplayUrl" class="prof-photo-avatar prof-photo-avatar--initial" [style.background]="heroBg">
+              {{ userInitial }}
+            </div>
+            <div class="prof-photo-content">
+              <h6 class="mb-1">Profile Photo</h6>
+              <p class="text-muted mb-2">PNG or JPG no bigger than 800px width and height</p>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <label class="prof-photo-btn prof-photo-btn--upload" [class.disabled]="avatarUploading">
+                  <input type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)" [disabled]="avatarUploading">
+                  <span *ngIf="!avatarUploading">Upload</span>
+                  <span *ngIf="avatarUploading" class="d-flex align-items-center gap-2">
+                    <span class="spinner-border spinner-border-sm"></span>Upload...
+                  </span>
+                </label>
+                <button type="button"
+                        class="prof-photo-btn prof-photo-btn--delete"
+                        (click)="removeAvatar()"
+                        [disabled]="avatarUploading || !avatarPath">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-success mb-3" *ngIf="avatarSuccessMessage">{{ avatarSuccessMessage }}</div>
+          <div class="alert alert-danger mb-3" *ngIf="avatarErrorMessage">{{ avatarErrorMessage }}</div>
+
+          <hr class="my-4">
+
+          <form (ngSubmit)="onUpdateProfile()" #profileFormRef="ngForm">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nom complet <span class="text-danger">*</span></label>
+                <div class="input-icon position-relative">
+                  <span class="input-icon-addon"><i class="ti ti-user"></i></span>
+                  <input type="text" class="form-control ps-4"
+                         [(ngModel)]="profileForm.fullName" name="fullName"
+                         required minlength="2" maxlength="150"
+                         #nameField="ngModel"
+                         placeholder="Jean Dupont">
                 </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Email <span class="text-danger">*</span></label>
-                  <input type="email" class="form-control"
-                         [(ngModel)]="profileForm.email" name="email" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Téléphone</label>
-                  <input type="text" class="form-control"
-                         [(ngModel)]="profileForm.phone" name="phone"
-                         placeholder="Ex : 0612345678">
+                <div *ngIf="nameField.invalid && (nameField.dirty || nameField.touched)"
+                     class="text-danger small mt-1">
+                  <span *ngIf="nameField.errors?.['required']">Le nom est requis.</span>
+                  <span *ngIf="nameField.errors?.['minlength']">Minimum 2 caractères.</span>
                 </div>
               </div>
+              <div class="col-md-6">
+                <label class="form-label">Adresse email <span class="text-danger">*</span></label>
+                <div class="input-icon position-relative">
+                  <span class="input-icon-addon"><i class="ti ti-mail"></i></span>
+                  <input type="email" class="form-control ps-4"
+                         [(ngModel)]="profileForm.email" name="email" required
+                         placeholder="jean@example.com">
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Telephone <small class="text-muted fw-normal">(optionnel)</small></label>
+                <div class="input-icon position-relative">
+                  <span class="input-icon-addon"><i class="ti ti-phone"></i></span>
+                  <input type="text" class="form-control ps-4"
+                         [(ngModel)]="profileForm.phone" name="phone"
+                         placeholder="+33 6 12 34 56 78">
+                </div>
+              </div>
+            </div>
 
-              <div *ngIf="successMessage" class="alert alert-success mt-2">{{ successMessage }}</div>
-              <div *ngIf="errorMessage" class="alert alert-danger mt-2">{{ errorMessage }}</div>
-
-              <button class="btn btn-secondary rounded-pill mt-2" type="submit">
-                Enregistrer les modifications
+            <div class="mt-4 d-flex justify-content-end">
+              <button class="btn rounded-pill px-4 fw-semibold text-white prof-save-btn"
+                      type="submit" [disabled]="saving || loading || profileFormRef.invalid" [style.background]="heroBg">
+                <span *ngIf="!saving">
+                  <i class="ti ti-device-floppy me-2"></i>Enregistrer les modifications
+                </span>
+                <span *ngIf="saving" class="d-flex align-items-center gap-2">
+                  <span class="spinner-border spinner-border-sm"></span>Enregistrement...
+                </span>
               </button>
-            </form>
-          </div>
-        </div>
+            </div>
+          </form>
 
-        <!-- Carte supprimer compte -->
-        <div class="card mb-4">
-          <div class="card-body">
-            <h5 class="fs-18 mb-2 text-danger">Supprimer mon compte</h5>
-            <p class="text-muted mb-3">
-              Cette action est irréversible. Toutes vos données seront définitivement supprimées.
-            </p>
-            <button class="btn btn-outline-danger" type="button"
-                    data-bs-toggle="modal" data-bs-target="#delete_account_modal">
-              Supprimer mon compte
-            </button>
-          </div>
         </div>
-
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Modal suppression -->
-<div class="modal fade" id="delete_account_modal">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="text-danger">Supprimer le compte</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p class="text-muted">
-          Confirmez la suppression en saisissant votre mot de passe.
-          Cette action est <strong>irréversible</strong>.
-        </p>
-        <input type="password" class="form-control mt-2"
-               [(ngModel)]="deletePassword" name="deletePassword"
-               placeholder="Votre mot de passe">
-        <div class="alert alert-danger mt-2" *ngIf="deleteError">{{ deleteError }}</div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn bg-gray-100 rounded-pill me-2" type="button"
-                data-bs-dismiss="modal">Annuler</button>
-        <button class="btn btn-danger rounded-pill" type="button"
-                (click)="onDeleteAccount()" data-bs-dismiss="modal">
-          Supprimer définitivement
-        </button>
+    <!-- ░░ TAB — Securite & Mot de passe ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <div *ngIf="activeTab==='securite'">
+      <div class="card border-0 shadow-sm prof-content-card" [style.--prof-accent]="accentColor">
+        <div class="card-body p-4">
+
+          <div class="border-bottom mb-4 pb-2">
+            <div class="row">
+              <div class="col-md-8">
+
+                <div class="mb-3">
+                  <h5 class="mb-1 fs-18">Changer le Mot de Passe</h5>
+                  <p class="text-muted mb-0">Utilisez un mot de passe fort pour securiser votre acces</p>
+                </div>
+
+                @if (pwSuccess) {
+                  <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+                    <i class="ti ti-circle-check fs-16 flex-shrink-0"></i>
+                    <span>{{ pwSuccess }}</span>
+                  </div>
+                }
+                @if (pwError) {
+                  <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+                    <i class="ti ti-alert-circle fs-16 flex-shrink-0"></i>
+                    <span>{{ pwError }}</span>
+                  </div>
+                }
+
+                <div class="mb-3 position-relative">
+                  <label class="form-label">Mot de passe actuel <span class="text-danger">*</span></label>
+                  <div class="position-relative">
+                    <input [type]="showOldPw ? 'text' : 'password'"
+                           class="pass-inputs form-control"
+                           [(ngModel)]="pwForm.oldPassword"
+                           placeholder="Votre mot de passe actuel">
+                    <span class="isax toggle-password"
+                          [ngClass]="showOldPw ? 'isax-eye' : 'isax-eye-slash'"
+                          (click)="showOldPw = !showOldPw"
+                          (keydown.enter)="showOldPw = !showOldPw"
+                          tabindex="0"></span>
+                  </div>
+                </div>
+
+                <div class="mb-3 position-relative">
+                  <label class="form-label">Nouveau mot de passe <span class="text-danger">*</span></label>
+                  <div id="passwordInput" class="pass-group">
+                    <div class="pass-group mb-3">
+                      <input [type]="showNewPw ? 'text' : 'password'"
+                             id="password"
+                             class="pass-input form-control form-control-lg"
+                             [(ngModel)]="pwForm.newPassword"
+                             placeholder="Min. 8 caracteres">
+                      <span class="isax toggle-password fs-14"
+                            [ngClass]="showNewPw ? 'isax-eye' : 'isax-eye-slash'"
+                            (click)="showNewPw = !showNewPw"
+                            (keydown.enter)="showNewPw = !showNewPw"
+                            tabindex="0"></span>
+                    </div>
+                    <div *ngIf="pwForm.newPassword"
+                         id="passwordStrength"
+                         class="strength-meter password-strength"
+                         [ngClass]="{
+                           'poor-active':   pwStrength === 1,
+                           'avg-active':    pwStrength === 2,
+                           'strong-active': pwStrength === 3,
+                           'heavy-active':  pwStrength === 4
+                         }">
+                      <span [ngClass]="{'active': pwStrength >= 1}"></span>
+                      <span [ngClass]="{'active': pwStrength >= 2}"></span>
+                      <span [ngClass]="{'active': pwStrength >= 3}"></span>
+                      <span [ngClass]="{'active': pwStrength >= 4}"></span>
+                    </div>
+                  </div>
+
+                  <div *ngIf="pwForm.newPassword" id="passwordInfo" class="mt-2" aria-live="polite">
+                    <span *ngIf="pwStrength === 1" class="d-flex align-items-center text-danger fs-15 fw-semibold mb-2">
+                      <img src="assets/img/icon/angry.svg" class="me-2" alt="">Faible. Au moins 8 caracteres
+                    </span>
+                    <span *ngIf="pwStrength === 2" class="d-flex align-items-center text-warning fs-15 fw-semibold mb-2">
+                      <img src="assets/img/icon/anguish.svg" class="me-2" alt="">Moyen. Ajoutez une majuscule ou chiffre
+                    </span>
+                    <span *ngIf="pwStrength === 3" class="d-flex align-items-center fs-15 fw-semibold mb-2" style="color:#6366f1">
+                      <img src="assets/img/icon/smile.svg" class="me-2" alt="">Bien. Ajoutez un symbole special
+                    </span>
+                    <span *ngIf="pwStrength === 4" class="d-flex align-items-center text-success fs-15 fw-semibold mb-2">
+                      <img src="assets/img/icon/smile.svg" class="me-2" alt="">Fort ! Mot de passe securise.
+                    </span>
+                    <div class="d-flex flex-wrap gap-3 mt-1">
+                      <small class="prof-pw-rule" [class.prof-pw-rule-ok]="pwForm.newPassword.length >= 8">
+                        <i class="ti" [class.ti-circle-check]="pwForm.newPassword.length >= 8"
+                                      [class.ti-circle]="pwForm.newPassword.length < 8"></i>
+                        8 caracteres min.
+                      </small>
+                      <small class="prof-pw-rule" [class.prof-pw-rule-ok]="pwHasUpper">
+                        <i class="ti" [class.ti-circle-check]="pwHasUpper" [class.ti-circle]="!pwHasUpper"></i>
+                        Majuscule
+                      </small>
+                      <small class="prof-pw-rule" [class.prof-pw-rule-ok]="pwHasDigit">
+                        <i class="ti" [class.ti-circle-check]="pwHasDigit" [class.ti-circle]="!pwHasDigit"></i>
+                        Chiffre
+                      </small>
+                      <small class="prof-pw-rule" [class.prof-pw-rule-ok]="pwHasSymbol">
+                        <i class="ti" [class.ti-circle-check]="pwHasSymbol" [class.ti-circle]="!pwHasSymbol"></i>
+                        Symbole special
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
+                  <div class="position-relative">
+                    <input [type]="showConfirmPw ? 'text' : 'password'"
+                           class="pass-inputs form-control"
+                           [(ngModel)]="pwForm.confirmPassword"
+                           placeholder="Repetez le nouveau mot de passe"
+                           [class.is-valid]="pwMatch"
+                           [class.is-invalid]="pwForm.confirmPassword && !pwMatch">
+                    <span class="isax toggle-password"
+                          [ngClass]="showConfirmPw ? 'isax-eye' : 'isax-eye-slash'"
+                          (click)="showConfirmPw = !showConfirmPw"
+                          (keydown.enter)="showConfirmPw = !showConfirmPw"
+                          tabindex="0"></span>
+                  </div>
+                  <small *ngIf="pwForm.confirmPassword && !pwMatch" class="text-danger mt-1 d-block">
+                    <i class="ti ti-alert-circle me-1"></i>Les mots de passe ne correspondent pas
+                  </small>
+                  <small *ngIf="pwMatch" class="text-success mt-1 d-block">
+                    <i class="ti ti-circle-check me-1"></i>Les mots de passe correspondent
+                  </small>
+                </div>
+
+                <button class="btn rounded-pill px-4 fw-semibold text-white prof-save-btn"
+                        type="button" (click)="onChangePassword()" [disabled]="changingPw"
+                        [style.background]="heroBg">
+                  <span *ngIf="!changingPw"><i class="ti ti-key me-2"></i>Changer le mot de passe</span>
+                  <span *ngIf="changingPw" class="d-flex align-items-center gap-2">
+                    <span class="spinner-border spinner-border-sm"></span>Enregistrement...
+                  </span>
+                </button>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
-  </div>
-</div>
+
+    <!-- ░░ TAB — Zone Danger ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <div *ngIf="activeTab==='danger'">
+      <div class="card border-0 shadow-sm prof-content-card" [style.--prof-accent]="accentColor">
+        <div class="card-body p-4">
+          <div class="border-bottom mb-4 pb-4">
+            <div class="row">
+              <div class="col-md-8">
+
+                <div class="mb-3">
+                  <h5 class="mb-1 fs-18" [style.color]="accentColor">Zone Danger</h5>
+                  <p class="text-muted mb-0">Actions irreversibles — procedez avec prudence</p>
+                </div>
+
+                <div class="d-flex align-items-start gap-3 mb-4 rounded-3 p-3" [style.background]="accentFaint" [style.border]="'1px solid ' + accentBorder">
+                  <i class="ti ti-alert-triangle fs-18 flex-shrink-0 mt-1" [style.color]="accentColor"></i>
+                  <div>
+                    <strong>Supprimer definitivement mon compte</strong>
+                    <p class="mb-0 small mt-1">
+                      Cette action est <strong>irreversible</strong>. Toutes vos donnees, cours, certificats et
+                      historiques seront <strong>definitiv ement supprimes</strong> sans possibilite de recuperation.
+                    </p>
+                  </div>
+                </div>
+
+                                @if (deleteError) {
+                  <div class="d-flex align-items-center gap-2 mb-3 rounded-3 p-3" [style.background]="accentFaint" [style.border]="'1px solid ' + accentBorder">
+                    <i class="ti ti-alert-circle fs-16 flex-shrink-0" [style.color]="accentColor"></i>
+                    <span [style.color]="accentColor">{{ deleteError }}</span>
+                  </div>
+                }
+
+                <div class="mb-4">
+                  <label class="form-label fw-medium">Confirmez avec votre mot de passe actuel <span class="text-danger">*</span></label>
+                  <div class="position-relative" style="max-width:360px">
+                    <input [type]="showDeletePw ? 'text' : 'password'"
+                           class="pass-inputs form-control"
+                           [(ngModel)]="deletePassword"
+                           placeholder="Votre mot de passe actuel">
+                    <span class="isax toggle-password"
+                          [ngClass]="showDeletePw ? 'isax-eye' : 'isax-eye-slash'"
+                          (click)="showDeletePw = !showDeletePw"
+                          (keydown.enter)="showDeletePw = !showDeletePw"
+                          tabindex="0"></span>
+                  </div>
+                </div>
+
+                <button class="btn rounded-pill fw-semibold"
+                        [style.background]="accentFaint" [style.color]="accentColor" [style.border]="'1.5px solid ' + accentBorder"
+                        type="button" (click)="confirmDeleteAccount()" [disabled]="deleting">
+                  <span *ngIf="!deleting"><i class="ti ti-trash me-2"></i>Supprimer definitivement mon compte</span>
+                  <span *ngIf="deleting" class="d-flex align-items-center gap-2">
+                    <span class="spinner-border spinner-border-sm"></span>Suppression en cours...
+                  </span>
+                </button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</div><!-- /content -->

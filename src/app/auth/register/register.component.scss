@@ -1,0 +1,11 @@
+.face-register-btn {
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.2s;
+  &:hover {
+    transform: translateY(-1px);
+    border-color: #5C67E5;
+    color: #5C67E5;
+    box-shadow: 0 4px 15px rgba(92,103,229,0.2);
+  }
+}

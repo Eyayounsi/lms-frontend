@@ -6,9 +6,12 @@ import { environment } from '../../../../environments/environment';
 export interface AdminUser {
   id: number;
   fullName: string;
+  avatarPath?: string;
   email: string;
   phone: string;
+  companyName: string;
   role: string;
+  secondaryRoles?: string[];
   accountStatus: string;
   createdAt: string;
 }
@@ -36,5 +39,9 @@ export class AdminApiService {
 
   changeUserRole(id: number, role: string): Observable<AdminUser> {
     return this.http.put<AdminUser>(`${this.apiUrl}/admin/users/${id}/change-role?role=${role}`, {});
+  }
+
+  createRecruiter(data: { fullName: string; email: string; phone: string; companyName: string; password: string }): Observable<AdminUser> {
+    return this.http.post<AdminUser>(`${this.apiUrl}/admin/users/create-recruiter`, data);
   }
 }

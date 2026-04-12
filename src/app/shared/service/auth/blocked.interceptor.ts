@@ -1,15 +1,21 @@
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
-import { Router } from '@angular/router';
 import { BlockedService } from './blocked.service';
+import { AuthService } from './auth.service';
 
 // Empêche plusieurs déconnexions simultanées (race condition post-login)
 let isLoggingOut = false;
 
+function shouldSkipAutoLogoutOn401(url: string): boolean {
+  const lower = (url || '').toLowerCase();
+  return lower.includes('/api/ai/chatbot/')
+    || lower.includes('/api/student/progress/lesson/');
+}
+
 export const blockedInterceptor: HttpInterceptorFn = (req, next) => {
   const blockedService = inject(BlockedService);
-  const router = inject(Router);
+  const authService = inject(AuthService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -24,7 +30,12 @@ export const blockedInterceptor: HttpInterceptorFn = (req, next) => {
       // pour éviter qu'un polling sans token (header/sidebar avant login) ne vide le localStorage
       // Garde-fou: on ignore le 401 si le token actuel en localStorage est DIFFERENT
       // de celui utilisé dans la requête (le token a été rafraîchi entre-temps)
-      if (error.status === 401 && !req.url.includes('/auth/') && req.headers.has('Authorization')) {
+      if (
+        error.status === 401
+        && !req.url.includes('/auth/')
+        && req.headers.has('Authorization')
+        && !shouldSkipAutoLogoutOn401(req.url)
+      ) {
         const currentToken = localStorage.getItem('token');
         const requestToken = req.headers.get('Authorization')?.replace('Bearer ', '');
 
@@ -33,12 +44,9 @@ export const blockedInterceptor: HttpInterceptorFn = (req, next) => {
         if (!currentToken || currentToken === requestToken) {
           if (!isLoggingOut) {
             isLoggingOut = true;
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
-            localStorage.removeItem('fullName');
-            localStorage.removeItem('email');
-            localStorage.removeItem('id');
-            router.navigate(['/auth/login']);
+            // Session invalide -> passer par la page de déconnexion obligatoire.
+            console.log('🔴 blockedInterceptor - 401 detected, triggering logout via startMandatoryLogoutFlow');
+            authService.startMandatoryLogoutFlow('unauthorized');
             // Réinitialiser le flag après un court délai pour permettre les futures déconnexions
             setTimeout(() => { isLoggingOut = false; }, 2000);
           }

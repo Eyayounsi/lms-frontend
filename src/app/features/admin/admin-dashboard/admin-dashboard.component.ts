@@ -3,7 +3,14 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { routes } from '../../../shared/service/routes/routes';
-import { SuperAdminApiService, DashboardStats } from '../../superadmin/services/superadmin-api.service';
+import { forkJoin } from 'rxjs';
+import {
+    AdminReportsService,
+    CourseStats,
+    ReportsOverview,
+    RevenueStats,
+    UserStats
+} from '../services/admin-reports.service';
 
 @Component({
     selector: 'app-admin-dashboard',
@@ -17,22 +24,31 @@ export class AdminDashboardComponent implements OnInit {
     public userName: string = '';
     public userRole: string = '';
 
-    stats: DashboardStats | null = null;
+    get userHeroInitials(): string {
+        if (!this.userName) return 'AD';
+        return this.userName.split(' ').map(p => p.charAt(0)).join('').toUpperCase().slice(0, 2);
+    }
+
+    overview:    ReportsOverview | null = null;
+    userStats:   UserStats | null = null;
+    courseStats: CourseStats | null = null;
     loading = true;
-    newThisMonth = 0;
 
     // ─── Donut Chart ──────────────────────────────────────────────────────────
-    donutSeries: number[] = [];
-    donutOptions: any = {
-        chart: { type: 'donut', height: 260, animations: { enabled: true } },
-        labels: ['Actifs', 'Bloqués'],
-        colors: ['#22c55e', '#ef4444'],
-        legend: { position: 'bottom' },
-        dataLabels: { enabled: true, formatter: (val: number) => `${val.toFixed(1)}%` },
-        plotOptions: { pie: { donut: { size: '65%', labels: { show: true,
-            total: { show: true, label: 'Total', fontSize: '14px', fontWeight: '700' }
-        }}}},
-        tooltip: { y: { formatter: (val: number) => `${val} utilisateur(s)` } }
+    // ─── Revenue Chart (area) ─────────────────────────────────────────────────
+    revenueSeries: any[] = [];
+    revenueOptions: any = {
+        chart: { type: 'area', height: 260, toolbar: { show: false } },
+        colors: ['#5625E8', '#03C95A'],
+        fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
+        stroke: { curve: 'smooth', width: 2 },
+        markers: { size: 4, strokeColors: '#fff', strokeWidth: 2 },
+        xaxis: { categories: [], labels: { rotate: -40, style: { fontSize: '10px' } } },
+        yaxis: { labels: { formatter: (v: number) => `${v.toFixed(0)} €` } },
+        grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
+        dataLabels: { enabled: false },
+        legend: { position: 'top' },
+        tooltip: { y: { formatter: (v: number) => `${v.toFixed(2)} €` } }
     };
 
     // ─── Bar Chart ────────────────────────────────────────────────────────────
@@ -40,7 +56,7 @@ export class AdminDashboardComponent implements OnInit {
     barOptions: any = {
         chart: { type: 'bar', height: 260, toolbar: { show: false } },
         plotOptions: { bar: { borderRadius: 5, columnWidth: '55%', distributed: true } },
-        colors: ['#6366f1', '#22c55e', '#ef4444', '#f59e0b', '#8b5cf6'],
+        colors: ['#5625E8', '#03C95A', '#9b59b6', '#FFC107', '#02a8b5'],
         dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } },
         xaxis: { categories: [] },
         yaxis: { title: { text: 'Utilisateurs' } },
@@ -49,14 +65,27 @@ export class AdminDashboardComponent implements OnInit {
         tooltip: { y: { formatter: (val: number) => `${val} utilisateur(s)` } }
     };
 
+    // ─── Donut Chart (cours par statut) ──────────────────────────────────────
+    courseDonutSeries: number[] = [];
+    courseDonutOptions: any = {
+        chart: { type: 'donut', height: 220, animations: { enabled: true } },
+        labels: ['Brouillon', 'En attente', 'Publié', 'Rejeté'],
+        colors: ['#94a3b8', '#FFC107', '#03C95A', '#5625E8'],
+        legend: { position: 'bottom', fontSize: '11px' },
+        dataLabels: { enabled: true, formatter: (val: number) => `${val.toFixed(0)}%` },
+        plotOptions: { pie: { donut: { size: '65%', labels: { show: true,
+            total: { show: true, label: 'Total', fontSize: '13px', fontWeight: '700' }
+        }}}}
+    };
+
     // ─── Line Chart ───────────────────────────────────────────────────────────
     lineSeries: any[] = [];
     lineOptions: any = {
         chart: { type: 'area', height: 240, toolbar: { show: false } },
-        colors: ['#ef4444'],
+        colors: ['#5625E8'],
         fill: { type: 'gradient', gradient: { opacityFrom: 0.5, opacityTo: 0.05 } },
         stroke: { curve: 'smooth', width: 3 },
-        markers: { size: 4, colors: ['#ef4444'], strokeColors: '#fff', strokeWidth: 2 },
+        markers: { size: 4, colors: ['#5625E8'], strokeColors: '#fff', strokeWidth: 2 },
         xaxis: { categories: [], labels: { rotate: -40, style: { fontSize: '10px' } } },
         yaxis: { min: 0, labels: { formatter: (v: number) => Math.round(v).toString() } },
         grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
@@ -65,7 +94,7 @@ export class AdminDashboardComponent implements OnInit {
     };
 
     constructor(
-        private superAdminApi: SuperAdminApiService,
+        private reportsService: AdminReportsService,
         private cdr: ChangeDetectorRef
     ) {}
 
@@ -77,10 +106,17 @@ export class AdminDashboardComponent implements OnInit {
 
     loadStats(): void {
         this.loading = true;
-        this.superAdminApi.getAdminStats().subscribe({
-            next: (data) => {
-                this.stats = data;
-                this.buildCharts(data);
+        forkJoin({
+            overview:    this.reportsService.getOverview(),
+            userStats:   this.reportsService.getUserStats(),
+            revenue:     this.reportsService.getRevenue(),
+            courseStats: this.reportsService.getCourseStats()
+        }).subscribe({
+            next: ({ overview, userStats, revenue, courseStats }) => {
+                this.overview    = overview;
+                this.userStats   = userStats;
+                this.courseStats = courseStats;
+                this.buildCharts(overview, userStats, revenue, courseStats);
                 this.loading = false;
                 this.cdr.detectChanges();
             },
@@ -88,39 +124,54 @@ export class AdminDashboardComponent implements OnInit {
         });
     }
 
-    buildCharts(data: DashboardStats): void {
-        this.donutSeries = [data.activeUsers ?? 0, data.blockedUsers ?? 0];
+    buildCharts(overview: ReportsOverview, userStats: UserStats, revenue: RevenueStats, courseStats: CourseStats): void {
+        // Revenue area chart
+        this.revenueSeries = [
+            { name: 'Revenus (€)', data: revenue.revenue },
+            { name: 'Ventes',       data: revenue.sales }
+        ];
+        this.revenueOptions = {
+            ...this.revenueOptions,
+            xaxis: { ...this.revenueOptions.xaxis, categories: revenue.labels }
+        };
 
+        // Bar — utilisateurs par rôle
         const roleLabels: Record<string, string> = {
             STUDENT: 'Étudiants', INSTRUCTOR: 'Instruct.',
             ADMIN: 'Admins', RECRUITER: 'Recruteurs', SUPERADMIN: 'SuperAdmin'
         };
-        const roles = Object.keys(data.usersByRole ?? {});
-        this.barSeries = [{ name: 'Utilisateurs', data: roles.map(r => data.usersByRole[r] ?? 0) }];
-        this.barOptions = { ...this.barOptions,
+        const roles = Object.keys(userStats.byRole ?? {});
+        this.barSeries = [{ name: 'Utilisateurs', data: roles.map(r => userStats.byRole[r] ?? 0) }];
+        this.barOptions = {
+            ...this.barOptions,
             xaxis: { ...this.barOptions.xaxis, categories: roles.map(r => roleLabels[r] || r) }
         };
 
-        const months = Object.keys(data.registrationsByMonth ?? {});
-        const now = new Date();
-        const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-        this.newThisMonth = data.registrationsByMonth?.[currentKey] ?? 0;
-        this.lineSeries = [{ name: 'Inscriptions', data: months.map(m => data.registrationsByMonth[m] ?? 0) }];
-        this.lineOptions = { ...this.lineOptions,
-            xaxis: { ...this.lineOptions.xaxis,
-                categories: months.map(m => {
-                    const [y, mo] = m.split('-');
-                    return new Date(parseInt(y), parseInt(mo) - 1)
-                        .toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
-                })
-            }
+        // Line — inscriptions (12 derniers mois)
+        this.lineSeries = [{ name: 'Inscriptions', data: userStats.registrations }];
+        this.lineOptions = {
+            ...this.lineOptions,
+            xaxis: { ...this.lineOptions.xaxis, categories: userStats.labels }
         };
+
+        // Donut — cours par statut
+        this.courseDonutSeries = [
+            courseStats.byStatus.DRAFT,
+            courseStats.byStatus.PENDING,
+            courseStats.byStatus.PUBLISHED,
+            courseStats.byStatus.REJECTED
+        ];
+    }
+
+    get pendingCourses(): number {
+        if (!this.overview) return 0;
+        return Math.max(0, this.overview.totalCourses - this.overview.publishedCourses);
     }
 
     getRoleColor(role: string): string {
         const colors: Record<string, string> = {
-            STUDENT: '#6366f1', INSTRUCTOR: '#22c55e',
-            ADMIN: '#ef4444', RECRUITER: '#f59e0b', SUPERADMIN: '#8b5cf6'
+            STUDENT: '#5625E8', INSTRUCTOR: '#03C95A',
+            ADMIN: '#9b59b6', RECRUITER: '#FFC107', SUPERADMIN: '#5625E8'
         };
         return colors[role] || '#6b7280';
     }

@@ -20,18 +20,44 @@
     <!-- Données réelles -->
     <div class="card mb-3" *ngIf="!loading && profile">
         <div class="card-body">
-            <div class="d-flex align-items-center">
-                <div class="position-relative me-3">
-                    <img [src]="getAvatarUrl()" class="rounded-circle" width="80" height="80" style="object-fit:cover;" alt="Avatar">
-                    <label class="position-absolute bottom-0 end-0 bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
-                           style="width:28px;height:28px;cursor:pointer;" title="Changer l'avatar">
-                        <i class="isax isax-camera fs-14"></i>
-                        <input type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)">
-                    </label>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="stu-prof-photo-wrap">
+                    <img *ngIf="getAvatarUrl()" [src]="getAvatarUrl()" class="rounded-circle" width="80" height="80" style="object-fit:cover;" alt="Avatar">
+                    <div *ngIf="!getAvatarUrl()"
+                         class="rounded-circle d-inline-flex align-items-center justify-content-center"
+                         style="width:80px;height:80px;background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;font-size:30px;font-weight:800;text-transform:uppercase;">
+                        {{ avatarInitial }}
+                    </div>
                 </div>
-                <div>
+
+                <div class="flex-grow-1">
                     <h5 class="mb-1">{{ profile.fullName }}</h5>
                     <p class="text-muted mb-0">{{ profile.email }}</p>
+
+                    <div class="stu-prof-photo-actions mt-2">
+                        <label class="stu-prof-photo-btn stu-prof-photo-btn--upload" [class.disabled]="avatarUploading">
+                            <input type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)" [disabled]="avatarUploading">
+                            <span *ngIf="!avatarUploading">Upload</span>
+                            <span *ngIf="avatarUploading" class="d-flex align-items-center gap-2">
+                                <span class="spinner-border spinner-border-sm"></span>Upload...
+                            </span>
+                        </label>
+
+                        <button type="button"
+                                class="stu-prof-photo-btn stu-prof-photo-btn--delete"
+                                (click)="removeAvatar()"
+                                [disabled]="avatarUploading || !profile?.avatarPath">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ms-auto text-end" *ngIf="profile.challengePoints !== undefined">
+                    <a [routerLink]="routes.studentChallenges" class="text-decoration-none">
+                        <span class="badge rounded-pill px-3 py-2" style="background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; font-size: 14px;">
+                            <i class="ti ti-trophy me-1"></i>{{ profile.challengePoints }} pts
+                        </span>
+                    </a>
                 </div>
             </div>
         </div>

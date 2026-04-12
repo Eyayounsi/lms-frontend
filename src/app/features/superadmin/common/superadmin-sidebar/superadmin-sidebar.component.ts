@@ -15,6 +15,10 @@ export class SuperadminSidebarComponent {
   public routes = routes;
   public userName: string = localStorage.getItem('fullName') || 'Super Administrateur';
 
+  get userInitials(): string {
+    return this.userName.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase()).join('').slice(0, 2) || 'SA';
+  }
+
   constructor(private authService: AuthService) {}
 
   onLogout(): void {

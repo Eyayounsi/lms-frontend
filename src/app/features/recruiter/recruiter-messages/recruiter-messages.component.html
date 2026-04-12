@@ -1,0 +1,225 @@
+<div class="rct-msg-wrapper" (click)="closeEmojiPicker()">
+
+  <!-- ── LEFT PANEL : conversations ── -->
+  <aside class="rct-msg-panel-left">
+
+    <!-- Header -->
+    <div class="rct-msg-panel-hd">
+      <div class="rct-msg-panel-hd-top">
+        <div class="rct-msg-panel-title">
+          <i class="ti ti-messages"></i>
+          <span>Messagerie</span>
+        </div>
+        <span *ngIf="totalUnread() > 0" class="rct-msg-badge-unread">{{ totalUnread() }}</span>
+      </div>
+
+      <!-- Search / New conversation -->
+      <div class="rct-msg-search-wrap" (click)="$event.stopPropagation()">
+        <div class="rct-msg-search-box">
+          <i class="ti ti-search rct-msg-search-icon" *ngIf="!startingConversationWith"></i>
+          <span class="spinner-border spinner-border-sm rct-msg-search-spin" *ngIf="startingConversationWith"></span>
+          <input type="text"
+                 class="rct-msg-search-input"
+                 placeholder="Rechercher un étudiant..."
+                 [(ngModel)]="studentSearchQuery"
+                 (ngModelChange)="onStudentSearch()"
+                 (blur)="closeSearchDropdown()" />
+        </div>
+
+        <!-- Search dropdown -->
+        <div class="rct-msg-search-dropdown" *ngIf="showSearchDropdown">
+          <div *ngIf="studentSearchResults.length === 0" class="rct-msg-search-empty">
+            <i class="ti ti-user-off"></i> Aucun résultat
+          </div>
+          <div *ngFor="let s of studentSearchResults"
+               class="rct-msg-search-item"
+               (mousedown)="startConversationWith(s)">
+            <img [src]="getAvatarUrl(s.avatarPath, s.fullName)" class="rct-msg-search-av" [alt]="s.fullName" />
+            <div class="rct-msg-search-info">
+              <span class="rct-msg-search-name">{{ s.fullName }}</span>
+              <span class="rct-msg-search-sub">{{ s.designation || 'Étudiant' }}</span>
+            </div>
+            <i class="ti ti-plus rct-msg-search-plus"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Conversations list -->
+    <div class="rct-msg-conv-list">
+
+      <!-- Loading -->
+      <div *ngIf="loadingConversations" class="rct-msg-loading">
+        <div class="rct-msg-sk-wrap" *ngFor="let i of [1,2,3]">
+          <div class="rct-msg-sk-av"></div>
+          <div class="rct-msg-sk-lines">
+            <div class="rct-msg-sk rct-msg-sk-lg"></div>
+            <div class="rct-msg-sk rct-msg-sk-sm"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="conversationsError" class="rct-msg-error-box">
+        <i class="ti ti-alert-circle"></i> {{ conversationsError }}
+      </div>
+
+      <!-- Empty -->
+      <div *ngIf="!loadingConversations && !conversationsError && conversations.length === 0"
+           class="rct-msg-conv-empty">
+        <div class="rct-msg-conv-empty-ico"><i class="ti ti-message-off"></i></div>
+        <p>Aucune conversation</p>
+        <small>Recherchez un étudiant ci-dessus pour démarrer.</small>
+      </div>
+
+      <!-- Items -->
+      <div *ngFor="let conv of conversations"
+           class="rct-msg-conv-item"
+           [class.rct-msg-conv-active]="selectedConversation?.conversationId === conv.conversationId"
+           (click)="selectConversation(conv)">
+        <div class="rct-msg-conv-av-wrap">
+          <img [src]="getAvatarUrl(conv.participantAvatar, conv.participantName)"
+               class="rct-msg-conv-av"
+               [alt]="conv.participantName" />
+          <span class="rct-msg-online-dot"></span>
+        </div>
+        <div class="rct-msg-conv-info">
+          <div class="rct-msg-conv-row1">
+            <span class="rct-msg-conv-name">{{ conv.participantName }}</span>
+            <span class="rct-msg-conv-time">{{ formatDate(conv.lastMessageAt) }}</span>
+          </div>
+          <div class="rct-msg-conv-row2">
+            <span class="rct-msg-conv-preview">
+              <span *ngIf="conv.lastMessageIsOwn" class="rct-msg-you">Vous : </span>{{ conv.lastMessage || 'Nouvelle conversation' }}
+            </span>
+            <span *ngIf="conv.unreadCount > 0" class="rct-msg-unread-bubble">{{ conv.unreadCount }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ── RIGHT PANEL : chat window ── -->
+  <main class="rct-msg-chat">
+
+    <!-- Empty state -->
+    <div *ngIf="!selectedConversation" class="rct-msg-chat-empty">
+      <div class="rct-msg-chat-empty-ico">
+        <i class="ti ti-message-circle-2"></i>
+      </div>
+      <h5>Sélectionnez une conversation</h5>
+      <p>Ou recherchez un étudiant pour démarrer une nouvelle conversation.</p>
+    </div>
+
+    <!-- Active conversation -->
+    <ng-container *ngIf="selectedConversation">
+
+      <!-- Chat header -->
+      <div class="rct-msg-chat-hd">
+        <div class="rct-msg-chat-hd-left">
+          <div class="rct-msg-chat-hd-av-wrap">
+            <img [src]="getAvatarUrl(selectedConversation.participantAvatar, selectedConversation.participantName)"
+                 class="rct-msg-chat-hd-av"
+                 [alt]="selectedConversation.participantName" />
+            <span class="rct-msg-online-dot"></span>
+          </div>
+          <div class="rct-msg-chat-hd-info">
+            <span class="rct-msg-chat-hd-name">{{ selectedConversation.participantName }}</span>
+            <span class="rct-msg-chat-hd-status"><span class="rct-msg-online-pulse"></span> En ligne</span>
+          </div>
+        </div>
+        <div class="rct-msg-chat-hd-actions">
+        </div>
+      </div>
+
+      <!-- Messages area -->
+      <div class="rct-msg-chat-body" #messagesContainer>
+
+        <!-- Loading -->
+        <div *ngIf="loadingMessages" class="rct-msg-messages-loading">
+          <div class="spinner-border text-primary" style="width:2rem;height:2rem"></div>
+        </div>
+
+        <!-- Error -->
+        <div *ngIf="messagesError && !loadingMessages" class="rct-msg-messages-err">
+          <i class="ti ti-alert-circle me-1"></i>{{ messagesError }}
+        </div>
+
+        <!-- Empty -->
+        <div *ngIf="!loadingMessages && !messagesError && messages.length === 0"
+             class="rct-msg-messages-empty">
+          <div class="rct-msg-messages-empty-ico"><i class="ti ti-message-dots"></i></div>
+          <p>Démarrez la conversation !</p>
+          <small>Envoyez un message à {{ selectedConversation.participantName }}.</small>
+        </div>
+
+        <!-- Message loop -->
+        <ng-container *ngFor="let msg of messages; let i = index">
+
+          <!-- Date separator -->
+          <div *ngIf="showDateSeparator(messages, i)" class="rct-msg-date-sep">
+            <span>{{ formatDate(msg.sentAt) }}</span>
+          </div>
+
+          <!-- Message row -->
+          <div class="rct-msg-row" [class.rct-msg-mine]="isFromMe(msg)" [class.rct-msg-theirs]="!isFromMe(msg)">
+            <div *ngIf="!isFromMe(msg)" class="rct-msg-row-av-wrap">
+              <img [src]="getAvatarUrl(selectedConversation.participantAvatar, selectedConversation.participantName)"
+                   class="rct-msg-row-av"
+                   [alt]="selectedConversation.participantName" />
+            </div>
+            <div class="rct-msg-bubble-wrap">
+              <div class="rct-msg-bubble" [class.rct-msg-bubble-mine]="isFromMe(msg)" [class.rct-msg-bubble-theirs]="!isFromMe(msg)">
+                <p class="rct-msg-text">{{ msg.content }}</p>
+              </div>
+              <div class="rct-msg-meta" [class.rct-msg-meta-right]="isFromMe(msg)">
+                {{ formatTime(msg.sentAt) }}
+                <i *ngIf="isFromMe(msg)" class="ti ms-1"
+                   [class.ti-checks]="msg.isRead"
+                   [class.ti-check]="!msg.isRead"
+                   [style.color]="msg.isRead ? '#03C95A' : 'inherit'"></i>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
+      </div>
+
+      <!-- Chat input -->
+      <div class="rct-msg-input-area" (click)="$event.stopPropagation()">
+
+        <!-- Emoji picker -->
+        <div class="rct-msg-emoji-picker" *ngIf="showEmojiPicker">
+          <span *ngFor="let e of emojis"
+                class="rct-msg-emoji-item"
+                (click)="insertEmoji(e)">{{ e }}</span>
+        </div>
+
+        <div class="rct-msg-input-row">
+          <button class="rct-msg-input-btn" title="Émojis" (click)="toggleEmojiPicker()">
+            <i class="ti ti-mood-smile"></i>
+          </button>
+          <div class="rct-msg-input-wrap">
+            <textarea class="rct-msg-input"
+                      rows="1"
+                      placeholder="Écrivez un message... (Shift+Entrée pour nouvelle ligne)"
+                      [(ngModel)]="newMessage"
+                      (keydown)="onKeyDown($event)"
+                      [disabled]="sendingMessage"></textarea>
+          </div>
+          <button class="rct-msg-send-btn"
+                  (click)="sendMessage()"
+                  [disabled]="!newMessage.trim() || sendingMessage"
+                  title="Envoyer (Entrée)">
+            <span *ngIf="!sendingMessage"><i class="ti ti-send-2"></i></span>
+            <span *ngIf="sendingMessage"><span class="spinner-border spinner-border-sm"></span></span>
+          </button>
+        </div>
+
+      </div>
+
+    </ng-container>
+  </main>
+
+</div>

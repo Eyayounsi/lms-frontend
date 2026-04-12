@@ -5,26 +5,26 @@
         <div class="blog">
           <div class="blog-image">
             <a [routerLink]="routes.blog_details">
-              <img class="img-fluid" src="./assets/img/blog/blog-16.jpg" alt="img">
+              <img class="img-fluid" src="./assets/img/blog/blog-img-1.jpg" alt="img">
             </a>
           </div>
           <div class="blog-item">
-            <h5 class="mb-2"><a [routerLink]="routes.blog_details">Learn Web App Development from Experts in 2024</a></h5>
-            <p class="text-truncate line-clamb-2">Master the art of web application development with expert-led courses that cover the latest tools, fram...</p>
+            <h5 class="mb-2"><a [routerLink]="routes.blog_details">Apprenez le développement web avec des experts en 2024</a></h5>
+            <p class="text-truncate line-clamb-2">Maîtrisez l'art du développement d'applications web grâce à des cours animés par des experts couvrant les derniers outils et frameworks...</p>
             <div class="blog-info">
               <div class="d-flex align-items-center flex-wrap justify-content-between gap-2">
                 <div class="d-flex align-items-center user-profile">
                   <a [routerLink]="routes.instructorDetails" class="user-img"><img class="rounded-pill w-auto" src="./assets/img/user/user-52.jpg" alt="img"></a>
-                  <a [routerLink]="routes.instructorDetails" class="user-name">John Miller</a>
+                  <a [routerLink]="routes.instructorDetails" class="user-name">Jean Dupont</a>
                 </div>
                 <ul class="d-flex align-items-center flex-wrap gap-2">
                   <li>
                     <img class="me-1" src="./assets/img/icons/calendar.svg" alt="img">
-                    <p>20 Apr 2024</p>
+                    <p>20 Avr 2024</p>
                   </li>
                   <li>
                     <img class="me-1" src="./assets/img/icons/tag.svg" alt="img">
-                    <p>Programming, Web Design</p>
+                    <p>Programmation, Design Web</p>
                   </li>
                 </ul>
               </div>
@@ -36,26 +36,26 @@
         <div class="blog">
           <div class="blog-image">
             <a [routerLink]="routes.blog_details">
-              <img class="img-fluid" src="./assets/img/blog/blog-17.jpg" alt="img">
+              <img class="img-fluid" src="./assets/img/blog/blog-img-3.jpg" alt="img">
             </a>
           </div>
           <div class="blog-item">
-            <h5 class="mb-2"><a [routerLink]="routes.blog_details">The Complete JavaScript Course for Beginners</a></h5>
-            <p class="text-truncate line-clamb-2">Dive into the world of JavaScript with our complete beginner-friendly course! Learn essential concepts...</p>
+            <h5 class="mb-2"><a [routerLink]="routes.blog_details">Le cours JavaScript complet pour les débutants</a></h5>
+            <p class="text-truncate line-clamb-2">Plongez dans le monde de JavaScript avec notre cours complet adapté aux débutants ! Apprenez les concepts essentiels...</p>
             <div class="blog-info">
               <div class="d-flex align-items-center flex-wrap justify-content-between gap-2">
                 <div class="d-flex align-items-center user-profile">
                   <a [routerLink]="routes.instructorDetails" class="user-img"><img class="rounded-pill w-auto" src="./assets/img/user/user-15.jpg" alt="img"></a>
-                  <a [routerLink]="routes.instructorDetails" class="user-name">Donald Vesely</a>
+                  <a [routerLink]="routes.instructorDetails" class="user-name">Sophie Martin</a>
                 </div>
                 <ul class="d-flex align-items-center flex-wrap gap-2">
                   <li>
                     <img class="me-1" src="./assets/img/icons/calendar.svg" alt="img">
-                    <p>08 Apr 2024</p>
+                    <p>08 Avr 2024</p>
                   </li>
                   <li>
                     <img class="me-1" src="./assets/img/icons/tag.svg" alt="img">
-                    <p>Programming, Web Design</p>
+                    <p>Programmation, JavaScript</p>
                   </li>
                 </ul>
               </div>
@@ -67,26 +67,26 @@
       <div class="blog">
         <div class="blog-image">
           <a [routerLink]="routes.blog_details">
-            <img class="img-fluid" src="./assets/img/blog/blog-18.jpg" alt="img">
+            <img class="img-fluid" src="./assets/img/blog/blog-img-2.jpg" alt="img">
           </a>
         </div>
         <div class="blog-item">
-          <h5 class="mb-2"><a [routerLink]="routes.blog_details">Revolutionize Learning with a Modern LMS</a></h5>
-          <p class="text-truncate line-clamb-2">Discover how a Learning Management System (LMS) can transform education and corporate training by ...</p>
+          <h5 class="mb-2"><a [routerLink]="routes.blog_details">Révolutionnez l'apprentissage avec un LMS moderne</a></h5>
+          <p class="text-truncate line-clamb-2">Découvrez comment une plateforme de gestion de l'apprentissage (LMS) peut transformer l'éducation et la formation professionnelle...</p>
           <div class="blog-info">
             <div class="d-flex align-items-center flex-wrap justify-content-between gap-2">
               <div class="d-flex align-items-center user-profile">
                 <a [routerLink]="routes.instructorDetails" class="user-img"><img class="rounded-pill w-auto" src="./assets/img/user/user-05.jpg" alt="img"></a>
-                <a [routerLink]="routes.instructorDetails" class="user-name">James Barnes</a>
+                <a [routerLink]="routes.instructorDetails" class="user-name">Ahmed Ben Ali</a>
               </div>
               <ul class="d-flex align-items-center flex-wrap gap-2">
                 <li>
                   <img class="me-1" src="./assets/img/icons/calendar.svg" alt="img">
-                  <p>23 Feb 2024</p>
+                  <p>23 Fév 2024</p>
                 </li>
                 <li>
                   <img class="me-1" src="./assets/img/icons/tag.svg" alt="img">
-                  <p>Modern Learning, Innovative</p>
+                  <p>Apprentissage moderne, Innovation</p>
                 </li>
               </ul>
             </div>
@@ -94,6 +94,36 @@
         </div>
       </div>
     </div>
+    <!-- Dynamic published posts from admin -->
+    @for (post of dynamicPosts; track post.id) {
+    <div class="col-lg-9">
+      <div class="blog">
+        <div class="blog-image">
+          <a href="javascript:void(0);">
+            <img class="img-fluid" [src]="post.coverImage || './assets/img/blog/blog-16.jpg'" alt="img">
+          </a>
+        </div>
+        <div class="blog-item">
+          <h5 class="mb-2"><a href="javascript:void(0);">{{ post.title }}</a></h5>
+          <p class="text-truncate line-clamb-2">{{ post.summary }}</p>
+          <div class="blog-info">
+            <div class="d-flex align-items-center flex-wrap justify-content-between gap-2">
+              <div class="d-flex align-items-center user-profile">
+                <span class="user-name">{{ post.authorName }}</span>
+              </div>
+              <ul class="d-flex align-items-center flex-wrap gap-2">
+                <li>
+                  <img class="me-1" src="./assets/img/icons/calendar.svg" alt="img">
+                  <p>{{ post.createdAt | date:'dd MMM yyyy' }}</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+    <!-- /Dynamic posts -->
     </div>
   <!-- /pagination -->
   <div class="row align-items-center">

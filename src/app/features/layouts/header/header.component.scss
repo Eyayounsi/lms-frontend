@@ -4,3 +4,78 @@
 .disply-block{
     display: block;
 }
+
+/* ── "Plus" dropdown for index nav ── */
+.index-nav-more {
+    position: relative;
+
+    .index-more-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 260px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 20px 60px rgba(15, 23, 42, 0.14);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        padding: 10px;
+        z-index: 9999;
+        list-style: none;
+
+        li a {
+            padding: 10px 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #0f172a;
+            transition: background 0.2s ease;
+
+            &:hover {
+                background: #f8fafc;
+            }
+        }
+    }
+}
+
+/* icon bubble reused from home */
+.index-more-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 17px;
+}
+
+/* Reuse cat-p-* colour classes from home/admin */
+.cat-p-indigo.index-more-icon { background: #eef2ff; color: #4338ca; }
+.cat-p-purple.index-more-icon { background: #faf5ff; color: #7e22ce; }
+.cat-p-emerald.index-more-icon { background: #f0fdf4; color: #15803d; }
+
+/* Subtle pink accent for navbar hover/focus states */
+:host {
+    header .header-nav .main-menu-wrapper .main-nav > li > a {
+        transition: color 0.2s ease;
+    }
+
+    header .header-nav .main-menu-wrapper .main-nav > li > a:hover,
+    header .header-nav .main-menu-wrapper .main-nav > li > a:focus-visible {
+        color: #be185d !important;
+    }
+
+    header .header-nav .main-menu-wrapper .main-nav > li > a:hover i,
+    header .header-nav .main-menu-wrapper .main-nav > li > a:focus-visible i {
+        color: #be185d !important;
+    }
+
+    header .header-nav .main-menu-wrapper .main-nav > li .submenu > li > a:hover,
+    header .header-nav .main-menu-wrapper .main-nav > li .submenu > li > a:focus-visible {
+        background: linear-gradient(135deg, #fff1f7, #fdf4ff);
+        color: #9d174d;
+    }
+}

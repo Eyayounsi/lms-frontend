@@ -103,4 +103,8 @@ export class StudentSettingsComponent implements OnInit {
       }
     });
   }
+
+  get avatarInitial(): string {
+    return this.profileForm.fullName?.trim()?.charAt(0)?.toUpperCase() || 'U';
+  }
 }

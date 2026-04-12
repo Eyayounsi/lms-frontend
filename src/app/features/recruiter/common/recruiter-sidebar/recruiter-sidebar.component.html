@@ -1,31 +1,57 @@
-<div class="settings-sidebar mb-lg-0">
-    <div>
-        <h6 class="mb-3">Espace Recruteur</h6>
-        <ul class="mb-3 pb-1">
-            <li>
-                <a [routerLink]="routes.recruiter_dashboard" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-grid-35 me-2"></i>Tableau de bord
-                </a>
-            </li>
-            <li>
-                <a [routerLink]="routes.recruiter_shared_profiles" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-profile-2user5 me-2"></i>Profils Étudiants
-                </a>
-            </li>
-        </ul>
-        <hr>
-        <h6 class="mb-3">Paramètres</h6>
-        <ul>
-            <li>
-                <a [routerLink]="routes.recruiterSettings" class="d-inline-flex align-items-center" routerLinkActive="active">
-                    <i class="isax isax-setting-25 me-2"></i>Mon Profil
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" (click)="onLogout()" class="d-inline-flex align-items-center">
-                    <i class="isax isax-logout5 me-2"></i>Déconnexion
-                </a>
-            </li>
-        </ul>
+﻿<div class="rct-sidebar">
+
+  <!-- ── Logo / Brand ── -->
+  <div class="rct-profile-card">
+    <div class="rct-profile-av">
+      <span class="rct-profile-initial">{{ initial }}</span>
+      <span class="rct-profile-status"></span>
     </div>
+    <div class="rct-profile-info">
+      <p class="rct-profile-name">{{ fullName }}</p>
+      <span class="rct-profile-role">Recruteur</span>
+    </div>
+  </div>
+
+  <!-- ── Navigation ── -->
+  <nav class="rct-nav">
+    <p class="rct-nav-label">Espace Recruteur</p>
+
+    <a [routerLink]="routes.recruiter_dashboard" routerLinkActive="rct-active" class="rct-nav-item">
+      <span class="rct-nav-ico"><i class="ti ti-layout-dashboard"></i></span>
+      <span class="rct-nav-text">Tableau de bord</span>
+    </a>
+
+    <a [routerLink]="routes.recruiter_shared_profiles" routerLinkActive="rct-active" class="rct-nav-item">
+      <span class="rct-nav-ico"><i class="ti ti-users"></i></span>
+      <span class="rct-nav-text">Profils Étudiants</span>
+    </a>
+
+    <a [routerLink]="routes.recruiter_certified_students" routerLinkActive="rct-active" class="rct-nav-item">
+      <span class="rct-nav-ico"><i class="ti ti-certificate"></i></span>
+      <span class="rct-nav-text">Étudiants Certifiés</span>
+    </a>
+
+    <a [routerLink]="routes.recruiter_job_offers" routerLinkActive="rct-active" class="rct-nav-item">
+      <span class="rct-nav-ico"><i class="ti ti-briefcase"></i></span>
+      <span class="rct-nav-text">Offres d'Emploi</span>
+    </a>
+
+    <a [routerLink]="routes.recruiter_messages" routerLinkActive="rct-active" class="rct-nav-item">
+      <span class="rct-nav-ico"><i class="ti ti-message-circle"></i></span>
+      <span class="rct-nav-text">Messagerie</span>
+    </a>
+
+    <div class="rct-nav-divider"></div>
+    <p class="rct-nav-label">Paramètres</p>
+
+    <a [routerLink]="routes.recruiterSettings" routerLinkActive="rct-active" class="rct-nav-item">
+      <span class="rct-nav-ico"><i class="ti ti-user-circle"></i></span>
+      <span class="rct-nav-text">Mon Profil</span>
+    </a>
+
+    <a href="javascript:void(0)" (click)="onLogout()" class="rct-nav-item rct-nav-logout">
+      <span class="rct-nav-ico"><i class="ti ti-logout"></i></span>
+      <span class="rct-nav-text">Déconnexion</span>
+    </a>
+  </nav>
 </div>

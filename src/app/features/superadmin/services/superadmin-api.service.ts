@@ -6,9 +6,13 @@ import { environment } from '../../../../environments/environment';
 export interface SuperAdminUser {
   id: number;
   fullName: string;
+  avatarPath?: string;
   email: string;
   phone: string;
+  companyName: string;
   role: string;
+  /** Rôles secondaires — ex: un instructeur qui a aussi accès étudiant */
+  secondaryRoles?: string[];
   accountStatus: string;
   createdAt: string;
 }
@@ -54,5 +58,17 @@ export class SuperAdminApiService {
 
   changeUserRole(id: number, role: string): Observable<SuperAdminUser> {
     return this.http.put<SuperAdminUser>(`${this.apiUrl}/superadmin/users/${id}/change-role?role=${role}`, {});
+  }
+
+  createAccount(data: { fullName: string; email: string; phone: string; companyName: string; password: string; role: string }): Observable<SuperAdminUser> {
+    return this.http.post<SuperAdminUser>(`${this.apiUrl}/superadmin/users/create-account`, data);
+  }
+
+  addSecondaryRole(userId: number, role: string): Observable<SuperAdminUser> {
+    return this.http.post<SuperAdminUser>(`${this.apiUrl}/superadmin/users/${userId}/secondary-roles/${role}`, {});
+  }
+
+  removeSecondaryRole(userId: number, role: string): Observable<SuperAdminUser> {
+    return this.http.delete<SuperAdminUser>(`${this.apiUrl}/superadmin/users/${userId}/secondary-roles/${role}`);
   }
 }

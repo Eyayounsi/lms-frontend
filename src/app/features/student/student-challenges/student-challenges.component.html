@@ -1,0 +1,186 @@
+<!-- Skeleton chargement -->
+<div *ngIf="loading" class="row g-3">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm p-4">
+            <div class="skeleton skeleton-line mb-3" style="width: 40%; height: 28px;"></div>
+            <div class="skeleton skeleton-line mb-2" style="width: 60%; height: 16px;"></div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4" *ngFor="let _ of [1,2,3,4,5,6]">
+        <div class="card border-0 shadow-sm p-3">
+            <div class="skeleton skeleton-line mb-2" style="width: 30%; height: 44px; border-radius: 10px;"></div>
+            <div class="skeleton skeleton-line mb-2" style="width: 70%; height: 16px;"></div>
+            <div class="skeleton skeleton-line" style="width: 100%; height: 8px; border-radius: 4px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Erreur -->
+<div *ngIf="error && !loading" class="alert alert-danger border-0 shadow-sm">
+    <i class="ti ti-alert-circle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadChallenges()">Réessayer</button>
+</div>
+
+<!-- Contenu principal -->
+<ng-container *ngIf="!loading && !error">
+
+    <!-- Banner -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 challenges-banner text-white">
+                <div class="card-body d-flex align-items-center gap-3 py-4 px-4">
+                    <div class="banner-icon-ring flex-shrink-0">
+                        <div class="banner-icon">
+                            <i class="ti ti-trophy fs-24 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h4 class="mb-1 text-white fw-bold">Mes Challenges</h4>
+                        <p class="mb-0 small" style="color: rgba(255,255,255,0.75);">
+                            Complétez des défis pour gagner des points et obtenir des coupons de réduction
+                        </p>
+                    </div>
+                    <div class="d-flex gap-3 flex-shrink-0">
+                        <div class="text-center">
+                            <div class="fw-bold fs-20 text-white">{{ points }}</div>
+                            <div class="small" style="color: rgba(255,255,255,0.7);">Points</div>
+                        </div>
+                        <div class="vr" style="border-color: rgba(255,255,255,0.2);"></div>
+                        <div class="text-center">
+                            <div class="fw-bold fs-20 text-white">{{ unlockedCount }}/{{ totalCount }}</div>
+                            <div class="small" style="color: rgba(255,255,255,0.7);">Débloqués</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats rapides -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="stat-icon-box bg-success-transparent">
+                        <i class="ti ti-circle-check fs-20 text-success"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small mb-0">Challenges réussis</p>
+                        <h5 class="fw-bold mb-0">{{ unlockedCount }}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="stat-icon-box bg-warning-transparent">
+                        <i class="ti ti-star fs-20 text-warning"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small mb-0">Points disponibles</p>
+                        <h5 class="fw-bold mb-0">{{ points }} pts</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body d-flex align-items-center gap-3 py-3">
+                    <div class="stat-icon-box bg-primary-transparent">
+                        <i class="ti ti-coins fs-20 text-primary"></i>
+                    </div>
+                    <div>
+                        <p class="text-muted small mb-0">Total points gagnés</p>
+                        <h5 class="fw-bold mb-0">{{ totalEarnedPoints }} pts</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bouton échange -->
+    <div class="row mb-4" *ngIf="points >= 100">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm border-start border-4 border-success">
+                <div class="card-body d-flex align-items-center justify-content-between py-3 px-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="ti ti-gift fs-24 text-success"></i>
+                        <div>
+                            <p class="fw-semibold mb-0">Vous avez assez de points pour un coupon !</p>
+                            <p class="text-muted small mb-0">100 pts → 10% | 200 pts → 20% | 300 pts → 30% de réduction</p>
+                        </div>
+                    </div>
+                    <a [routerLink]="routes.studentPointsExchange" class="btn btn-success btn-sm px-4">
+                        <i class="ti ti-arrows-exchange me-1"></i>Échanger
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenges débloqués -->
+    <div class="mb-4" *ngIf="unlockedChallenges.length > 0">
+        <h6 class="fw-bold mb-3">
+            <i class="ti ti-circle-check text-success me-2"></i>Challenges Débloqués
+        </h6>
+        <div class="row g-3">
+            <div class="col-md-6 col-xl-4" *ngFor="let ch of unlockedChallenges">
+                <div class="card border-0 shadow-sm challenge-card unlocked h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start justify-content-between mb-3">
+                            <div class="challenge-icon-box bg-success-transparent">
+                                <i [class]="ch.iconClass + ' fs-20 text-success'"></i>
+                            </div>
+                            <span class="badge bg-success-transparent text-success px-2 py-1">
+                                <i class="ti ti-check me-1"></i>+{{ ch.rewardPoints }} pts
+                            </span>
+                        </div>
+                        <h6 class="fw-semibold mb-1">{{ ch.title }}</h6>
+                        <p class="text-muted small mb-3">{{ ch.description }}</p>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-success" style="width: 100%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span class="text-success small fw-semibold">Complété !</span>
+                            <span class="text-muted small" *ngIf="ch.unlockedAt">{{ ch.unlockedAt }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Challenges en cours / verrouillés -->
+    <div *ngIf="lockedChallenges.length > 0">
+        <h6 class="fw-bold mb-3">
+            <i class="ti ti-lock text-muted me-2"></i>Challenges en cours
+        </h6>
+        <div class="row g-3">
+            <div class="col-md-6 col-xl-4" *ngFor="let ch of lockedChallenges">
+                <div class="card border-0 shadow-sm challenge-card locked h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start justify-content-between mb-3">
+                            <div class="challenge-icon-box bg-light">
+                                <i [class]="ch.iconClass + ' fs-20 text-muted'"></i>
+                            </div>
+                            <span class="badge bg-light text-muted px-2 py-1">
+                                {{ ch.rewardPoints }} pts
+                            </span>
+                        </div>
+                        <h6 class="fw-semibold mb-1">{{ ch.title }}</h6>
+                        <p class="text-muted small mb-3">{{ ch.description }}</p>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar bg-primary" [style.width.%]="ch.progressPercent"></div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span class="text-muted small">{{ ch.currentCount }} / {{ ch.targetCount }}</span>
+                            <span class="text-muted small">{{ ch.progressPercent }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</ng-container>

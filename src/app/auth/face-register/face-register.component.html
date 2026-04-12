@@ -1,0 +1,229 @@
+<div class="face-register-page">
+
+  <!-- ══════════════════════════════════════════════════════════════ STEP 1 -->
+  <div *ngIf="step === 1" class="step-wrapper step-form animate-in">
+    <div class="face-card">
+
+      <!-- Header -->
+      <div class="face-card-header">
+        <a [routerLink]="routes.home">
+          <img src="assets/img/logo.svg" alt="Logo" class="logo-img">
+        </a>
+        <div class="step-badge">Étape 1 / 2</div>
+      </div>
+
+      <!-- Title -->
+      <div class="face-card-title">
+        <div class="face-icon-circle">
+          <i class="ti ti-face-id fs-32 text-primary"></i>
+        </div>
+        <h2 class="fw-bold mt-3 mb-1">Inscription Face ID</h2>
+        <p class="text-muted small">
+          Créez votre compte et utilisez votre visage pour vous connecter
+        </p>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+        <i class="ti ti-alert-triangle fs-16 flex-shrink-0"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Form -->
+      <form #faceForm="ngForm" (ngSubmit)="onFormSubmit(faceForm)" novalidate>
+
+        <div class="mb-3 position-relative">
+          <label class="form-label">Nom complet <span class="text-danger">*</span></label>
+          <div class="position-relative">
+            <input
+              type="text"
+              name="fullName"
+              ngModel
+              required
+              class="form-control form-control-lg"
+              placeholder="Jean Dupont"
+            />
+            <span><i class="isax isax-user input-icon text-gray-7 fs-14"></i></span>
+          </div>
+        </div>
+
+        <div class="mb-4 position-relative">
+          <label class="form-label">Email <span class="text-danger">*</span></label>
+          <div class="position-relative">
+            <input
+              type="email"
+              name="email"
+              ngModel
+              required
+              class="form-control form-control-lg"
+              placeholder="exemple@email.com"
+            />
+            <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
+          </div>
+        </div>
+
+        <!-- What happens next -->
+        <div class="info-banner mb-4">
+          <i class="ti ti-camera fs-18 me-2 text-primary"></i>
+          <span>Après validation, <strong>10 photos</strong> de votre visage seront capturées pour sécuriser votre compte.</span>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary btn-lg face-btn">
+            <i class="ti ti-camera me-2"></i>
+            Continuer vers la capture
+          </button>
+        </div>
+      </form>
+
+      <!-- Footer links -->
+      <div class="mt-4 text-center links-row">
+        <a [routerLink]="routes.register" class="link-2">
+          <i class="ti ti-user-plus me-1"></i>Inscription classique
+        </a>
+        <span class="mx-2 text-muted">·</span>
+        <a [routerLink]="routes.login" class="link-2">
+          <i class="ti ti-login me-1"></i>Se connecter
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ STEP 2 -->
+  <div *ngIf="step === 2" class="step-wrapper step-camera animate-in">
+
+    <!-- Top bar -->
+    <div class="capture-topbar">
+      <img src="assets/img/logo.svg" alt="Logo" class="logo-img">
+      <div class="topbar-info">
+        <span class="text-muted small">Inscription de</span>
+        <strong class="ms-1">{{ formData.fullName }}</strong>
+        <span class="badge bg-light text-dark ms-2 small">{{ formData.email }}</span>
+      </div>
+      <div class="step-badge">Étape 2 / 2</div>
+    </div>
+
+    <div class="capture-layout">
+
+      <!-- ── Left: info + thumbnails ─────────────────────── -->
+      <div class="capture-sidebar">
+
+        <h5 class="fw-bold mb-1">
+          <i class="ti ti-camera me-1 text-primary"></i>
+          Capture du visage
+        </h5>
+        <p class="text-muted small mb-3">
+          Cliquez sur <strong>Capturer</strong> pour prendre une photo.<br>
+          Tournez légèrement la tête entre chaque capture.
+        </p>
+
+        <!-- Progress -->
+        <div class="progress-section mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <span class="small fw-semibold">Progression</span>
+            <span class="badge" [class.bg-success]="capturedImages.length === 10" [class.bg-primary]="capturedImages.length < 10">
+              {{ capturedImages.length }} / 10
+            </span>
+          </div>
+          <div class="progress" style="height: 8px;">
+            <div
+              class="progress-bar"
+              [class.bg-success]="capturedImages.length === 10"
+              [style.width.%]="captureProgress"
+              role="progressbar"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Camera error -->
+        <div *ngIf="cameraError" class="alert alert-danger small p-2">
+          <i class="ti ti-alert-circle me-1"></i>{{ cameraError }}
+        </div>
+
+        <!-- Thumbnails grid -->
+        <div class="thumbnails-grid">
+          <div *ngFor="let img of capturedImages; let i = index" class="thumbnail-item">
+            <img [src]="img" alt="capture {{ i + 1 }}" class="thumbnail-img">
+            <button (click)="removeImage(i)" class="thumbnail-remove" title="Supprimer">×</button>
+            <div class="thumbnail-label">{{ i + 1 }}</div>
+          </div>
+          <!-- Empty slots -->
+          <div *ngFor="let _ of [].constructor(10 - capturedImages.length)"
+               class="thumbnail-item thumbnail-empty">
+            <i class="ti ti-camera text-muted"></i>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="d-grid gap-2 mt-3">
+          <button
+            (click)="submitRegistration()"
+            [disabled]="capturedImages.length < 10 || submitting"
+            class="btn btn-success btn-lg"
+          >
+            <i class="ti ti-check me-2"></i>
+            {{ submitting ? 'Enregistrement…' : 'Finaliser l\'inscription' }}
+          </button>
+
+          <button
+            (click)="restartCapture()"
+            [disabled]="submitting"
+            class="btn btn-outline-secondary btn-sm"
+          >
+            <i class="ti ti-refresh me-1"></i>Recommencer
+          </button>
+        </div>
+
+      </div>
+
+      <!-- ── Right: camera feed ──────────────────────────── -->
+      <div class="capture-camera">
+
+        <!-- Video stream -->
+        <div class="video-wrapper" [class.camera-error]="!!cameraError">
+          <video #faceVideo autoplay playsinline muted class="camera-video"></video>
+          <canvas #faceCanvas style="display:none;"></canvas>
+
+          <!-- Overlay frame guide -->
+          <div class="face-guide-overlay">
+            <div class="face-oval"></div>
+          </div>
+
+          <!-- Capture count badge -->
+          <div class="capture-badge">
+            <i class="ti ti-camera me-1"></i>{{ capturedImages.length }}/10
+          </div>
+
+          <!-- Ready indicator -->
+          <div *ngIf="capturedImages.length === 10" class="ready-overlay">
+            <i class="ti ti-check-circle fs-48 text-success mb-2"></i>
+            <p class="fw-semibold mb-0">10 captures effectuées !</p>
+            <small>Cliquez sur "Finaliser l'inscription"</small>
+          </div>
+        </div>
+
+        <!-- Capture button -->
+        <div class="text-center mt-3">
+          <button
+            (click)="captureImage()"
+            [disabled]="capturedImages.length >= 10 || !!cameraError"
+            class="btn btn-primary btn-capture"
+          >
+            <i class="ti ti-camera fs-20 me-2"></i>
+            Capturer
+            <span class="ms-2 badge bg-white text-primary">{{ capturedImages.length }}/10</span>
+          </button>
+          <p class="text-muted small mt-2">
+            <i class="ti ti-info-circle me-1"></i>
+            Tournez légèrement la tête et changez d'expression entre chaque capture
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>

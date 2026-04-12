@@ -1,0 +1,271 @@
+<div class="main-wrapper">
+  <div class="page-content">
+    <div class="container-fluid p-4">
+
+  <!-- ══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Indigo AI                                                         -->
+  <!-- ══════════════════════════════════════════════════════════════════════════ -->
+  <div class="anl-hero mb-4">
+    <div class="anl-glow anl-glow-1"></div>
+    <div class="anl-glow anl-glow-2"></div>
+    <div class="anl-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="anl-av-wrap">
+              <div class="anl-av-ring"></div>
+              <div class="anl-av-border"></div>
+              <div class="anl-av-circle">
+                <i class="isax isax-chart-215" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="anl-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="anl-chip"><i class="isax isax-cpu me-1" style="font-size:9px"></i>Analytics IA</span>
+                <span class="anl-live"><span class="anl-live-dot"></span>TEMPS RÉEL</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Analytics IA — Administration</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Vue stratégique globale — engagement, notes, recommandations</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="anl-glass d-none d-md-flex align-items-center" *ngIf="analytics">
+              <div class="anl-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ analytics.platformAvgAttention.toFixed(0) }}%</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Attention</small>
+              </div>
+              <div class="anl-stat-div"></div>
+              <div class="anl-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ analytics.platformTotalEnrollments }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Inscriptions</small>
+              </div>
+              <div class="anl-stat-div"></div>
+              <div class="anl-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ analytics.allCourses.length }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Cours</small>
+              </div>
+            </div>
+            <button class="anl-refresh d-flex align-items-center gap-2" (click)="loadAnalytics()">
+              <i class="ti ti-refresh" style="font-size:14px"></i>Actualiser
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Loading ───────────────────────────────────────────────────────────── -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-muted">Analyse en cours…</p>
+  </div>
+
+  <!-- ── Error UX ──────────────────────────────────────────────────────────── -->
+  <div *ngIf="!loading && !analytics" class="text-center py-5 text-danger">
+    <i class="ti ti-alert-circle analytics-error-icon d-block mb-2"></i>
+    <p class="mt-2">Impossible de charger les analytics.<br>
+      <button class="btn btn-outline-primary btn-sm mt-2" (click)="loadAnalytics()">Réessayer</button>
+    </p>
+  </div>
+
+  <ng-container *ngIf="!loading && analytics">
+
+    <!-- ── KPI Cards ─────────────────────────────────────────────────────────── -->
+    <div class="row g-3 mb-4">
+      <div class="col-xl-2 col-md-4 col-6" *ngFor="let kpi of platformKpiCards">
+        <div class="admin-kpi-card">
+          <div class="kpi-icon" [style.background]="kpi.bg">
+            <i class="isax {{kpi.icon}} kpi-icon-size" [style.color]="kpi.color"></i>
+          </div>
+          <div class="kpi-body">
+            <div class="kpi-value">{{ kpi.value }}</div>
+            <div class="kpi-label">{{ kpi.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tab Navigation ────────────────────────────────────────────────────── -->
+    <ul class="nav admin-analytics-tabs mb-4">
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'overview'" (click)="setTab('overview')">
+          <i class="isax isax-chart-2 me-1"></i>Vue d'ensemble
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" [class.active]="activeTab === 'ranking'" (click)="setTab('ranking')">
+          <i class="isax isax-ranking-1 me-1"></i>Classement Cours
+        </button>
+      </li>
+    </ul>
+
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB: vue d'ensemble                                                     -->
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="activeTab === 'overview'">
+
+      <div class="row g-4">
+
+        <!-- Donut: répartition plateforme -->
+        <div class="col-lg-4">
+          <div class="analytics-card h-100">
+            <div class="analytics-card-header">
+              <span><i class="isax isax-chart-21 me-2 text-primary"></i>Répartition Plateforme</span>
+              <small class="text-muted">{{ analytics.platformTotalDetections }} détections</small>
+            </div>
+            <div class="analytics-card-body">
+              <div *ngIf="analytics.platformTotalDetections === 0" class="no-data-placeholder">
+                <span>📊</span><p>Aucune donnée caméra disponible</p>
+              </div>
+              <apx-chart *ngIf="analytics.platformTotalDetections > 0"
+                [series]="platformDonutOptions.series!"
+                [chart]="platformDonutOptions.chart!"
+                [labels]="platformDonutOptions.labels!"
+                [colors]="platformDonutOptions.colors!"
+                [legend]="platformDonutOptions.legend!"
+                [dataLabels]="platformDonutOptions.dataLabels!"
+                [plotOptions]="platformDonutOptions.plotOptions!"
+                [stroke]="platformDonutOptions.stroke!">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Engagement -->
+        <div class="col-lg-8">
+          <div class="analytics-card h-100">
+            <div class="analytics-card-header">
+              <span><i class="isax isax-activity5 me-2 text-primary"></i>Top 6 — Score d'Engagement</span>
+              <small class="text-muted">engagement = attention + rating + inscriptions</small>
+            </div>
+            <div class="analytics-card-body">
+              <div *ngIf="analytics.topEngagementCourses.length === 0" class="no-data-placeholder">
+                <span>📈</span><p>Pas encore de données</p>
+              </div>
+              <apx-chart *ngIf="analytics.topEngagementCourses.length > 0"
+                [series]="topEngagementChartOptions.series!"
+                [chart]="topEngagementChartOptions.chart!"
+                [xaxis]="topEngagementChartOptions.xaxis!"
+                [yaxis]="topEngagementChartOptions.yaxis!"
+                [plotOptions]="topEngagementChartOptions.plotOptions!"
+                [dataLabels]="topEngagementChartOptions.dataLabels!"
+                [colors]="topEngagementChartOptions.colors!"
+                [grid]="topEngagementChartOptions.grid!"
+                [tooltip]="topEngagementChartOptions.tooltip!">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Rated -->
+        <div class="col-lg-6">
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <span><i class="isax isax-star5 me-2 text-warning"></i>Top 6 — Meilleures Notes</span>
+            </div>
+            <div class="analytics-card-body">
+              <div *ngIf="analytics.topRatedCourses.length === 0" class="no-data-placeholder">
+                <span>⭐</span><p>Aucune évaluation pour l'instant</p>
+              </div>
+              <apx-chart *ngIf="analytics.topRatedCourses.length > 0"
+                [series]="topRatingChartOptions.series!"
+                [chart]="topRatingChartOptions.chart!"
+                [xaxis]="topRatingChartOptions.xaxis!"
+                [yaxis]="topRatingChartOptions.yaxis!"
+                [plotOptions]="topRatingChartOptions.plotOptions!"
+                [dataLabels]="topRatingChartOptions.dataLabels!"
+                [colors]="topRatingChartOptions.colors!"
+                [grid]="topRatingChartOptions.grid!"
+                [tooltip]="topRatingChartOptions.tooltip!">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+
+        <!-- Needs improvement list -->
+        <div class="col-lg-6">
+          <div class="analytics-card">
+            <div class="analytics-card-header">
+              <span><i class="isax isax-warning-25 me-2 text-danger"></i>Cours à Améliorer
+                <span class="badge ms-2 badge-low-score">Score &lt; 40</span></span>
+            </div>
+            <div class="analytics-card-body p-3">
+              <div *ngIf="analytics.needsImprovementCourses.length === 0" class="no-data-placeholder">
+                <span>✅</span><p>Tous les cours sont performants !</p>
+              </div>
+              <div *ngFor="let c of analytics.needsImprovementCourses" class="improve-row">
+                <img *ngIf="c.coverImage" [src]="coverUrl(c.coverImage)" [alt]="c.title" class="improve-thumb">
+                <div *ngIf="!c.coverImage" class="improve-thumb course-no-cover"><i class="isax isax-book-1"></i></div>
+                <div class="improve-info">
+                  <div class="improve-title" [title]="c.title">{{ truncate(c.title, 30) }}</div>
+                  <div class="improve-stats">
+                    <span class="badge me-1" [style.background]="c.recommendationColor + '22'" [style.color]="c.recommendationColor">
+                      {{ c.recommendationIcon }} {{ c.recommendationBadge }}
+                    </span>
+                    <span class="text-muted" style="font-size:11px">Attention: {{ c.avgAttentionScore.toFixed(0) }}%</span>
+                  </div>
+                </div>
+                <div class="improve-score" [style.color]="getRingColor(c.engagementScore)">
+                  {{ c.engagementScore.toFixed(0) }}
+                  <small style="font-size:10px;font-weight:400;color:#94a3b8">/100</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /overview -->
+
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <!-- TAB: classement                                                         -->
+    <!-- ════════════════════════════════════════════════════════════════════════ -->
+    <div *ngIf="activeTab === 'ranking'">
+      <div class="row g-3">
+        <div class="col-xl-4 col-md-6" *ngFor="let c of analytics.allCourses; let i = index">
+          <div class="rank-card">
+            <div class="rank-badge">#{{ i + 1 }}</div>
+            <img *ngIf="c.coverImage" [src]="coverUrl(c.coverImage)" [alt]="c.title" class="rank-thumb">
+            <div *ngIf="!c.coverImage" class="rank-thumb course-no-cover"><i class="isax isax-book-1"></i></div>
+            <div class="rank-body">
+              <div class="rank-title" [title]="c.title">{{ truncate(c.title, 28) }}</div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <div [innerHTML]="getScoreRing(c.engagementScore, 44)"></div>
+                <div>
+                  <div class="ring-score" [style.color]="getRingColor(c.engagementScore)">{{ c.engagementScore.toFixed(0) }}</div>
+                  <div style="font-size:10px;color:#94a3b8">Score</div>
+                </div>
+              </div>
+              <div class="rank-metrics">
+                <span class="rank-meta"><i class="isax isax-people5 me-1"></i>{{ c.enrollmentCount }}</span>
+                <span class="rank-meta">
+                  <ng-container *ngFor="let _ of [].constructor(stars(c.avgRating).full)">⭐</ng-container>
+                  <ng-container *ngIf="stars(c.avgRating).half">½</ng-container>
+                  {{ c.avgRating != null ? (c.avgRating | number:'1.1-1') : 'N/A' }}
+                </span>
+                <span class="rank-meta rank-badge-reco"
+                  [style.background]="c.recommendationColor + '22'"
+                  [style.color]="c.recommendationColor">
+                  {{ c.recommendationIcon }} {{ c.recommendationBadge }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="analytics.allCourses.length === 0" class="col-12">
+          <div class="ranking-empty-state">
+            <div class="analytics-emoji">📚</div>
+            <p>Aucun cours publié pour l'instant.</p>
+          </div>
+        </div>
+      </div>
+    </div><!-- /ranking -->
+
+  </ng-container>
+
+    </div><!-- /container-fluid -->
+  </div><!-- /page-content -->
+</div><!-- /main-wrapper -->

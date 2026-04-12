@@ -28,8 +28,15 @@ export class ProfileService {
   // Uploader l'avatar
   uploadAvatar(file: File): Observable<any> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file, file.name);
+    // Compatibilité backend: certains endpoints peuvent attendre 'avatar'
+    formData.append('avatar', file, file.name);
     return this.http.post(`${this.apiUrl}/user/avatar`, formData);
+  }
+
+  // Supprimer l'avatar
+  deleteAvatar(): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/user/avatar`);
   }
 
   // Profil public d'un instructeur (sans auth)

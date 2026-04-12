@@ -1,0 +1,351 @@
+// ════════════════════════════════════════════════════════════════════════════════
+// STUDENT DASHBOARD - DESIGN PROFESSIONNEL MODERNE
+// ════════════════════════════════════════════════════════════════════════════════
+
+// ─── Sticky Sidebar ───────────────────────────────────────────────────────────
+.student-sidebar-col {
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+}
+
+// ─── Hero Section ─────────────────────────────────────────────────────────────
+.std-shell-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 1.2rem 1.4rem;
+  background: linear-gradient(135deg, #fd3995 0%, #9b59b6 34%, #5625e8 68%, #02a8b5 100%);
+  box-shadow: 0 12px 40px rgba(253, 57, 149, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  color: #fff;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, rgba(255,255,255,.1) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
+
+// ─── Floating Glows (Background Effects) ──────────────────────────────────────
+.std-shell-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.std-shell-glow-1 {
+  width: 300px;
+  height: 300px;
+  top: -90px;
+  right: 4%;
+  background: radial-gradient(circle, rgba(2,168,181,.22) 0%, transparent 70%);
+  animation: std-shell-float 8s ease-in-out infinite;
+}
+
+.std-shell-glow-2 {
+  width: 220px;
+  height: 220px;
+  bottom: -70px;
+  left: 5%;
+  background: radial-gradient(circle, rgba(253,57,149,.16) 0%, transparent 70%);
+  animation: std-shell-float 10s ease-in-out infinite reverse;
+}
+
+.std-shell-hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+// ─── Avatar Styles ───────────────────────────────────────────────────────────
+.std-shell-av-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.std-shell-av-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255,255,255,.45);
+  animation: std-shell-rotate 12s linear infinite;
+}
+
+.std-shell-av-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fd3995, #5625e8, #02a8b5);
+}
+
+.std-shell-av-circle {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9b59b6, #5625e8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.58rem;
+  line-height: 1;
+}
+
+.std-shell-av-initials {
+  font-size: 1.22rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #fff;
+}
+
+// ─── Badge & Label Styles ─────────────────────────────────────────────────────
+.std-shell-role-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.25);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.std-shell-hero-title {
+  margin: 0;
+  font-size: 1.42rem;
+  font-weight: 800;
+  letter-spacing: -.3px;
+  color: #fff;
+}
+
+.std-shell-hero-subtitle {
+  font-size: .82rem;
+  color: rgba(255,255,255,.72);
+  margin: 0.3rem 0 0 0;
+}
+
+.std-shell-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  color: rgba(255,255,255,.85);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.std-shell-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: std-shell-blink 1.2s ease-in-out infinite;
+}
+
+// ─── Action Buttons (Header Controls) ─────────────────────────────────────────
+.std-shell-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-size: .82rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,.15);
+  border: 1px solid rgba(255,255,255,.3);
+  backdrop-filter: blur(8px);
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+  cursor: pointer;
+
+  i {
+    font-size: 0.9rem;
+  }
+
+  &:hover {
+    color: #fff;
+    background: rgba(255,255,255,.24);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .2);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.std-shell-action-btn--neutral {
+  background: rgba(255,255,255,.18);
+
+  &:hover {
+    background: rgba(255,255,255,.28);
+  }
+}
+
+.std-shell-action-btn--danger {
+  background: rgba(239, 68, 68, .2);
+  border-color: rgba(239, 68, 68, .4);
+
+  &:hover {
+    background: rgba(239, 68, 68, .3);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, .2);
+  }
+}
+
+// ─── Glass Panel (Stats Bar) ──────────────────────────────────────────────────
+.std-shell-glass-panel {
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 16px;
+  padding: 10px 4px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.std-shell-mini-stat {
+  padding: 0 14px;
+  min-width: 82px;
+  text-align: center;
+
+  strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+
+  small {
+    color: rgba(255,255,255,.6);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+}
+
+.std-shell-mini-divider {
+  width: 1px;
+  height: 34px;
+  background: rgba(255,255,255,.2);
+  margin: 0 4px;
+}
+
+// ─── Content Container ───────────────────────────────────────────────────────
+.std-content-wrapper {
+  position: relative;
+}
+
+// ─── Animations ──────────────────────────────────────────────────────────────
+@keyframes std-shell-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes std-shell-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes std-shell-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// ─── Responsive Design ───────────────────────────────────────────────────────
+@media (max-width: 991px) {
+  .student-sidebar-col {
+    position: static;
+    margin-bottom: 2rem;
+  }
+
+  .std-shell-hero {
+    padding: 1rem 1.2rem;
+  }
+
+  .std-shell-hero-title {
+    font-size: 1.2rem;
+  }
+
+  .std-shell-av-wrap {
+    width: 60px;
+    height: 60px;
+  }
+
+  .std-shell-av-ring {
+    inset: -6px;
+  }
+}
+
+@media (max-width: 576px) {
+  .std-shell-hero {
+    padding: 0.8rem 1rem;
+    border-radius: 16px;
+  }
+
+  .std-shell-hero-inner .row {
+    flex-direction: column;
+  }
+
+  .std-shell-glow-1,
+  .std-shell-glow-2 {
+    width: 200px;
+    height: 200px;
+    opacity: 0.5;
+  }
+
+  .std-shell-av-wrap {
+    width: 56px;
+    height: 56px;
+  }
+
+  .std-shell-hero-title {
+    font-size: 1rem;
+  }
+
+  .std-shell-hero-subtitle {
+    font-size: 0.75rem;
+  }
+
+  .std-shell-glass-panel {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .std-shell-mini-divider {
+    width: 100%;
+    height: 1px;
+    margin: 0;
+  }
+}

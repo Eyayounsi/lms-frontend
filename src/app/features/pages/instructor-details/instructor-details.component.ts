@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProfileService } from '../../../shared/service/profile/profile.service';
+import { routes } from '../../../shared/service/routes/routes';
+import { resolveAvatarImage } from '../../../shared/utils/avatar-image.util';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
 
 @Component({
   selector: 'app-instructor-details',
@@ -10,11 +13,13 @@ import { ProfileService } from '../../../shared/service/profile/profile.service'
   styleUrl: './instructor-details.component.scss'
 })
 export class InstructorDetailsComponent implements OnInit {
+  routes = routes;
   instructor: any = null;
   courses: any[] = [];
   education: any[] = [];
   experience: any[] = [];
   loading = true;
+  private failedCourseImageKeys = new Set<string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -43,14 +48,50 @@ export class InstructorDetailsComponent implements OnInit {
   }
 
   getAvatarUrl(path: string): string {
-    if (!path) return 'assets/img/user/user-61.jpg';
-    if (path.startsWith('http')) return path;
-    return 'http://localhost:8081/' + (path.startsWith('/') ? path.substring(1) : path);
+    return resolveAvatarImage(path, 'assets/img/user/user-61.jpg');
   }
 
-  getThumbnailUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-02.jpg';
-    if (path.startsWith('http')) return path;
-    return 'http://localhost:8081/' + (path.startsWith('/') ? path.substring(1) : path);
+  getCourseImage(course: any): string {
+    const candidates = [
+      course?.coverImage,
+      course?.thumbnailUrl,
+      course?.coverImageUrl,
+      course?.thumbnail,
+      course?.imageUrl,
+      course?.image,
+      course?.courseImageUrl,
+      course?.courseImage
+    ];
+    const found = candidates.find((v: any) => typeof v === 'string' && v.trim().length > 0);
+    return found ? resolveCourseImage(found, '') : '';
+  }
+
+  hasCourseImage(course: any): boolean {
+    const key = this.getCourseKey(course);
+    return !!this.getCourseImage(course) && !this.failedCourseImageKeys.has(key);
+  }
+
+  onCourseImageError(course: any): void {
+    this.failedCourseImageKeys.add(this.getCourseKey(course));
+  }
+
+  getCoursePlaceholderGradient(course: any): string {
+    const gradients = [
+      'linear-gradient(135deg, #5625E8 0%, #02a8b5 100%)',
+      'linear-gradient(135deg, #FD3995 0%, #9b59b6 100%)',
+      'linear-gradient(135deg, #02a8b5 0%, #5625E8 100%)',
+      'linear-gradient(135deg, #9b59b6 0%, #FD3995 100%)'
+    ];
+    const key = this.getCourseKey(course);
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) {
+      hash = ((hash << 5) - hash) + key.charCodeAt(i);
+      hash |= 0;
+    }
+    return gradients[Math.abs(hash) % gradients.length];
+  }
+
+  private getCourseKey(course: any): string {
+    return String(course?.id || course?.slug || course?.title || Math.random());
   }
 }

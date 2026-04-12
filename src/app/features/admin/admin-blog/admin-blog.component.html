@@ -1,0 +1,234 @@
+﻿<div class="page-content">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Rose                                                               -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="blg-hero mb-4">
+    <div class="blg-glow blg-glow-1"></div>
+    <div class="blg-glow blg-glow-2"></div>
+    <div class="blg-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="blg-av-wrap">
+              <div class="blg-av-ring"></div>
+              <div class="blg-av-border"></div>
+              <div class="blg-av-circle">
+                <i class="ti ti-news" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="blg-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="blg-chip"><i class="ti ti-pencil me-1" style="font-size:9px"></i>Éditorial</span>
+                <span class="blg-live"><span class="blg-live-dot"></span>ACTIF</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Gestion du Blog</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Publiez et gérez les articles de la plateforme</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="blg-glass d-none d-md-flex align-items-center">
+              <div class="blg-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ posts.length }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Total</small>
+              </div>
+              <div class="blg-stat-div"></div>
+              <div class="blg-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ publishedCount }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Publiés</small>
+              </div>
+              <div class="blg-stat-div"></div>
+              <div class="blg-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ draftCount }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Brouillons</small>
+              </div>
+            </div>
+            <button class="blg-refresh d-flex align-items-center gap-2" (click)="openCreate()">
+              <i class="ti ti-plus" style="font-size:14px"></i>Nouvel article
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" style="color:#e11d48" role="status"></div>
+    <p class="mt-2 text-muted">Chargement…</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ Filter bar ═══ -->
+  <div *ngIf="!loading" class="ac-card mb-4 p-3">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-7">
+        <div class="input-group">
+          <span class="input-group-text bg-transparent border-end-0" style="border-color:#e2e8f0">
+            <i class="ti ti-search text-muted"></i>
+          </span>
+          <input type="text" class="form-control border-start-0 ps-0" placeholder="Rechercher par titre ou auteur…"
+                 style="border-color:#e2e8f0"
+                 [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" style="border-color:#e2e8f0;border-radius:8px"
+                [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()">
+          <option value="">Tous les statuts</option>
+          <option value="PUBLISHED">Publiés</option>
+          <option value="DRAFT">Brouillons</option>
+        </select>
+      </div>
+      <div class="col-md-2 text-end">
+        <span class="text-muted small">{{ filteredPosts.length }} résultat(s)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ Table ═══════ -->
+  <div *ngIf="!loading" class="ac-card">
+    <div *ngIf="filteredPosts.length === 0" class="ac-empty">
+      <div class="ac-empty-icon"><i class="ti ti-news"></i></div>
+      <h6 class="fw-semibold text-secondary mb-1">Aucun article</h6>
+      <p class="text-muted small mb-3">{{ searchTerm ? 'Aucun résultat.' : 'Créez votre premier article de blog.' }}</p>
+      <button class="blg-btn-primary" (click)="openCreate()">
+        <i class="ti ti-plus"></i>Nouvel article
+      </button>
+    </div>
+
+    <div *ngIf="filteredPosts.length > 0" class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead style="background:linear-gradient(135deg,#fff1f2,#fce7f3);border-bottom:2px solid rgba(225,29,72,.15)">
+          <tr>
+            <th class="ps-4 py-3 text-muted small fw-semibold" style="width:40px">#</th>
+            <th class="py-3 text-muted small fw-semibold">Titre</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:120px">Statut</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:150px">Auteur</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:120px">Date</th>
+            <th class="py-3 text-muted small fw-semibold text-end pe-4" style="width:160px">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let post of filteredPosts; let i = index" class="blg-row">
+            <td class="ps-4 text-muted small">{{ i + 1 }}</td>
+            <td>
+              <div class="fw-semibold" style="color:#0f172a">{{ post.title }}</div>
+              <div class="text-muted small text-truncate" style="max-width:320px">{{ post.summary }}</div>
+            </td>
+            <td>
+              <span class="ac-status" [ngClass]="post.status === 'PUBLISHED' ? 'published' : 'archived'">
+                <i class="ti ti-{{ post.status === 'PUBLISHED' ? 'eye' : 'pencil' }}"></i>
+                {{ post.status === 'PUBLISHED' ? 'Publié' : 'Brouillon' }}
+              </span>
+            </td>
+            <td class="text-muted small">{{ post.authorName }}</td>
+            <td class="text-muted small">{{ post.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td class="text-end pe-4">
+              <button class="blg-btn-icon blg-btn-toggle me-1"
+                      [title]="post.status === 'PUBLISHED' ? 'Dépublier' : 'Publier'"
+                      (click)="toggle(post)">
+                <i class="ti ti-{{ post.status === 'PUBLISHED' ? 'eye-off' : 'eye' }}"></i>
+              </button>
+              <button class="blg-btn-icon blg-btn-edit me-1" (click)="openEdit(post)" title="Modifier">
+                <i class="ti ti-edit"></i>
+              </button>
+              <button class="blg-btn-icon blg-btn-del" (click)="openDelete(post)" title="Supprimer">
+                <i class="ti ti-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL CRÉER / MODIFIER                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showForm" class="modal fade show d-block" tabindex="-1"
+     style="background-color:rgba(15,23,42,.55);backdrop-filter:blur(4px)">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header border-0"
+           style="background:linear-gradient(135deg,#9f1239,#e11d48);border-radius:17px 17px 0 0;padding:20px 24px">
+        <h5 class="modal-title text-white fw-bold">
+          <i class="ti ti-{{ editId ? 'edit' : 'plus' }} me-2"></i>
+          {{ editId ? "Modifier l'article" : 'Nouvel article' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelForm()"></button>
+      </div>
+      <div class="modal-body" style="padding:22px 24px">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Titre <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="form.title"
+                 placeholder="Titre de l'article" style="border-radius:10px">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Résumé</label>
+          <textarea class="form-control" rows="2" [(ngModel)]="form.summary"
+                    placeholder="Résumé court affiché dans la liste…"
+                    style="border-radius:10px;resize:none"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Image de couverture</label>
+          <input type="file" class="form-control" accept="image/*" (change)="onImageSelected($event)"
+                 [disabled]="uploadingImage" style="border-radius:10px">
+          <div *ngIf="uploadingImage" class="d-flex align-items-center gap-2 mt-2 text-muted small">
+            <span class="spinner-border spinner-border-sm"></span> Upload en cours…
+          </div>
+          <div *ngIf="form.coverImage && !uploadingImage" class="mt-2 d-flex align-items-center gap-2">
+            <img [src]="form.coverImage" alt="Aperçu" class="rounded" style="max-height:100px;object-fit:cover;border-radius:8px!important">
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="form.coverImage = ''">
+              <i class="ti ti-x me-1"></i>Supprimer
+            </button>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Contenu</label>
+          <textarea class="form-control" rows="10" [(ngModel)]="form.content"
+                    placeholder="Contenu de l'article…"
+                    style="border-radius:10px;resize:none"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0" style="padding:16px 24px 20px">
+        <button class="btn btn-light fw-semibold px-4 rounded-pill" (click)="cancelForm()">Annuler</button>
+        <button class="blg-btn-primary" (click)="save()" [disabled]="saving">
+          <span *ngIf="saving" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!saving" class="ti ti-check"></i>
+          {{ editId ? 'Mettre à jour' : 'Créer l\'article' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL SUPPRIMER                                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showDeleteModal" class="modal fade show d-block" tabindex="-1"
+     style="background-color:rgba(15,23,42,.55);backdrop-filter:blur(4px)">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-body text-center py-5 px-4">
+        <div class="ac-confirm-ico mx-auto mb-3 blg-confirm-ico">
+          <i class="ti ti-trash"></i>
+        </div>
+        <h5 class="fw-bold mb-2">Supprimer <strong>{{ postToDelete?.title }}</strong> ?</h5>
+        <p class="text-muted small mb-4">Cette action est irréversible.</p>
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-light fw-semibold px-4 rounded-pill" (click)="cancelDelete()">Annuler</button>
+          <button class="ac-btn-delete rounded-pill px-4" (click)="confirmDelete()" [disabled]="deleting">
+            <span *ngIf="deleting" class="spinner-border spinner-border-sm"></span>
+            <i *ngIf="!deleting" class="ti ti-trash"></i>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

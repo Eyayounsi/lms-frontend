@@ -1,3 +1,314 @@
+<!-- 
+     À PROPOS  Dreams LMS  |  Français  |  Design moderne
+      -->
+
+<!--  BREADCRUMB HERO  -->
+<section class="about-hero-sec">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6" data-aos="fade-right">
+        <span class="about-pill mb-3 d-inline-flex align-items-center gap-2">
+          <i class="fa-solid fa-graduation-cap"></i> À propos de Dreams LMS
+        </span>
+        <h1 class="about-hero-title mb-4">
+          Nous croyons que <span>chaque</span> personne mérite<br>d'apprendre sans limites
+        </h1>
+        <p class="fs-lg text-muted mb-4">
+          Dreams LMS rassemble des formateurs experts et des apprenants ambitieux sur une
+          plateforme pensée pour la progression réelle. Accessible, certifiante et toujours à la
+          pointe de la pédagogie numérique.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a [routerLink]="routes.courseListPublic" class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2">
+            <i class="fa-solid fa-book-open"></i> Explorer les cours
+          </a>
+          <a [routerLink]="routes.contactUs" class="btn btn-outline-secondary btn-lg d-inline-flex align-items-center gap-2">
+            <i class="fa-solid fa-envelope"></i> Nous contacter
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-6" data-aos="fade-left">
+        <div class="about-hero-img-wrap position-relative p-3 p-sm-4">
+          <div class="position-absolute top-0 start-0 z-n1">
+            <img src="assets/img/shapes/shape-1.svg" alt="" aria-hidden="true">
+          </div>
+          <div class="position-absolute bottom-0 end-0 z-n1">
+            <img src="assets/img/shapes/shape-2.svg" alt="" aria-hidden="true">
+          </div>
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80&auto=format&fit=crop" class="img-fluid img-radius" style="border-radius:28px;width:100%;object-fit:cover;max-height:420px" alt="Équipe Dreams LMS">
+          <div class="about-float-card about-float-1">
+            <i class="fa-solid fa-graduation-cap text-primary fs-20"></i>
+            <div>
+              <div class="fw-800 fs-20 lh-1">5 000+</div>
+              <div class="text-muted" style="font-size:12px">Apprenants actifs</div>
+            </div>
+          </div>
+          <div class="about-float-card about-float-2">
+            <i class="fa-solid fa-certificate text-warning fs-20"></i>
+            <div>
+              <div class="fw-800 fs-20 lh-1">98 %</div>
+              <div class="text-muted" style="font-size:12px">Taux de satisfaction</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--  NOTRE HISTOIRE (template reuse: about-section-two)  -->
+<section class="about-section-two pb-0">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6 order-lg-2" data-aos="fade-left">
+        <div class="p-3 p-sm-4 position-relative">
+          <div class="position-absolute top-0 end-0 z-n1">
+            <img src="assets/img/shapes/about-shape1.png" alt="" aria-hidden="true">
+          </div>
+          <div class="position-absolute bottom-0 start-0 z-n1">
+            <img src="assets/img/shapes/about-shape2.png" alt="" aria-hidden="true">
+          </div>
+          <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=700&q=80&auto=format&fit=crop" class="img-fluid img-radius" style="border-radius:24px;width:100%;object-fit:cover;max-height:400px" alt="Notre histoire Dreams LMS">
+        </div>
+      </div>
+      <div class="col-lg-6 order-lg-1" data-aos="fade-right">
+        <div class="ps-0 ps-lg-2 pt-4 pt-lg-0 ps-xl-4">
+          <div class="section-header">
+            <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Notre histoire</span>
+            <h2>Nés d'une conviction : l'éducation doit être accessible</h2>
+            <p>Fondée par des passionnés de technologie et d'enseignement, Dreams LMS est née
+               d'un constat simple : trop de talents restent bloqués faute d'accès à une formation
+               de qualité. Nous avons alors conçu une plateforme pensée pour briser ces barrières.</p>
+          </div>
+          <div class="d-flex align-items-center about-us-banner">
+            <div>
+              <span class="bg-primary-transparent rounded-3 p-2 about-icon d-flex justify-content-center align-items-center">
+                <i class="isax isax-book-1 fs-24"></i>
+              </span>
+            </div>
+            <div class="ps-3">
+              <h6 class="mb-1">Apprenez depuis n'importe où</h6>
+              <p class="mb-0 text-muted">Ordinateur, tablette ou mobile  vos cours vous suivent partout.</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center about-us-banner">
+            <div>
+              <span class="bg-secondary-transparent rounded-3 p-2 about-icon d-flex justify-content-center align-items-center">
+                <i class="isax isax-bookmark5 fs-24"></i>
+              </span>
+            </div>
+            <div class="ps-3">
+              <h6 class="mb-1">Formateurs rigoureusement sélectionnés</h6>
+              <p class="mb-0 text-muted">Chaque formateur est un expert actif, validé par notre équipe pédagogique.</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center about-us-banner">
+            <div>
+              <span class="bg-skyblue-transparent rounded-3 p-2 about-icon d-flex justify-content-center align-items-center">
+                <i class="isax isax-medal fs-24"></i>
+              </span>
+            </div>
+            <div class="ps-3">
+              <h6 class="mb-1">Certifications vérifiables</h6>
+              <p class="mb-0 text-muted">Partagez votre certificat avec un QR code unique et un lien de vérification.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--  CHIFFRES CLÉS  -->
+<section class="about-stats-sec">
+  <div class="container">
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-3 col-md-6 text-center" data-aos="zoom-in" data-aos-delay="0">
+        <div class="about-stat-item">
+          <div class="about-stat-icon"><i class="fa-solid fa-book-open"></i></div>
+          <h2 class="about-stat-num">50+</h2>
+          <p class="text-white-50 mb-0">Cours disponibles</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 text-center" data-aos="zoom-in" data-aos-delay="100">
+        <div class="about-stat-item">
+          <div class="about-stat-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+          <h2 class="about-stat-num">20+</h2>
+          <p class="text-white-50 mb-0">Formateurs experts</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 text-center" data-aos="zoom-in" data-aos-delay="200">
+        <div class="about-stat-item">
+          <div class="about-stat-icon"><i class="fa-solid fa-users"></i></div>
+          <h2 class="about-stat-num">5 000+</h2>
+          <p class="text-white-50 mb-0">Apprenants inscrits</p>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 text-center" data-aos="zoom-in" data-aos-delay="300">
+        <div class="about-stat-item">
+          <div class="about-stat-icon"><i class="fa-solid fa-certificate"></i></div>
+          <h2 class="about-stat-num">3 000+</h2>
+          <p class="text-white-50 mb-0">Certificats délivrés</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--  VALEURS (template card reuse)  -->
+<section class="about-values-sec">
+  <div class="container">
+    <div class="row justify-content-center mb-5">
+      <div class="col-lg-7 text-center">
+        <div class="section-header">
+          <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Nos valeurs</span>
+          <h2>Ce qui nous guide au quotidien</h2>
+          <p>Nos valeurs ne sont pas gravées dans du marbre  elles se vivent à chaque cours, chaque question répondue, chaque certificat décerné.</p>
+        </div>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
+        <div class="about-value-card">
+          <div class="about-value-icon cat-p-indigo"><i class="fa-solid fa-unlock"></i></div>
+          <h5 class="mt-3 mb-2">Accessibilité</h5>
+          <p class="text-muted mb-0">Des cours gratuits et payants afin que le niveau de revenu ne soit jamais un obstacle à l'apprentissage.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="about-value-card">
+          <div class="about-value-icon cat-p-purple"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <h5 class="mt-3 mb-2">Excellence</h5>
+          <p class="text-muted mb-0">Chaque formateur est sélectionné pour son expertise, sa pédagogie et son engagement envers les apprenants.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="about-value-card">
+          <div class="about-value-icon cat-p-emerald"><i class="fa-solid fa-shield-halved"></i></div>
+          <h5 class="mt-3 mb-2">Confiance</h5>
+          <p class="text-muted mb-0">Certificats vérifiables, contenus mis à jour régulièrement, support toujours disponible pour vous accompagner.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="0">
+        <div class="about-value-card">
+          <div class="about-value-icon cat-p-amber"><i class="fa-solid fa-people-group"></i></div>
+          <h5 class="mt-3 mb-2">Communauté</h5>
+          <p class="text-muted mb-0">Une vraie communauté d'apprenants et de formateurs qui s'entraident et partagent leurs connaissances.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="about-value-card">
+          <div class="about-value-icon cat-p-pink"><i class="fa-solid fa-rocket"></i></div>
+          <h5 class="mt-3 mb-2">Innovation</h5>
+          <p class="text-muted mb-0">Quiz adaptatifs, suivi de présence, analytics avancés  nous repoussons les limites du e-learning.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="about-value-card">
+          <div class="about-value-icon cat-p-sky"><i class="fa-solid fa-globe"></i></div>
+          <h5 class="mt-3 mb-2">Impact global</h5>
+          <p class="text-muted mb-0">Apprenants en Tunisie, en France, au Canada nos formations touchent des professionnels partout dans le monde.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--  AVANTAGES (template benefit-section reuse)  -->
+<section class="benefit-section">
+  <div class="container">
+    <div class="section-header text-center">
+      <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Nos avantages</span>
+      <h2>Pourquoi choisir Dreams LMS ?</h2>
+      <p>La bonne formation, guidée par un expert passionné, transforme votre trajectoire professionnelle.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="position-absolute top-0 end-0 mt-n3 me-n4">
+              <img src="assets/img/shapes/bg-1.png" alt="" aria-hidden="true">
+            </div>
+            <div class="p-4 rounded-pill bg-primary-transparent d-inline-flex">
+              <i class="fa-solid fa-laptop-code fs-24 text-primary"></i>
+            </div>
+            <h5 class="mt-3 mb-1">Apprentissage flexible</h5>
+            <p class="text-muted mb-0">Accédez à vos cours depuis n'importe quel appareil, à tout moment, où que vous soyez dans le monde.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="position-absolute top-0 end-0 mt-n3 me-n4">
+              <img src="assets/img/shapes/bg-2.png" alt="" aria-hidden="true">
+            </div>
+            <div class="p-4 rounded-pill bg-secondary-transparent d-inline-flex">
+              <i class="fa-solid fa-infinity fs-24 text-secondary"></i>
+            </div>
+            <h5 class="mt-3 mb-1">Accès à vie</h5>
+            <p class="text-muted mb-0">Une fois inscrit, les cours vous appartiennent pour toujours  mises à jour et nouveaux contenus inclus.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="position-absolute top-0 end-0 mt-n3 me-n4">
+              <img src="assets/img/shapes/bg-3.png" alt="" aria-hidden="true">
+            </div>
+            <div class="p-4 rounded-pill bg-skyblue-transparent d-inline-flex">
+              <i class="fa-solid fa-user-tie fs-24 text-info"></i>
+            </div>
+            <h5 class="mt-3 mb-1">Formateurs experts</h5>
+            <p class="text-muted mb-0">Chaque instructeur est un professionnel actif, sélectionné selon des critères pédagogiques rigoureux.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!--  INSTITUTIONS PARTENAIRES (template client-section reuse)  -->
+<section class="client-section">
+  <div class="container">
+    <h6 class="fw-medium text-center mb-4">
+      Reconnu par <span class="text-decoration-underline text-secondary">20+</span> institutions et entreprises partenaires
+    </h6>
+    <div class="institutions-slider lazy slider">
+      <ngx-slick-carousel [config]="instructorSlider">
+        <div class="institutions-items p-1" ngxSlickItem><img class="img-fluid" src="assets/img/client/01.svg" alt="client"></div>
+        <div class="institutions-items p-1" ngxSlickItem><img class="img-fluid" src="assets/img/client/02.svg" alt="client"></div>
+        <div class="institutions-items p-1" ngxSlickItem><img class="img-fluid" src="assets/img/client/03.svg" alt="client"></div>
+        <div class="institutions-items p-1" ngxSlickItem><img class="img-fluid" src="assets/img/client/04.svg" alt="client"></div>
+        <div class="institutions-items p-1" ngxSlickItem><img class="img-fluid" src="assets/img/client/05.svg" alt="client"></div>
+        <div class="institutions-items p-1" ngxSlickItem><img class="img-fluid" src="assets/img/client/06.svg" alt="client"></div>
+      </ngx-slick-carousel>
+    </div>
+  </div>
+</section>
+
+<!--  CTA FINAL  -->
+<section class="about-cta-sec">
+  <div class="container">
+    <div class="about-cta-inner">
+      <div class="row align-items-center">
+        <div class="col-lg-8">
+          <h2 class="text-white mb-2">Prêt(e) à transformer votre carrière ?</h2>
+          <p class="text-white opacity-80 mb-0">Rejoignez des milliers d'apprenants qui font confiance à Dreams LMS pour monter en compétences.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+          <a [routerLink]="routes.register" class="btn btn-light btn-lg fw-bold d-inline-flex align-items-center gap-2">
+            <i class="fa-solid fa-user-plus"></i> S'inscrire gratuitement
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Ancien contenu masqué (ne pas supprimer) -->
+<div style="display:none">
 <!-- about -->
 <section class="about-section-two pb-0">
     <div class="container">
@@ -85,7 +396,7 @@
                             <i class="isax isax-bookmark5 fs-24"></i>
                         </div>
                         <h5 class="mt-3 mb-1">Lifetime Access</h5>
-                        <p>When you enroll in our courses, you’re not just signing up for a temporary learning to experience you’re making.</p>
+                        <p>When you enroll in our courses, youâ€™re not just signing up for a temporary learning to experience youâ€™re making.</p>
                     </div>
                 </div>
             </div>
@@ -229,7 +540,7 @@
         <div class="section-header text-center">
             <span class="fw-medium text-secondary text-decoration-underline mb-2 d-inline-block">Featured Instructors</span>
             <h2>Top Class & Professional Instructors</h2>
-            <p>Words from Those Who’ve Experienced Real Growth.</p>
+            <p>Words from Those Whoâ€™ve Experienced Real Growth.</p>
         </div>
         <div class="testimonials-slider lazy mt-4">
             <ngx-slick-carousel [config]="testimonialSlider">
@@ -266,7 +577,7 @@
                             </div>
                             <h6 class="mb-1"><a [routerLink]="routes.instructorDetails">Adrian Dennis</a></h6>
                             <p class="fs-14 mb-3">Developer</p>
-                            <p class="mb-3 text-truncate line-clamb-2">I’ve learned so much from my mentor’s personal experience.</p>
+                            <p class="mb-3 text-truncate line-clamb-2">Iâ€™ve learned so much from my mentorâ€™s personal experience.</p>
                             <div>
                                 <i class="fa-solid fa-star text-warning"></i>
                                 <i class="fa-solid fa-star text-warning"></i>
@@ -350,7 +661,7 @@
                         <div class="accordion-item" data-aos="fade-up">
                             <h2 class="accordion-header" id="headingcustomicon1One">
                                 <a href="javascript:void(0);" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon1One" aria-expanded="true" aria-controls="collapsecustomicon1One">
-                                What’s DreamLMS want to give you? <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
+                                Whatâ€™s DreamLMS want to give you? <i class="isax isax-add fs-20 fw-semibold ms-1"></i>
                                 </a>
                             </h2>
                             <div id="collapsecustomicon1One" class="accordion-collapse collapse show" aria-labelledby="headingcustomicon1One" data-bs-parent="#accordioncustomicon1Example">
@@ -415,3 +726,4 @@
     </div>
 </section>
 <!-- faq -->
+</div><!-- /hidden old content -->

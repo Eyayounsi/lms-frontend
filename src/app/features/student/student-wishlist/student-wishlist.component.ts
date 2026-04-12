@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { routes } from '../../../shared/service/routes/routes';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
 
 @Component({
     selector: 'app-student-wishlist',
@@ -28,7 +29,19 @@ export class StudentWishlistComponent implements OnInit {
     this.loading = true;
     this.courseService.getWishlist().subscribe({
       next: (data) => {
-        this.items = data;
+        this.items = (data || []).map((item: any) => {
+          const originalPrice = +(item.originalPrice ?? item.price ?? 0);
+          const effectivePrice = +(item.effectivePrice ?? originalPrice);
+          return {
+            courseId: item.courseId,
+            courseTitle: item.courseTitle,
+            courseImage: item.courseCoverImage,
+            instructorName: item.instructorName,
+            originalPrice,
+            effectivePrice,
+            onSale: !!item.onSale && originalPrice > 0 && effectivePrice < originalPrice
+          };
+        });
         this.loading = false;
       },
       error: (err) => {
@@ -67,9 +80,26 @@ export class StudentWishlistComponent implements OnInit {
   }
 
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return resolveCourseImage(path);
+  }
+
+  getCurrentPrice(item: any): number {
+    return +(item?.effectivePrice ?? item?.originalPrice ?? 0);
+  }
+
+  hasActivePromotion(item: any): boolean {
+    const original = +(item?.originalPrice ?? 0);
+    const effective = +(item?.effectivePrice ?? original);
+    return !!item?.onSale && original > 0 && effective < original;
+  }
+
+  getPromotionPercent(item: any): number {
+    const original = +(item?.originalPrice ?? 0);
+    const effective = +(item?.effectivePrice ?? original);
+    if (original <= 0 || effective >= original) {
+      return 0;
+    }
+    return Math.round(((original - effective) / original) * 100);
   }
 
   private showSuccess(msg: string): void {

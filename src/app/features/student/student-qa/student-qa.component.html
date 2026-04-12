@@ -1,429 +1,225 @@
-<div class="quiz-wizard">
-    <fieldset id="first-field" *ngIf="current === 1">
-        <div class="page-title d-flex align-items-center justify-content-between">
-            <h5>My Quiz Attempts</h5>
-        </div>
-        <div class="quiz-attempt-card border-0">
-            <div class="quiz-attempt-body p-0">
-                <div class="border p-3 mb-3 rounded-2">
-                <div class="bg-light border p-3 mb-3 rounded-2 flex-wrap">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <div class="mb-2 mb-md-0">
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar avatar-lg me-3 flex-shrink-0">
-                                        <img class="img-fluid rounded-3" src="assets/img/students/quiz.jpg" alt="">
-                                    </div>
-                                    <h5 class="fs-18">Information About UI/UX Design Degree</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="text-md-end">
-                                <p class="d-inline-flex align-items-center mb-0">
-                                    <i class="isax isax-clock me-1"></i>
-                                    00:02:21 
-                                    <span class="text-dark ms-1"> / 00:03:00</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <span class="fw-semibold text-gray-9">Quiz Progress</span>
-                        <span>Question 1 out of 5</span>
-                    </div>
-                    <div class="progress progress-xs  flex-grow-1 mb-1">
-                        <div class="progress-bar bg-success rounded" role="progressbar" style="width: 20%;" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="mb-0">
-                    <h6 class="mb-3">What does UI stand for?</h6>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-1" id="Radio-sm-1">
-                        <label class="form-check-label" for="Radio-sm-1">
-                            User Intention
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-1" id="Radio-sm-2">
-                        <label class="form-check-label" for="Radio-sm-2">
-                            User Interface
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-1" id="Radio-sm-3">
-                        <label class="form-check-label" for="Radio-sm-3">
-                            Universal Interaction
-                        </label>
-                    </div>
-                    <div class="form-check mb-0">
-                        <input class="form-check-input" type="radio" name="qusetion-1" id="Radio-sm-4">
-                        <label class="form-check-label" for="Radio-sm-4">
-                            Usability Information
-                        </label>
-                    </div>
-                </div>
-            </div>
-                <div class="text-end">
-                    <button type="button" class="btn btn-secondary rounded-pill next_btn" (click)="next()">Next<i class="isax isax-arrow-right-3 ms-1 fs-10"></i></button>
-                </div>
-            </div>
-        </div>
-    
-    </fieldset>
+﻿<div class="student-qa">
 
-    <fieldset [ngStyle]="{'display':current===2?'block':''}">
-        <div class="page-title d-flex align-items-center justify-content-between">
-            <h5>My Quiz Attempts</h5>
-        </div>
-        <div class="quiz-attempt-card border-0">								
-            <div class="quiz-attempt-body p-0">
-                <div class="border p-3 mb-3 rounded-2">
-                    <div class="bg-light border p-3 mb-3 rounded-2 flex-wrap">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="mb-2 mb-md-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-lg me-3 flex-shrink-0">
-                                            <img class="img-fluid rounded-3" src="assets/img/students/quiz.jpg" alt="">
-                                        </div>
-                                        <h5 class="fs-18">Information About UI/UX Design Degree</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-md-end">
-                                    <p class="d-inline-flex align-items-center mb-0">
-                                        <i class="isax isax-clock me-1"></i>
-                                        00:02:21 
-                                        <span class="text-dark ms-1"> / 00:03:00</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <div class="mb-3">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <span class="fw-semibold text-gray-9">Quiz Progress</span>
-                        <span>Question 2 out of 5</span>
-                    </div>
-                    <div class="progress progress-xs  flex-grow-1 mb-1">
-                        <div class="progress-bar bg-success rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="mb-0">
-                    <h6 class="mb-3">Which of the following is a principle of UX design?</h6>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-2" id="Radio-sm-5">
-                        <label class="form-check-label" for="Radio-sm-5">
-                            Minimalistic Design
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-2" id="Radio-sm-6">
-                        <label class="form-check-label" for="Radio-sm-6">
-                            User-Centered Design
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-2" id="Radio-sm-7">
-                        <label class="form-check-label" for="Radio-sm-7">
-                            Gradient Usage
-                        </label>
-                    </div>
-                    <div class="form-check mb-0">
-                        <input class="form-check-input" type="radio" name="qusetion-2" id="Radio-sm-8">
-                        <label class="form-check-label" for="Radio-sm-8">
-                            Typography Hierarchy
-                        </label>
-                    </div>
-                </div>
+  <!-- Page Title -->
+  <div class="page-title d-flex align-items-center justify-content-between">
+    <h5>Mes Questions (Q&amp;A)</h5>
+    <button class="btn btn-secondary rounded-pill" (click)="openAskModal()">
+      <i class="isax isax-add-circle me-2 fs-10"></i>Poser une question
+    </button>
+  </div>
+
+  <!-- Statistiques -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <span class="icon-box bg-primary-transparent me-3 flex-shrink-0">
+              <img src="assets/img/icon/graduation.svg" alt="">
+            </span>
+            <div>
+              <p class="mb-1">Total Questions</p>
+              <h4 class="fw-bold">{{ totalQuestions }}</h4>
             </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <a href="javascript:void(0);" class="btn bg-gray-100 d-inline-flex rounded-pill align-items-center prev_btn me-1" (click)="previous()"><i class="isax isax-arrow-left-2 me-1 fs-10"></i>Previous</a>
-                    <button type="button" class="btn btn-secondary rounded-pill next_btn" (click)="next()">Next<i class="isax isax-arrow-right-3 ms-1 fs-10"></i></button>
-                </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <span class="icon-box bg-success-transparent me-3 flex-shrink-0">
+              <img src="assets/img/icon/bookmark.svg" alt="">
+            </span>
+            <div>
+              <p class="mb-1">RÃ©pondues</p>
+              <h4 class="fw-bold">{{ answeredCount }}</h4>
             </div>
+          </div>
         </div>
-    </fieldset>
-    <fieldset  [ngStyle]="{'display':current===3?'block':''}">
-        <div class="page-title d-flex align-items-center justify-content-between">
-            <h5>My Quiz Attempts</h5>
-        </div>
-        <div class="quiz-attempt-card border-0">						
-            <div class="quiz-attempt-body p-0">
-                <div class="border p-3 mb-3 rounded-2">
-                    <div class="bg-light border p-3 mb-3 rounded-2 flex-wrap">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="mb-2 mb-md-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-lg me-3 flex-shrink-0">
-                                            <img class="img-fluid rounded-3" src="assets/img/students/quiz.jpg" alt="">
-                                        </div>
-                                        <h5 class="fs-18">Information About UI/UX Design Degree</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-md-end">
-                                    <p class="d-inline-flex align-items-center mb-0">
-                                        <i class="isax isax-clock me-1"></i>
-                                        00:02:21 
-                                        <span class="text-dark ms-1"> / 00:03:00</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <div class="mb-3">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <span class="fw-semibold text-gray-9">Quiz Progress</span>
-                        <span>Question 3 out of 5</span>
-                    </div>
-                    <div class="progress progress-xs  flex-grow-1 mb-1">
-                        <div class="progress-bar bg-success rounded" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="mb-0">
-                    <h6 class="mb-3">Which tool is commonly used for wireframing?</h6>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-3" id="Radio-sm-9">
-                        <label class="form-check-label" for="Radio-sm-9">
-                            Adobe Photoshop
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-3" id="Radio-sm-10">
-                        <label class="form-check-label" for="Radio-sm-10">
-                            Figma
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-3" id="Radio-sm-11">
-                        <label class="form-check-label" for="Radio-sm-11">
-                            Visual Studio Code
-                        </label>
-                    </div>
-                    <div class="form-check mb-0">
-                        <input class="form-check-input" type="radio" name="qusetion-3" id="Radio-sm-12">
-                        <label class="form-check-label" for="Radio-sm-12">
-                            GitHub
-                        </label>
-                    </div>
-                </div>
-                 </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <a href="javascript:void(0);" class="btn bg-gray-100 d-inline-flex rounded-pill align-items-center prev_btn me-1" (click)="previous()"><i class="isax isax-arrow-left-2 me-1 fs-10"></i>Previous</a>
-                    <button type="button" class="btn btn-secondary rounded-pill next_btn" (click)="next()">Next<i class="isax isax-arrow-right-3 ms-1 fs-10"></i></button>
-                </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <span class="icon-box bg-warning-transparent me-3 flex-shrink-0">
+              <img src="assets/img/icon/book.svg" alt="">
+            </span>
+            <div>
+              <p class="mb-1">Sans rÃ©ponse</p>
+              <h4 class="fw-bold">{{ unansweredCount }}</h4>
             </div>
+          </div>
         </div>
-    </fieldset>
-    <fieldset  [ngStyle]="{'display':current===4?'block':''}">
-        <div class="page-title d-flex align-items-center justify-content-between">
-            <h5>My Quiz Attempts</h5>
-        </div>
-        <div class="quiz-attempt-card border-0">
-            <div class="quiz-attempt-body p-0">
-                <div class="border p-3 mb-3 rounded-2">
-                    <div class="bg-light border p-3 mb-3 rounded-2 flex-wrap">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="mb-2 mb-md-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-lg me-3 flex-shrink-0">
-                                            <img class="img-fluid rounded-3" src="assets/img/students/quiz.jpg" alt="">
-                                        </div>
-                                        <h5 class="fs-18">Information About UI/UX Design Degree</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-md-end">
-                                    <p class="d-inline-flex align-items-center mb-0">
-                                        <i class="isax isax-clock me-1"></i>
-                                        00:02:21 
-                                        <span class="text-dark ms-1"> / 00:03:00</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <div class="mb-3">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <span class="fw-bold text-gray-9">Quiz Progress</span>
-                        <span>Question 4 out of 5</span>
-                    </div>
-                    <div class="progress progress-xs  flex-grow-1 mb-1">
-                        <div class="progress-bar bg-success rounded" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-secondary" role="status">
+        <span class="visually-hidden">Chargement...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Empty state -->
+  @if (!loading && questions.length === 0) {
+    <div class="text-center py-5">
+      <img src="assets/img/icon/graduation.svg" alt="" class="mb-3" style="width:56px;opacity:.5">
+      <h6 class="text-muted">Vous n'avez encore posÃ© aucune question.</h6>
+      <p class="text-muted fs-14">Utilisez le bouton ci-dessus pour poser votre premiÃ¨re question.</p>
+    </div>
+  }
+
+  <!-- Liste des questions -->
+  @if (!loading && questions.length > 0) {
+    <div class="questions-list">
+      @for (q of questions; track q.id) {
+        <div class="card mb-3 border">
+          <div class="card-body pb-2">
+            <!-- Header de la question -->
+            <div class="d-flex align-items-start justify-content-between">
+              <div class="flex-grow-1 me-3">
+                <h6 class="mb-1 fw-semibold text-dark">{{ q.title }}</h6>
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                  <span class="badge bg-soft-primary text-primary">
+                    <i class="isax isax-book-1 me-1 fs-10"></i>{{ q.courseName }}
+                  </span>
+                  @if (q.lessonTitle) {
+                    <span class="badge bg-soft-secondary text-secondary">
+                      <i class="isax isax-video-play me-1 fs-10"></i>{{ q.lessonTitle }}
+                    </span>
+                  }
+                  <span class="text-muted fs-12">
+                    <i class="isax isax-clock me-1 fs-10"></i>{{ q.createdAt | date:'dd MMM yyyy' }}
+                  </span>
+                  <span class="badge" [ngClass]="q.answerCount > 0 ? 'bg-soft-success text-success' : 'bg-soft-warning text-warning'">
+                    <i class="isax isax-message me-1 fs-10"></i>{{ q.answerCount }} rÃ©ponse{{ q.answerCount !== 1 ? 's' : '' }}
+                  </span>
                 </div>
-                <div class="mb-0">
-                    <h6 class="mb-3">What is a wireframe?</h6>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-13">
-                        <label class="form-check-label" for="Radio-sm-13">
-                            A detailed, interactive prototype
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-14">
-                        <label class="form-check-label" for="Radio-sm-14">
-                            A low-fidelity representation of a design
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-15">
-                        <label class="form-check-label" for="Radio-sm-15">
-                            The codebase of a website
-                        </label>
-                    </div>
-                    <div class="form-check mb-0">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-16">
-                        <label class="form-check-label" for="Radio-sm-16">
-                            A high-fidelity design concept
-                        </label>
-                    </div>
-                </div>
-               </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <a href="javascript:void(0);" class="btn btn-light d-inline-flex rounded-pill align-items-center prev_btn me-1" (click)="previous()"><i class="isax isax-arrow-left-2 me-1 fs-10"></i>Back</a>
-                    <button type="button" class="btn btn-secondary rounded-pill next_btn" (click)="next()">Next<i class="isax isax-arrow-right-3 ms-1 fs-10"></i></button>
-                </div>
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <button class="btn btn-sm btn-light border rounded-pill"
+                        (click)="toggleExpand(q)"
+                        [title]="expandedId === q.id ? 'RÃ©duire' : 'Voir les rÃ©ponses'">
+                  <i class="isax fs-14"
+                     [ngClass]="expandedId === q.id ? 'isax-arrow-up-3' : 'isax-arrow-down-2'"></i>
+                </button>
+                <button class="btn btn-sm btn-light border rounded-pill text-danger"
+                        (click)="deleteQuestion(q)"
+                        title="Supprimer">
+                  <i class="isax isax-trash fs-14"></i>
+                </button>
+              </div>
             </div>
-        </div>
-    </fieldset>
-    <fieldset  [ngStyle]="{'display':current===5?'block':''}">
-        <div class="page-title d-flex align-items-center justify-content-between">
-            <h5>My Quiz Attempts</h5>
-        </div>
-        <div class="quiz-attempt-card border-0">								
-            <div class="quiz-attempt-body p-0">
-                <div class="border p-3 mb-3 rounded-2">
-                    <div class="bg-light border p-3 mb-3 rounded-2 flex-wrap">
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <div class="mb-2 mb-md-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar avatar-lg me-3 flex-shrink-0">
-                                            <img class="img-fluid rounded-3" src="assets/img/students/quiz.jpg" alt="">
-                                        </div>
-                                        <h5 class="fs-18">Information About UI/UX Design Degree</h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="text-md-end">
-                                    <p class="d-inline-flex align-items-center mb-0">
-                                        <i class="isax isax-clock me-1"></i>
-                                        00:02:21 
-                                        <span class="text-dark ms-1"> / 00:03:00</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <div class="mb-3">
-                    <div class="d-flex align-items-center justify-content-between mb-1">
-                        <span class="fw-bold text-gray-9">Quiz Progress</span>
-                        <span>Question 5 out of 5</span>
-                    </div>
-                    <div class="progress progress-xs  flex-grow-1 mb-1">
-                        <div class="progress-bar bg-success rounded" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+
+            <!-- Corps de la question et rÃ©ponses (expanded) -->
+            @if (expandedId === q.id) {
+              <div class="mt-3 border-top pt-3">
+                <div class="bg-light rounded p-3 mb-3">
+                  <p class="mb-0 text-gray-8">{{ q.body }}</p>
                 </div>
-                <div class="mb-0">
-                    <h6 class="mb-3">What is the primary goal of UX design?</h6>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-17">
-                        <label class="form-check-label" for="Radio-sm-17">
-                            To create a visually appealing design
-                        </label>
+
+                <h6 class="fs-14 fw-semibold mb-3">
+                  <i class="isax isax-message-text me-2"></i>RÃ©ponses
+                </h6>
+
+                @if (!q.answers || q.answers.length === 0) {
+                  <p class="text-muted fs-13 ps-2">
+                    <i class="isax isax-info-circle me-1"></i>
+                    Aucune rÃ©ponse pour le moment. L'instructeur sera notifiÃ©.
+                  </p>
+                }
+
+                @for (answer of q.answers; track answer.id) {
+                  <div class="d-flex align-items-start mb-3">
+                    <div class="avatar avatar-sm me-3 flex-shrink-0">
+                      <img class="img-fluid rounded-circle"
+                           [src]="getAvatarUrl(answer.authorAvatar)"
+                           [alt]="answer.authorName">
                     </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-18">
-                        <label class="form-check-label" for="Radio-sm-18">
-                            To enhance user satisfaction and usability
-                        </label>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-19">
-                        <label class="form-check-label" for="Radio-sm-19">
-                            To develop complex navigation flows
-                        </label>
-                    </div>
-                    <div class="form-check mb-0">
-                        <input class="form-check-input" type="radio" name="qusetion-4" id="Radio-sm-20">
-                        <label class="form-check-label" for="Radio-sm-20">
-                            To optimize code performance
-                        </label>
-                    </div>
-                </div>
-            </div>
-                <div class="d-flex align-items-center justify-content-between">
-                    <a href="javascript:void(0);" class="btn bg-gray-100 d-inline-flex rounded-pill align-items-center prev_btn me-1" (click)="previous()"><i class="isax isax-arrow-left-2 me-1 fs-10"></i>Back</a>
-                    <button type="button" class="btn btn-secondary rounded-pill next_btn" (click)="next()">Finish</button>
-                </div>
-            </div>
-        </div>
-    </fieldset>
-    <fieldset  [ngStyle]="{'display':current===6?'block':''}">
-        <div class="page-title d-flex align-items-center justify-content-between">
-            <h5>My Quiz Attempts</h5>
-        </div>
-        <div class="card">							
-            <div class="card-body">								
-                <div class="quiz-circle-progress m-0 mb-3">
-                    <div class="circle-progress mb-2"  data-value='80'>
-                        <span class="progress-left">
-                            <span class="progress-bar border-success" [ngStyle]="{'transform':'rotate(118deg)'}"></span>
+                    <div class="flex-grow-1 bg-white border rounded p-3">
+                      <div class="d-flex align-items-center mb-1">
+                        <strong class="fs-14 me-2">{{ answer.authorName }}</strong>
+                        @if (answer.instructorAnswer) {
+                          <span class="badge bg-secondary fs-11">Instructeur</span>
+                        }
+                        <span class="text-muted fs-12 ms-auto">
+                          {{ answer.createdAt | date:'dd MMM yyyy' }}
                         </span>
-                        <span class="progress-right">
-                            <span class="progress-bar border-success" [ngStyle]="{'transform':'rotate(180deg)'}"></span>
-                        </span>
-                        <div class="progress-value text-success fw-bold fs-24">80%</div>
+                      </div>
+                      <p class="mb-0 text-gray-8">{{ answer.body }}</p>
                     </div>
-                    <p class="text-center fs-14">Pass Score : 80%</p>
-                </div>
-                <div class="text-center mb-3">
-                    <h6 class="mb-1">Congratulations! You Passed</h6>
-                    <p class="fs-14">You’ve successfully passed the quiz. Keep up the great work!</p>
-                </div>
-                <div class="d-flex align-items-center justify-content-center">
-                    <a [routerLink]="routes.students_Dashboard" class="btn btn-secondary rounded-pill"><i class="isax isax-arrow-left-2 me-1 fs-10"></i>Back to Dashboard</a>
-                </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>
+
+<!-- Modal: Poser une question -->
+<div class="modal fade" id="ask_question_modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="fw-bold">Poser une Question</h5>
+        <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <i class="isax isax-close-circle5"></i>
+        </button>
+      </div>
+      <form (ngSubmit)="onAskQuestion()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Cours <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="questionForm.courseId" name="courseId" required>
+                <option value="" disabled>SÃ©lectionner un cours</option>
+                @for (course of enrolledCourses; track course.id) {
+                  <option [value]="course.id">{{ course.title }}</option>
+                }
+              </select>
+              @if (enrolledCourses.length === 0) {
+                <small class="text-muted">Vous devez Ãªtre inscrit Ã  un cours pour poser une question.</small>
+              }
             </div>
-        </div>
-    </fieldset>
-    <fieldset  [ngStyle]="{'display':current===7?'block':''}">
-        <div class="page-title d-flex align-items-center justify-content-between">
-            <h5>My Quiz Attempts</h5>
-        </div>
-        <div class="quiz-attempt-card">					
-            <div class="quiz-attempt-body">							
-                <div class="quiz-circle-progress m-0 mb-3">
-                    <div class="circle-progress mb-2"  data-value='20'>
-                        <span class="progress-left">
-                            <span class="progress-bar border-danger"></span>
-                        </span>
-                        <span class="progress-right">
-                            <span class="progress-bar border-danger"></span>
-                        </span>
-                        <div class="progress-value text-danger fw-bold fs-24">20%</div>
-                    </div>
-                    <p class="text-center fs-14">Pass Score : 20%</p>
-                </div>
-                <div class="text-center mb-3">
-                    <h6 class="mb-1">Sorry, You Didn't Pass This Time</h6>
-                    <p class="fs-14">Don't worry, learn from this attempt and come back stronger next time!</p>
-                </div>
-                <div class="d-flex align-items-center justify-content-center">
-                    <a [routerLink]="routes.students_Dashboard" class="btn btn-secondary rounded-pill"><i class="isax isax-arrow-left-2 me-1 fs-10"></i>Back to Dashboard</a>
-                </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Titre de la question <span class="text-danger">*</span></label>
+              <input type="text" class="form-control"
+                     [(ngModel)]="questionForm.title"
+                     name="qtitle"
+                     placeholder="Ex: Comment fonctionne les closures en JavaScript ?"
+                     maxlength="255"
+                     required>
             </div>
+            <div class="col-md-12 mb-3">
+              <label class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" rows="5"
+                        [(ngModel)]="questionForm.body"
+                        name="qbody"
+                        placeholder="DÃ©crivez votre question en dÃ©tail..."
+                        required></textarea>
+            </div>
+          </div>
         </div>
-    </fieldset>
+        <div class="modal-footer">
+          <button type="button" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-secondary rounded-pill" [disabled]="submitting">
+            @if (submitting) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            Envoyer la question
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

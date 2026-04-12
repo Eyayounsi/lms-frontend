@@ -18,7 +18,7 @@
       <div class="row">
 
         <!--  SIDEBAR GAUCHE  -->
-        <div class="col-lg-4 border-end">
+        <div [ngClass]="cameraActive ? 'col-lg-3' : 'col-lg-4'" class="border-end">
           <div class="progress-overview-section">
 
             <div class="mb-4">
@@ -113,7 +113,7 @@
         </div>
 
         <!--  CONTENU PRINCIPAL  -->
-        <div class="col-lg-8">
+        <div [ngClass]="cameraActive ? 'col-lg-6' : 'col-lg-8'">
           <div class="course-watch-content">
 
             <!-- Spinner pendant le chargement de leçon -->
@@ -490,6 +490,275 @@
           </div>
         </div>
 
+        <!--  PANNEAU CAMÉRA (droite)  -->
+        <div class="col-lg-3">
+
+          <!-- ── Camera OFF state ── -->
+          <div class="cv-widget" *ngIf="!cameraActive">
+            <div class="cv-widget__header">
+              <div class="cv-widget__icon-wrap">
+                <i class="isax isax-camera"></i>
+              </div>
+              <div>
+                <div class="cv-widget__title">Suivi IA</div>
+                <div class="cv-widget__sub">Analyse d'attention</div>
+              </div>
+              <label class="cv-switch ms-auto" title="Activer la caméra">
+                <input type="checkbox" [checked]="cameraActive" (change)="toggleCamera()">
+                <span class="cv-switch__track"></span>
+              </label>
+            </div>
+            <div class="cv-widget__features">
+              <div class="cv-widget__feature">
+                <i class="isax isax-chart-2" style="color:#3b82f6;"></i>
+                <span>Attention en temps réel</span>
+              </div>
+              <div class="cv-widget__feature">
+                <i class="isax isax-lamp-on" style="color:#f59e0b;"></i>
+                <span>Recommandations intelligentes</span>
+              </div>
+              <div class="cv-widget__feature">
+                <i class="isax isax-wind" style="color:#06b6d4;"></i>
+                <span>Exercices de respiration</span>
+              </div>
+              <div class="cv-widget__feature">
+                <i class="isax isax-star" style="color:#22c55e;"></i>
+                <span>Rapport de session personnalisé</span>
+              </div>
+            </div>
+            <button class="cv-widget__cta" (click)="startCamera()">
+              <i class="isax isax-camera me-2"></i>Activer le suivi IA
+            </button>
+          </div>
+
+          <!-- ── Camera ON panel ── -->
+          <div class="camera-panel" *ngIf="cameraActive">
+
+            <!-- Header with live indicator + switch -->
+            <div class="camera-panel__header">
+              <div class="d-flex align-items-center gap-2">
+                <span class="camera-panel__dot"></span>
+                <span class="fw-semibold small">Suivi IA Actif</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-pill" [style.background]="getAttentionColor()" style="font-size:0.7rem;">
+                  {{ attentionScore }}%
+                </span>
+                <label class="cv-switch" title="Désactiver la caméra">
+                  <input type="checkbox" [checked]="cameraActive" (change)="toggleCamera()">
+                  <span class="cv-switch__track"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Micro-coaching card -->
+            <div class="micro-coaching" *ngIf="showMicroCoaching">
+              <div class="micro-coaching__header">
+                <i class="isax isax-cpu me-1"></i>
+                <span>Assistant IA</span>
+                <button class="micro-coaching__close" (click)="dismissMicroCoaching()" title="Fermer">
+                  <i class="isax isax-close-square"></i>
+                </button>
+              </div>
+              <div class="micro-coaching__body">
+                <div class="micro-coaching__tip" *ngIf="currentTip">
+                  <i class="isax isax-lamp-on me-1 text-warning"></i>{{ currentTip }}
+                </div>
+                <div class="micro-coaching__tip micro-coaching__tip--idle" *ngIf="!currentTip">
+                  <i class="isax isax-eye me-1" style="color:#3b82f6;"></i>Analyse en cours…
+                </div>
+              </div>
+            </div>
+
+            <!-- Video feed -->
+            <div class="camera-panel__video-wrapper">
+              <video #cameraVideo autoplay playsinline muted class="camera-panel__video"></video>
+              <canvas #cameraCanvas style="display:none;"></canvas>
+              <!-- Detection indicators -->
+              <div class="camera-panel__indicators" *ngIf="latestDetection">
+                <span class="camera-indicator" *ngIf="!latestDetection.face_detected" title="Visage non détecté">
+                  <i class="isax isax-user-remove"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--warn" *ngIf="latestDetection.eyes_closed" title="Yeux fermés">
+                  <i class="isax isax-eye-slash"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--warn" *ngIf="latestDetection.looking_away" title="Regard ailleurs">
+                  <i class="isax isax-eye"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--info" *ngIf="latestDetection.yawning" title="Bâillement">
+                  <i class="isax isax-emoji-sad"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--success" *ngIf="latestDetection.expression === 'SMILING'" title="Sourire 😊">
+                  <i class="isax isax-emoji-happy"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--success" *ngIf="latestDetection.expression === 'CONCENTRATED'" title="Concentré 🎯">
+                  <i class="isax isax-brain"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--warn" *ngIf="latestDetection.expression === 'SAD'" title="Triste">
+                  <i class="isax isax-emoji-sad"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--danger" *ngIf="latestDetection.expression === 'ANGRY'" title="Frustré">
+                  <i class="isax isax-danger"></i>
+                </span>
+                <span class="camera-indicator camera-indicator--warn" *ngIf="latestDetection.expression === 'TIRED'" title="Fatigué">
+                  <i class="isax isax-moon"></i>
+                </span>
+              </div>
+            </div>
+
+            <!-- Attention bar -->
+            <div class="camera-panel__attention">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted">Niveau d'attention</small>
+                <small [style.color]="getAttentionColor()" class="fw-bold">{{ attentionScore }}%</small>
+              </div>
+              <div class="attention-track">
+                <div class="attention-fill" [style.width.%]="attentionScore"
+                     [style.background]="getAttentionColor()"></div>
+              </div>
+              <div *ngIf="getAttentionLevelLabel()" class="mt-1">
+                <span class="attention-badge" [style.background]="getAttentionLevelColor() + '22'"
+                      [style.color]="getAttentionLevelColor()"
+                      [style.border-color]="getAttentionLevelColor()">
+                  {{ getAttentionLevelLabel() }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Breathing suggestion -->
+            <div class="breathing-suggestion" *ngIf="breathingSuggested && !breathingActive">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <i class="isax isax-wind" style="color:#0ea5e9;"></i>
+                <small class="fw-semibold" style="color:#0369a1;">Pause recommandée</small>
+              </div>
+              <small style="color:#374151;">Besoin de souffler ? Essayez un exercice de respiration.</small>
+              <div class="d-flex gap-1 mt-2">
+                <button class="btn btn-sm flex-fill" style="background:#0ea5e9;color:#fff;font-size:11px;" (click)="startBreathingExercise()">
+                  🌬️ Commencer
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" style="font-size:11px;" (click)="dismissBreathingSuggestion()">
+                  Plus tard
+                </button>
+              </div>
+            </div>
+
+            <!-- Breathing exercise in progress -->
+            <div class="breathing-exercise" *ngIf="breathingActive">
+              <div class="breathing-exercise__header">
+                <i class="isax isax-wind me-1"></i>
+                <span>Exercice de respiration</span>
+                <button class="btn btn-sm btn-link text-muted p-0 ms-auto" (click)="stopBreathingExercise()">
+                  <i class="isax isax-close-circle"></i>
+                </button>
+              </div>
+              <div class="breathing-exercise__circle"
+                   [class.inhale]="breathingPhase === 'inhale'"
+                   [class.hold]="breathingPhase === 'hold'"
+                   [class.exhale]="breathingPhase === 'exhale'">
+                <span class="breathing-exercise__time">{{ breathingTimeLeft }}</span>
+              </div>
+              <div class="breathing-exercise__label">{{ getBreathingLabel() }}</div>
+              <div class="breathing-exercise__phases">
+                <span [class.active]="breathingPhase === 'inhale'">Inspirez (4s)</span>
+                <span [class.active]="breathingPhase === 'hold'">Gardez (2s)</span>
+                <span [class.active]="breathingPhase === 'exhale'">Expirez (6s)</span>
+              </div>
+            </div>
+
+            <!-- Action buttons row -->
+            <div class="d-flex gap-2 mt-2" style="padding: 0 14px;">
+              <button class="btn btn-sm flex-fill" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;font-size:11.5px;"
+                      (click)="toggleSessionStats()">
+                <i class="isax isax-chart-2 me-1"></i>
+                {{ showSessionStats ? 'Masquer stats' : 'Session' }}
+              </button>
+              <button class="btn btn-sm" title="{{ ttsEnabled ? 'Désactiver la lecture vocale' : 'Activer la lecture vocale des recommandations' }}"
+                      [style.background]="ttsEnabled ? '#f5f3ff' : '#f9fafb'"
+                      [style.color]="ttsEnabled ? '#7c3aed' : '#6b7280'"
+                      [style.border]="ttsEnabled ? '1px solid #ddd6fe' : '1px solid #e5e7eb'"
+                      (click)="toggleTts()">
+                {{ ttsEnabled ? '🔊' : '🔇' }}
+              </button>
+              <button class="btn btn-sm" title="{{ soundEnabled ? 'Couper le son' : 'Activer le son' }}"
+                      [style.background]="soundEnabled ? '#f0fdf4' : '#fef2f2'"
+                      [style.color]="soundEnabled ? '#16a34a' : '#dc2626'"
+                      [style.border]="soundEnabled ? '1px solid #bbf7d0' : '1px solid #fecaca'"
+                      (click)="toggleSound()">
+                {{ soundEnabled ? '🔔' : '🔕' }}
+              </button>
+              <button class="btn btn-sm" title="{{ showMicroCoaching ? 'Masquer l\'assistant IA' : 'Afficher l\'assistant IA' }}"
+                      [style.background]="showMicroCoaching ? '#f0fdf4' : '#f5f3ff'"
+                      [style.color]="showMicroCoaching ? '#16a34a' : '#7c3aed'"
+                      [style.border]="showMicroCoaching ? '1px solid #bbf7d0' : '1px solid #ddd6fe'"
+                      (click)="toggleMicroCoaching()">
+                🤖
+              </button>
+            </div>
+
+            <!-- Session Stats Panel -->
+            <div class="camera-stats-panel" *ngIf="showSessionStats">
+              <div class="camera-stats-panel__header">
+                <i class="isax isax-chart-2 me-1 text-info"></i>
+                <span>Session en cours</span>
+                <small class="text-muted ms-auto">{{ sessionDuration }}</small>
+              </div>
+              <div class="camera-stats-panel__gauge">
+                <div class="d-flex justify-content-between mb-1">
+                  <small class="text-muted">Attention moyenne</small>
+                  <small class="fw-bold" [style.color]="sessionAvgAttention >= 75 ? '#22c55e' : sessionAvgAttention >= 50 ? '#f59e0b' : '#ef4444'">
+                    {{ sessionAvgAttention }}%
+                  </small>
+                </div>
+                <div class="progress" style="height: 8px; border-radius: 4px;">
+                  <div class="progress-bar"
+                       [style.width.%]="sessionAvgAttention"
+                       [style.background]="sessionAvgAttention >= 75 ? '#22c55e' : sessionAvgAttention >= 50 ? '#f59e0b' : '#ef4444'"
+                       style="transition: width 0.5s ease;"></div>
+                </div>
+              </div>
+              <div *ngIf="sessionTypeCountsSorted.length > 0" class="camera-stats-panel__breakdown">
+                <small class="text-muted d-block mb-2">Détections</small>
+                <div class="detection-badges">
+                  <span *ngFor="let t of sessionTypeCountsSorted"
+                        class="detection-badge"
+                        [style.borderColor]="t.color"
+                        [style.color]="t.color">
+                    {{ t.label }} <strong>{{ t.count }}</strong>
+                  </span>
+                </div>
+              </div>
+              <div class="camera-stats-panel__advice">
+                <i class="isax isax-star me-1 text-warning"></i>
+                <small>{{ sessionImprovementTip }}</small>
+              </div>
+            </div>
+
+            <!-- Remarks -->
+            <div class="camera-panel__remarks mt-3">
+              <h6 class="small fw-semibold mb-2">
+                <i class="isax isax-message-text me-1"></i>Remarques récentes
+                <span class="badge bg-secondary ms-1">{{ cameraRemarks.length }}</span>
+              </h6>
+              <div class="camera-remarks-list" *ngIf="cameraRemarks.length > 0">
+                <div class="camera-remark-item" *ngFor="let r of cameraRemarks">
+                  <div class="d-flex align-items-start gap-2">
+                    <i class="isax {{ getRemarkIcon(r.type) }} flex-shrink-0 mt-1"
+                       [style.color]="getRemarkColor(r.type)"></i>
+                    <div>
+                      <p class="mb-0 small">{{ r.message }}</p>
+                      <small class="text-muted">{{ r.time | date:'HH:mm:ss' }}</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="cameraRemarks.length === 0" class="text-center text-muted small py-3">
+                <i class="isax isax-tick-circle d-block fs-24 mb-1 text-success"></i>
+                Aucune remarque — Continuez ainsi !
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -500,6 +769,109 @@
      FLOATING NOTES BUTTON (chatbot style) — visible si cours chargé
      ================================================================ -->
 <ng-container *ngIf="course">
+
+  <!-- Bouton flottant IA étudiant (au-dessus des notes) -->
+  <button class="notes-fab student-ai-fab"
+          (click)="openStudentAiAssistant()"
+          title="Assistant IA Étudiant"
+          [class.notes-fab--open]="showStudentAiPanel">
+    <i class="isax isax-message-text" *ngIf="!studentAiBusy"></i>
+    <i class="isax isax-refresh" *ngIf="studentAiBusy"></i>
+  </button>
+
+  <!-- Panneau conversation IA étudiant -->
+  <div class="notes-panel ai-panel" [class.notes-panel--visible]="showStudentAiPanel">
+    <div class="notes-panel__header">
+      <div class="ai-header-left">
+        <div class="ai-header-icon">🎓</div>
+        <div>
+          <div class="ai-header-title">Assistant IA Étudiant</div>
+          <div class="ai-header-mode">Aide contextuelle sur votre leçon active</div>
+        </div>
+      </div>
+      <div class="ai-header-right">
+        <div class="ai-status-badge">
+          <span class="ai-status-dot"></span>ACTIF
+        </div>
+        <button *ngIf="studentAiHistory.length > 0"
+                class="ai-clear-btn"
+                title="Effacer la conversation"
+                (click)="studentAiHistory = []">✕ Effacer</button>
+        <button class="btn-close btn-close-white btn-sm" (click)="showStudentAiPanel = false"></button>
+      </div>
+    </div>
+
+    <div class="notes-panel__body ai-panel__body">
+      <div class="ai-lesson-context" *ngIf="course || activeLesson">
+        <div class="ai-lesson-context__label">Contexte chargé</div>
+        <div class="ai-lesson-context__title">{{ activeLesson?.title || course?.title }}</div>
+        <div class="ai-lesson-context__meta">
+          {{ course?.title }}
+          <span *ngIf="activeLesson?.lessonType">• {{ activeLesson?.lessonType }}</span>
+        </div>
+      </div>
+
+      <div *ngIf="studentAiHistory.length === 0 && !studentAiBusy" class="ai-empty-state">
+        <div class="ai-empty-state__icon">🧠</div>
+        <div class="ai-empty-state__title">Coach pédagogique instantané</div>
+        <div class="ai-empty-state__sub">Posez une question sur la leçon, demandez un résumé,<br>des exercices ou une explication simplifiée.</div>
+        <div class="ai-audit-chips">
+          <button class="ai-chip" (click)="studentAiInput = 'Résume cette leçon en 5 points essentiels'">Résumé</button>
+          <button class="ai-chip" (click)="studentAiInput = 'Explique cette leçon avec des mots simples et un exemple'">Explication simple</button>
+          <button class="ai-chip" (click)="studentAiInput = 'Donne-moi 3 questions de révision avec réponses courtes'">Révision</button>
+          <button class="ai-chip" (click)="studentAiInput = 'Propose 3 exercices pratiques progressifs'">Exercices</button>
+        </div>
+      </div>
+
+      <div class="ai-chat-list" *ngIf="studentAiHistory.length > 0">
+        <div *ngFor="let msg of studentAiHistory; let i = index"
+             class="ai-msg"
+             [class.ai-msg--user]="msg.role === 'user'"
+             [class.ai-msg--assistant]="msg.role === 'assistant'">
+          <div class="ai-msg__meta">
+            <span class="ai-msg__avatar">{{ msg.role === 'user' ? 'V' : 'IA' }}</span>
+            {{ msg.role === 'user' ? 'Vous' : 'Agent IA' }}
+          </div>
+          <div class="ai-msg__bubble" [innerHTML]="msg.role === 'assistant' ? formatStudentMessage(msg.content) : msg.content"></div>
+        </div>
+      </div>
+
+      <div *ngIf="studentAiBusy" class="ai-typing-indicator">
+        <div class="ai-typing-meta">
+          <span class="ai-typing-avatar">IA</span>
+          Assistant pédagogique · préparation de la réponse…
+        </div>
+        <div class="ai-typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-panel__composer">
+      <textarea class="notes-panel__textarea ai-panel__input"
+                rows="3"
+                [(ngModel)]="studentAiInput"
+                [disabled]="studentAiBusy"
+                placeholder="Ex: Résume cette leçon en 5 points + 3 questions de révision"></textarea>
+      <div class="ai-composer-actions">
+        <button class="ai-copy-btn"
+                (click)="copyLastStudentAiReply()"
+                [disabled]="studentAiHistory.length === 0">
+          <i class="isax isax-copy" style="font-size:.92rem"></i> Copier
+        </button>
+        <button class="ai-send-btn"
+                (click)="sendStudentAiMessage()"
+                [disabled]="studentAiBusy || !studentAiInput.trim()">
+          <ng-container *ngIf="studentAiBusy; else studentAiReady">
+            <i class="isax isax-refresh-2" style="animation:spin 1s linear infinite;font-size:.92rem"></i> Analyse…
+          </ng-container>
+          <ng-template #studentAiReady>
+            <i class="isax isax-send-2" style="font-size:.92rem"></i> Envoyer
+          </ng-template>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Bouton flottant -->
   <button class="notes-fab" (click)="toggleNotesPanel()"

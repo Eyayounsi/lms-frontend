@@ -1,78 +1,142 @@
-﻿<div class="page-title d-flex align-items-center justify-content-between">
-    <h5 class="fw-bold">My Profile</h5>
-    <a [routerLink]="routes.instructorSettings" class="edit-profile-icon" title="Edit Profile"><i class="isax isax-edit-2"></i></a>
+﻿<div class="ins-profile-page-title d-flex align-items-center justify-content-between">
+    <h5 class="fw-bold mb-0">Profil instructeur</h5>
+    <a [routerLink]="routes.instructorSettings" class="ins-profile-edit-link" title="Modifier le profil"><i class="isax isax-edit-2"></i></a>
 </div>
 
 <!-- Loading -->
-<div *ngIf="loading" class="text-center py-5">
+<div *ngIf="loading" class="ins-profile-state text-center py-5">
     <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2 text-muted">Loading profile...</p>
+    <p class="mt-2 text-muted">Chargement du profil...</p>
 </div>
 
-<div *ngIf="errorMessage" class="alert alert-danger">
+<div *ngIf="errorMessage" class="alert ins-profile-alert">
     <i class="isax isax-warning-2 me-2"></i>{{ errorMessage }}
 </div>
 
 <div *ngIf="!loading && profile">
 
-    <!-- Avatar Card -->
-    <div class="card">
+    <div class="card ins-profile-hero mb-3">
         <div class="card-body">
-            <div class="d-flex align-items-center mb-3">
-                <div class="position-relative me-3">
-                    <img [src]="getAvatarUrl()" class="rounded-circle" width="80" height="80" style="object-fit:cover;" alt="Avatar">
-                    <label class="position-absolute bottom-0 end-0 bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
-                           style="width:28px;height:28px;cursor:pointer;" title="Change Avatar">
-                        <i class="isax isax-camera fs-14"></i>
-                        <input type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)">
-                    </label>
+            <div class="ins-profile-glow ins-profile-glow--one"></div>
+            <div class="ins-profile-glow ins-profile-glow--two"></div>
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 position-relative">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="me-1 ins-profile-avatar-wrap">
+                        <img *ngIf="getAvatarUrl()" [src]="getAvatarUrl()" class="rounded-circle ins-profile-avatar" alt="Avatar">
+                        <div *ngIf="!getAvatarUrl()" class="rounded-circle ins-profile-avatar ins-profile-avatar--initial">
+                            {{ avatarInitial }}
+                        </div>
+                    </div>
+                    <div>
+                        <p class="ins-profile-kicker mb-1">Espace instructeur</p>
+                        <h4 class="mb-1 fw-bold ins-profile-name">{{ profile.fullName }}</h4>
+                        <p class="ins-profile-role mb-0">{{ getRoleLabel() }}</p>
+                        <div class="ins-profile-photo-actions mt-2">
+                            <label class="ins-profile-photo-btn ins-profile-photo-btn--upload" [class.disabled]="avatarUploading">
+                                <input type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)" [disabled]="avatarUploading">
+                                <span *ngIf="!avatarUploading">Upload</span>
+                                <span *ngIf="avatarUploading" class="d-flex align-items-center gap-2">
+                                    <span class="spinner-border spinner-border-sm"></span>Upload...
+                                </span>
+                            </label>
+                            <button type="button"
+                                    class="ins-profile-photo-btn ins-profile-photo-btn--delete"
+                                    (click)="removeAvatar()"
+                                    [disabled]="avatarUploading || !profile?.avatarPath">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <h5 class="mb-1">{{ profile.fullName }}</h5>
-                    <p class="text-muted mb-0">{{ profile.designation || 'Instructor' }}</p>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="ins-profile-chip">{{ getProfileCompletion() }}% profil complété</span>
+                    <a [routerLink]="routes.instructorSettings" class="btn btn-primary ins-profile-btn-pill">
+                        <i class="isax isax-edit-2 me-1"></i>Modifier profil
+                    </a>
+                </div>
+            </div>
+
+            <div class="ins-profile-progress mt-3">
+                <div class="ins-profile-progress__head">
+                    <span>Progression du profil</span>
+                    <strong>{{ completedItemsCount }}/{{ totalCompletionItems }} champs</strong>
+                </div>
+                <div class="ins-profile-progress__track">
+                    <div class="ins-profile-progress__fill" [style.width.%]="getProfileCompletion()"></div>
+                </div>
+                <div class="ins-profile-progress__chips mt-2">
+                    <span *ngFor="let item of getCompletionItems()"
+                          class="ins-profile-progress-chip"
+                          [class.ins-profile-progress-chip--done]="item.done">
+                        <i class="isax" [ngClass]="item.done ? 'isax-tick-circle' : 'isax-close-circle'"></i>
+                        {{ item.label }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-2">
+                <div class="col-sm-4">
+                    <div class="ins-profile-stat">
+                        <span class="ins-profile-stat__label">Complétion</span>
+                        <strong class="ins-profile-stat__value">{{ getProfileCompletion() }}%</strong>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="ins-profile-stat">
+                        <span class="ins-profile-stat__label">Réseaux</span>
+                        <strong class="ins-profile-stat__value">{{ getSocialCount() }}</strong>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="ins-profile-stat">
+                        <span class="ins-profile-stat__label">Parcours</span>
+                        <strong class="ins-profile-stat__value">{{ education.length + experience.length }}</strong>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Basic Info -->
-    <div class="card">
+    <div class="card ins-profile-card">
         <div class="card-body">
-            <h5 class="fs-18 pb-3 border-bottom mb-3">Basic Information</h5>
+            <h5 class="fs-18 pb-3 border-bottom mb-3">Informations principales</h5>
             <div class="row">
                 <div class="col-md-4">
-                    <div class="mb-3">
-                        <h6>First Name</h6>
+                    <div class="ins-profile-item mb-3">
+                        <h6>Prénom</h6>
                         <span>{{ getFirstName() }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="mb-3">
-                        <h6>Last Name</h6>
+                    <div class="ins-profile-item mb-3">
+                        <h6>Nom</h6>
                         <span>{{ getLastName() || '---' }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="mb-3">
-                        <h6>Phone Number</h6>
-                        <span>{{ profile.phone || 'Not provided' }}</span>
+                    <div class="ins-profile-item mb-3">
+                        <h6>Téléphone</h6>
+                        <span>{{ profile.phone || 'Non renseigné' }}</span>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="mb-3">
+                    <div class="ins-profile-item mb-3">
                         <h6>Email</h6>
                         <span>{{ profile.email }}</span>
                     </div>
                 </div>
                 <div class="col-md-4" *ngIf="profile.address">
-                    <div class="mb-3">
-                        <h6>Address</h6>
+                    <div class="ins-profile-item mb-3">
+                        <h6>Adresse</h6>
                         <span>{{ profile.address }}</span>
                     </div>
                 </div>
                 <div class="col-md-12" *ngIf="profile.bio">
-                    <div>
-                        <h6>Bio</h6>
+                    <div class="ins-profile-item ins-profile-item--bio">
+                        <h6>Biographie</h6>
                         <span>{{ profile.bio }}</span>
                     </div>
                 </div>
@@ -81,32 +145,32 @@
     </div>
 
     <!-- Social Links -->
-    <div class="card" *ngIf="profile.facebookUrl || profile.instagramUrl || profile.twitterUrl || profile.youtubeUrl || profile.linkedinUrl">
+    <div class="card ins-profile-card" *ngIf="profile.facebookUrl || profile.instagramUrl || profile.twitterUrl || profile.youtubeUrl || profile.linkedinUrl">
         <div class="card-body">
-            <h5 class="fs-18 pb-3 border-bottom mb-3">Social Links</h5>
+            <h5 class="fs-18 pb-3 border-bottom mb-3">Liens sociaux</h5>
             <div class="row">
                 <div class="col-md-4 mb-2" *ngIf="profile.facebookUrl">
                     <h6 class="small text-muted mb-1">Facebook</h6>
-                    <a [href]="profile.facebookUrl" target="_blank" class="text-primary">{{ profile.facebookUrl }}</a>
+                    <a [href]="profile.facebookUrl" target="_blank" class="ins-profile-link">{{ profile.facebookUrl }}</a>
                 </div>
                 <div class="col-md-4 mb-2" *ngIf="profile.instagramUrl">
                     <h6 class="small text-muted mb-1">Instagram</h6>
-                    <a [href]="profile.instagramUrl" target="_blank" class="text-primary">{{ profile.instagramUrl }}</a>
+                    <a [href]="profile.instagramUrl" target="_blank" class="ins-profile-link">{{ profile.instagramUrl }}</a>
                 </div>
                 <div class="col-md-4 mb-2" *ngIf="profile.linkedinUrl">
                     <h6 class="small text-muted mb-1">LinkedIn</h6>
-                    <a [href]="profile.linkedinUrl" target="_blank" class="text-primary">{{ profile.linkedinUrl }}</a>
+                    <a [href]="profile.linkedinUrl" target="_blank" class="ins-profile-link">{{ profile.linkedinUrl }}</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Education -->
-    <div class="card" *ngIf="education.length > 0">
+    <div class="card ins-profile-card" *ngIf="education.length > 0">
         <div class="card-body">
-            <h5 class="fs-18 pb-3 border-bottom mb-3">Education</h5>
+            <h5 class="fs-18 pb-3 border-bottom mb-3">Éducation</h5>
             <div class="education-flow">
-                <div class="ps-4 pb-3 timeline-flow" *ngFor="let edu of education">
+                <div class="ps-4 pb-3 timeline-flow ins-profile-timeline-item" *ngFor="let edu of education">
                     <div>
                         <h6 class="mb-1">{{ edu.degree }}</h6>
                         <p>{{ edu.school }} - ({{ edu.year }})</p>
@@ -117,11 +181,11 @@
     </div>
 
     <!-- Experience -->
-    <div class="card mb-0" *ngIf="experience.length > 0">
+    <div class="card ins-profile-card mb-0" *ngIf="experience.length > 0">
         <div class="card-body">
-            <h5 class="fs-18 pb-3 border-bottom mb-3">Experience</h5>
-            <div class="d-flex align-items-center mb-4" *ngFor="let exp of experience">
-                <span class="bg-light border avatar avatar-lg text-gray-9 flex-shrink-0 me-3"><i class="isax isax-briefcase fw-bold"></i></span>
+            <h5 class="fs-18 pb-3 border-bottom mb-3">Expérience</h5>
+            <div class="d-flex align-items-center mb-4 ins-profile-exp-item" *ngFor="let exp of experience">
+                <span class="avatar avatar-lg flex-shrink-0 me-3 ins-profile-exp-icon"><i class="isax isax-briefcase fw-bold"></i></span>
                 <div>
                     <h6 class="mb-1">{{ exp.title }}</h6>
                     <p>{{ exp.company }} - ({{ exp.period }})</p>

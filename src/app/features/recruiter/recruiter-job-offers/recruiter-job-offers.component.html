@@ -1,0 +1,255 @@
+﻿<!-- ═══════════════════════════════════════════════════════════════════════
+     Offres d'Emploi — Premium Redesign avec Toggle Publish/Draft
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- Hero Banner -->
+<div class="rct-jo-hero mb-4">
+  <div class="rct-jo-glow rct-jo-glow-1"></div>
+  <div class="rct-jo-glow rct-jo-glow-2"></div>
+  <div class="rct-jo-hero-body">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="d-flex align-items-center gap-4">
+          <div class="rct-jo-av-wrap">
+            <div class="rct-jo-av-ring"></div>
+            <div class="rct-jo-av-border"></div>
+            <div class="rct-jo-av-circle">
+              <i class="ti ti-briefcase" style="font-size:26px;color:#fff"></i>
+            </div>
+            <div class="rct-jo-av-pulse"></div>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="rct-jo-chip"><i class="ti ti-building me-1" style="font-size:9px"></i>Recrutement</span>
+              <span class="rct-jo-live"><span class="rct-jo-live-dot"></span>{{ offers.length }} offre(s)</span>
+            </div>
+            <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-0.3px">Offres d'Emploi &amp; Stages</h3>
+            <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Publiez vos offres et attirez les meilleurs talents certifiés</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5 mt-3 mt-lg-0">
+        <div class="d-flex justify-content-lg-end">
+          <button class="rct-jo-new-btn" (click)="openCreate()">
+            <i class="ti ti-plus me-2"></i>Nouvelle offre
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mini-stats -->
+<div class="row g-3 mb-4" *ngIf="!loading && !error && offers.length > 0">
+  <div class="col-md-4">
+    <div class="rct-jo-stat">
+      <div class="rct-jo-stat-ico" style="background:rgba(57,44,125,.1);color:#392C7D"><i class="ti ti-list fs-18"></i></div>
+      <div>
+        <h4 class="fw-bold mb-0" style="color:#392C7D">{{ offers.length }}</h4>
+        <p class="text-muted small mb-0">Total Offres</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="rct-jo-stat">
+      <div class="rct-jo-stat-ico" style="background:rgba(3,201,90,.1);color:#03C95A"><i class="ti ti-circle-check fs-18"></i></div>
+      <div>
+        <h4 class="fw-bold mb-0" style="color:#03C95A">{{ getActiveCount() }}</h4>
+        <p class="text-muted small mb-0">Offres Actives</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="rct-jo-stat">
+      <div class="rct-jo-stat-ico" style="background:rgba(245,159,11,.1);color:#F59E0B"><i class="ti ti-clock fs-18"></i></div>
+      <div>
+        <h4 class="fw-bold mb-0" style="color:#F59E0B">{{ getStageCount() }}</h4>
+        <p class="text-muted small mb-0">Stages</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Skeleton -->
+<div *ngIf="loading" class="row g-3">
+  <div class="col-md-6" *ngFor="let _ of [1,2,3,4]">
+    <div class="rct-jo-card">
+      <div class="rct-jo-card-body">
+        <div class="d-flex justify-content-between mb-3">
+          <div class="rct-sk rct-sk-sm" style="width:55%"></div>
+          <div class="rct-sk" style="width:60px;height:22px;border-radius:20px"></div>
+        </div>
+        <div class="rct-sk rct-sk-sm mb-2" style="width:35%"></div>
+        <div class="rct-sk rct-sk-sm" style="width:45%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Erreur -->
+<div *ngIf="error && !loading" class="rct-jo-alert-warn mb-4">
+  <i class="ti ti-alert-circle me-2"></i>{{ error }}
+  <button class="btn btn-sm btn-outline-warning ms-3" (click)="loadOffers()">Réessayer</button>
+</div>
+
+<!-- Aucune offre -->
+<div *ngIf="!loading && !error && offers.length === 0" class="rct-jo-empty">
+  <div class="rct-jo-empty-ico">
+    <i class="ti ti-file-off" style="font-size:40px;color:#392C7D"></i>
+  </div>
+  <h5 class="fw-bold mb-1" style="color:#1e1b4b">Aucune offre publiée</h5>
+  <p class="text-muted small mb-3">Créez votre première offre d'emploi ou de stage.</p>
+  <button class="rct-jo-new-btn-sm" (click)="openCreate()">
+    <i class="ti ti-plus me-2"></i>Créer une offre
+  </button>
+</div>
+
+<!-- Cartes offres -->
+<div class="row g-3" *ngIf="!loading && !error && offers.length > 0">
+  <div class="col-md-6" *ngFor="let offer of offers; let i = index"
+       [style.animation-delay]="(i * 0.05) + 's'">
+    <div class="rct-jo-card" [class.rct-jo-card-active]="offer.status === 'ACTIVE'" [class.rct-jo-card-draft]="offer.status === 'DRAFT'" [class.rct-jo-card-closed]="offer.status === 'CLOSED'">
+      <div class="rct-jo-card-body">
+        <!-- Header -->
+        <div class="d-flex align-items-start gap-3 mb-3">
+          <div class="rct-jo-card-ico" [style]="getOfferTypeStyle(offer.offerType)">
+            <i [class]="offer.offerType === 'STAGE' ? 'ti ti-school' : 'ti ti-building'" style="font-size:20px"></i>
+          </div>
+          <div class="flex-grow-1 min-width-0">
+            <h6 class="fw-bold mb-0 text-truncate" style="color:#1e1b4b">{{ offer.title }}</h6>
+            <small class="text-muted">Créée le {{ formatDate(offer.createdAt) }}</small>
+          </div>
+          <span class="rct-jo-status-badge" [style]="getStatusStyle(offer.status)">{{ getStatusLabel(offer.status) }}</span>
+        </div>
+
+        <!-- Meta -->
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <span class="rct-jo-meta-chip rct-jo-meta-type">
+            <i class="ti ti-tag me-1" style="font-size:10px"></i>{{ offer.offerType }}
+          </span>
+          <span *ngIf="offer.contractType" class="rct-jo-meta-chip">
+            <i class="ti ti-file-text me-1" style="font-size:10px"></i>{{ offer.contractType }}
+          </span>
+          <span *ngIf="offer.location" class="rct-jo-meta-chip">
+            <i class="ti ti-map-pin me-1" style="font-size:10px"></i>{{ offer.location }}
+          </span>
+          <span *ngIf="offer.deadline" class="rct-jo-meta-chip rct-jo-meta-deadline">
+            <i class="ti ti-calendar me-1" style="font-size:10px"></i>{{ formatDate(offer.deadline) }}
+          </span>
+        </div>
+
+        <!-- Skills -->
+        <div *ngIf="offer.requiredSkills" class="mb-3">
+          <div class="d-flex flex-wrap gap-1">
+            <span *ngFor="let skill of offer.requiredSkills.split(',').slice(0,4); let s = index"
+                  class="rct-jo-skill-chip">{{ skill.trim() }}</span>
+          </div>
+        </div>
+
+        <!-- Actions row -->
+        <div class="rct-jo-actions">
+          <!-- Publish toggle -->
+          <button class="rct-jo-toggle-btn"
+                  [class.rct-jo-toggle-active]="offer.status === 'ACTIVE'"
+                  [class.rct-jo-toggle-draft]="offer.status !== 'ACTIVE'"
+                  (click)="toggleStatus(offer)"
+                  [title]="offer.status === 'ACTIVE' ? 'Mettre en brouillon' : 'Publier'">
+            <i class="ti" [class.ti-eye]="offer.status !== 'ACTIVE'" [class.ti-eye-off]="offer.status === 'ACTIVE'"></i>
+            <span>{{ offer.status === 'ACTIVE' ? 'Publié' : (offer.status === 'DRAFT' ? 'Brouillon' : 'Fermé') }}</span>
+          </button>
+          <button class="rct-jo-edit-btn" (click)="openEdit(offer)" title="Modifier">
+            <i class="ti ti-pencil"></i>
+          </button>
+          <button class="rct-jo-del-btn" (click)="confirmDelete(offer.id)" title="Supprimer">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Modal Créer / Modifier ═══ -->
+<div *ngIf="showModal" class="rct-jo-modal-backdrop" (click)="closeModal()"></div>
+<div *ngIf="showModal" class="rct-jo-modal" (click)="$event.stopPropagation()">
+  <!-- Header -->
+  <div class="rct-jo-modal-hd">
+    <div class="d-flex align-items-center gap-3">
+      <div class="rct-jo-modal-hd-ico">
+        <i class="ti" [class.ti-plus]="!editingOffer" [class.ti-pencil]="editingOffer" style="font-size:18px;color:#fff"></i>
+      </div>
+      <div>
+        <h5 class="fw-bold mb-0 text-white">{{ editingOffer ? 'Modifier l\'offre' : 'Nouvelle offre' }}</h5>
+        <small style="color:rgba(255,255,255,.65)">{{ editingOffer ? 'Mettez à jour votre offre' : 'Créez une offre d\'emploi ou de stage' }}</small>
+      </div>
+    </div>
+    <button class="rct-jo-modal-close" (click)="closeModal()"><i class="ti ti-x"></i></button>
+  </div>
+
+  <!-- Body -->
+  <div class="rct-jo-modal-body">
+    <div *ngIf="saveError" class="rct-jo-save-error mb-3">
+      <i class="ti ti-alert-circle me-2"></i>{{ saveError }}
+    </div>
+
+    <div class="row g-3">
+      <div class="col-12">
+        <label class="rct-jo-label">Titre de l'offre <span class="text-danger">*</span></label>
+        <input type="text" class="rct-jo-input" placeholder="Ex: Développeur Full Stack Angular/Spring" [(ngModel)]="form.title">
+      </div>
+      <div class="col-md-6">
+        <label class="rct-jo-label">Type d'offre</label>
+        <select class="rct-jo-select" [(ngModel)]="form.offerType">
+          <option value="EMPLOI">Emploi</option>
+          <option value="STAGE">Stage</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="rct-jo-label">Type de contrat</label>
+        <select class="rct-jo-select" [(ngModel)]="form.contractType">
+          <option value="CDI">CDI</option>
+          <option value="CDD">CDD</option>
+          <option value="FREELANCE">Freelance</option>
+          <option value="STAGE_6M">Stage 6 mois</option>
+          <option value="STAGE_3M">Stage 3 mois</option>
+          <option value="ALTERNANCE">Alternance</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="rct-jo-label">Localisation</label>
+        <input type="text" class="rct-jo-input" placeholder="Paris, Remote, Hybride..." [(ngModel)]="form.location">
+      </div>
+      <div class="col-md-6">
+        <label class="rct-jo-label">Date limite de candidature</label>
+        <input type="date" class="rct-jo-input" [(ngModel)]="form.deadline">
+      </div>
+      <div class="col-12">
+        <label class="rct-jo-label">Compétences requises</label>
+        <input type="text" class="rct-jo-input" placeholder="Angular, Spring Boot, MySQL (séparés par des virgules)" [(ngModel)]="form.requiredSkills">
+      </div>
+      <div class="col-12">
+        <label class="rct-jo-label">Description</label>
+        <textarea class="rct-jo-input" rows="5" placeholder="Décrivez le poste, les missions, les avantages..." [(ngModel)]="form.description"></textarea>
+      </div>
+      <div class="col-md-6">
+        <label class="rct-jo-label">Statut de publication</label>
+        <select class="rct-jo-select" [(ngModel)]="form.status">
+          <option value="ACTIVE">Active — visible par les étudiants</option>
+          <option value="DRAFT">Brouillon — non publiée</option>
+          <option value="CLOSED">Fermée — candidatures terminées</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="rct-jo-modal-footer">
+    <button class="rct-jo-save-btn" (click)="save()" [disabled]="saving">
+      <span *ngIf="!saving"><i class="ti ti-device-floppy me-2"></i>Enregistrer</span>
+      <span *ngIf="saving"><span class="spinner-border spinner-border-sm me-2"></span>Enregistrement...</span>
+    </button>
+    <button class="rct-jo-cancel-btn" (click)="closeModal()" [disabled]="saving">
+      <i class="ti ti-x me-1"></i>Annuler
+    </button>
+  </div>
+</div>

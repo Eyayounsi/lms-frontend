@@ -1,378 +1,225 @@
-
-    <div class="tickets">
-        <div class="d-flex align-items-center justify-content-between flex-wrap page-title">
-        <h5>Support Tickets</h5>
-        <a href="javascript:void(0);" class="btn btn-secondary rounded-pill" data-bs-toggle="modal" data-bs-target="#add_ticket"><i class="isax isax-add-circle me-2 fs-10"></i>Add Ticket</a>
-        </div> 
-        <div class="row">
-            <div class="col-md-6 col-xl-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <span class="icon-box bg-primary-transparent me-3 flex-shrink-0">
-                                <img src="assets/img/icon/graduation.svg" alt="">
-                            </span>
-                            <div>
-                                <p class="mb-1">Total Tickets</p>
-                                <h4 class="fw-bold">50</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <span class="icon-box bg-secondary-transparent me-3 flex-shrink-0">
-                                <img src="assets/img/icon/book.svg" alt="">
-                            </span>
-                            <div>
-                                <p class="mb-1">Opened Tickets</p>
-                                <h4 class="fw-bold">30</h4>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 col-xl-4">
-                <div class="student-info">
-                    <div class="d-flex align-items-center">
-                        <span class="icon-box bg-success-transparent me-3 flex-shrink-0">
-                            <img src="assets/img/icon/bookmark.svg" alt="">
-                        </span>
-                        <div>
-                            <span class="d-block">Closed Tickets</span>
-                            <h4 class="fs-24 mt-1">25</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> 
-        <div class="row align-items-center mb-2">
-            <div class="col-md-8">
-                <div class="d-flex align-items-center flex-wrap">
-                    <div class="mb-3">
-                        <div class="dropdown me-3">
-                            <a href="javascript:void(0);" class="dropdown-toggle text-gray-6 btn  rounded border d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                                Category
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Mailing Issues</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Language Issues</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Installation Error</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="dropdown me-3">
-                            <a href="javascript:void(0);" class="dropdown-toggle text-gray-6 btn  rounded border d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                                Priority
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">High</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Low</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Medium</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <div class="dropdown">
-                            <a href="javascript:void(0);" class="dropdown-toggle text-gray-6 btn  rounded border d-inline-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                                Status
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Opened</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Inprogress</a>
-                                </li>
-                                <li>
-                                    <a href="javascript:void(0);" class="dropdown-item rounded-1">Closed</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="input-icon mb-3">
-                    <span class="input-icon-addon">
-                        <i class="isax isax-search-normal-14"></i>
-                    </span>
-                    <input  [(ngModel)]="searchDataValue" [ngModelOptions]="{ standalone: true }" type="search" (ngModelChange)="searchData(searchDataValue)" class="form-control form-control-md" placeholder="Search">
-                </div>
-            </div>
-        </div>  
-        <div class="table-responsive custom-table">
-            <table matSort (matSortChange)="sortData($event)" class="table">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Ticket ID</th>
-                        <th>Date</th>
-                        <th>Subject</th>
-                        <th>Priority</th>
-                        <th>Category</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (data of tableData;track data){
-                    <tr>
-                        <td><a href="javascript:void(0);" class="text-primary" data-bs-toggle="modal" data-bs-target="#ticket_details">{{data.ticketId}}</a></td>
-                        <td>{{data.date}}</td>
-                        <td>{{data.subject}}</td>
-                        <td><span class="badge badge-sm d-inline-flex align-items-center" [ngClass]="data.priority==='High'?'bg-soft-danger':data.priority==='Medium'?'bg-soft-skyblue':'bg-soft-success'"><i class="fa-solid fa-circle fs-5 me-1"></i>{{data.priority}}</span></td>
-                        <td>{{data.category}}</td>
-                        <td><span class="badge badge-sm d-inline-flex align-items-center" [ngClass]="data.status==='Opened'?'bg-purple':data.status==='Inprogress'?'bg-warning':'bg-success'"><i class="fa-solid fa-circle fs-5 me-1"></i>{{data.status}}</span></td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon" data-bs-toggle="modal" data-bs-target="#ticket_details"><i class="isax isax-eye"></i></a>
-                                <a href="javascript:void(0);" class="d-inline-flex fs-14 me-2 action-icon" data-bs-toggle="modal" data-bs-target="#edit_ticket"><i class="isax isax-edit-2"></i></a>
-                                <a href="javascript:void(0);" class="d-inline-flex fs-14 action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="isax isax-trash"></i></a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-                    
-                </tbody>
-            </table>
-        </div>
-        <app-custom-pagination/>                 
+﻿<div class="tickets">
+  <div class="d-flex align-items-center justify-content-between flex-wrap page-title">
+    <h5>Tickets Support</h5>
+    <button class="btn btn-secondary rounded-pill" (click)="openAddModal()">
+      <i class="isax isax-add-circle me-2 fs-10"></i>Nouveau Ticket
+    </button>
+  </div>
+  <!-- Stats -->
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card"><div class="card-body d-flex align-items-center">
+        <span class="icon-box bg-primary-transparent me-3 flex-shrink-0"><img src="assets/img/icon/graduation.svg" alt=""></span>
+        <div><p class="mb-1">Total</p><h4 class="fw-bold">{{ totalCount }}</h4></div>
+      </div></div>
     </div>
+    <div class="col-md-4">
+      <div class="card"><div class="card-body d-flex align-items-center">
+        <span class="icon-box bg-secondary-transparent me-3 flex-shrink-0"><img src="assets/img/icon/book.svg" alt=""></span>
+        <div><p class="mb-1">Ouverts</p><h4 class="fw-bold">{{ openedCount }}</h4></div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="student-info d-flex align-items-center">
+        <span class="icon-box bg-success-transparent me-3 flex-shrink-0"><img src="assets/img/icon/bookmark.svg" alt=""></span>
+        <div><p class="mb-1">Fermés</p><h4 class="fw-bold">{{ closedCount }}</h4></div>
+      </div>
+    </div>
+  </div>
+  <!-- Search -->
+  <div class="row mt-3 mb-3">
+    <div class="col-md-4 ms-auto">
+      <div class="input-icon">
+        <span class="input-icon-addon"><i class="isax isax-search-normal-14"></i></span>
+        <input type="search" class="form-control" placeholder="Rechercher..."
+               [(ngModel)]="searchValue" (ngModelChange)="searchData($event)">
+      </div>
+    </div>
+  </div>
+  @if (loading) {
+    <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+  }
+  @if (!loading && filteredTickets.length === 0) {
+    <div class="text-center py-5 text-muted">
+      <i class="isax isax-ticket fs-1 d-block mb-2"></i>
+      Aucun ticket trouvé.
+    </div>
+  }
+  @if (!loading && filteredTickets.length > 0) {
+    <div class="table-responsive custom-table">
+      <table class="table">
+        <thead class="thead-light">
+          <tr>
+            <th>Ticket ID</th>
+            <th>Sujet</th>
+            <th>Catégorie</th>
+            <th>Priorité</th>
+            <th>Date</th>
+            <th>Statut</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of filteredTickets; track t.id) {
+            <tr>
+              <td><a href="javascript:void(0);" class="text-primary" (click)="openDetailsModal(t)">{{ t.ticketId }}</a></td>
+              <td><a href="javascript:void(0);" (click)="openDetailsModal(t)">{{ t.subject }}</a></td>
+              <td>{{ t.category }}</td>
+              <td><span class="badge badge-sm d-inline-flex align-items-center" [ngClass]="priorityClass(t.priority)">
+                <i class="fa-solid fa-circle fs-5 me-1"></i>{{ t.priority }}
+              </span></td>
+              <td class="text-nowrap">{{ t.date | date:'dd/MM/yyyy' }}</td>
+              <td><span class="badge badge-sm d-inline-flex align-items-center" [ngClass]="statusClass(t.status)">
+                <i class="fa-solid fa-circle fs-5 me-1"></i>{{ t.status }}
+              </span></td>
+              <td>
+                <div class="d-flex align-items-center gap-1">
+                  <a href="javascript:void(0);" class="action-icon" (click)="openDetailsModal(t)"><i class="isax isax-eye"></i></a>
+                  <a href="javascript:void(0);" class="action-icon" (click)="openEditModal(t)"><i class="isax isax-edit-2"></i></a>
+                  <a href="javascript:void(0);" class="action-icon text-danger" (click)="confirmDelete(t.id)"><i class="isax isax-trash"></i></a>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
 
+<!-- Details Modal -->
+<div class="modal fade" id="ticket_details">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="fw-bold">Détails du Ticket</h5>
+        <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal"><i class="isax isax-close-circle5"></i></button>
+      </div>
+      <div class="modal-body">
+        @if (selectedTicket) {
+          <div class="row g-3">
+            <div class="col-md-6"><strong>ID :</strong> {{ selectedTicket.ticketId }}</div>
+            <div class="col-md-6"><strong>Date :</strong> {{ selectedTicket.date | date:'dd/MM/yyyy' }}</div>
+            <div class="col-md-6"><strong>Catégorie :</strong> {{ selectedTicket.category }}</div>
+            <div class="col-md-6"><strong>Priorité :</strong>
+              <span class="badge ms-1" [ngClass]="priorityClass(selectedTicket.priority)">{{ selectedTicket.priority }}</span>
+            </div>
+            <div class="col-12"><strong>Sujet :</strong> {{ selectedTicket.subject }}</div>
+            @if (selectedTicket.description) {
+              <div class="col-12"><strong>Description :</strong><p class="mt-1">{{ selectedTicket.description }}</p></div>
+            }
+            <div class="col-md-6"><strong>Statut :</strong>
+              <span class="badge ms-1" [ngClass]="statusClass(selectedTicket.status)">{{ selectedTicket.status }}</span>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn bg-gray-100 rounded-pill" data-bs-dismiss="modal">Fermer</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-                <!-- Add Ticket -->
-			<div class="modal fade" id="add_ticket">
-				<div class="modal-dialog modal-dialog-centered modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="fw-bold">Add Ticket</h5>
-							<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-								<i class="isax isax-close-circle5"></i>
-							</button>
-						</div>
-						<form>
-							<div class="modal-body">
-								<div class="row">
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Ticket Title <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Category <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="Select">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">Mailing Issues</mat-option>
-												<mat-option value="1">Language Issues</mat-option>
-												<mat-option value="1">Installation Error</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Priority <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="Select">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">High</mat-option>
-												<mat-option value="1">Low</mat-option>
-												<mat-option value="1">Medium</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Description</label>
-											<div class="summernote"><p>Enter Ticket Detail</p></div>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Attachments</label>
-											<div class="file-upload drag-file w-100 d-flex align-items-center justify-content-center flex-column">
-												<span class="upload-img mb-2"><i class="isax isax-folder5 fs-24"></i></span>
-												<p class="mb-1 text-gray-9 fw-medium">Drag and drop your files</p>
-												<p class="mb-2 fs-12">Accept File Type: doc,docx,jpg,jpeg,png,txt,pdf</p>
-												<input type="file" accept="video/image">
-												<span class="btn mt-2 btn-secondary rounded-pill"><i class="isax isax-document-upload me-1"></i>Upload</span>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
-								<button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Submit</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<!-- /Add Ticket -->
+<!-- Add Modal -->
+<div class="modal fade" id="add_ticket">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="fw-bold">Nouveau Ticket</h5>
+        <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal"><i class="isax isax-close-circle5"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Sujet <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [(ngModel)]="addForm.subject" placeholder="Sujet du ticket">
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Catégorie <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="addForm.category">
+              <option value="" disabled>Sélectionner</option>
+              @for (c of categories; track c) { <option [value]="c">{{ c }}</option> }
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Priorité <span class="text-danger">*</span></label>
+            <select class="form-select" [(ngModel)]="addForm.priority">
+              <option value="" disabled>Sélectionner</option>
+              @for (p of priorities; track p) { <option [value]="p">{{ p }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="addForm.description" placeholder="Décrivez votre problème..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn btn-secondary rounded-pill" (click)="onAddTicket()" [disabled]="addSubmitting">
+          @if (addSubmitting) { <span class="spinner-border spinner-border-sm me-1"></span> } Créer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
-			<!-- Edit Ticket -->
-			<div class="modal fade" id="edit_ticket">
-				<div class="modal-dialog modal-dialog-centered modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="fw-bold">Edit Ticket</h5>
-							<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-								<i class="isax isax-close-circle5"></i>
-							</button>
-						</div>
-						<form>
-							<div class="modal-body">
-								<div class="row">
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Ticket Title <span class="text-danger"> *</span></label>
-											<input type="text" class="form-control" value="Issue with Course Notification Emails">
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Category <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="Mailing Issues">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">Mailing Issues</mat-option>
-												<mat-option value="1">Language Issues</mat-option>
-												<mat-option value="1">Installation Error</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-6">
-										<div class="mb-3">
-											<label class="form-label">Priority <span class="text-danger"> *</span></label>
-											<mat-select class="custom-mat-select select" placeholder="High">
-												<mat-option value="1">Select</mat-option>
-												<mat-option value="1">High</mat-option>
-												<mat-option value="1">Low</mat-option>
-												<mat-option value="1">Medium</mat-option>
-											</mat-select>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Description</label>
-											<div class="summernote"><p>Enter Ticket Detail</p></div>
-										</div>
-									</div>
-									<div class="col-md-12">
-										<div class="mb-3">
-											<label class="form-label">Attachments</label>
-											<div class="file-upload drag-file w-100 d-flex align-items-center justify-content-center flex-column">
-												<span class="upload-img mb-2"><i class="isax isax-folder5 fs-24"></i></span>
-												<p class="mb-1 text-gray-9 fw-medium">Drag and drop your files</p>
-												<p class="mb-2 fs-12">Accept File Type: doc,docx,jpg,jpeg,png,txt,pdf</p>
-												<input type="file" accept="video/image">
-												<span class="btn mt-2 btn-secondary rounded-pill"><i class="isax isax-document-upload me-1"></i>Upload</span>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="modal-footer">
-								<button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Cancel</button>
-								<button class="btn btn-secondary rounded-pill" type="submit" data-bs-dismiss="modal">Save Changes</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-			<!-- /Edit Ticket -->
+<!-- Edit Modal -->
+<div class="modal fade" id="edit_ticket">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="fw-bold">Modifier Ticket</h5>
+        <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal"><i class="isax isax-close-circle5"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Sujet</label>
+          <input type="text" class="form-control" [(ngModel)]="editForm.subject">
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Catégorie</label>
+            <select class="form-select" [(ngModel)]="editForm.category">
+              @for (c of categories; track c) { <option [value]="c">{{ c }}</option> }
+            </select>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Priorité</label>
+            <select class="form-select" [(ngModel)]="editForm.priority">
+              @for (p of priorities; track p) { <option [value]="p">{{ p }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="editForm.description"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn btn-secondary rounded-pill" (click)="onEditTicket()" [disabled]="editSubmitting">
+          @if (editSubmitting) { <span class="spinner-border spinner-border-sm me-1"></span> } Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
-			<!-- Ticket Details -->
-			<div class="modal fade" id="ticket_details">
-				<div class="modal-dialog modal-dialog-centered modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5 class="d-inline-flex align-items-center">Ticket Details <span class="text-primary fs-14 ms-2">#TIC010</span></h5>
-							<div class="d-flex align-items-center justify-content-end">
-								<span class="badge badge-sm bg-purple d-inline-flex align-items-center me-2"><i class="fa-solid fa-circle fs-5 me-1"></i>Opened</span>
-								<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-									<i class="isax isax-close-circle5"></i>
-								</button>
-							</div>
-						</div>
-						<div class="modal-body">
-							<div class="row">
-								<div class="col-lg-4">
-									<div class="mb-3">
-										<h6 class="mb-1">Category</h6>
-										<p>Mailing Issues</p>
-									</div>
-								</div>
-								<div class="col-lg-4">
-									<div class="mb-3">
-										<h6 class="mb-1">Date</h6>
-										<p>26 Jul 2025</p>
-									</div>
-								</div>
-								<div class="col-lg-4">
-									<div class="mb-3">
-										<h6 class="mb-1">Priority</h6>
-										<span class="badge bg-soft-danger badge-sm d-inline-flex align-items-center"><i class="fa-solid fa-circle fs-5 me-1"></i>High</span>
-									</div>
-								</div>
-								<div class="col-lg-12">
-									<div class="mb-3">
-										<h6 class="mb-1">Subject</h6>
-										<p>Issue with Course Notification Emails</p>
-									</div>
-								</div>
-								<div class="col-lg-12">
-									<div>
-										<h6 class="mb-1">Description</h6>
-										<p>I am not receiving important emails from the LMS platform, such as course notifications, 
-											enrollment confirmations, or assignment updates. Additionally, some 
-											students have reported that they are not receiving emails about live classes or announcements.
-											This issue is affecting communication and timely updates for both instructors and students. 
-											Please investigate and resolve this issue as soon as possible.
-											</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Ticket Details -->
-
-			<!-- Delete Modal -->
-			<div class="modal fade" id="delete_modal">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-body text-center custom-modal-body">
-							<span class="avatar avatar-lg bg-danger-transparent rounded-circle mb-2">
-								<i class="isax isax-trash fs-24 text-danger"></i>
-							</span>
-							<div>
-								<h4 class="mb-2">Delete Ticket</h4>
-								<p class="mb-3">Are you sure you want to delete ticket?</p>
-								<div class="d-flex align-items-center justify-content-center">
-									<a href="javascript:void(0);" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Cancel</a>
-									<a href="javascript:void(0);" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Yes, Remove All</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Delete Modal -->
+<!-- Delete Modal -->
+<div class="modal fade" id="delete_ticket_modal">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center py-4">
+        <span class="avatar avatar-lg bg-danger-transparent rounded-circle mb-2 d-inline-flex align-items-center justify-content-center">
+          <i class="isax isax-trash fs-24 text-danger"></i>
+        </span>
+        <h5 class="mt-2">Supprimer le ticket ?</h5>
+        <p class="text-muted">Cette action est irréversible.</p>
+        <button class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn btn-danger rounded-pill" (click)="doDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>

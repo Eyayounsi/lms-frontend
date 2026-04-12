@@ -1,0 +1,597 @@
+﻿// ─── Premium Avatar SuperAdmin (header trigger) ─────────────────────────────
+.sa-header-avatar-wrap {
+  position: relative;
+  width: 38px; height: 38px; flex-shrink: 0; cursor: pointer;
+
+  .sa-hav-border {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(135deg, #020c18 0%, #0d3a66 35%, #5625E8 65%, #0DCAF0 100%);
+    transition: transform .2s ease;
+  }
+  .sa-hav-inner {
+    position: absolute; inset: 2px; border-radius: 50%;
+    background: linear-gradient(135deg, #020c18, #0d3a66);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sa-hav-initial {
+    font-size: 13px; font-weight: 900; color: #a5f3fc; line-height: 1;
+    letter-spacing: .3px;
+  }
+  .sa-hav-crown {
+    position: absolute; top: -3px; right: -3px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: linear-gradient(135deg, #0DCAF0, #0284c7);
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid #fff;
+    box-shadow: 0 2px 6px rgba(13,202,240,.7); z-index: 5;
+    animation: sa-hdr-crownPop 2.5s ease-in-out infinite;
+    i { font-size: 6px; color: #fff; }
+  }
+
+  &:hover .sa-hav-border { transform: scale(1.1); }
+}
+
+.sa-hav-lg {
+  width: 46px !important; height: 46px !important;
+  .sa-hav-inner { inset: 2.5px !important; }
+  .sa-hav-initial { font-size: 17px !important; }
+  .sa-hav-crown { width: 17px !important; height: 17px !important; i { font-size: 7px !important; } }
+}
+
+@keyframes sa-hdr-crownPop {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.22); box-shadow: 0 3px 10px rgba(13,202,240,.9); }
+}
+
+.sa-header-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #020c18 0%, #0d3a66 35%, #5625E8 65%, #0DCAF0 100%);
+  box-shadow: 0 2px 8px rgba(2,12,24,.45);
+  flex-shrink: 0; cursor: pointer;
+  transition: box-shadow .2s, transform .2s;
+  &:hover { box-shadow: 0 4px 16px rgba(13,202,240,.5); transform: scale(1.06); }
+  &--lg { width: 44px; height: 44px; }
+}
+
+// ─── Navigation SuperAdmin (topbar) ──────────────────────────────────────────
+ul.sa-admin-nav {
+  display: flex !important; flex-direction: row; align-items: center;
+  gap: 2px; list-style: none; padding: 0; margin: 0;
+
+  > li > a {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 13px; font-size: 13px; font-weight: 600;
+    color: #374151; border-radius: 10px;
+    text-decoration: none !important; transition: all .18s ease;
+    white-space: nowrap; position: relative;
+    i { font-size: 15px; color: #a5b4d4; opacity: .85; transition: opacity .18s, color .18s; }
+    &:hover { i { opacity: 1; color: #5625E8; } }
+  }
+  > li.active > a::after {
+    content: '';
+    position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 2.5px; border-radius: 2px;
+  }
+}
+
+// SuperAdmin — midnight-indigo-sky active pill
+ul.sa-admin-nav.nav-superadmin {
+  > li > a {
+    &:hover { background: rgba(86,37,232,.08); color: #5625E8; }
+  }
+  > li.active > a {
+    background: linear-gradient(90deg, rgba(86,37,232,.12), rgba(13,202,240,.06));
+    color: #5625E8; font-weight: 700;
+    &::after { background: linear-gradient(90deg, #5625E8, #0DCAF0); }
+    i { opacity: 1; color: #5625E8; }
+  }
+}
+
+// ─── Role-specific nav color overrides ───────────────────────────────────────
+ul.sa-admin-nav.nav-admin {
+  > li {
+    > a:hover { background: rgba(29,78,216,.09); color: #1d4ed8; i { opacity: 1; } }
+    &.active > a {
+      background: linear-gradient(90deg, rgba(29,78,216,.13), rgba(29,78,216,.04));
+      color: #1d4ed8; font-weight: 700;
+      i { opacity: 1; }
+      &::after { background: linear-gradient(90deg, #FD3995, #9b59b6, #5625E8, #02a8b5); }
+    }
+  }
+}
+
+// ─── Premium Avatar Admin (header trigger) ───────────────────────────────────
+.adm-header-avatar-wrap {
+  position: relative;
+  width: 38px; height: 38px; flex-shrink: 0; cursor: pointer;
+
+  .adm-hav-border {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(135deg, #FD3995, #9b59b6, #5625E8, #02a8b5);
+    transition: transform .2s ease;
+  }
+  .adm-hav-inner {
+    position: absolute; inset: 2px; border-radius: 50%;
+    background: linear-gradient(135deg, #9b59b6, #5625E8);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .adm-hav-initial {
+    font-size: 13px; font-weight: 900; color: #fff; line-height: 1;
+    letter-spacing: .3px;
+  }
+  .adm-hav-badge {
+    position: absolute; top: -3px; right: -3px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: linear-gradient(135deg, #FD3995, #5625E8);
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid #fff;
+    box-shadow: 0 2px 6px rgba(253,57,149,.6); z-index: 5;
+    animation: adm-hdr-badgePop 2.8s ease-in-out infinite;
+    i { font-size: 6px; color: #fff; }
+  }
+
+  &:hover .adm-hav-border { transform: scale(1.1); }
+}
+
+// Admin — lg variant (inside dropdown header)
+.adm-hav-lg {
+  width: 46px !important; height: 46px !important;
+  .adm-hav-inner { inset: 2.5px !important; }
+  .adm-hav-initial { font-size: 17px !important; }
+  .adm-hav-badge { width: 17px !important; height: 17px !important; i { font-size: 7px !important; } }
+}
+
+@keyframes adm-hdr-badgePop {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.22); box-shadow: 0 3px 10px rgba(253,57,149,.9); }
+}
+
+ul.sa-admin-nav.nav-instructor {
+  > li {
+    > a:hover { background: rgba(99, 102, 241, .09); color: #6366f1; i { opacity: 1; } }
+    &.active > a { background: rgba(99, 102, 241, .12); color: #6366f1; font-weight: 700; i { opacity: 1; } }
+  }
+}
+
+ul.sa-admin-nav.nav-student {
+  > li {
+    > a:hover { background: rgba(16, 185, 129, .09); color: #059669; i { opacity: 1; } }
+    &.active > a { background: rgba(16, 185, 129, .12); color: #059669; font-weight: 700; i { opacity: 1; } }
+  }
+}
+
+ul.sa-admin-nav.nav-recruiter {
+  > li {
+    > a:hover { background: rgba(14, 165, 233, .09); color: #0284c7; i { opacity: 1; } }
+    &.active > a { background: rgba(14, 165, 233, .12); color: #0284c7; font-weight: 700; i { opacity: 1; } }
+  }
+}
+
+// ─── Role Switcher ────────────────────────────────────────────────────────────
+.role-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1.5px solid var(--rsw-color, #6b7280);
+  background: transparent;
+  color: var(--rsw-color, #6b7280);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: var(--rsw-color, #6b7280);
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
+  }
+
+  &:disabled, &.role-switch-loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Premium Avatar Recruiter (header trigger) ───────────────────────────────
+.rct-header-avatar-wrap {
+  position: relative;
+  width: 38px; height: 38px; flex-shrink: 0; cursor: pointer;
+
+  .rct-hav-border {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(135deg, #03C95A, #392C7D, #0DCAF0);
+    transition: transform .2s ease;
+  }
+  .rct-hav-inner {
+    position: absolute; inset: 2px; border-radius: 50%;
+    background: linear-gradient(135deg, #03C95A, #392C7D);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .rct-hav-initial {
+    font-size: 13px; font-weight: 900; color: #fff; line-height: 1;
+    letter-spacing: .3px;
+  }
+  .rct-hav-badge {
+    position: absolute; top: -3px; right: -3px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: linear-gradient(135deg, #03C95A, #059669);
+    display: flex; align-items: center; justify-content: center;
+    border: 1.5px solid #fff;
+    box-shadow: 0 2px 6px rgba(3,201,90,.6); z-index: 5;
+    animation: rct-hdr-badgePop 2.8s ease-in-out infinite;
+    i { font-size: 6px; color: #fff; }
+  }
+
+  &:hover .rct-hav-border { transform: scale(1.1); }
+}
+
+@keyframes rct-hdr-badgePop {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.22); box-shadow: 0 3px 10px rgba(3,201,90,.9); }
+}
+
+// ─── Student Dashboard pill (in instructor dropdown) ─────────────────────────
+.student-dash-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  flex-shrink: 0;
+
+  i { font-size: 13px; }
+}
+
+// ─── Devenir Instructeur — bouton CTA header (étudiants) ─────────────────────
+.btn-become-instructor {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border: none;
+  cursor: pointer;
+}
+
+// ─── Devenir Instructeur — bouton dans le dropdown ───────────────────────────
+.become-instructor-dropdown-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(99,102,241,.2);
+  background: rgba(99,102,241,.05);
+  cursor: pointer;
+  transition: all 0.18s ease;
+
+  .bi-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #fff;
+
+    i { font-size: 15px; }
+  }
+
+  &:hover {
+    border-color: rgba(99,102,241,.5);
+    background: rgba(99,102,241,.1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(99,102,241,.15);
+  }
+}
+
+@keyframes popInModal {
+  from { opacity: 0; transform: scale(0.92) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+// ─── Profile Dropdown hover — SA & Admin ─────────────────────────────────────
+:host ::ng-deep {
+  a.sa-drop-item:hover,
+  a.sa-drop-item:focus {
+    background-color: rgba(86,37,232,.08) !important;
+    color: #5625E8 !important;
+    i { color: #0DCAF0 !important; }
+  }
+  a.adm-drop-item:hover,
+  a.adm-drop-item:focus {
+    background-color: rgba(86,37,232,.08) !important;
+    color: #5625E8 !important;
+    i { color: #5625E8 !important; }
+  }
+}
+
+// ─── Quick CTA button (Créer un cours pour instructeur) ──────────────────────
+.btn-header-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff !important;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  i { font-size: 16px; }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+    color: #fff !important;
+  }
+}
+
+// ─── DARK MODE ────────────────────────────────────────────────────────────
+:host-context(.dark-mode) {
+  // Navbar SA/Admin nav links — texte lisible sur fond sombre
+  ul.sa-admin-nav > li > a {
+    color: #94a3b8;
+    i { color: #64748b; opacity: 1; }
+    &:hover { color: #e2e8f0; i { color: #a5b4fc; } }
+  }
+  ul.sa-admin-nav.nav-superadmin > li.active > a { color: #a5f3fc; }
+  ul.sa-admin-nav.nav-admin > li.active > a { color: #fda4af; }
+
+  // Dropdown profil — fond sombre
+  .dropdown-menu {
+    background: #1a1a2b;
+    border-color: rgba(255,255,255,.08);
+    .dropdown-item { color: #cbd5e1; }
+    .dropdown-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+  }
+  // Notification dropdown header
+  .bg-light { background: #111119 !important; }
+}
+
+// ─── Recruiter Notification Bell ─────────────────────────────────────────────
+.rct-notif-dropdown {
+  position: relative;
+
+  // Bell icon styling
+  .ti-bell, .ti-bell-ringing {
+    font-size: 20px;
+    color: #374151;
+    transition: color .2s;
+  }
+  &:hover .ti-bell,
+  &:hover .ti-bell-ringing { color: #03C95A; }
+
+  // Animated ring on unread
+  .rct-notif-ring {
+    animation: rct-bell-shake .5s ease;
+    color: #03C95A !important;
+  }
+
+  // Badge count
+  .rct-notif-badge {
+    position: absolute;
+    top: -4px; right: -6px;
+    min-width: 17px; height: 17px;
+    background: linear-gradient(135deg, #03C95A, #059669);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(3,201,90,.35);
+    letter-spacing: .3px;
+  }
+}
+
+// Dropdown menu panel
+.rct-notif-menu {
+  width: 330px !important;
+  max-height: 440px;
+  overflow-y: auto;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 36px rgba(57,44,125,.15) !important;
+  border: 1px solid rgba(57,44,125,.1) !important;
+  padding: 0 !important;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: rgba(57,44,125,.2); border-radius: 10px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+}
+
+// Panel header
+.rct-notif-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(57,44,125,.09);
+  background: linear-gradient(135deg, rgba(3,201,90,.06), rgba(57,44,125,.04));
+  border-radius: 14px 14px 0 0;
+}
+.rct-notif-hd-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1e1b4b;
+}
+.rct-notif-hd-ico {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #03C95A, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  i { font-size: 14px; }
+}
+.rct-notif-hd-count {
+  background: linear-gradient(135deg, #03C95A, #059669);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 20px;
+}
+.rct-notif-mark-all {
+  border: none;
+  background: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #03C95A;
+  cursor: pointer;
+  padding: 0;
+  transition: color .15s;
+  &:hover { color: #059669; }
+}
+
+// Empty state
+.rct-notif-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 20px;
+  text-align: center;
+  p { font-size: 13px; font-weight: 700; color: #374151; margin: 10px 0 3px; }
+  small { color: #9ca3af; font-size: 11.5px; }
+}
+.rct-notif-empty-ico {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(3,201,90,.08), rgba(57,44,125,.06));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(57,44,125,.1);
+  i { font-size: 24px; color: rgba(57,44,125,.3); }
+}
+
+// Notification item
+.rct-notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(57,44,125,.07);
+  text-decoration: none;
+  color: inherit;
+  transition: background .13s;
+  position: relative;
+
+  &:hover { background: rgba(57,44,125,.04); }
+  &:last-child { border-bottom: none; }
+}
+.rct-notif-unread { background: rgba(3,201,90,.04) !important; }
+.rct-notif-item-ico {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(3,201,90,.1), rgba(57,44,125,.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(3,201,90,.15);
+  i { font-size: 15px; color: #03C95A; }
+}
+.rct-notif-item-body { flex: 1; min-width: 0; }
+.rct-notif-item-title {
+  margin: 0 0 2px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1e1b4b;
+  white-space: normal;
+  line-height: 1.35;
+}
+.rct-notif-item-msg {
+  margin: 0 0 3px;
+  font-size: 11px;
+  color: #6b7280;
+  white-space: normal;
+}
+.rct-notif-item-time {
+  font-size: 10px;
+  color: #9ca3af;
+}
+.rct-notif-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #03C95A;
+  flex-shrink: 0;
+  margin-top: 6px;
+  box-shadow: 0 0 0 2px rgba(3,201,90,.25);
+}
+
+// ─── Message icon unread badge ────────────────────────────────────────────────
+.rct-msg-icon-badge {
+  position: absolute;
+  top: -5px; right: -7px;
+  min-width: 16px; height: 16px;
+  background: linear-gradient(135deg, #03C95A, #059669);
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(3,201,90,.35);
+  letter-spacing: .2px;
+  pointer-events: none;
+}
+:host-context(.dark-mode) .rct-msg-icon-badge { border-color: #111119; }
+
+// ─── Bell animation ───────────────────────────────────────────────────────────
+@keyframes rct-bell-shake {
+  0%,100% { transform: rotate(0deg); }
+  15%      { transform: rotate(15deg); }
+  30%      { transform: rotate(-13deg); }
+  45%      { transform: rotate(8deg); }
+  60%      { transform: rotate(-6deg); }
+  75%      { transform: rotate(3deg); }
+}
+
+// ─── Dark mode ────────────────────────────────────────────────────────────────
+:host-context(.dark-mode) {
+  .rct-notif-dropdown {
+    .ti-bell, .ti-bell-ringing { color: #94a3b8; }
+    &:hover .ti-bell,
+    &:hover .ti-bell-ringing { color: #03C95A; }
+    .rct-notif-badge { border-color: #111119; }
+  }
+  .rct-notif-menu { background: #1a1a2b !important; border-color: rgba(255,255,255,.08) !important; }
+  .rct-notif-hd { background: linear-gradient(135deg,rgba(3,201,90,.06),rgba(57,44,125,.07)); border-bottom-color: rgba(255,255,255,.08); }
+  .rct-notif-hd-left { color: #e2e8f0; }
+  .rct-notif-item { border-bottom-color: rgba(255,255,255,.06); &:hover { background: rgba(255,255,255,.04) !important; } }
+  .rct-notif-unread { background: rgba(3,201,90,.06) !important; }
+  .rct-notif-item-title { color: #e2e8f0; }
+  .rct-notif-empty p { color: #e2e8f0; }
+}
+// Header background (global scope since :host-context doesn't reach <header>)
+:host-context(.dark-mode) header.header-two {
+  background-color: #1a1a2b !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,.35) !important;
+  border-bottom: 1px solid rgba(255,255,255,.06) !important;
+}

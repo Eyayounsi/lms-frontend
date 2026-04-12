@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OrderService, OrderHistoryDto } from '../../../shared/service/order/order.service';
 import { environment } from '../../../../environments/environment';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
 
 @Component({
     selector: 'app-student-order-history',
@@ -17,6 +18,10 @@ export class StudentOrderHistoryComponent implements OnInit {
   errorMessage = '';
   searchValue = '';
   statusFilter = '';
+
+  invoiceOrder: OrderHistoryDto | null = null;
+  studentName = localStorage.getItem('fullName') || 'Client';
+  studentEmail = localStorage.getItem('email') || '';
 
   constructor(private orderService: OrderService) {}
 
@@ -56,9 +61,7 @@ export class StudentOrderHistoryComponent implements OnInit {
   }
 
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return `${environment.apiUrl.replace('/api', '')}${clean}`;
+    return resolveCourseImage(path);
   }
 
   formatDate(dateStr: string): string {
@@ -88,5 +91,18 @@ export class StudentOrderHistoryComponent implements OnInit {
 
   getTotalSpent(): number {
     return this.orders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  }
+
+  openInvoice(o: OrderHistoryDto): void { this.invoiceOrder = o; }
+  closeInvoice(): void { this.invoiceOrder = null; }
+
+  printInvoice(): void {
+    const el = document.getElementById('student-invoice-area');
+    if (!el) return;
+    const original = document.body.innerHTML;
+    document.body.innerHTML = el.innerHTML;
+    window.print();
+    document.body.innerHTML = original;
+    window.location.reload();
   }
 }

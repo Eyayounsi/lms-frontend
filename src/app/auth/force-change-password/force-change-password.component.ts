@@ -59,7 +59,14 @@ export class ForceChangePasswordComponent {
         localStorage.setItem('firstLogin', 'false');
         this.successMessage = 'Mot de passe modifié avec succès ! Redirection...';
         setTimeout(() => {
-          this.router.navigate([routes.recruiter_dashboard]);
+          const role = localStorage.getItem('role');
+          if (role === 'ADMIN') {
+            this.router.navigate([routes.admin_dashboard]);
+          } else if (role === 'SUPERADMIN') {
+            this.router.navigate([routes.superadmin_dashboard]);
+          } else {
+            this.router.navigate([routes.recruiter_dashboard]);
+          }
         }, 1500);
       },
       error: (err: any) => {

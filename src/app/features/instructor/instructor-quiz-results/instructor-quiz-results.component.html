@@ -97,40 +97,117 @@
                 </div>
             </div>
         </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card bg-success-transparent border-0">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="mb-1 fw-normal text-gray-5">Total Attempts</h6>
+                            <span class="fs-20 fw-bold mb-1 d-block text-gray-9">{{ getTotalAttempts() }}</span>
+                        </div>
+                        <div class="icon-box bg-soft-success">
+                            <i class="isax isax-note-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body py-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                    <h6 class="mb-1">Vue agrégée par étudiant</h6>
+                    <p class="text-muted fs-12 mb-0">Une ligne par étudiant, puis détail des tentatives à la demande.</p>
+                </div>
+                <div class="iq-search-wrap">
+                    <i class="isax isax-search-normal"></i>
+                    <input type="text" class="form-control form-control-sm" placeholder="Rechercher un étudiant" [(ngModel)]="searchTerm">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="table-responsive custom-table">
         <table matSort (matSortChange)="sortData($event)" class="table">
             <thead class="thead-light">
                 <tr>
                     <th>Student Name</th>
-                    <th>Score</th>
+                    <th>Best Score</th>
+                    <th>Latest Score</th>
                     <th>Attempts</th>
-                    <th>Status</th>
-                    <th>Date</th>
+                    <th>Pass Rate</th>
+                    <th>Last Attempt</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngIf="results.length === 0">
-                    <td colspan="5" class="text-center text-muted py-4">No results yet</td>
+                <tr *ngIf="filteredStudentRows.length === 0">
+                    <td colspan="7" class="text-center text-muted py-4">No results yet</td>
                 </tr>
-                <tr *ngFor="let r of results">
+                <ng-container *ngFor="let row of filteredStudentRows">
+                <tr>
                     <td>
-                        <div class="d-flex align-items-center">
-                            <span class="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
-                                <img [src]="r.studentAvatar || 'assets/img/user/user-01.jpg'" alt="">
-                            </span>
-                            <span class="fs-14">{{ r.studentName }}</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <app-avatar-fallback 
+                              [imageUrl]="row.studentAvatar"
+                              [name]="row.studentName"
+                              size="sm">
+                            </app-avatar-fallback>
+                            <span class="fs-14">{{ row.studentName }}</span>
                         </div>
                     </td>
-                    <td>{{ r.score }}%</td>
-                    <td>{{ r.attempts }}</td>
+                    <td>{{ row.bestScore }}%</td>
+                    <td>{{ row.latestScore }}%</td>
+                    <td><span class="badge bg-secondary-transparent text-secondary">{{ row.attemptsCount }}</span></td>
                     <td>
-                        <span class="badge" [class.badge-success]="r.passed" [class.badge-danger]="!r.passed">
-                            {{ r.passed ? 'Passed' : 'Failed' }}
-                        </span>
+                        <span class="badge bg-info-transparent text-info">{{ row.passRate }}%</span>
                     </td>
-                    <td>{{ r.finishedAt | date:'short' }}</td>
+                    <td>{{ row.latestFinishedAt | date:'short' }}</td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-primary" (click)="toggleStudent(row.key)">
+                            <i class="isax" [ngClass]="isStudentExpanded(row.key) ? 'isax-arrow-up-2' : 'isax-arrow-down-1'"></i>
+                            {{ isStudentExpanded(row.key) ? 'Masquer' : 'Voir détails' }}
+                        </button>
+                    </td>
                 </tr>
+
+                <tr *ngIf="isStudentExpanded(row.key)" class="attempts-row">
+                    <td colspan="7" class="p-0">
+                        <div class="attempts-box">
+                            <div class="attempts-box-header">
+                                <span>Tentatives de {{ row.studentName }}</span>
+                                <span class="text-muted">{{ row.attemptsCount }} tentative(s)</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Score</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let a of row.attempts; let idx = index">
+                                            <td>{{ idx + 1 }}</td>
+                                            <td>{{ a.score }}%</td>
+                                            <td>
+                                                <span class="badge" [class.badge-success]="a.passed" [class.badge-danger]="!a.passed">
+                                                    {{ a.passed ? 'Passed' : 'Failed' }}
+                                                </span>
+                                            </td>
+                                            <td>{{ a.finishedAt | date:'short' }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                </ng-container>
             </tbody>
         </table>
     </div>

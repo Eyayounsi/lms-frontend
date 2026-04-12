@@ -7,7 +7,10 @@ export interface CertificateDto {
   id: number;
   courseId: number;
   courseTitle: string;
+  studentId: number;
   studentName: string;
+  studentAvatar?: string;
+  instructorName: string;
   certificateCode: string;
   issuedAt: string;
 }
@@ -33,5 +36,10 @@ export class CertificateService {
   /** Public — no auth needed */
   verifyByCode(code: string): Observable<CertificateDto> {
     return this.http.get<CertificateDto>(`${this.api}/courses/certificates/verify/${code}`);
+  }
+
+  /** Instructor — list all certs issued for instructor's courses */
+  getInstructorCertificates(): Observable<CertificateDto[]> {
+    return this.http.get<CertificateDto[]>(`${this.api}/instructor/certificates`);
   }
 }

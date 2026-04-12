@@ -3,34 +3,43 @@ export const routes = {
   superadmin_dashboard: '/superadmin/superadmin-dashboard',
   superadmin_users: '/superadmin/superadmin-users',
   superadminSettings: '/superadmin/superadmin-settings',
+  superadmin_logs: '/superadmin/superadmin-logs',
 
   // Admin Routes
   admin_dashboard: '/admin/admin-dashboard',
   admin_users: '/admin/admin-users',
   admin_courses: '/admin/admin-courses',
   admin_categories: '/admin/admin-categories',
+  admin_blog: '/admin/admin-blog',
+  admin_tickets: '/admin/admin-tickets',
+  admin_payouts: '/admin/admin-payouts',
+  admin_detection: '/admin/admin-detection',
+  adminAnalytics: '/admin/admin-analytics',
   adminSettings: '/admin/admin-settings',
 
   // Recruiter Routes
   recruiter_dashboard: '/recruiter/recruiter-dashboard',
   recruiter_shared_profiles: '/recruiter/recruiter-shared-profiles',
-  recruiterSettings: '/recruiter/recruiter-settings',
+  recruiter_certified_students: '/recruiter/recruiter-certified-students',
+  recruiter_job_offers: '/recruiter/recruiter-job-offers',
+  recruiter_messages: '/recruiter/recruiter-messages',
+  recruiterSettings: '/recruiter/settings/recruiter-settings',
+  recruiterChangePassword: '/recruiter/settings/recruiter-change-password',
   forceChangePassword: '/auth/force-change-password',
+  face_register: '/auth/face-register',
 
   // Instructor Routes
   instructor: '/instructor/',
   instructor_dashboard: '/instructor/instructor-dashboard',
   instructor_payouts: '/instructor/instructor-payouts',
   instructor_tickets: '/instructor/instructor-tickets',
-  instructorAnnouncements: '/instructor/instructor-announcements',
-  instructorAssignment: '/instructor/instructor-assignment',
   instructorWishlist: '/instructor/instructor-wishlist',
   instructorWithdraw: '/instructor/instructor-withdraw',
   instructorProfile: '/instructor/instructor-profile',
   instructorQuizQuestion: '/instructor/instructor-quiz-questions',
   instructorQuiz: '/instructor/instructor-quiz',
   instructorCertificate: '/instructor/instructor-certificate',
-  instructorEarning: '/instructor/instructor-earnings',
+  instructorEarning: '/instructor/instructor-payouts',
   instructorStatements: '/instructor/instructor-statements',
   quiz:  'quiz',
   studentsList: '/instructor/students-list',
@@ -38,7 +47,10 @@ export const routes = {
   studentsDetails: '/instructor/students-details',
   instructorQuizResult: '/instructor/instructor-quiz-results',
   instructorCourse: '/instructor/instructor-course',
-  instructorMyCourses: '/instructor/instructor-my-courses',
+  instructorNotifications: '/instructor/notifications',
+  instructorAddCourse: '/instructor/add-course',
+  instructorEditCourse: '/instructor/edit-course',
+  instructorMyCourses: '/instructor/instructor-course',
   instructorCourseGrid: '/instructor/instructor-course-grid',
   instructorTickets: '/instructor/instructor-tickets',
   instructorMessage: '/instructor/instructor-message',
@@ -52,6 +64,8 @@ export const routes = {
   instructorDeleteAccount: '/instructor/settings/instructor-delete-account',
   instructorChangePassword: '/instructor/settings/instructor-change-password',
   instructorSettings: '/instructor/settings/instructor-settings',
+  instructorDetection: '/instructor/instructor-detection',
+  instructorAnalytics: '/instructor/instructor-analytics',
 
   // Student Routes
   students: '/student/',
@@ -94,6 +108,10 @@ export const routes = {
   studentChangePassword: '/student/settings/student-change-password',
   studentSettings: '/student/settings/student-settings',
   studentBillingAddress: '/student/settings/student-billing-address',
+  studentQa: '/student/student-qa',
+  student_job_offers: '/student/student-job-offers',
+  studentChallenges: '/student/student-challenges',
+  studentPointsExchange: '/student/student-points-exchange',
 
   // Pages Routes
   pages: '/pages/',
@@ -161,6 +179,7 @@ export const routes = {
   courseListPublic: '/courses/course-list-public',
   verifyCertificate: '/courses/certificates/verify',
   addCourse: '/courses/add-course',
+  editCourse: '/courses/edit-course',
 };
 
 export default routes;

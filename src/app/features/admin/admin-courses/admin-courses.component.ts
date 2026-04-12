@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { SafeUrlPipe } from '../../../shared/pipe/safe-url.pipe';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-admin-courses',
@@ -20,14 +22,18 @@ export class AdminCoursesComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  // Onglet actif : 'pending' | 'published' | 'all' | 'pending-edits'
-  activeTab: 'pending' | 'published' | 'all' | 'pending-edits' = 'pending';
+  // Onglet actif : 'pending' | 'published' | 'all' | 'pending-edits' | 'archived'
+  activeTab: 'pending' | 'published' | 'all' | 'pending-edits' | 'archived' = 'pending';
   allCourses: any[] = [];
   loadingAll = true;
 
   // Modifications en attente
   pendingEditsCourses: any[] = [];
   loadingPendingEdits = true;
+
+  // Cours archivés
+  archivedCourses: any[] = [];
+  loadingArchived = true;
 
   // Modal détail
   selectedCourse: any = null;
@@ -36,6 +42,7 @@ export class AdminCoursesComponent implements OnInit {
   // Modal rejet
   showRejectModal = false;
   rejectionReason = '';
+  rejectSubmitting = false;
 
   // Modal rejet modification
   showRejectEditModal = false;
@@ -71,6 +78,7 @@ export class AdminCoursesComponent implements OnInit {
     this.loadPublishedCourses();
     this.loadAllCourses();
     this.loadPendingEditsCourses();
+    this.loadArchivedCourses();
     this.courseService.getCategories().subscribe({
       next: (cats) => (this.categories = cats),
       error: () => {}
@@ -90,6 +98,14 @@ export class AdminCoursesComponent implements OnInit {
     this.courseService.getCoursesWithPendingEdits().subscribe({
       next: (data) => { this.pendingEditsCourses = data; this.loadingPendingEdits = false; },
       error: () => { this.loadingPendingEdits = false; }
+    });
+  }
+
+  loadArchivedCourses(): void {
+    this.loadingArchived = true;
+    this.courseService.getArchivedCoursesForAdmin().subscribe({
+      next: (data) => { this.archivedCourses = data; this.loadingArchived = false; },
+      error: () => { this.loadingArchived = false; }
     });
   }
 
@@ -122,7 +138,7 @@ export class AdminCoursesComponent implements OnInit {
     });
   }
 
-  switchTab(tab: 'pending' | 'published' | 'all' | 'pending-edits'): void {
+  switchTab(tab: 'pending' | 'published' | 'all' | 'pending-edits' | 'archived'): void {
     this.activeTab = tab;
   }
 
@@ -155,28 +171,51 @@ export class AdminCoursesComponent implements OnInit {
   }
 
   deleteReviewAdmin(review: any): void {
-    if (!confirm(`Supprimer l'avis de "${review.studentName}" ?`)) return;
-    this.courseService.adminDeleteReview(review.id).subscribe({
-      next: () => {
-        this.modalReviews = this.modalReviews.filter(r => r.id !== review.id);
-        this.showSuccess(`Avis de ${review.studentName} supprimé.`);
-      },
-      error: (e) => (this.errorMessage = e?.error?.message || 'Erreur.')
+    Swal.fire({
+      title: 'Supprimer cet avis ?',
+      html: `Avis de <strong>${review.studentName}</strong> — action irréversible.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-trash me-1"></i>Supprimer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#6b7280',
+      customClass: { popup: 'rounded-4 shadow' }
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.courseService.adminDeleteReview(review.id).subscribe({
+        next: () => {
+          this.modalReviews = this.modalReviews.filter(r => r.id !== review.id);
+          this.showToast('success', `Avis de ${review.studentName} supprimé.`);
+        },
+        error: (e) => this.showToast('error', e?.error?.message || 'Erreur.')
+      });
     });
   }
 
   // Approuver
   approveCourse(course: any): void {
-    if (confirm(`Approuver le cours "${course.title}" ? Il sera visible par tous les étudiants.`)) {
+    Swal.fire({
+      title: 'Approuver ce cours ?',
+      html: `Le cours <strong>${course.title}</strong> sera visible par tous les étudiants.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-check me-1"></i>Approuver',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#6b7280',
+      customClass: { popup: 'rounded-4 shadow' }
+    }).then(result => {
+      if (!result.isConfirmed) return;
       this.courseService.reviewCourse(course.id, { action: 'APPROVE' }).subscribe({
         next: () => {
-          this.showSuccess('Cours approuvé avec succès !');
+          this.showToast('success', 'Cours approuvé avec succès !');
           this.loadPendingCourses();
           this.closeDetail();
         },
-        error: (err) => this.errorMessage = err.error?.message || 'Erreur'
+        error: (err) => this.showToast('error', err.error?.message || "Erreur lors de l'approbation")
       });
-    }
+    });
   }
 
   // Rejeter
@@ -184,29 +223,38 @@ export class AdminCoursesComponent implements OnInit {
     this.selectedCourse = course;
     this.showRejectModal = true;
     this.rejectionReason = '';
+    this.rejectSubmitting = false;
   }
 
   closeRejectModal(): void {
     this.showRejectModal = false;
     this.rejectionReason = '';
+    this.rejectSubmitting = false;
   }
 
   confirmReject(): void {
-    if (!this.rejectionReason.trim()) {
-      this.errorMessage = 'Veuillez indiquer la raison du rejet';
-      return;
-    }
-    this.courseService.reviewCourse(this.selectedCourse.id, {
+    if (!this.selectedCourse || this.rejectSubmitting) return;
+    this.rejectSubmitting = true;
+    const courseSnapshot = this.selectedCourse;
+    const reasonSnapshot = this.rejectionReason.trim() || undefined;
+    this.showRejectModal = false;
+    this.closeDetail();
+    this.courseService.reviewCourse(courseSnapshot.id, {
       action: 'REJECT',
-      rejectionReason: this.rejectionReason
+      rejectionReason: reasonSnapshot
     }).subscribe({
       next: () => {
-        this.showSuccess('Cours rejeté');
-        this.showRejectModal = false;
-        this.closeDetail();
+        this.rejectSubmitting = false;
+        this.showToast('success', 'Cours rejeté');
         this.loadPendingCourses();
       },
-      error: (err) => this.errorMessage = err.error?.message || 'Erreur'
+      error: (err) => {
+        this.rejectSubmitting = false;
+        this.selectedCourse = courseSnapshot;
+        this.rejectionReason = reasonSnapshot || '';
+        this.showRejectModal = true;
+        this.showToast('error', err.error?.message || 'Erreur lors du rejet');
+      }
     });
   }
 
@@ -225,26 +273,60 @@ export class AdminCoursesComponent implements OnInit {
     if (!this.courseToDelete) return;
     this.courseService.adminDeleteCourse(this.courseToDelete.id).subscribe({
       next: () => {
-        this.showSuccess('Cours supprimé');
+        this.showToast('success', 'Cours supprimé définitivement');
         this.closeDeleteModal();
-        this.loadPendingCourses();
-        this.loadPublishedCourses();
-        this.loadAllCourses();
+        this.loadPendingCourses(); this.loadPublishedCourses();
+        this.loadAllCourses(); this.loadArchivedCourses();
       },
-      error: (err) => { this.errorMessage = err.error?.message || 'Erreur lors de la suppression'; this.closeDeleteModal(); }
+      error: (err) => { this.showToast('error', err.error?.message || 'Erreur lors de la suppression'); this.closeDeleteModal(); }
     });
   }
 
   // Admin: Archiver
   adminArchive(course: any): void {
-    if (!confirm(`Archiver le cours "${course.title}" ?`)) return;
-    this.courseService.adminArchiveCourse(course.id).subscribe({
-      next: () => {
-        this.showSuccess('Cours archivé');
-        this.loadPublishedCourses();
-        this.loadAllCourses();
-      },
-      error: (err) => this.errorMessage = err.error?.message || 'Erreur lors de l\'archivage'
+    Swal.fire({
+      title: 'Archiver ce cours ?',
+      html: `<strong>${course.title}</strong> ne sera plus visible par les étudiants.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-box-archive me-1"></i>Archiver',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#475569',
+      cancelButtonColor: '#6b7280',
+      customClass: { popup: 'rounded-4 shadow' }
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.courseService.adminArchiveCourse(course.id).subscribe({
+        next: () => {
+          this.showToast('success', 'Cours archivé');
+          this.loadPublishedCourses(); this.loadAllCourses(); this.loadArchivedCourses();
+        },
+        error: (err) => this.showToast('error', err.error?.message || "Erreur lors de l'archivage")
+      });
+    });
+  }
+
+  // Admin: Désarchiver
+  adminUnarchive(course: any): void {
+    Swal.fire({
+      title: 'Désarchiver ce cours ?',
+      html: `<strong>${course.title}</strong> sera remis en ligne et visible par tous.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-rotate-left me-1"></i>Désarchiver',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#6b7280',
+      customClass: { popup: 'rounded-4 shadow' }
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.courseService.adminUnarchiveCourse(course.id).subscribe({
+        next: () => {
+          this.showToast('success', 'Cours remis en ligne');
+          this.loadPublishedCourses(); this.loadAllCourses(); this.loadArchivedCourses();
+        },
+        error: (err) => this.showToast('error', err.error?.message || 'Erreur lors du désarchivage')
+      });
     });
   }
 
@@ -264,12 +346,12 @@ export class AdminCoursesComponent implements OnInit {
     if (!this.selectedCourse) return;
     this.courseService.adminUpdatePrice(this.selectedCourse.id, this.newPrice).subscribe({
       next: () => {
-        this.showSuccess('Prix mis à jour avec succès !');
+        this.showToast('success', 'Prix mis à jour !');
         this.closePriceModal();
         this.loadPublishedCourses();
         this.loadAllCourses();
       },
-      error: (err) => this.errorMessage = err.error?.message || 'Erreur lors de la mise à jour du prix'
+      error: (err) => this.showToast('error', err.error?.message || 'Erreur lors de la mise à jour du prix')
     });
   }
 
@@ -291,12 +373,12 @@ export class AdminCoursesComponent implements OnInit {
     if (!this.selectedCourse) return;
     this.courseService.adminSetPromotion(this.selectedCourse.id, this.promoPrice, this.promoEndsAt).subscribe({
       next: () => {
-        this.showSuccess('Promotion appliquée !');
+        this.showToast('success', 'Promotion appliquée !');
         this.closePromoModal();
         this.loadPublishedCourses();
         this.loadAllCourses();
       },
-      error: (err) => this.errorMessage = err.error?.message || 'Erreur lors de l\'application de la promotion'
+      error: (err) => this.showToast('error', err.error?.message || "Erreur lors de l'application de la promotion")
     });
   }
 
@@ -311,9 +393,7 @@ export class AdminCoursesComponent implements OnInit {
   }
 
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return resolveCourseImage(path);
   }
 
   getFileUrl(path: string): string {
@@ -648,21 +728,28 @@ export class AdminCoursesComponent implements OnInit {
     if (!this.selectedCourse) return;
     this.courseService.adminEditCourse(this.selectedCourse.id, this.adminEditForm).subscribe({
       next: (updated) => {
-        this.showSuccess('Cours mis à jour !');
+        this.showToast('success', 'Cours mis à jour !');
         this.selectedCourse = updated;
         this.adminEditMode = false;
-        this.loadPendingCourses();
-        this.loadPublishedCourses();
-        this.loadAllCourses();
+        this.loadPendingCourses(); this.loadPublishedCourses(); this.loadAllCourses();
       },
-      error: (err) => (this.errorMessage = err.error?.message || 'Erreur lors de la mise à jour')
+      error: (err) => this.showToast('error', err.error?.message || 'Erreur lors de la mise à jour')
     });
   }
 
-  private showSuccess(msg: string): void {
-    this.successMessage = msg;
-    this.errorMessage = '';
-    setTimeout(() => this.successMessage = '', 3000);
+  private showToast(type: 'success' | 'error' | 'warning' | 'info', msg: string): void {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3500,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+      }
+    });
+    Toast.fire({ icon: type, title: msg });
   }
 
   toggleFeatured(course: any): void {
@@ -670,11 +757,11 @@ export class AdminCoursesComponent implements OnInit {
     this.courseService.toggleFeatured(course.id, newFeatured).subscribe({
       next: () => {
         course.featured = newFeatured;
-        this.showSuccess(newFeatured ? `"${course.title}" mis en avant !` : `"${course.title}" retiré des mis en avant.`);
+        this.showToast('success', newFeatured
+          ? `"${course.title}" mis en avant !`
+          : `"${course.title}" retiré des mis en avant.`);
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Impossible de modifier le featured.';
-      }
+      error: (err) => this.showToast('error', err.error?.message || 'Impossible de modifier le featured.')
     });
   }
 
@@ -683,15 +770,25 @@ export class AdminCoursesComponent implements OnInit {
   // ═══════════════════════════════════════════════════════════════════════
 
   approvePendingEditAction(course: any): void {
-    if (!confirm(`Approuver les modifications du cours "${course.title}" ? Les changements seront visibles par les étudiants.`)) return;
-    this.courseService.approvePendingEdit(course.id).subscribe({
-      next: () => {
-        this.showSuccess('Modification approuvée !');
-        this.loadPendingEditsCourses();
-        this.loadPublishedCourses();
-        this.loadAllCourses();
-      },
-      error: (err) => this.errorMessage = err.error?.message || 'Erreur lors de l\'approbation'
+    Swal.fire({
+      title: 'Approuver les modifications ?',
+      html: `Les changements du cours <strong>${course.title}</strong> seront visibles immédiatement.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '<i class="fa-solid fa-check me-1"></i>Approuver',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#16a34a',
+      cancelButtonColor: '#6b7280',
+      customClass: { popup: 'rounded-4 shadow' }
+    }).then(result => {
+      if (!result.isConfirmed) return;
+      this.courseService.approvePendingEdit(course.id).subscribe({
+        next: () => {
+          this.showToast('success', 'Modification approuvée !');
+          this.loadPendingEditsCourses(); this.loadPublishedCourses(); this.loadAllCourses();
+        },
+        error: (err) => this.showToast('error', err.error?.message || "Erreur lors de l'approbation")
+      });
     });
   }
 
@@ -711,12 +808,11 @@ export class AdminCoursesComponent implements OnInit {
     if (!this.editRejectCourse) return;
     this.courseService.rejectPendingEdit(this.editRejectCourse.id, this.editRejectReason).subscribe({
       next: () => {
-        this.showSuccess('Modification rejetée');
+        this.showToast('success', 'Modification rejetée');
         this.closeRejectEditModal();
-        this.loadPendingEditsCourses();
-        this.loadAllCourses();
+        this.loadPendingEditsCourses(); this.loadAllCourses();
       },
-      error: (err) => this.errorMessage = err.error?.message || 'Erreur lors du rejet'
+      error: (err) => this.showToast('error', err.error?.message || 'Erreur lors du rejet')
     });
   }
 }

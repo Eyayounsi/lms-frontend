@@ -1,0 +1,44 @@
+.instructor-detail-content .course-carousal-img {
+	height: 190px;
+	background: transparent;
+}
+
+.instructor-detail-content .course-carousal-img.has-image {
+	background: transparent;
+}
+
+.instructor-detail-content .course-carousal-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.instructor-detail-content .ins-details-course-placeholder {
+	width: 100%;
+	height: 100%;
+	border-radius: 0.75rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	color: #fff;
+	padding: 0.75rem;
+	text-align: center;
+}
+
+.instructor-detail-content .ins-details-course-placeholder i {
+	font-size: 1.25rem;
+}
+
+.instructor-detail-content .ins-details-course-placeholder span {
+	font-size: 0.82rem;
+	font-weight: 600;
+	line-height: 1.25;
+	max-width: 100%;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}

@@ -5,6 +5,8 @@ import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
+import { resolveAvatarImage } from '../../../shared/utils/avatar-image.util';
 
 @Component({
   selector: 'app-course-grid',
@@ -105,14 +107,13 @@ export class CourseGridComponent implements OnInit {
   }
 
   getImageUrl(image: string): string {
-    if (!image) return 'assets/img/course/course-01.jpg';
+    if (!image) return 'assets/img/course-img/courses-01.jpg';
+    if (image.startsWith('preset:')) return `assets/img/course-img/${image.replace('preset:', '')}`;
     if (image.startsWith('http')) return image;
-    return `http://localhost:8081/api/files/${image}`;
+    return resolveCourseImage(image);
   }
 
   getAvatarUrl(avatar: string): string {
-    if (!avatar) return 'assets/img/user/user-01.jpg';
-    if (avatar.startsWith('http')) return avatar;
-    return `http://localhost:8081/api/files/${avatar}`;
+    return resolveAvatarImage(avatar, 'assets/img/user/user-01.jpg');
   }
 }

@@ -1,49 +1,115 @@
 <div class="page-content">
-      <!-- Messages -->
-        <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
-          <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
-          <button type="button" class="btn-close" (click)="successMessage = ''"></button>
-        </div>
-        <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
-          <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
-          <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
-        </div>
 
-        <!-- Header + Onglets -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h4 class="mb-0">
-            <i class="fa-solid fa-clipboard-check me-2 text-warning"></i>
-            Gestion des Cours
-          </h4>
+  <!-- ══════════════════════════════════════════════════════════════
+       HERO
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="ac-hero mb-4">
+    <div class="ac-glow ac-glow-1"></div>
+    <div class="ac-glow ac-glow-2"></div>
+    <div class="ac-hero-body">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <!-- Left: avatar + title -->
+        <div class="d-flex align-items-center gap-3">
+          <div class="ac-av-wrap">
+            <div class="ac-av-ring"></div>
+            <div class="ac-av-border">
+              <div class="ac-av-circle">
+                <i class="ti ti-school" style="font-size:26px;color:#fff;"></i>
+              </div>
+            </div>
+            <div class="ac-av-pulse"></div>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="ac-chip"><i class="ti ti-shield-check me-1" style="font-size:9px"></i>Admin</span>
+              <span class="ac-live"><span class="ac-live-dot"></span>Live</span>
+            </div>
+            <h4 class="text-white fw-bold mb-0 lh-1" style="font-size:1.35rem">Gestion des Cours</h4>
+            <p class="text-white-50 small mb-0 mt-1">Validation, publication et suivi de tous les cours</p>
+          </div>
         </div>
+        <!-- Right: glass stats -->
+        <div class="ac-glass d-flex align-items-center gap-0">
+          <div class="ac-stat text-center">
+            <div class="text-white fw-800 lh-1" style="font-size:1.4rem;font-weight:800">{{ allCourses.length }}</div>
+            <div class="text-white-50" style="font-size:10.5px">Total</div>
+          </div>
+          <div class="ac-stat-div mx-1"></div>
+          <div class="ac-stat text-center">
+            <div class="lh-1 fw-800" style="font-size:1.4rem;font-weight:800;color:#FFC107">{{ pendingCourses.length }}</div>
+            <div class="text-white-50" style="font-size:10.5px">En attente</div>
+          </div>
+          <div class="ac-stat-div mx-1"></div>
+          <div class="ac-stat text-center">
+            <div class="lh-1 fw-800" style="font-size:1.4rem;font-weight:800;color:#03C95A">{{ publishedCourses.length }}</div>
+            <div class="text-white-50" style="font-size:10.5px">Publiés</div>
+          </div>
+          <div class="ac-stat-div mx-1"></div>
+          <div class="ac-stat text-center">
+            <div class="lh-1 fw-800" style="font-size:1.4rem;font-weight:800;color:#0DCAF0">{{ archivedCourses.length }}</div>
+            <div class="text-white-50" style="font-size:10.5px">Archivés</div>
+          </div>
+          <div class="ac-stat-div mx-1"></div>
+          <div class="ac-stat text-center">
+            <div class="lh-1 fw-800" style="font-size:1.4rem;font-weight:800;color:#FD3995">{{ pendingEditsCourses.length }}</div>
+            <div class="text-white-50" style="font-size:10.5px">Modifs</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <!-- Onglets -->
-        <ul class="nav nav-tabs mb-4">
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'pending'" (click)="switchTab('pending')" style="cursor:pointer">
-              <i class="fa-solid fa-clock me-1 text-warning"></i>En attente
-              <span class="badge bg-warning text-dark ms-1">{{ pendingCourses.length }}</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'published'" (click)="switchTab('published')" style="cursor:pointer">
-              <i class="fa-solid fa-check-circle me-1 text-success"></i>Publiés
-              <span class="badge bg-success ms-1">{{ publishedCourses.length }}</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'all'" (click)="switchTab('all')" style="cursor:pointer">
-              <i class="fa-solid fa-list me-1 text-info"></i>Tous les cours
-              <span class="badge bg-info ms-1">{{ allCourses.length }}</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab === 'pending-edits'" (click)="switchTab('pending-edits')" style="cursor:pointer">
-              <i class="fa-solid fa-pen-to-square me-1 text-primary"></i>Modifications en attente
-              <span class="badge bg-primary ms-1">{{ pendingEditsCourses.length }}</span>
-            </a>
-          </li>
-        </ul>
+  <!-- ══════════════════════════════════════════════════════════════
+       KPI CARDS
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md" *ngFor="let kpi of [
+      {val: allCourses.length,         label: 'Total cours',        icon: 'fa-book',            cls: 'ac-kpi-blue',   bar: 100,                                                          tab: 'all'},
+      {val: pendingCourses.length,     label: 'En attente',         icon: 'fa-clock',           cls: 'ac-kpi-yellow', bar: pendingCourses.length / (allCourses.length||1) * 100,         tab: 'pending'},
+      {val: publishedCourses.length,   label: 'Publiés',            icon: 'fa-check-circle',    cls: 'ac-kpi-green',  bar: publishedCourses.length / (allCourses.length||1) * 100,       tab: 'published'},
+      {val: pendingEditsCourses.length,label: 'Modifs en attente',  icon: 'fa-pen-to-square',   cls: 'ac-kpi-violet', bar: 100,                                                          tab: 'pending-edits'},
+      {val: archivedCourses.length,    label: 'Archivés',           icon: 'fa-box-archive',     cls: 'ac-kpi-slate',  bar: archivedCourses.length / (allCourses.length||1) * 100,        tab: 'archived'}
+    ]">
+      <div class="card border-0 shadow-sm ac-kpi ac-kpi-clickable" [ngClass]="[kpi.cls, activeTab === kpi.tab ? 'ac-kpi-active' : '']" (click)="switchTab($any(kpi.tab))">
+        <div class="ac-kpi-body d-flex align-items-center gap-3">
+          <div class="ac-kpi-icon"><i class="fa-solid" [ngClass]="kpi.icon"></i></div>
+          <div>
+            <div class="ac-kpi-val">{{ kpi.val }}</div>
+            <div class="ac-kpi-label">{{ kpi.label }}</div>
+          </div>
+        </div>
+        <div class="px-3 pb-3">
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" [style.width.%]="kpi.bar"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       NAVIGATION TABS
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="ac-nav">
+    <button class="ac-tab" [class.active]="activeTab === 'pending'" (click)="switchTab('pending')">
+      <i class="fa-solid fa-clock"></i>En attente
+      <span class="ac-badge" [ngClass]="activeTab==='pending' ? 'bg-warning text-dark' : 'bg-light text-muted'">{{ pendingCourses.length }}</span>
+    </button>
+    <button class="ac-tab" [class.active]="activeTab === 'published'" (click)="switchTab('published')">
+      <i class="fa-solid fa-check-circle"></i>Publiés
+      <span class="ac-badge" [ngClass]="activeTab==='published' ? 'bg-success text-white' : 'bg-light text-muted'">{{ publishedCourses.length }}</span>
+    </button>
+    <button class="ac-tab" [class.active]="activeTab === 'all'" (click)="switchTab('all')">
+      <i class="fa-solid fa-layer-group"></i>Tous les cours
+      <span class="ac-badge" [ngClass]="activeTab==='all' ? 'bg-primary text-white' : 'bg-light text-muted'">{{ allCourses.length }}</span>
+    </button>
+    <button class="ac-tab" [class.active]="activeTab === 'pending-edits'" (click)="switchTab('pending-edits')">
+      <i class="fa-solid fa-pen-to-square"></i>Modifications
+      <span class="ac-badge" [ngClass]="activeTab==='pending-edits' ? 'bg-primary text-white' : 'bg-light text-muted'">{{ pendingEditsCourses.length }}</span>
+    </button>
+    <button class="ac-tab" [class.active]="activeTab === 'archived'" (click)="switchTab('archived')">
+      <i class="fa-solid fa-box-archive"></i>Archivés
+      <span class="ac-badge" [ngClass]="activeTab==='archived' ? 'bg-secondary text-white' : 'bg-light text-muted'">{{ archivedCourses.length }}</span>
+    </button>
+  </div>
 
         <!-- ══ ONGLET EN ATTENTE ══ -->
         <div *ngIf="activeTab === 'pending'">
@@ -54,56 +120,70 @@
           </div>
 
           <!-- Aucun cours -->
-          <div *ngIf="!loading && pendingCourses.length === 0" class="text-center py-5">
-            <i class="fa-solid fa-check-double fa-3x text-success mb-3"></i>
-            <h5 class="text-muted">Aucun cours en attente</h5>
-            <p class="text-muted">Tous les cours ont été traités</p>
+          <div *ngIf="!loading && pendingCourses.length === 0" class="ac-empty">
+            <div class="ac-empty-icon"><i class="fa-solid fa-check-double"></i></div>
+            <h5 class="fw-semibold text-muted mb-1">File vide !</h5>
+            <p class="text-muted small mb-0">Tous les cours ont été traités.</p>
           </div>
 
           <!-- Liste des cours en attente -->
           <div *ngIf="!loading && pendingCourses.length > 0">
-            <div class="card mb-3 shadow-sm" *ngFor="let course of pendingCourses">
-              <div class="card-body">
-                <div class="row align-items-center">
+            <div class="card border-0 shadow-sm ac-card mb-3" *ngFor="let course of pendingCourses">
+              <div class="card-body p-3">
+                <div class="row align-items-center g-3">
+
                   <!-- Image -->
                   <div class="col-md-2">
-                    <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded" 
-                         style="height: 100px; width: 100%; object-fit: cover;" alt="cover">
+                    <img [src]="getImageUrl(course.coverImage)" class="ac-card-img-lg" alt="cover">
                   </div>
+
                   <!-- Info -->
-                  <div class="col-md-6">
-                    <h5 class="mb-1">{{ course.title }}</h5>
+                  <div class="col-md-5">
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                      <h6 class="fw-bold mb-0">{{ course.title }}</h6>
+                      <span class="ac-status pending"><i class="fa-solid fa-clock me-1"></i>En attente</span>
+                    </div>
                     <p class="text-muted small mb-1">
-                      <i class="fa-solid fa-user me-1"></i>{{ course.instructorName }}
+                      <i class="fa-solid fa-user me-1 text-primary"></i>{{ course.instructorName }}
+                      &nbsp;·&nbsp;<i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
                     </p>
-                    <p class="text-muted small mb-1">
-                      <i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
-                      &nbsp;|&nbsp;
-                      <ng-container *ngIf="course.onSale; else normalPricePending">
-                        <span class="text-decoration-line-through text-muted me-1">{{ course.price | number:'1.2-2' }} €</span>
-                        <span class="text-danger fw-bold">{{ course.effectivePrice | number:'1.2-2' }} €</span>
-                        <span class="badge bg-danger ms-1">PROMO</span>
-                      </ng-container>
-                      <ng-template #normalPricePending>
-                        <i class="fa-solid fa-euro-sign me-1"></i>{{ course.price | number:'1.2-2' }}
-                      </ng-template>
-                    </p>
-                    <p class="text-muted small mb-0">
-                      {{ course.description?.length > 120 ? (course.description | slice:0:120) + '...' : course.description }}
+                    <p class="text-muted small mb-0" style="line-height:1.45">
+                      {{ course.description?.length > 110 ? (course.description | slice:0:110) + '…' : course.description }}
                     </p>
                   </div>
+
                   <!-- Actions -->
-                  <div class="col-md-4 text-end">
-                    <button class="btn btn-outline-primary btn-sm me-1" (click)="openDetail(course)">
-                      <i class="fa-solid fa-eye me-1"></i>Détails
-                    </button>
-                    <button class="btn btn-success btn-sm me-1" (click)="approveCourse(course)">
-                      <i class="fa-solid fa-check me-1"></i>Approuver
-                    </button>
-                    <button class="btn btn-danger btn-sm" (click)="openRejectModal(course)">
-                      <i class="fa-solid fa-times me-1"></i>Rejeter
-                    </button>
+                  <div class="col-md-5">
+                    <div class="d-flex flex-column gap-2 align-items-end">
+
+                      <!-- Prix -->
+                      <div class="text-end">
+                        <ng-container *ngIf="course.onSale; else pricePending">
+                          <span class="text-decoration-line-through text-muted small me-1">{{ course.price | number:'1.2-2' }} €</span>
+                          <span class="fw-bold text-danger">{{ course.effectivePrice | number:'1.2-2' }} €</span>
+                          <span class="ac-promo ms-1">PROMO</span>
+                        </ng-container>
+                        <ng-template #pricePending>
+                          <span class="fw-bold text-dark">{{ course.price | number:'1.2-2' }} €</span>
+                        </ng-template>
+                      </div>
+
+                      <!-- Boutons -->
+                      <div class="d-flex gap-2 flex-wrap justify-content-end">
+                        <button class="ac-btn-detail" (click)="openDetail(course)">
+                          <i class="fa-solid fa-eye me-1"></i>Détails
+                        </button>
+                        <button class="ac-btn-approve" (click)="approveCourse(course)">
+                          <i class="fa-solid fa-check me-1"></i>Approuver
+                        </button>
+                        <button class="ac-btn-reject" (click)="openRejectModal(course)">
+                          <i class="fa-solid fa-times me-1"></i>Rejeter
+                        </button>
+                      </div>
+
+                    </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -112,82 +192,91 @@
 
         <!-- ══ ONGLET PUBLIÉS ══ -->
         <div *ngIf="activeTab === 'published'">
-          <!-- Loading -->
           <div *ngIf="loadingPublished" class="text-center py-5">
             <div class="spinner-border text-success" role="status"></div>
-            <p class="mt-2 text-muted">Chargement des cours publiés...</p>
+            <p class="mt-2 text-muted">Chargement...</p>
           </div>
-
-          <!-- Aucun cours publié -->
-          <div *ngIf="!loadingPublished && publishedCourses.length === 0" class="text-center py-5">
-            <i class="fa-solid fa-book-open fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">Aucun cours publié</h5>
-            <p class="text-muted">Approuvez des cours pour les voir ici</p>
+          <div *ngIf="!loadingPublished && publishedCourses.length === 0" class="ac-empty">
+            <div class="ac-empty-icon"><i class="fa-solid fa-book-open"></i></div>
+            <h5 class="fw-semibold text-muted mb-1">Aucun cours publié</h5>
+            <p class="text-muted small mb-0">Approuvez des cours pour les voir ici.</p>
           </div>
-
-          <!-- Liste des cours publiés -->
           <div *ngIf="!loadingPublished && publishedCourses.length > 0">
-            <div class="card mb-3 shadow-sm border-success" *ngFor="let course of publishedCourses">
-              <div class="card-body">
-                <div class="row align-items-center">
+            <div class="card border-0 shadow-sm ac-card mb-3" *ngFor="let course of publishedCourses">
+              <div class="card-body p-3">
+                <div class="row align-items-center g-3">
+
                   <!-- Image -->
                   <div class="col-md-2">
-                    <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded" 
-                         style="height: 100px; width: 100%; object-fit: cover;" alt="cover">
+                    <img [src]="getImageUrl(course.coverImage)" class="ac-card-img-lg" alt="cover">
+                    <div class="text-center mt-1">
+                      <small class="text-muted"><i class="fa-solid fa-users me-1"></i>{{ course.enrollmentCount || 0 }} inscrits</small>
+                    </div>
                   </div>
+
                   <!-- Info -->
-                  <div class="col-md-7">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                      <h5 class="mb-0">{{ course.title }}</h5>
-                      <span class="badge bg-success">Publié</span>
+                  <div class="col-md-5">
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                      <h6 class="fw-bold mb-0">{{ course.title }}</h6>
+                      <span class="ac-status published"><i class="fa-solid fa-circle me-1" style="font-size:6px;vertical-align:middle"></i>Publié</span>
+                      <span *ngIf="course.featured" class="ac-status" style="background:rgba(234,179,8,.15);color:#a16207">
+                        <i class="fa-solid fa-star me-1"></i>Vedette
+                      </span>
                     </div>
                     <p class="text-muted small mb-1">
-                      <i class="fa-solid fa-user me-1"></i>{{ course.instructorName }}
+                      <i class="fa-solid fa-user me-1 text-primary"></i>{{ course.instructorName }}
+                      &nbsp;·&nbsp;<i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
                     </p>
-                    <p class="text-muted small mb-1">
-                      <i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
-                      &nbsp;|&nbsp;
-                      <ng-container *ngIf="course.onSale; else normalPricePublished">
-                        <span class="text-decoration-line-through text-muted me-1">{{ course.price | number:'1.2-2' }} €</span>
-                        <span class="text-danger fw-bold">{{ course.effectivePrice | number:'1.2-2' }} €</span>
-                        <span class="badge bg-danger ms-1">PROMO</span>
-                      </ng-container>
-                      <ng-template #normalPricePublished>
-                        <i class="fa-solid fa-euro-sign me-1"></i>{{ course.price | number:'1.2-2' }}
-                      </ng-template>
-                      &nbsp;|&nbsp;
-                      <i class="fa-solid fa-users me-1"></i>{{ course.enrollmentCount || 0 }} inscrit(s)
-                    </p>
-                    <p class="text-muted small mb-0">
-                      {{ course.description?.length > 120 ? (course.description | slice:0:120) + '...' : course.description }}
+                    <p class="text-muted small mb-0" style="line-height:1.45">
+                      {{ course.description?.length > 110 ? (course.description | slice:0:110) + '…' : course.description }}
                     </p>
                   </div>
-                    <!-- Actions (published tab) -->
-                  <div class="col-md-3 text-end">
-                    <div class="d-flex flex-column gap-1 align-items-end">
-                      <button class="btn btn-outline-primary btn-sm w-100" (click)="openDetail(course)">
-                        <i class="fa-solid fa-eye me-1"></i>Voir détails
-                      </button>
-                      <button class="btn btn-outline-info btn-sm w-100" (click)="openPriceModal(course)">
-                        <i class="fa-solid fa-euro-sign me-1"></i>Modifier prix
-                      </button>
-                      <button class="btn btn-outline-warning btn-sm w-100" (click)="openPromoModal(course)">
-                        <i class="fa-solid fa-tag me-1"></i>Promotion
-                      </button>
-                      <button class="btn btn-sm w-100"
-                              [ngClass]="course.featured ? 'btn-warning' : 'btn-outline-secondary'"
-                              (click)="toggleFeatured(course)"
-                              [title]="course.featured ? 'Retirer des mis en avant' : 'Mettre en avant sur la page d\'accueil'">
-                        <i class="fa-solid fa-star me-1"></i>{{ course.featured ? 'En vedette ★' : 'Mettre en avant' }}
-                      </button>
-                      <button class="btn btn-outline-secondary btn-sm w-100" (click)="adminArchive(course)">
-                        <i class="fa-solid fa-archive me-1"></i>Archiver
-                      </button>
-                      <button class="btn btn-danger btn-sm w-100" (click)="openDeleteModal(course)">
-                        <i class="fa-solid fa-trash me-1"></i>Supprimer
-                      </button>
+
+                  <!-- Actions -->
+                  <div class="col-md-5">
+                    <div class="d-flex flex-column gap-2 align-items-end">
+
+                      <!-- Prix -->
+                      <div class="text-end">
+                        <ng-container *ngIf="course.onSale; else pricePublished">
+                          <span class="text-decoration-line-through text-muted small me-1">{{ course.price | number:'1.2-2' }} €</span>
+                          <span class="fw-bold text-danger">{{ course.effectivePrice | number:'1.2-2' }} €</span>
+                          <span class="ac-promo ms-1">PROMO</span>
+                        </ng-container>
+                        <ng-template #pricePublished>
+                          <span class="fw-bold text-dark">{{ course.price | number:'1.2-2' }} €</span>
+                        </ng-template>
+                      </div>
+
+                      <!-- Rangée 1 : Détails + Prix + Promotion -->
+                      <div class="d-flex gap-2 flex-wrap justify-content-end">
+                        <button class="ac-btn-detail" (click)="openDetail(course)">
+                          <i class="fa-solid fa-eye me-1"></i>Détails
+                        </button>
+                        <button class="ac-btn-price" (click)="openPriceModal(course)">
+                          <i class="fa-solid fa-euro-sign me-1"></i>Prix
+                        </button>
+                        <button class="ac-btn-promo" (click)="openPromoModal(course)">
+                          <i class="fa-solid fa-tag me-1"></i>Promotion
+                        </button>
+                      </div>
+
+                      <!-- Rangée 2 : Vedette + Archiver + Supprimer -->
+                      <div class="d-flex gap-2 flex-wrap justify-content-end">
+                        <button class="ac-btn-star" [class.featured]="course.featured" (click)="toggleFeatured(course)">
+                          <i class="fa-solid fa-star me-1"></i>{{ course.featured ? 'En vedette' : 'Vedette' }}
+                        </button>
+                        <button class="ac-btn-archive" (click)="adminArchive(course)">
+                          <i class="fa-solid fa-box-archive me-1"></i>Archiver
+                        </button>
+                        <button class="ac-btn-delete" (click)="openDeleteModal(course)">
+                          <i class="fa-solid fa-trash me-1"></i>Supprimer
+                        </button>
+                      </div>
+
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -200,12 +289,12 @@
         <div *ngIf="showDetailModal" class="modal fade show d-block" tabindex="-1"
              style="background-color: rgba(0,0,0,0.5);">
           <div class="modal-dialog modal-xl modal-dialog-scrollable">
-            <div class="modal-content">
-              <div class="modal-header bg-warning">
-                <h5 class="modal-title">
+            <div class="modal-content ac-modal-glass">
+              <div class="modal-header" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 100%);border-bottom:none">
+                <h5 class="modal-title text-white">
                   <i class="fa-solid fa-book me-2"></i>{{ selectedCourse?.title }}
                 </h5>
-                <button type="button" class="btn-close" (click)="closeDetail()"></button>
+                <button type="button" class="btn-close btn-close-white" (click)="closeDetail()"></button>
               </div>
               <div class="modal-body" *ngIf="selectedCourse">
 
@@ -376,24 +465,24 @@
                 </div>
 
               </div>
-              <div class="modal-footer">
+              <div class="modal-footer" style="border-top:1px solid rgba(0,0,0,.08)">
                 <ng-container *ngIf="!adminEditMode">
-                  <button class="btn btn-warning me-auto" (click)="openAdminEdit()">
-                    <i class="fa-solid fa-pen me-1"></i>Éditer le cours
+                  <button class="ac-btn-price me-auto" (click)="openAdminEdit()" style="line-height:1.5;padding:7px 16px">
+                    <i class="fa-solid fa-pen me-1"></i>Éditer
                   </button>
-                  <button *ngIf="selectedCourse?.status === 'PENDING'" class="btn btn-success"
+                  <button *ngIf="selectedCourse?.status === 'PENDING'" class="ac-btn-approve"
                           (click)="approveCourse(selectedCourse)">
                     <i class="fa-solid fa-check me-1"></i>Approuver
                   </button>
-                  <button *ngIf="selectedCourse?.status === 'PENDING'" class="btn btn-danger"
-                          (click)="openRejectModal(selectedCourse); closeDetail()">
+                  <button *ngIf="selectedCourse?.status === 'PENDING'" class="ac-btn-reject"
+                          (click)="openRejectModal(selectedCourse)">
                     <i class="fa-solid fa-times me-1"></i>Rejeter
                   </button>
-                  <button class="btn btn-secondary" (click)="closeDetail()">Fermer</button>
+                  <button class="btn btn-sm btn-secondary rounded-pill px-4" (click)="closeDetail()">Fermer</button>
                 </ng-container>
                 <ng-container *ngIf="adminEditMode">
-                  <button class="btn btn-secondary" (click)="cancelAdminEdit()">Annuler</button>
-                  <button class="btn btn-success" (click)="saveAdminEdit()">
+                  <button class="btn btn-sm btn-secondary rounded-pill px-4" (click)="cancelAdminEdit()">Annuler</button>
+                  <button class="ac-btn-approve" (click)="saveAdminEdit()">
                     <i class="fa-solid fa-check me-1"></i>Enregistrer
                   </button>
                 </ng-container>
@@ -408,9 +497,9 @@
         <div *ngIf="showRejectModal" class="modal fade show d-block" tabindex="-1"
              style="background-color: rgba(0,0,0,0.5);">
           <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title">
+            <div class="modal-content ac-modal-glass">
+              <div class="modal-header" style="background:linear-gradient(135deg,#b91c1c 0%,#ef4444 100%);border-bottom:none">
+                <h5 class="modal-title text-white">
                   <i class="fa-solid fa-ban me-2"></i>Rejeter le cours
                 </h5>
                 <button type="button" class="btn-close btn-close-white" (click)="closeRejectModal()"></button>
@@ -418,7 +507,7 @@
               <div class="modal-body">
                 <p>Vous allez rejeter le cours : <strong>{{ selectedCourse?.title }}</strong></p>
                 <div class="mb-3">
-                  <label class="form-label">Raison du rejet *</label>
+                  <label class="form-label">Raison du rejet <span class="text-muted fw-normal">(optionnel)</span></label>
                   <textarea class="form-control" rows="4" [(ngModel)]="rejectionReason"
                             placeholder="Expliquez pourquoi le cours est rejeté (contenu insuffisant, qualité, etc.)"></textarea>
                 </div>
@@ -427,9 +516,9 @@
                   L'instructeur recevra un email avec cette raison et pourra modifier puis re-soumettre.
                 </p>
               </div>
-              <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="closeRejectModal()">Annuler</button>
-                <button class="btn btn-danger" (click)="confirmReject()" [disabled]="!rejectionReason.trim()">
+              <div class="modal-footer" style="border-top:1px solid rgba(0,0,0,.08)">
+                <button class="btn btn-sm btn-secondary rounded-pill px-4" (click)="closeRejectModal()">Annuler</button>
+                <button class="ac-btn-reject" (click)="confirmReject()">
                   <i class="fa-solid fa-ban me-1"></i>Confirmer le rejet
                 </button>
               </div>
@@ -440,62 +529,97 @@
         <!-- ══ ONGLET TOUS LES COURS ══ -->
         <div *ngIf="activeTab === 'all'">
           <div *ngIf="loadingAll" class="text-center py-5">
-            <div class="spinner-border text-info" role="status"></div>
+            <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-2 text-muted">Chargement...</p>
           </div>
-          <div *ngIf="!loadingAll && allCourses.length === 0" class="text-center py-5">
-            <h5 class="text-muted">Aucun cours</h5>
+          <div *ngIf="!loadingAll && allCourses.length === 0" class="ac-empty">
+            <div class="ac-empty-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <h5 class="fw-semibold text-muted mb-1">Aucun cours</h5>
           </div>
           <div *ngIf="!loadingAll && allCourses.length > 0">
-            <div class="card mb-2 shadow-sm" *ngFor="let course of allCourses">
-              <div class="card-body py-2">
-                <div class="row align-items-center">
+            <div class="card border-0 shadow-sm ac-card mb-3" *ngFor="let course of allCourses">
+              <div class="card-body p-3">
+                <div class="row align-items-center g-3">
+
+                  <!-- Image -->
                   <div class="col-md-2">
-                    <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded"
-                         style="height:70px; width:100%; object-fit:cover;" alt="">
+                    <img [src]="getImageUrl(course.coverImage)" class="ac-card-img-lg" alt="cover">
                   </div>
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                      <strong>{{ course.title }}</strong>
-                      <span class="badge"
-                            [ngClass]="course.status==='PUBLISHED'?'bg-success':course.status==='PENDING'?'bg-warning text-dark':course.status==='DRAFT'?'bg-secondary':course.status==='REJECTED'?'bg-danger':'bg-dark'">
+
+                  <!-- Info -->
+                  <div class="col-md-5">
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                      <h6 class="fw-bold mb-0">{{ course.title }}</h6>
+                      <span class="ac-status"
+                        [ngClass]="course.status==='PUBLISHED'?'published':course.status==='PENDING'?'pending':course.status==='REJECTED'?'rejected':course.status==='ARCHIVED'?'archived':''">
                         {{ course.status }}
                       </span>
-                      <span *ngIf="course.hasPendingEdit" class="badge bg-primary">
-                        <i class="fa-solid fa-pen-to-square me-1"></i>Modif. en attente
+                      <span *ngIf="course.hasPendingEdit" class="ac-edit-badge">
+                        <i class="fa-solid fa-pen-to-square"></i>Modification en attente
                       </span>
                     </div>
-                    <p class="text-muted small mb-0">
-                      {{ course.instructorName }} &nbsp;|&nbsp;
-                      <ng-container *ngIf="course.onSale; else normalPriceAll">
-                        <span class="text-decoration-line-through text-muted me-1">{{ course.price | number:'1.2-2' }} €</span>
-                        <span class="text-danger fw-bold">{{ course.effectivePrice | number:'1.2-2' }} €</span>
-                        <span class="badge bg-danger ms-1">PROMO</span>
-                      </ng-container>
-                      <ng-template #normalPriceAll>{{ course.price | number:'1.2-2' }} €</ng-template>
+                    <p class="text-muted small mb-1">
+                      <i class="fa-solid fa-user me-1 text-primary"></i>{{ course.instructorName }}
+                      &nbsp;·&nbsp;<i class="fa-solid fa-signal me-1"></i>{{ getLevelLabel(course.level) }}
+                    </p>
+                    <p class="text-muted small mb-0" style="line-height:1.45">
+                      {{ course.description?.length > 110 ? (course.description | slice:0:110) + '…' : course.description }}
                     </p>
                   </div>
-                  <div class="col-md-4 text-end d-flex gap-1 justify-content-end flex-wrap">
-                    <button class="btn btn-outline-info btn-sm" (click)="openPriceModal(course)">
-                      <i class="fa-solid fa-euro-sign"></i>
-                    </button>
-                    <button class="btn btn-outline-warning btn-sm" (click)="openPromoModal(course)">
-                      <i class="fa-solid fa-tag"></i>
-                    </button>
-                    <button class="btn btn-sm"
-                            [ngClass]="course.featured ? 'btn-warning' : 'btn-outline-secondary'"
-                            (click)="toggleFeatured(course)"
-                            [title]="course.featured ? 'Retirer des mis en avant' : 'Mettre en avant'">
-                      <i class="fa-solid fa-star"></i>
-                    </button>
-                    <button class="btn btn-outline-secondary btn-sm" *ngIf="course.status==='PUBLISHED'"
-                            (click)="adminArchive(course)">
-                      <i class="fa-solid fa-archive"></i>
-                    </button>
-                    <button class="btn btn-danger btn-sm" (click)="openDeleteModal(course)">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
+
+                  <!-- Actions -->
+                  <div class="col-md-5">
+                    <div class="d-flex flex-column gap-2 align-items-end">
+
+                      <!-- Prix -->
+                      <div class="text-end">
+                        <ng-container *ngIf="course.onSale; else priceAll">
+                          <span class="text-decoration-line-through text-muted small me-1">{{ course.price | number:'1.2-2' }} €</span>
+                          <span class="fw-bold text-danger">{{ course.effectivePrice | number:'1.2-2' }} €</span>
+                          <span class="ac-promo ms-1">PROMO</span>
+                        </ng-container>
+                        <ng-template #priceAll>
+                          <span class="fw-bold text-dark">{{ course.price | number:'1.2-2' }} €</span>
+                        </ng-template>
+                      </div>
+
+                      <!-- PENDING -->
+                      <div *ngIf="course.status === 'PENDING'" class="d-flex gap-2 flex-wrap justify-content-end">
+                        <button class="ac-btn-detail" (click)="openDetail(course)"><i class="fa-solid fa-eye me-1"></i>Détails</button>
+                        <button class="ac-btn-approve" (click)="approveCourse(course)"><i class="fa-solid fa-check me-1"></i>Approuver</button>
+                        <button class="ac-btn-reject" (click)="openRejectModal(course)"><i class="fa-solid fa-times me-1"></i>Rejeter</button>
+                      </div>
+
+                      <!-- PUBLISHED -->
+                      <ng-container *ngIf="course.status === 'PUBLISHED'">
+                        <div class="d-flex gap-2 flex-wrap justify-content-end">
+                          <button class="ac-btn-detail" (click)="openDetail(course)"><i class="fa-solid fa-eye me-1"></i>Détails</button>
+                          <button class="ac-btn-price" (click)="openPriceModal(course)"><i class="fa-solid fa-euro-sign me-1"></i>Prix</button>
+                          <button class="ac-btn-promo" (click)="openPromoModal(course)"><i class="fa-solid fa-tag me-1"></i>Promotion</button>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap justify-content-end">
+                          <button class="ac-btn-star" [class.featured]="course.featured" (click)="toggleFeatured(course)"><i class="fa-solid fa-star me-1"></i>{{ course.featured ? 'En vedette' : 'Vedette' }}</button>
+                          <button class="ac-btn-archive" (click)="adminArchive(course)"><i class="fa-solid fa-box-archive me-1"></i>Archiver</button>
+                          <button class="ac-btn-delete" (click)="openDeleteModal(course)"><i class="fa-solid fa-trash me-1"></i>Supprimer</button>
+                        </div>
+                      </ng-container>
+
+                      <!-- ARCHIVED -->
+                      <div *ngIf="course.status === 'ARCHIVED'" class="d-flex gap-2 flex-wrap justify-content-end">
+                        <button class="ac-btn-detail" (click)="openDetail(course)"><i class="fa-solid fa-eye me-1"></i>Détails</button>
+                        <button class="ac-btn-unarchive" (click)="adminUnarchive(course)"><i class="fa-solid fa-rotate-left me-1"></i>Désarchiver</button>
+                        <button class="ac-btn-delete" (click)="openDeleteModal(course)"><i class="fa-solid fa-trash me-1"></i>Supprimer</button>
+                      </div>
+
+                      <!-- REJECTED -->
+                      <div *ngIf="course.status === 'REJECTED'" class="d-flex gap-2 flex-wrap justify-content-end">
+                        <button class="ac-btn-detail" (click)="openDetail(course)"><i class="fa-solid fa-eye me-1"></i>Détails</button>
+                        <button class="ac-btn-delete" (click)="openDeleteModal(course)"><i class="fa-solid fa-trash me-1"></i>Supprimer</button>
+                      </div>
+
+                    </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -508,79 +632,121 @@
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-2 text-muted">Chargement...</p>
           </div>
-          <div *ngIf="!loadingPendingEdits && pendingEditsCourses.length === 0" class="text-center py-5">
-            <i class="fa-solid fa-check-double fa-3x text-success mb-3"></i>
-            <h5 class="text-muted">Aucune modification en attente</h5>
-            <p class="text-muted">Toutes les modifications ont été traitées</p>
+          <div *ngIf="!loadingPendingEdits && pendingEditsCourses.length === 0" class="ac-empty">
+            <div class="ac-empty-icon"><i class="fa-solid fa-check-double"></i></div>
+            <h5 class="fw-semibold text-muted mb-1">Aucune modification en attente</h5>
+            <p class="text-muted small mb-0">Toutes les modifications ont été traitées.</p>
           </div>
           <div *ngIf="!loadingPendingEdits && pendingEditsCourses.length > 0">
-            <div class="card mb-3 shadow-sm border-primary" *ngFor="let course of pendingEditsCourses">
-              <div class="card-body">
-                <div class="row align-items-start">
-                  <!-- Image -->
-                  <div class="col-md-2">
-                    <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded"
-                         style="height: 100px; width: 100%; object-fit: cover;" alt="cover">
-                  </div>
-                  <!-- Info + Comparaison -->
-                  <div class="col-md-6">
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                      <h5 class="mb-0">{{ course.title }}</h5>
-                      <span class="badge bg-primary">Modification en attente</span>
+            <div class="ac-edit-card mb-3" *ngFor="let course of pendingEditsCourses">
+
+              <!-- Header de la carte -->
+              <div class="ac-edit-header">
+                <div class="d-flex align-items-center gap-3">
+                  <img [src]="getImageUrl(course.coverImage)" class="ac-edit-thumb" alt="cover">
+                  <div>
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                      <span class="ac-edit-title">{{ course.title }}</span>
+                      <span class="ac-edit-badge-pill">
+                        <i class="fa-solid fa-pen-to-square"></i>Modification en attente
+                      </span>
                     </div>
-                    <p class="text-muted small mb-2">
-                      <i class="fa-solid fa-user me-1"></i>{{ course.instructorName }}
+                    <p class="ac-edit-meta mb-0">
+                      <i class="fa-solid fa-user"></i>{{ course.instructorName }}
                     </p>
-                    <!-- Tableau de comparaison -->
-                    <div *ngIf="course.pendingEditData" class="table-responsive">
-                      <table class="table table-sm table-bordered mb-0" style="font-size: 0.82rem;">
-                        <thead class="table-light">
-                          <tr>
-                            <th style="width:25%">Champ</th>
-                            <th style="width:37%">Valeur actuelle</th>
-                            <th style="width:38%">Modification proposée</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngIf="course.pendingEditData.title && course.pendingEditData.title !== course.title">
-                            <td class="fw-bold">Titre</td>
-                            <td class="text-muted">{{ course.title }}</td>
-                            <td class="text-primary fw-semibold">{{ course.pendingEditData.title }}</td>
-                          </tr>
-                          <tr *ngIf="course.pendingEditData.description && course.pendingEditData.description !== course.description">
-                            <td class="fw-bold">Description</td>
-                            <td class="text-muted">{{ (course.description || '') | slice:0:80 }}...</td>
-                            <td class="text-primary fw-semibold">{{ (course.pendingEditData.description || '') | slice:0:80 }}...</td>
-                          </tr>
-                          <tr *ngIf="course.pendingEditData.price != null && +course.pendingEditData.price !== +course.price">
-                            <td class="fw-bold">Prix</td>
-                            <td class="text-muted">{{ course.price | number:'1.2-2' }} €</td>
-                            <td class="text-primary fw-semibold">{{ course.pendingEditData.price | number:'1.2-2' }} €</td>
-                          </tr>
-                          <tr *ngIf="course.pendingEditData.level && course.pendingEditData.level !== course.level">
-                            <td class="fw-bold">Niveau</td>
-                            <td class="text-muted">{{ getLevelLabel(course.level) }}</td>
-                            <td class="text-primary fw-semibold">{{ getLevelLabel(course.pendingEditData.level) }}</td>
-                          </tr>
-                          <tr *ngIf="course.pendingEditData.language && course.pendingEditData.language !== course.language">
-                            <td class="fw-bold">Langue</td>
-                            <td class="text-muted">{{ course.language }}</td>
-                            <td class="text-primary fw-semibold">{{ course.pendingEditData.language }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
                   </div>
-                  <!-- Actions -->
-                  <div class="col-md-4 text-end d-flex flex-column align-items-end gap-2">
-                    <button class="btn btn-success btn-sm w-100" (click)="approvePendingEditAction(course)">
-                      <i class="fa-solid fa-check me-1"></i>Approuver la modification
+                </div>
+                <!-- Actions dans le header -->
+                <div class="ac-edit-actions">
+                  <button class="ac-edit-btn ac-edit-approve" (click)="approvePendingEditAction(course)">
+                    <i class="fa-solid fa-check"></i>Approuver
+                  </button>
+                  <button class="ac-edit-btn ac-edit-reject" (click)="openRejectEditModal(course)">
+                    <i class="fa-solid fa-times"></i>Rejeter
+                  </button>
+                  <button class="ac-edit-btn ac-edit-view" (click)="openDetail(course)">
+                    <i class="fa-solid fa-eye"></i>Voir le cours
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tableau de comparaison -->
+              <div *ngIf="course.pendingEditData" class="ac-edit-diff">
+                <!-- En-têtes -->
+                <div class="ac-diff-head">
+                  <div class="ac-diff-col-field">Champ modifié</div>
+                  <div class="ac-diff-col-old"><i class="fa-solid fa-circle-xmark me-1"></i>Valeur actuelle</div>
+                  <div class="ac-diff-col-new"><i class="fa-solid fa-circle-check me-1"></i>Nouvelle valeur</div>
+                </div>
+                <!-- Ligne : Titre -->
+                <div class="ac-diff-row" *ngIf="course.pendingEditData.title && course.pendingEditData.title !== course.title">
+                  <div class="ac-diff-field"><i class="fa-solid fa-heading"></i>Titre</div>
+                  <div class="ac-diff-old">{{ course.title }}</div>
+                  <div class="ac-diff-new">{{ course.pendingEditData.title }}</div>
+                </div>
+                <!-- Ligne : Prix -->
+                <div class="ac-diff-row" *ngIf="course.pendingEditData.price != null && +course.pendingEditData.price !== +course.price">
+                  <div class="ac-diff-field"><i class="fa-solid fa-euro-sign"></i>Prix</div>
+                  <div class="ac-diff-old">{{ course.price | number:'1.2-2' }} €</div>
+                  <div class="ac-diff-new">{{ course.pendingEditData.price | number:'1.2-2' }} €</div>
+                </div>
+                <!-- Ligne : Niveau -->
+                <div class="ac-diff-row" *ngIf="course.pendingEditData.level && course.pendingEditData.level !== course.level">
+                  <div class="ac-diff-field"><i class="fa-solid fa-signal"></i>Niveau</div>
+                  <div class="ac-diff-old">{{ getLevelLabel(course.level) }}</div>
+                  <div class="ac-diff-new">{{ getLevelLabel(course.pendingEditData.level) }}</div>
+                </div>
+                <!-- Ligne : Langue -->
+                <div class="ac-diff-row" *ngIf="course.pendingEditData.language && course.pendingEditData.language !== course.language">
+                  <div class="ac-diff-field"><i class="fa-solid fa-language"></i>Langue</div>
+                  <div class="ac-diff-old">{{ course.language }}</div>
+                  <div class="ac-diff-new">{{ course.pendingEditData.language }}</div>
+                </div>
+                <!-- Aucun changement visible -->
+                <div *ngIf="!course.pendingEditData.title && course.pendingEditData.price == null && !course.pendingEditData.level && !course.pendingEditData.language"
+                     class="ac-diff-empty">
+                  <i class="fa-solid fa-info-circle me-2"></i>Aucun champ affiché — voir les détails complets
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ ONGLET ARCHIVÉS ══ -->
+        <div *ngIf="activeTab === 'archived'">
+          <div *ngIf="loadingArchived" class="text-center py-5">
+            <div class="spinner-border text-secondary" role="status"></div>
+            <p class="mt-2 text-muted">Chargement...</p>
+          </div>
+          <div *ngIf="!loadingArchived && archivedCourses.length === 0" class="ac-empty">
+            <div class="ac-empty-icon"><i class="fa-solid fa-box-archive"></i></div>
+            <h5 class="fw-semibold text-muted mb-1">Aucun cours archivé</h5>
+            <p class="text-muted small mb-0">Les cours archivés apparaîtront ici.</p>
+          </div>
+          <div *ngIf="!loadingArchived && archivedCourses.length > 0">
+            <div class="card border-0 shadow-sm ac-card ac-card-archived mb-2" *ngFor="let course of archivedCourses">
+              <div class="card-body py-2 px-3">
+                <div class="row align-items-center g-2">
+                  <div class="col-md-1">
+                    <img [src]="getImageUrl(course.coverImage)" class="ac-card-img" alt="">
+                  </div>
+                  <div class="col-md-7">
+                    <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                      <span class="fw-semibold text-muted">{{ course.title }}</span>
+                      <span class="ac-status archived"><i class="fa-solid fa-box-archive me-1"></i>Archivé</span>
+                    </div>
+                    <p class="text-muted small mb-0">
+                      <i class="fa-solid fa-user me-1"></i>{{ course.instructorName }}
+                      &nbsp;·&nbsp;{{ course.price | number:'1.2-2' }} €
+                    </p>
+                  </div>
+                  <div class="col-md-4 d-flex gap-2 justify-content-end flex-wrap">
+                    <button class="ac-btn-unarchive" (click)="adminUnarchive(course)">
+                      <i class="fa-solid fa-rotate-left me-1"></i>Désarchiver
                     </button>
-                    <button class="btn btn-danger btn-sm w-100" (click)="openRejectEditModal(course)">
-                      <i class="fa-solid fa-times me-1"></i>Rejeter la modification
-                    </button>
-                    <button class="btn btn-outline-primary btn-sm w-100" (click)="openDetail(course)">
-                      <i class="fa-solid fa-eye me-1"></i>Voir le cours complet
+                    <button class="ac-btn-delete" (click)="openDeleteModal(course)" title="Supprimer définitivement">
+                      <i class="fa-solid fa-trash"></i>
                     </button>
                   </div>
                 </div>
@@ -597,9 +763,9 @@
 <div *ngIf="showRejectEditModal" class="modal fade show d-block" tabindex="-1"
      style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header" style="background:linear-gradient(135deg,#b91c1c 0%,#ef4444 100%);border-bottom:none">
+        <h5 class="modal-title text-white">
           <i class="fa-solid fa-ban me-2"></i>Rejeter la modification
         </h5>
         <button type="button" class="btn-close btn-close-white" (click)="closeRejectEditModal()"></button>
@@ -612,9 +778,9 @@
                     placeholder="Expliquez pourquoi la modification est rejetée..."></textarea>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeRejectEditModal()">Annuler</button>
-        <button class="btn btn-danger" (click)="confirmRejectEdit()">
+      <div class="modal-footer" style="border-top:1px solid rgba(0,0,0,.08)">
+        <button class="btn btn-sm btn-secondary rounded-pill px-4" (click)="closeRejectEditModal()">Annuler</button>
+        <button class="ac-btn-reject" (click)="confirmRejectEdit()">
           <i class="fa-solid fa-ban me-1"></i>Confirmer le rejet
         </button>
       </div>
@@ -628,10 +794,9 @@
 <div *ngIf="showDeleteModal" class="modal fade show d-block" tabindex="-1"
      style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content ac-modal-glass">
       <div class="modal-body text-center py-4">
-        <div class="mb-3"
-             style="width:60px;height:60px;background:rgba(220,53,69,0.1);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">
+        <div class="ac-confirm-ico mb-3">
           <i class="fa-solid fa-trash fa-xl text-danger"></i>
         </div>
         <h5 class="mb-2">Supprimer le cours ?</h5>
@@ -640,8 +805,8 @@
           Cette action est irréversible et supprime toutes les inscriptions et données associées.
         </p>
         <div class="d-flex justify-content-center gap-2">
-          <button class="btn btn-light rounded-pill px-4" (click)="closeDeleteModal()">Annuler</button>
-          <button class="btn btn-danger rounded-pill px-4" (click)="confirmAdminDelete()">Oui, supprimer</button>
+          <button class="btn btn-sm btn-secondary rounded-pill px-4" (click)="closeDeleteModal()">Annuler</button>
+          <button class="ac-btn-delete" (click)="confirmAdminDelete()"><i class="fa-solid fa-trash me-1"></i>Supprimer</button>
         </div>
       </div>
     </div>
@@ -654,10 +819,10 @@
 <div *ngIf="showPriceModal" class="modal fade show d-block" tabindex="-1"
      style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-info text-white">
-        <h5 class="modal-title">
-          <i class="fa-solid fa-euro-sign me-2"></i>Modifier le prix : {{ selectedCourse?.title }}
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header" style="background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 100%);border-bottom:none">
+        <h5 class="modal-title text-white">
+          <i class="fa-solid fa-euro-sign me-2"></i>Modifier le prix
         </h5>
         <button type="button" class="btn-close btn-close-white" (click)="closePriceModal()"></button>
       </div>
@@ -669,9 +834,9 @@
         </div>
         <p class="text-muted small">Prix actuel : <strong>{{ selectedCourse?.price | number:'1.2-2' }} €</strong></p>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closePriceModal()">Annuler</button>
-        <button class="btn btn-info text-white" (click)="savePriceModal()">
+      <div class="modal-footer" style="border-top:1px solid rgba(0,0,0,.08)">
+        <button class="btn btn-sm btn-secondary rounded-pill px-4" (click)="closePriceModal()">Annuler</button>
+        <button class="ac-btn-approve" (click)="savePriceModal()">
           <i class="fa-solid fa-save me-1"></i>Enregistrer
         </button>
       </div>
@@ -685,12 +850,12 @@
 <div *ngIf="showPromoModal" class="modal fade show d-block" tabindex="-1"
      style="background-color: rgba(0,0,0,0.5);">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-warning text-dark">
-        <h5 class="modal-title">
-          <i class="fa-solid fa-tag me-2"></i>Promotion : {{ selectedCourse?.title }}
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header" style="background:linear-gradient(135deg,#b45309 0%,#d97706 100%);border-bottom:none">
+        <h5 class="modal-title text-white">
+          <i class="fa-solid fa-tag me-2"></i>Promotion
         </h5>
-        <button type="button" class="btn-close" (click)="closePromoModal()"></button>
+        <button type="button" class="btn-close btn-close-white" (click)="closePromoModal()"></button>
       </div>
       <div class="modal-body">
         <div class="mb-3">
@@ -704,9 +869,9 @@
         </div>
         <p class="text-muted small">Prix normal : <strong>{{ selectedCourse?.price | number:'1.2-2' }} €</strong></p>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closePromoModal()">Annuler</button>
-        <button class="btn btn-warning" (click)="savePromoModal()" [disabled]="!promoPrice || !promoEndsAt">
+      <div class="modal-footer" style="border-top:1px solid rgba(0,0,0,.08)">
+        <button class="btn btn-sm btn-secondary rounded-pill px-4" (click)="closePromoModal()">Annuler</button>
+        <button class="ac-btn-promo" (click)="savePromoModal()" [disabled]="!promoPrice || !promoEndsAt" style="padding:7px 16px">
           <i class="fa-solid fa-tag me-1"></i>Appliquer la promotion
         </button>
       </div>

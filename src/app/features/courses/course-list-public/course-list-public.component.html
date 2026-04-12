@@ -239,6 +239,9 @@
               <div class="course-img">
                 <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" style="height:185px;object-fit:cover;">
                 <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
+                  <span *ngIf="hasActivePromotion(course)" class="badge bg-danger text-white me-2">
+                    -{{ getPromotionPercent(course) }}%
+                  </span>
                   <a href="javascript:void(0);" class="fav-icon ms-auto"
                      [class.selected]="isInWishlist(course.id)"
                      (click)="toggleWishlist(course, $event)"
@@ -250,8 +253,9 @@
               <div class="course-content">
                 <div class="d-flex justify-content-between mb-2">
                   <div class="d-flex align-items-center">
-                    <img [src]="getInstructorAvatar(course.instructorAvatar)"
-                         class="img-fluid avatar avatar-sm rounded-circle" alt="instructor">
+                    <img [src]="getInstructorAvatar(course.instructorAvatar, course.instructorName)"
+                         (error)="onInstructorAvatarError($event, course.instructorName)"
+                         class="img-fluid avatar avatar-sm rounded-circle" alt="instructeur">
                     <div class="ms-2">
                       <span class="link-default fs-14">{{ course.instructorName }}</span>
                     </div>
@@ -271,7 +275,13 @@
                   </p>
                 </ng-template>
                 <div class="d-flex align-items-center justify-content-between">
-                  <h5 class="text-secondary mb-0">{{ formatPrice(course) }}</h5>
+                  <div class="d-flex flex-column align-items-start">
+                    <h5 class="text-secondary mb-0">{{ formatPrice(course) }}</h5>
+                    <small *ngIf="hasActivePromotion(course)" class="text-muted">
+                      <span class="text-decoration-line-through me-1">{{ course.price | number:'1.2-2' }} €</span>
+                      <span class="badge bg-danger">PROMO</span>
+                    </small>
+                  </div>
                   <ng-container *ngIf="isEnrolled(course.id); else notEnrolledGrid">
                     <a routerLink="/student/student-my-courses" class="btn btn-success btn-sm d-inline-flex align-items-center" (click)="$event.stopPropagation()">
                       Accéder<i class="isax isax-arrow-right-3 ms-1"></i>
@@ -302,6 +312,9 @@
                 <div class="position-relative overflow-hidden rounded-3 card-image">
                   <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded-3" alt="{{ course.title }}" style="min-height:120px;object-fit:cover;">
                   <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
+                    <span *ngIf="hasActivePromotion(course)" class="badge bg-danger text-white me-2">
+                      -{{ getPromotionPercent(course) }}%
+                    </span>
                     <a href="javascript:void(0);" class="like"
                        [class.selected]="isInWishlist(course.id)"
                        (click)="toggleWishlist(course, $event)">
@@ -312,8 +325,9 @@
                 <div class="course-list-contents w-100 ps-0 ps-md-3 pt-4 pt-md-0">
                   <div class="d-flex flex-wrap align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
-                      <img [src]="getInstructorAvatar(course.instructorAvatar)"
-                           class="img-fluid rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;" alt="">
+                      <img [src]="getInstructorAvatar(course.instructorAvatar, course.instructorName)"
+                           (error)="onInstructorAvatarError($event, course.instructorName)"
+                           class="img-fluid rounded-circle me-2" style="width:28px;height:28px;object-fit:cover;" alt="instructeur">
                       <p class="mb-0">{{ course.instructorName }}</p>
                     </div>
                     <span>
@@ -330,7 +344,13 @@
                     <p class="mb-0">{{ getLevelLabel(course.level) }}</p>
                   </div>
                   <div class="d-flex justify-content-between mt-3 align-items-center">
-                    <h5 class="text-secondary">{{ formatPrice(course) }}</h5>
+                    <div class="d-flex flex-column align-items-start">
+                      <h5 class="text-secondary mb-0">{{ formatPrice(course) }}</h5>
+                      <small *ngIf="hasActivePromotion(course)" class="text-muted">
+                        <span class="text-decoration-line-through me-1">{{ course.price | number:'1.2-2' }} €</span>
+                        <span class="badge bg-danger">PROMO</span>
+                      </small>
+                    </div>
                     <ng-container *ngIf="isEnrolled(course.id); else notEnrolledList">
                       <a routerLink="/student/student-my-courses" class="btn btn-success btn-sm d-inline-flex align-items-center" (click)="$event.stopPropagation()">
                         Accéder<i class="fs-8 fas fa-angle-right ms-2"></i>

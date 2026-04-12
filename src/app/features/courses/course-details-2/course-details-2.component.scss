@@ -1,0 +1,339 @@
+:host {
+	display: block;
+}
+
+/* Global page rhythm */
+.course-details {
+	padding: 46px 0 64px;
+	background: #ffffff;
+}
+
+/* Banner polish */
+.inner-banner {
+	position: relative;
+	overflow: hidden;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+	background: linear-gradient(115deg, #5b21b6 0%, #9333ea 48%, #ec4899 100%) !important;
+}
+
+.inner-banner::before {
+	content: none !important;
+}
+
+.inner-banner::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background:
+		linear-gradient(180deg, rgba(36, 10, 52, 0.1), rgba(36, 10, 52, 0.3)),
+		radial-gradient(900px 260px at 72% 0%, rgba(255, 255, 255, 0.1), transparent 60%);
+}
+
+.inner-banner.inner-banner--with-cover::after {
+	background:
+		linear-gradient(180deg, rgba(36, 10, 52, 0.1), rgba(36, 10, 52, 0.32)),
+		radial-gradient(900px 260px at 72% 0%, rgba(255, 255, 255, 0.1), transparent 60%);
+}
+
+.inner-banner .container {
+	position: relative;
+	z-index: 1;
+}
+
+.inner-banner h1 {
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	line-height: 1.15;
+}
+
+.course-sidebar-cover-placeholder {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.6rem;
+	color: #fff;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	text-shadow: 0 1px 8px rgba(2, 6, 23, 0.25);
+}
+.course-sidebar-cover-placeholder {
+	width: 100%;
+	min-height: 205px;
+	border-radius: 14px;
+
+	i {
+		font-size: 1.25rem;
+	}
+
+	span {
+		font-size: 1.2rem;
+	}
+}
+
+.course-instructor-avatar-fallback {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: #fff;
+	background: linear-gradient(135deg, #22d3ee, #6366f1);
+	border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.course-instructor-avatar-fallback--light {
+	border-color: #dbe3ef;
+	box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+/* Base card quality */
+.course-page-content .card,
+.course-sidebar-sec .card,
+.cou-features-card {
+	border: 1px solid #e6eaf2;
+	border-radius: 16px;
+	box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+	overflow: hidden;
+	margin-bottom: 16px;
+	background: #fff;
+}
+
+.course-page-content .card .card-body,
+.course-sidebar-sec .card .card-body,
+.cou-features-card .cou-features {
+	padding: 1.2rem 1.2rem;
+}
+
+.subs-title {
+	font-weight: 800;
+	color: #0f172a;
+	letter-spacing: -0.01em;
+}
+
+/* Rich text clarity */
+.course-page-content p,
+.course-page-content li {
+	color: #475569;
+	line-height: 1.6;
+}
+
+.course-page-content h6 {
+	color: #1e293b;
+	font-weight: 700;
+}
+
+.custom-list {
+	margin: 0;
+	padding-left: 0;
+	list-style: none;
+}
+
+.custom-list .list-items {
+	position: relative;
+	padding-left: 1.4rem;
+	margin-bottom: 0.55rem;
+}
+
+.custom-list .list-items::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0.5rem;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #5625e8, #02a8b5);
+}
+
+/* Accordion refinement */
+.accordion-item {
+	border: 0;
+	border-bottom: 1px solid #edf1f7;
+}
+
+.accordion-button {
+	font-weight: 700;
+	color: #0f172a;
+	background: #fff;
+	box-shadow: none;
+	padding: 0.95rem 0;
+}
+
+.accordion-button:not(.collapsed) {
+	background: #fff;
+	color: #5625e8;
+}
+
+.accordion-button i {
+	margin-left: auto;
+	transition: transform 0.2s ease;
+}
+
+.accordion-button:not(.collapsed) i {
+	transform: rotate(180deg);
+}
+
+.accordion-body ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.preview-link {
+	color: #5625e8;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.preview-link:hover {
+	color: #3f1bb2;
+}
+
+/* Reviews */
+.course-page-content .avatar img {
+	border: 2px solid #eef2ff;
+}
+
+.course-page-content textarea.form-control {
+	border-color: #dbe3ef;
+	border-radius: 10px;
+}
+
+.course-page-content textarea.form-control:focus {
+	border-color: #9ab0ff;
+	box-shadow: 0 0 0 0.15rem rgba(86, 37, 232, 0.13);
+}
+
+/* Sidebar sticky and polish */
+.course-sidebar-sec {
+	position: sticky;
+	top: 92px;
+}
+
+.course-sidebar-sec .position-relative {
+	border-radius: 14px;
+	overflow: hidden;
+}
+
+.course-sidebar-sec .position-relative img {
+	width: 100%;
+	border-radius: 14px;
+	object-fit: cover;
+}
+
+.play-icon {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+}
+
+.play-icon i {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(15, 23, 42, 0.52);
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	backdrop-filter: blur(2px);
+}
+
+/* CTA buttons */
+.btn-enroll,
+.btn-wish {
+	border-radius: 10px;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-enroll:hover,
+.btn-wish:hover {
+	transform: translateY(-1px);
+}
+
+.btn-enroll.btn-primary {
+	background: linear-gradient(135deg, #5625e8, #6f36ea);
+	border-color: transparent;
+	box-shadow: 0 10px 22px rgba(86, 37, 232, 0.24);
+}
+
+.btn-enroll.btn-success {
+	box-shadow: 0 10px 20px rgba(3, 195, 90, 0.2);
+}
+
+.wishlist-btns .btn-wish {
+	border: 1px solid #e3e8f3;
+	background: #fff;
+	color: #334155;
+}
+
+.wishlist-btns .btn-wish:hover {
+	border-color: #cfd9ee;
+	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+/* Includes and features lists */
+.course-sidebar-sec .card p,
+.cou-features-card li p {
+	display: flex;
+	align-items: center;
+	color: #334155;
+}
+
+.cou-features-card ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.cou-features-card li {
+	padding: 0.55rem 0;
+	border-bottom: 1px dashed #e8edf7;
+}
+
+.cou-features-card li:last-child {
+	border-bottom: 0;
+}
+
+/* Alerts */
+.alert {
+	border-radius: 12px;
+	border: 0;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+	.course-details {
+		padding-top: 30px;
+	}
+
+	.inner-banner {
+		padding: 34px 0;
+	}
+
+	.course-sidebar-sec {
+		position: static;
+		top: auto;
+	}
+}
+
+@media (max-width: 575.98px) {
+	.course-page-content .card .card-body,
+	.course-sidebar-sec .card .card-body,
+	.cou-features-card .cou-features {
+		padding: 1rem 0.95rem;
+	}
+
+	.inner-banner h1 {
+		font-size: 1.65rem;
+	}
+}

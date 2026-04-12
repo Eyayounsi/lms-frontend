@@ -3,6 +3,8 @@ import { routes } from '../../../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProfileService } from '../../../../shared/service/profile/profile.service';
+import { AuthService } from '../../../../shared/service/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-instructor-change-password',
@@ -19,8 +21,15 @@ export class InstructorChangePasswordComponent {
   confirmPassword = '';
   successMessage = '';
   errorMessage = '';
+  deletePassword = '';
+  deleteError = '';
+  deleting = false;
 
-  constructor(private profileService: ProfileService) {}
+  constructor(
+    private profileService: ProfileService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   onChangePassword(): void {
     this.successMessage = '';
@@ -35,14 +44,14 @@ export class InstructorChangePasswordComponent {
     }
     this.profileService.changePassword({ oldPassword: this.oldPassword, newPassword: this.newPassword }).subscribe({
       next: () => {
-        this.successMessage = 'Mot de passe modifié avec succès.';
+        this.successMessage = 'Mot de passe modifie avec succes.';
         this.oldPassword = '';
         this.newPassword = '';
         this.confirmPassword = '';
         this.resetStrength();
       },
       error: (err) => {
-        this.errorMessage = err.error || 'Erreur lors du changement de mot de passe.';
+        this.errorMessage = err.error || 'Erreur lors du changement du mot de passe.';
       }
     });
   }
@@ -77,7 +86,7 @@ export class InstructorChangePasswordComponent {
     }
   
     if (hasWhitespace) {
-      this.passwordInfoMessage = 'Whitespaces are not allowed';
+      this.passwordInfoMessage = 'Les espaces ne sont pas autorises.';
       this.passwordInfoColor = 'red';
       this.strengthLevel = '';
       return;
@@ -85,23 +94,23 @@ export class InstructorChangePasswordComponent {
   
     if (passwordLength < 8) {
       this.strengthLevel = 'poor';
-      this.passwordInfoMessage = 'Weak. Must contain at least 8 characters.';
+      this.passwordInfoMessage = 'Faible. Le mot de passe doit contenir au moins 8 caracteres.';
       this.passwordInfoColor = 'red';
     } else if (hasPoor || hasWeak || hasStrong) {
       this.strengthLevel = 'weak';
-      this.passwordInfoMessage = 'Average. Must contain at least 1 letter or number.';
+      this.passwordInfoMessage = 'Moyen. Ajoutez des lettres, des chiffres ou des caracteres speciaux.';
       this.passwordInfoColor = '#FFB54A';
     }
   
     if (passwordLength >= 8 && hasPoor && (hasWeak || hasStrong)) {
       this.strengthLevel = 'strong';
-      this.passwordInfoMessage = 'Almost strong. Must contain a special symbol.';
+      this.passwordInfoMessage = 'Fort. Ajoutez un caractere special pour renforcer encore le mot de passe.';
       this.passwordInfoColor = '#1D9CFD';
     }
   
     if (passwordLength >= 8 && hasPoor && hasWeak && hasStrong) {
       this.strengthLevel = 'heavy';
-      this.passwordInfoMessage = 'Awesome! You have a secure password.';
+      this.passwordInfoMessage = 'Excellent ! Vous avez un mot de passe securise.';
       this.passwordInfoColor = '#159F46';
     }
   }
@@ -110,5 +119,31 @@ export class InstructorChangePasswordComponent {
   private resetStrength(): void {
     this.strengthLevel = '';
     this.passwordInfoMessage = null;
+  }
+
+  onDeleteAccount(): void {
+    this.deleteError = '';
+
+    if (!this.deletePassword.trim()) {
+      this.deleteError = 'Veuillez entrer votre mot de passe pour confirmer.';
+      return;
+    }
+
+    this.deleting = true;
+    this.profileService.deleteAccount(this.deletePassword).subscribe({
+      next: () => {
+        this.deleting = false;
+        alert('Votre compte a ete supprime definitivement.');
+        this.authService.logout();
+      },
+      error: (err: any) => {
+        this.deleting = false;
+        this.deleteError = err.error || 'Mot de passe incorrect. Suppression refusée.';
+      }
+    });
+  }
+
+  goToProfileSettings(): void {
+    this.router.navigate([this.routes.instructorSettings]);
   }
 }

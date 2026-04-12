@@ -1,0 +1,102 @@
+// ─── Tab navigation ────────────────────────────────────────────────────────
+.cover-tab-nav {
+  gap: 8px;
+
+  .nav-link {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+    background: #f9fafb;
+    font-size: 0.875rem;
+    padding: 7px 16px;
+    transition: all .2s;
+
+    &.active {
+      background: #6366f1;
+      border-color: #6366f1;
+      color: #fff;
+    }
+
+    &:hover:not(.active) {
+      border-color: #6366f1;
+      color: #6366f1;
+      background: #eff6ff;
+    }
+  }
+}
+
+// ─── Preset image grid ─────────────────────────────────────────────────────
+.preset-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.preset-image-item {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  aspect-ratio: 16/9;
+  transition: border-color .2s, box-shadow .2s;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .2s;
+  }
+
+  &:hover {
+    border-color: #6366f150;
+    box-shadow: 0 4px 12px rgba(99,102,241,.18);
+
+    img { transform: scale(1.04); }
+  }
+
+  &.selected {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,.25);
+  }
+
+  .preset-check {
+    position: absolute;
+    inset: 0;
+    background: rgba(99,102,241,.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: #fff;
+  }
+}
+
+/* Keep wizard captions aligned across all 5 steps (notably "Additional information"). */
+.add-course-item .wizard .form-wizard-steps li .profile-step {
+  min-height: 72px;
+}
+
+.add-course-item .wizard .form-wizard-steps li .profile-step .step-section {
+  min-height: 34px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.add-course-item .wizard .form-wizard-steps li .profile-step .step-section p {
+  margin: 8px 0 0;
+  line-height: 1.2;
+  font-size: 13px;
+}
+
+@media (max-width: 991.98px) {
+  .add-course-item .wizard .form-wizard-steps li .profile-step {
+    min-height: auto;
+  }
+
+  .add-course-item .wizard .form-wizard-steps li .profile-step .step-section {
+    min-height: auto;
+  }
+}

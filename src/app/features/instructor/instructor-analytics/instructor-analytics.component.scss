@@ -1,0 +1,546 @@
+:host {
+  display: block;
+}
+
+.ia-shell {
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    filter: blur(36px);
+  }
+
+  &::before {
+    width: 260px;
+    height: 260px;
+    top: -40px;
+    right: -70px;
+    background: radial-gradient(circle, rgba(99, 102, 241, .12), transparent 70%);
+  }
+
+  &::after {
+    width: 220px;
+    height: 220px;
+    bottom: 4%;
+    left: -60px;
+    background: radial-gradient(circle, rgba(16, 185, 129, .10), transparent 72%);
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.ia-hero {
+  border: 1px solid #e5ecf6;
+  background: linear-gradient(160deg, #ffffff 0%, #f7f9ff 100%);
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .06);
+}
+
+.ia-hero-title {
+  font-size: 1.12rem;
+  letter-spacing: -.01em;
+
+  span {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.ia-hero-subtitle {
+  font-size: 13px;
+}
+
+.ia-hero-filters {
+  row-gap: .5rem;
+}
+
+.ia-input-wrap {
+  position: relative;
+
+  i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    font-size: .9rem;
+  }
+
+  .form-control {
+    width: 215px;
+    min-height: 36px;
+    border-radius: 10px;
+    border: 1px solid #dce6f3;
+    padding-left: 30px;
+    box-shadow: none;
+    transition: border-color .2s ease, box-shadow .2s ease;
+
+    &:focus {
+      border-color: #a5b4fc;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12);
+    }
+  }
+}
+
+.ia-select {
+  width: 175px;
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid #dce6f3;
+  box-shadow: none;
+}
+
+.ia-loading-text {
+  font-size: 13px;
+}
+
+.analytics-kpi-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border-radius: 14px;
+  border: 1px solid #e4ecf7;
+  padding: 14px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  animation: iaRiseIn .4s ease both;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #cfdcf1;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, .08);
+  }
+
+  .kpi-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid transparent;
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  .kpi-value {
+    font-size: 21px;
+    font-weight: 750;
+    color: #1e293b;
+    line-height: 1.15;
+  }
+
+  .kpi-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+}
+
+.ia-kpi-icon--courses {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border-color: #c7dbfb;
+
+  i { color: #1d4ed8; }
+}
+
+.ia-kpi-icon--attention {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+  border-color: #b7edcb;
+
+  i { color: #15803d; }
+}
+
+.ia-kpi-icon--rating {
+  background: linear-gradient(135deg, #fef9c3, #fde68a);
+  border-color: #f9df7c;
+
+  i { color: #a16207; }
+}
+
+.ia-kpi-icon--students {
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  border-color: #d5cbfd;
+
+  i { color: #6d28d9; }
+}
+
+.ia-kpi-value-rating {
+  color: #a16207;
+
+  span {
+    font-size: 13px;
+    font-weight: 400;
+  }
+}
+
+.ia-kpi-value-students {
+  color: #6d28d9;
+}
+
+.ia-empty-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eef2ff, #dbeafe);
+  border: 1px solid #d9e2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 34px;
+    color: #4f46e5;
+  }
+}
+
+.ia-empty-title {
+  color: #334155;
+}
+
+.ia-empty-subtitle {
+  font-size: 13.5px;
+}
+
+.ia-empty-btn {
+  box-shadow: 0 10px 18px rgba(79, 70, 229, .2);
+}
+
+.analytics-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e6edf7;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .05);
+  overflow: hidden;
+  transition: transform .2s ease, box-shadow .2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 22px rgba(15, 23, 42, .08);
+  }
+
+  .analytics-card-header {
+    padding: 13px 16px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 13.5px;
+    color: #334155;
+    background: linear-gradient(180deg, #f8faff, #f6f9ff);
+    border-bottom: 1px solid #e9eef7;
+
+    i {
+      color: #6366f1;
+    }
+  }
+
+  .analytics-card-body {
+    padding: 8px 8px 0;
+  }
+}
+
+.no-data-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 34px 20px;
+
+  span {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #eef2ff, #e2e8f0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 26px;
+      color: #64748b;
+    }
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 13px;
+    margin: 10px 0 0;
+    text-align: center;
+  }
+}
+
+.ia-section-title {
+  color: #334155;
+
+  i {
+    color: #6366f1;
+  }
+}
+
+.ia-section-badge {
+  background: #6366f1;
+  font-size: 11px;
+}
+
+.course-analytics-card {
+  background: linear-gradient(155deg, rgba(255, 255, 255, .88), rgba(248, 251, 255, .78));
+  border-radius: 16px;
+  border: 1.5px solid rgba(214, 225, 242, .85);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .06);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  animation: iaRiseIn .45s ease both;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, 0) 45%);
+  }
+
+  &:hover {
+    box-shadow: 0 16px 28px rgba(15, 23, 42, .1);
+    transform: translateY(-2px);
+    border-color: #cbd9ee !important;
+  }
+
+  &.selected {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .12), 0 10px 20px rgba(99, 102, 241, .08);
+  }
+
+  .course-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 14px 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .course-thumb {
+    width: 60px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid #e7edf8;
+  }
+
+  .course-thumb-placeholder {
+    background: linear-gradient(135deg, rgba(99, 102, 241, .1) 0%, rgba(139, 92, 246, .1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #6366f1;
+  }
+
+  .course-card-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .course-title {
+    font-size: 13px;
+    font-weight: 650;
+    color: #1e293b;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.ia-reco-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  letter-spacing: .01em;
+  backdrop-filter: blur(8px);
+}
+
+.engagement-ring-container {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+
+  .ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+}
+
+.course-metrics-row {
+  padding: 2px 14px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.metric-item {
+  width: 100%;
+}
+
+.metric-bar {
+  height: 5px;
+  border-radius: 99px;
+  background: #edf2f7;
+  overflow: hidden;
+  margin-bottom: 2px;
+}
+
+.metric-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width .7s ease;
+}
+
+.metric-label {
+  font-size: 11px;
+  color: #6b7280;
+
+  i {
+    font-size: .9rem;
+    vertical-align: -1px;
+  }
+
+  strong {
+    font-weight: 600;
+    color: #334155;
+  }
+}
+
+.ia-course-foot {
+  font-size: 12px;
+  color: #6b7280;
+
+  i {
+    font-size: .92rem;
+    vertical-align: -1px;
+  }
+}
+
+.ia-star-on {
+  color: #fbbf24;
+  font-size: 13px;
+}
+
+.ia-star-off {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.recommendation-box {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.open {
+    max-height: 400px;
+  }
+}
+
+.reco-inner {
+  padding: 12px 14px 16px;
+  border-top: 3px solid #d8e4f5;
+  background: linear-gradient(160deg, rgba(248, 251, 255, .9) 0%, rgba(252, 254, 255, .88) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  .reco-title {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 7px;
+  }
+
+  .reco-text {
+    font-size: 12.5px;
+    color: #475569;
+    line-height: 1.78;
+
+    ::ng-deep strong {
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    ::ng-deep ul,
+    ::ng-deep ol {
+      padding-left: 18px;
+      margin: 6px 0 0;
+    }
+
+    ::ng-deep li {
+      margin-bottom: 4px;
+    }
+  }
+}
+
+@keyframes iaRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .ia-hero {
+    padding: 12px;
+  }
+
+  .ia-input-wrap .form-control,
+  .ia-select {
+    width: 100%;
+  }
+
+  .ia-hero-filters {
+    width: 100%;
+
+    .ia-input-wrap,
+    .ia-select {
+      flex: 1 1 100%;
+    }
+  }
+
+  .analytics-kpi-card {
+    padding: 12px;
+
+    .kpi-value {
+      font-size: 19px;
+    }
+  }
+}

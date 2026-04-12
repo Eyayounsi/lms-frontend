@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { routes } from '../../../shared/service/routes/routes';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { resolveAvatarImage } from '../../../shared/utils/avatar-image.util';
 
 @Component({
   selector: 'app-instructor-list',
@@ -94,7 +95,6 @@ export class InstructorListComponent implements OnInit {
   }
 
   getAvatarUrl(path: string): string {
-    if (!path) return 'assets/img/avatar/avatar10.jpg';
-    return `http://localhost:8081/${path}`;
+    return resolveAvatarImage(path, 'assets/img/avatar/avatar10.jpg');
   }
 }

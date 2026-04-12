@@ -1,0 +1,138 @@
+.settings-sidebar {
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  padding: 14px;
+
+  h6 {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 800;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+
+  a {
+    width: 100%;
+    border-radius: 10px;
+    padding: 9px 10px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: #334155;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    i {
+      color: #6366f1;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #eef2ff, #f8faff);
+      color: #3730a3;
+      transform: translateX(3px);
+
+      i {
+        color: #4338ca;
+        transform: scale(1.1);
+      }
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #eef2ff, #e8edff);
+      color: #3730a3;
+      font-weight: 700;
+      box-shadow: inset 3px 0 0 #6366f1;
+
+      i {
+        color: #4f46e5;
+      }
+    }
+  }
+
+  hr {
+    border-color: #edf2f7;
+    opacity: 1;
+  }
+}
+
+.student-sidebar-profile {
+  border-radius: 12px;
+  border: 1px solid #dbe5ff;
+  background: linear-gradient(135deg, #f7faff 0%, #eef4ff 100%);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  h6 {
+    font-size: 0.85rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #1e3a8a;
+    font-weight: 800;
+  }
+
+  p {
+    font-size: 0.7rem;
+    color: #64748b;
+  }
+}
+
+.student-sidebar-profile__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+  overflow: hidden;
+}
+
+.student-sidebar-profile__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sidebar-badge {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  font-size: 10px;
+  line-height: 18px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18);
+  animation: badgePulse 1.8s ease-in-out infinite;
+}
+
+.sidebar-badge--msg {
+  background: #4a1d96;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}

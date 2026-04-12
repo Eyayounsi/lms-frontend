@@ -1,67 +1,118 @@
-<div class="page-content">
+﻿<div class="page-content">
 
-  <!-- Messages -->
-  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
-    <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
-    <button type="button" class="btn-close" (click)="successMessage = ''"></button>
-  </div>
-  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
-    <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
-    <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
-  </div>
-
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="mb-0">
-      <i class="fa-solid fa-tags me-2 text-primary"></i>Gestion des Catégories
-    </h4>
-    <button class="btn btn-primary" (click)="openCreate()">
-      <i class="fa-solid fa-plus me-1"></i>Nouvelle catégorie
-    </button>
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Teal                                                               -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="cat-hero mb-4">
+    <div class="cat-glow cat-glow-1"></div>
+    <div class="cat-glow cat-glow-2"></div>
+    <div class="cat-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="cat-av-wrap">
+              <div class="cat-av-ring"></div>
+              <div class="cat-av-border"></div>
+              <div class="cat-av-circle">
+                <i class="ti ti-tags" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="cat-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="cat-chip"><i class="ti ti-category me-1" style="font-size:9px"></i>Administration</span>
+                <span class="cat-live"><span class="cat-live-dot"></span>ACTIF</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Gestion des Catégories</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Organisez et structurez les catégories de cours</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="cat-glass d-none d-md-flex align-items-center">
+              <div class="cat-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ categories.length }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Catégories</small>
+              </div>
+              <div class="cat-stat-div"></div>
+              <div class="cat-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ filteredCategories.length }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Affichées</small>
+              </div>
+            </div>
+            <button class="cat-refresh d-flex align-items-center gap-2" (click)="openCreate()">
+              <i class="ti ti-plus" style="font-size:14px"></i>Nouvelle catégorie
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Loading -->
   <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2 text-muted">Chargement...</p>
+    <div class="spinner-border" style="color:#0d9488" role="status"></div>
+    <p class="mt-2 text-muted">Chargement…</p>
   </div>
 
-  <!-- Tableau -->
-  <div *ngIf="!loading" class="card shadow-sm">
-    <div class="table-responsive">
+  <!-- Search bar -->
+  <div *ngIf="!loading" class="ac-card mb-4 p-3">
+    <div class="input-group">
+      <span class="input-group-text bg-transparent border-end-0" style="border-color:#e2e8f0">
+        <i class="ti ti-search text-muted"></i>
+      </span>
+      <input type="text" class="form-control border-start-0 ps-0" placeholder="Rechercher par nom ou description…"
+             style="border-color:#e2e8f0"
+             [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
+      <span *ngIf="searchTerm" class="input-group-text bg-transparent border-start-0"
+            style="border-color:#e2e8f0;cursor:pointer" (click)="searchTerm=''; applyFilters()">
+        <i class="ti ti-x text-muted"></i>
+      </span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading" class="ac-card">
+    <div *ngIf="filteredCategories.length === 0" class="ac-empty">
+      <div class="ac-empty-icon"><i class="ti ti-tags"></i></div>
+      <h6 class="fw-semibold text-secondary mb-1">Aucune catégorie</h6>
+      <p class="text-muted small mb-3">{{ searchTerm ? 'Aucun résultat pour "' + searchTerm + '"' : 'Créez votre première catégorie de cours' }}</p>
+      <button class="cat-btn-primary" (click)="openCreate()">
+        <i class="ti ti-plus"></i>Nouvelle catégorie
+      </button>
+    </div>
+    <div *ngIf="filteredCategories.length > 0" class="table-responsive">
       <table class="table table-hover align-middle mb-0">
-        <thead class="table-light">
+        <thead style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border-bottom:2px solid rgba(13,148,136,.15)">
           <tr>
-            <th style="width:40px">#</th>
-            <th style="width:48px">Icône</th>
-            <th>Nom</th>
-            <th>Description</th>
-            <th>Slug</th>
-            <th class="text-end" style="width:120px">Actions</th>
+            <th class="ps-4 py-3 text-muted small fw-semibold" style="width:40px">#</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:72px">Icône</th>
+            <th class="py-3 text-muted small fw-semibold">Nom</th>
+            <th class="py-3 text-muted small fw-semibold">Description</th>
+            <th class="py-3 text-muted small fw-semibold">Slug</th>
+            <th class="py-3 text-muted small fw-semibold text-end pe-4" style="width:130px">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngIf="categories.length === 0">
-            <td colspan="6" class="text-center text-muted py-5">
-              <i class="fa-solid fa-tags fa-2x mb-2 d-block"></i>
-              Aucune catégorie. Créez-en une pour commencer.
+          <tr *ngFor="let cat of filteredCategories; let i = index" class="cat-row">
+            <td class="ps-4 text-muted small">{{ i + 1 }}</td>
+            <td>
+              <span class="cat-icon-badge" [ngClass]="getCategoryColorClass(cat.name)">
+                <i [class]="displayIcon(cat.icon)"></i>
+              </span>
             </td>
-          </tr>
-          <tr *ngFor="let cat of categories; let i = index">
-            <td class="text-muted small">{{ i + 1 }}</td>
-            <td class="text-center">
-              <i *ngIf="cat.icon" [class]="cat.icon" style="font-size:1.3rem;"></i>
-              <span *ngIf="!cat.icon" class="text-muted">—</span>
+            <td class="fw-semibold" style="color:#0f172a">{{ cat.name }}</td>
+            <td class="text-muted small" style="max-width:260px">
+              <span class="text-truncate d-block">{{ cat.description || '—' }}</span>
             </td>
-            <td class="fw-semibold">{{ cat.name }}</td>
-            <td class="text-muted small">{{ cat.description || '—' }}</td>
-            <td><code class="small text-secondary">{{ cat.slug }}</code></td>
-            <td class="text-end">
-              <button class="btn btn-sm btn-outline-warning me-1" (click)="openEdit(cat)" title="Modifier">
-                <i class="fa-solid fa-pen"></i>
+            <td><code class="small" style="color:#0d9488;background:rgba(13,148,136,.08);padding:2px 8px;border-radius:6px">{{ cat.slug }}</code></td>
+            <td class="text-end pe-4">
+              <button class="cat-btn-icon cat-btn-edit me-1" (click)="openEdit(cat)" title="Modifier">
+                <i class="ti ti-edit"></i>
               </button>
-              <button class="btn btn-sm btn-outline-danger" (click)="openDelete(cat)" title="Supprimer">
-                <i class="fa-solid fa-trash"></i>
+              <button class="cat-btn-icon cat-btn-del" (click)="openDelete(cat)" title="Supprimer">
+                <i class="ti ti-trash"></i>
               </button>
             </td>
           </tr>
@@ -72,116 +123,97 @@
 
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ -->
-<!--  MODAL CRÉER / MODIFIER                               -->
-<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL CRÉER / MODIFIER                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 <div *ngIf="showForm" class="modal fade show d-block" tabindex="-1"
-     style="background-color: rgba(0,0,0,0.5);">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">
-          <i class="fa-solid fa-tag me-2"></i>{{ editId ? 'Modifier la catégorie' : 'Nouvelle catégorie' }}
+     style="background-color:rgba(15,23,42,.55);backdrop-filter:blur(4px)">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header border-0 pb-0"
+           style="background:linear-gradient(135deg,#0f766e,#0d9488);border-radius:17px 17px 0 0;padding:20px 24px">
+        <h5 class="modal-title text-white fw-bold">
+          <i class="ti ti-{{ editId ? 'edit' : 'plus' }} me-2"></i>
+          {{ editId ? 'Modifier la catégorie' : 'Nouvelle catégorie' }}
         </h5>
         <button type="button" class="btn-close btn-close-white" (click)="cancelForm()"></button>
       </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Icône</label>
-
-          <!-- Prévisualisation + bouton ouvrir le sélecteur -->
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <div class="d-flex align-items-center justify-content-center rounded border bg-light"
-                 style="width:48px;height:48px;flex-shrink:0;">
-              <i *ngIf="form.icon" [class]="form.icon" style="font-size:1.6rem;"></i>
-              <i *ngIf="!form.icon" class="fa-solid fa-image text-muted" style="font-size:1.3rem;"></i>
+      <div class="modal-body" style="padding:22px 24px">
+        <div class="mb-4">
+          <label class="form-label fw-semibold mb-2" style="color:#0f766e">
+            <i class="ti ti-palette me-1"></i>Icône de la catégorie
+          </label>
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="d-flex align-items-center justify-content-center rounded-3 border"
+                 style="width:52px;height:52px;background:#f0fdfa;border-color:#99f6e4!important;flex-shrink:0">
+              <i [class]="displayIcon(form.icon)" style="font-size:1.7rem;color:#0d9488"></i>
             </div>
             <div class="flex-grow-1">
               <input type="text" class="form-control form-control-sm" [(ngModel)]="form.icon"
-                     placeholder="Ex: isax isax-code  ou  ti ti-code  ou  fa-solid fa-laptop">
-              <div class="form-text">Saisie libre ou utilise le sélecteur ci-dessous.</div>
+                     placeholder="Ex: isax isax-book-1 ou fa-solid fa-book">
+              <div class="form-text">Classe d'icône ou choisissez ci-dessous.</div>
             </div>
-            <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0"
-                    (click)="showIconPicker = !showIconPicker; iconSearch = ''">
-              <i class="isax isax-grid me-1"></i>{{ showIconPicker ? 'Fermer' : 'Choisir' }}
-            </button>
-            <button *ngIf="form.icon" type="button" class="btn btn-outline-danger btn-sm flex-shrink-0"
-                    title="Effacer l'icône" (click)="form.icon = ''">
-              <i class="isax isax-close-circle"></i>
+            <button *ngIf="form.icon" type="button" class="btn btn-sm btn-outline-danger flex-shrink-0"
+                    (click)="form.icon = 'isax isax-book-1'">
+              <i class="ti ti-refresh"></i>
             </button>
           </div>
-
-          <!-- Sélecteur visuel (grid d'icônes) -->
-          <div *ngIf="showIconPicker" class="border rounded-3 p-2 bg-white" style="max-height:280px;overflow-y:auto;">
-            <!-- Recherche -->
-            <div class="mb-2 px-1">
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="iconSearch"
-                     placeholder="Rechercher une icône... (code, design, livre...)"
-                     autofocus>
-            </div>
-            <!-- Grille -->
-            <div class="d-flex flex-wrap gap-1">
-              <button *ngFor="let icon of filteredIcons" type="button"
-                      class="btn btn-sm d-flex flex-column align-items-center justify-content-center p-2 gap-1"
-                      [class.btn-primary]="form.icon === icon.cls"
-                      [class.btn-outline-secondary]="form.icon !== icon.cls"
-                      style="width:68px;min-height:58px;font-size:11px;"
-                      title="{{ icon.label }}"
-                      (click)="selectIcon(icon.cls)">
-                <i [class]="icon.cls" style="font-size:1.4rem;"></i>
-                <span class="text-truncate" style="max-width:62px;">{{ icon.label }}</span>
-              </button>
-              <div *ngIf="filteredIcons.length === 0" class="text-muted small p-2">
-                Aucune icône trouvée. Saisissez la classe manuellement dans le champ ci-dessus.
-              </div>
-            </div>
+          <div class="category-icons-grid">
+            <button *ngFor="let preset of selectableIconPresets"
+              type="button" class="btn category-icon-btn"
+              [class.active]="displayIcon(form.icon) === preset.iconClass"
+              [ngClass]="preset.color" [title]="preset.label"
+              (click)="selectTemplateIcon(preset.iconClass)">
+              <i [class]="preset.iconClass"></i>
+              <span class="category-icon-label">{{ preset.label }}</span>
+            </button>
           </div>
         </div>
         <div class="mb-3">
-          <label class="form-label">Nom <span class="text-danger">*</span></label>
+          <label class="form-label fw-semibold">Nom <span class="text-danger">*</span></label>
           <input type="text" class="form-control" [(ngModel)]="form.name"
-                 placeholder="Ex: Développement Web" autofocus>
+                 placeholder="Ex: Développement Web" autofocus style="border-radius:10px">
         </div>
         <div class="mb-3">
-          <label class="form-label">Description</label>
+          <label class="form-label fw-semibold">Description</label>
           <textarea class="form-control" rows="3" [(ngModel)]="form.description"
-                    placeholder="Description de la catégorie..."></textarea>
+                    placeholder="Description de la catégorie…"
+                    style="border-radius:10px;resize:none"></textarea>
         </div>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="cancelForm()">Annuler</button>
-        <button class="btn btn-primary" (click)="save()"
-                [disabled]="saving || !form.name.trim()">
-          <span *ngIf="saving" class="spinner-border spinner-border-sm me-1"></span>
-          <i *ngIf="!saving" class="fa-solid fa-check me-1"></i>
-          {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+      <div class="modal-footer border-0 pt-0" style="padding:16px 24px 20px">
+        <button class="btn btn-light fw-semibold px-4 rounded-pill" (click)="cancelForm()">Annuler</button>
+        <button class="cat-btn-primary" (click)="save()" [disabled]="saving || !form.name.trim()">
+          <span *ngIf="saving" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!saving" class="ti ti-check"></i>
+          {{ saving ? 'Enregistrement…' : 'Enregistrer' }}
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ -->
-<!--  MODAL CONFIRMER SUPPRESSION                          -->
-<!-- ═══════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL SUPPRIMER                                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 <div *ngIf="showDeleteModal" class="modal fade show d-block" tabindex="-1"
-     style="background-color: rgba(0,0,0,0.5);">
+     style="background-color:rgba(15,23,42,.55);backdrop-filter:blur(4px)">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-body text-center py-4">
-        <div class="mb-3"
-             style="width:60px;height:60px;background:rgba(220,53,69,0.1);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">
-          <i class="fa-solid fa-trash fa-xl text-danger"></i>
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-body text-center py-5 px-4">
+        <div class="ac-confirm-ico mx-auto mb-3">
+          <i class="ti ti-trash"></i>
         </div>
-        <h5 class="mb-2">Supprimer <strong>{{ categoryToDelete?.name }}</strong> ?</h5>
-        <p class="text-muted mb-4">
+        <h5 class="fw-bold mb-2">Supprimer <strong>{{ categoryToDelete?.name }}</strong> ?</h5>
+        <p class="text-muted small mb-4">
           Cette action est irréversible.<br>
-          Les cours liés à cette catégorie n'auront plus de catégorie assignée.
+          Les cours liés n'auront plus de catégorie assignée.
         </p>
-        <div class="d-flex justify-content-center gap-2">
-          <button class="btn btn-light rounded-pill px-4" (click)="closeDelete()">Annuler</button>
-          <button class="btn btn-danger rounded-pill px-4" (click)="confirmDelete()" [disabled]="deleting">
-            <span *ngIf="deleting" class="spinner-border spinner-border-sm me-1"></span>
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-light fw-semibold px-4 rounded-pill" (click)="closeDelete()">Annuler</button>
+          <button class="ac-btn-delete rounded-pill px-4" (click)="confirmDelete()" [disabled]="deleting">
+            <span *ngIf="deleting" class="spinner-border spinner-border-sm"></span>
+            <i *ngIf="!deleting" class="ti ti-trash"></i>
             Supprimer
           </button>
         </div>

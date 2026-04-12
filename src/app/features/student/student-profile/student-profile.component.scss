@@ -1,0 +1,53 @@
+.stu-prof-photo-wrap {
+	flex-shrink: 0;
+}
+
+.stu-prof-photo-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.stu-prof-photo-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 34px;
+	padding: 0 14px;
+	border: 0;
+	border-radius: 999px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	transition: all .2s ease;
+}
+
+.stu-prof-photo-btn--upload {
+	background: #e5e7eb;
+	color: #111827;
+
+	&:hover {
+		background: #d1d5db;
+	}
+}
+
+.stu-prof-photo-btn--delete {
+	background: #ff4667;
+	color: #fff;
+
+	&:hover:enabled {
+		background: #e83b5b;
+	}
+
+	&:disabled {
+		opacity: .65;
+		cursor: not-allowed;
+	}
+}
+
+.stu-prof-photo-btn.disabled {
+	opacity: .75;
+	pointer-events: none;
+}

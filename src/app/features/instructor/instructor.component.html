@@ -1,61 +1,59 @@
-<!-- Breadcrumb -->
-@if (last !== 'view') {
-  <div class="breadcrumb-bar text-center">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 col-12">
-          <div class="breadcrumb-list">
-            <h2 class="breadcrumb-title">{{ last | titlecase }}</h2>
-            <nav aria-label="breadcrumb" class="page-breadcrumb">
-              <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a [routerLink] = "routes.home">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ last | titlecase }}</li>
-              </ol>
-            </nav>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-}
-<!-- /Breadcrumb -->
  @if(last !== 'students-details' ){
 <div class="content" >
   <div class="container">
-      <div class="instructor-profile">
-          <div class="instructor-profile-bg">
-              <img src="assets/img/bg/card-bg-01.png" class="instructor-profile-bg-1" alt="">
-          </div>
-          <div class="row align-items-center row-gap-3">
-                  <div class="col-md-6">
-                      <div class="d-flex align-items-center">
-                          <span class="avatar flex-shrink-0 avatar-xxl avatar-rounded me-3 border border-white border-3 position-relative">
-                              <img src="assets/img/user/user-01.jpg" alt="img">
-                              <span class="verify-tick"><i class="isax isax-verify5"></i></span>
-                          </span>
-                          <div>
-                              <h5 class="mb-1 text-white d-inline-flex align-items-center">Eugene Andre<a [routerLink]="routes.instructorProfile" class="link-light fs-16 ms-2"><i class="isax isax-edit-2"></i></a></h5>
-                              <p class="text-light">Instructor</p>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col-md-6">
-                      <div class="d-flex align-items-center flex-wrap gap-3 justify-content-md-end">
-                          <a [routerLink]="routes.addCourse" class="btn btn-white rounded-pill">Add New Course</a>
-                          <a [routerLink]="routes.students_Dashboard" class="btn btn-secondary rounded-pill">Student Dashboard</a>
-                      </div>
-                  </div>
-          </div>
-      </div>
-      <div class="row">
+      <div class="row align-items-start row-gap-4">
 
           <!-- sidebar -->
-          <app-instructor-sidebar
-              class="col-lg-3 "></app-instructor-sidebar>
+          <div class="col-lg-3 instructor-sidebar-col">
+            <app-instructor-sidebar></app-instructor-sidebar>
+          </div>
           <!-- /Sidebar -->
 
           <!-- Instructor Dashboard -->
           <div class="col-lg-9">
+            <div *ngIf="showInstructorPageHero" class="ins-shell-hero mb-4">
+              <div class="ins-shell-glow ins-shell-glow-1"></div>
+              <div class="ins-shell-glow ins-shell-glow-2"></div>
+              <div class="ins-shell-hero-inner">
+                <div class="row align-items-center w-100">
+                  <div class="col-lg-8">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="ins-shell-av-wrap">
+                        <div class="ins-shell-av-ring"></div>
+                        <div class="ins-shell-av-border"></div>
+                        <div class="ins-shell-av-circle"><i [class]="instructorPageIconClass"></i></div>
+                      </div>
+                      <div>
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                          <span class="ins-shell-role-chip"><i [class]="instructorPageIconClass + ' me-1'" style="font-size:9px"></i>Instructeur</span>
+                          <span class="ins-shell-live"><span class="ins-shell-live-dot"></span>Actif</span>
+                        </div>
+                        <h3 class="ins-shell-hero-title mb-0">{{ instructorPageHero.title }}</h3>
+                        <p class="ins-shell-hero-subtitle mb-0 mt-1">{{ instructorPageHero.subtitle }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-4">
+                    <div class="d-flex justify-content-lg-end mt-3 mt-lg-0" *ngIf="showHeaderNewCourseButton">
+                      <a [routerLink]="routes.instructorAddCourse" class="ins-shell-action-btn">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nouveau cours</span>
+                      </a>
+                    </div>
+                    <div class="d-flex justify-content-lg-end mt-3 mt-lg-0 gap-2" *ngIf="showHeaderNotificationButtons">
+                      <button type="button" class="ins-shell-action-btn ins-shell-action-btn--neutral" (click)="markAllNotificationsFromHeader()">
+                        <i class="fa-solid fa-check-double"></i>
+                        <span>Tout marquer lu</span>
+                      </button>
+                      <button type="button" class="ins-shell-action-btn ins-shell-action-btn--danger" (click)="deleteAllNotificationsFromHeader()">
+                        <i class="fa-solid fa-trash"></i>
+                        <span>Tout supprimer</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <router-outlet></router-outlet>
           </div>
           <!-- Instructor Dashboard -->
@@ -71,6 +69,195 @@
 <!-- ================================================================
      FLOATING NOTES BUTTON (bloc-notes instructeur)
      ================================================================ -->
+<!-- Bouton flottant IA instructeur (au-dessus des notes) -->
+<button class="notes-fab instructor-ai-fab"
+  (click)="openInstructorAiAssistant()"
+  title="Assistant IA Instructeur"
+  [class.notes-fab--open]="showInstructorAiPanel">
+  <i class="isax isax-message-text" *ngIf="!instructorAiBusy"></i>
+  <i class="isax isax-refresh" *ngIf="instructorAiBusy"></i>
+</button>
+
+<!-- Panneau conversation IA instructeur -->
+<div class="notes-panel ai-panel" [class.notes-panel--visible]="showInstructorAiPanel">
+
+  <!-- ── Header ── -->
+  <div class="notes-panel__header">
+    <div class="ai-header-left">
+      <div class="ai-header-icon">
+        @switch (instructorAiMode) {
+          @case ('quiz')  { &#x1F3AF; }
+          @case ('plan')  { &#x1F4CB; }
+          @case ('audit') { &#x1F50D; }
+          @default        { &#x1F916; }
+        }
+      </div>
+      <div>
+        <div class="ai-header-title">Assistant IA Instructeur</div>
+        <div class="ai-header-mode">
+          @switch (instructorAiMode) {
+            @case ('quiz')  { Quiz pédagogique }
+            @case ('plan')  { Plan de cours }
+            @case ('audit') { Audit de cours }
+            @default        { Copilot Instructor }
+          }
+        </div>
+      </div>
+    </div>
+    <div class="ai-header-right">
+      <div class="ai-status-badge">
+        <span class="ai-status-dot"></span>EN LIGNE
+      </div>
+      <button *ngIf="instructorAiHistory.length > 0"
+              class="ai-clear-btn"
+              title="Effacer la conversation"
+              (click)="instructorAiHistory = []">&#x2715; Effacer</button>
+      <button class="btn-close btn-close-white btn-sm" (click)="showInstructorAiPanel = false"></button>
+    </div>
+  </div>
+
+  <!-- ── Body ── -->
+  <div class="notes-panel__body ai-panel__body">
+
+    <!-- Controls -->
+    <div class="ai-controls-grid">
+      <select class="form-select form-select-sm" [(ngModel)]="instructorAiMode">
+        <option value="copilot">&#x1F916; Copilot</option>
+        <option value="quiz">&#x1F3AF; Quiz</option>
+        <option value="plan">&#x1F4CB; Plan de cours</option>
+        <option value="audit">&#x1F50D; Audit</option>
+      </select>
+      <select class="form-select form-select-sm" [(ngModel)]="instructorAiLevel">
+        <option value="Débutant">&#x1F7E2; Débutant</option>
+        <option value="Intermédiaire">&#x1F7E1; Intermédiaire</option>
+        <option value="Avancé">&#x1F534; Avancé</option>
+      </select>
+      <select class="form-select form-select-sm" [(ngModel)]="instructorAiDuration">
+        <option value="1 séance">&#x23F1; 1 séance</option>
+        <option value="2 semaines">&#x1F4C5; 2 semaines</option>
+        <option value="4 semaines">&#x1F4C5; 4 semaines</option>
+        <option value="8 semaines">&#x1F4C5; 8 semaines</option>
+      </select>
+      <select class="form-select form-select-sm" [(ngModel)]="instructorAiFormat">
+        <option value="structuré">&#x1F4D0; Structuré</option>
+        <option value="compact">&#x26A1; Compact</option>
+        <option value="détaillé">&#x1F4D6; Détaillé</option>
+      </select>
+    </div>
+
+    <!-- Audit course selector -->
+    @if (instructorAiMode === 'audit') {
+      <div class="ai-audit-card mt-2">
+        <div class="ai-audit-card__label">
+          <i class="isax isax-book" style="font-size:.85rem"></i> Cours à auditer
+        </div>
+        <select class="form-select form-select-sm" [(ngModel)]="selectedAuditCourseId">
+          <option [ngValue]="null">&#x1F310; Tous les cours (audit global)</option>
+          <option *ngFor="let course of instructorCoursesKnowledge" [ngValue]="course.id">
+            &#x1F4D8; {{ course.title }}
+          </option>
+        </select>
+        <span class="ai-audit-scope"
+              [class.ai-audit-scope--global]="selectedAuditCourseId === null"
+              [class.ai-audit-scope--targeted]="selectedAuditCourseId !== null">
+          @if (selectedAuditCourseId !== null) { &#x2705; Audit ciblé sur ce cours }
+          @else { &#x1F310; Audit global — tout le catalogue }
+        </span>
+      </div>
+    }
+
+    <!-- Objectives textarea -->
+    <textarea class="notes-panel__textarea ai-panel__objectives"
+              rows="2"
+              [(ngModel)]="instructorAiObjectives"
+              [disabled]="instructorAiBusy"
+              [placeholder]="instructorAiMode === 'audit' ? 'Axe d\'analyse (ex: manque d\'exercices, progression trop rapide...)' : 'Objectifs pédagogiques (optionnel)'"></textarea>
+
+    <!-- Empty state -->
+    <div *ngIf="instructorAiHistory.length === 0 && !instructorAiBusy" class="ai-empty-state">
+      <div class="ai-empty-state__icon">
+        @switch (instructorAiMode) {
+          @case ('quiz')  { &#x1F3AF; }
+          @case ('plan')  { &#x1F4CB; }
+          @case ('audit') { &#x1F50D; }
+          @default        { &#x1F916; }
+        }
+      </div>
+      @if (instructorAiMode === 'audit') {
+        <div class="ai-empty-state__title">Audit de cours IA</div>
+        <div class="ai-empty-state__sub">Choisissez un cours, décrivez l'axe<br>et obtenez un rapport structuré.</div>
+        <div class="ai-audit-chips">
+          <button class="ai-chip" (click)="instructorAiInput = 'Identifier les lacunes pédagogiques et manques d\'exercices pratiques'">Lacunes</button>
+          <button class="ai-chip" (click)="instructorAiInput = 'Analyser la progression et la difficulté entre les modules'">Progression</button>
+          <button class="ai-chip" (click)="instructorAiInput = 'Évaluer la qualité et quantité des quiz par rapport au contenu'">Qualité quiz</button>
+          <button class="ai-chip" (click)="instructorAiInput = 'Améliorer l\'engagement et réduire le taux d\'abandon'">Engagement</button>
+        </div>
+      } @else {
+        <div class="ai-empty-state__title">
+          @switch (instructorAiMode) {
+            @case ('quiz') { Génération de quiz }
+            @case ('plan') { Plan de cours }
+            @default       { Copilot Instructor }
+          }
+        </div>
+        <div class="ai-empty-state__sub">Décrivez votre besoin ci-dessous<br>et l'agent génère une réponse professionnelle.</div>
+      }
+    </div>
+
+    <!-- Chat messages -->
+    <div class="ai-chat-list" *ngIf="instructorAiHistory.length > 0">
+      <div *ngFor="let msg of instructorAiHistory"
+           class="ai-msg"
+           [class.ai-msg--user]="msg.role === 'user'"
+           [class.ai-msg--assistant]="msg.role === 'assistant'">
+        <div class="ai-msg__meta">
+          <span class="ai-msg__avatar">{{ msg.role === 'user' ? 'V' : 'IA' }}</span>
+          {{ msg.role === 'user' ? 'Vous' : 'Agent IA' }}
+        </div>
+        <div class="ai-msg__bubble" [innerHTML]="msg.role === 'assistant' ? formatInstructorMessage(msg.content) : msg.content"></div>
+      </div>
+    </div>
+
+    <!-- Typing indicator -->
+    <div *ngIf="instructorAiBusy" class="ai-typing-indicator">
+      <div class="ai-typing-meta">
+        <span class="ai-typing-avatar">IA</span>
+        Agent IA · en cours d'analyse&#x2026;
+      </div>
+      <div class="ai-typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Composer ── -->
+  <div class="ai-panel__composer">
+    <textarea class="notes-panel__textarea ai-panel__input"
+              rows="3"
+              [(ngModel)]="instructorAiInput"
+              [disabled]="instructorAiBusy"
+              [placeholder]="instructorAiMode === 'audit' ? (selectedAuditCourseId !== null ? 'Aspect à analyser (qualité quiz, progression, types de contenu...)' : 'Aspect à analyser globalement (cohérence catalogue, couverture thématique...)') : 'Sujet principal (obligatoire)'"></textarea>
+    <div class="ai-composer-actions">
+      <button class="ai-copy-btn"
+              (click)="copyLastInstructorAiReply()"
+              [disabled]="instructorAiHistory.length === 0">
+        <i class="isax isax-copy" style="font-size:.92rem"></i> Copier
+      </button>
+      <button class="ai-send-btn"
+              (click)="sendInstructorAiMessage()"
+              [disabled]="instructorAiBusy || !instructorAiInput.trim()">
+        @if (instructorAiBusy) {
+          <i class="isax isax-refresh-2" style="animation:spin 1s linear infinite;font-size:.92rem"></i> Analyse&#x2026;
+        } @else {
+          <i class="isax isax-send-2" style="font-size:.92rem"></i> Générer
+        }
+      </button>
+    </div>
+  </div>
+
+</div>
+
 <!-- Bouton flottant -->
 <button class="notes-fab" (click)="toggleNotesPanel()"
         title="Mes Notes" [class.notes-fab--open]="showNotesPanel">
@@ -108,102 +295,3 @@
 
 </div>
 <!-- /Bloc-notes instructeur -->
-
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-bg">
-      <img src="assets/img/bg/footer-bg-01.png" class="footer-bg-1" alt="">
-      <img src="assets/img/bg/footer-bg-02.png" class="footer-bg-2" alt="">
-  </div>
-  <div class="footer-top">
-      <div class="container">
-          <div class="row row-gap-4">
-              <div class="col-lg-4">
-                  <div class="footer-about">
-                      <div class="footer-logo">
-                          <img src="assets/img/logo.svg" alt="">
-                      </div>
-                      <p>Platform designed to help organizations, educators, and learners manage, deliver, and track learning and training activities.</p>
-                      <div class="d-flex align-items-center">
-                          <a href="javascript:void(0);" class="me-2"><img src="assets/img/icon/appstore.svg" alt=""></a>
-                          <a href="javascript:void(0);"><img src="assets/img/icon/googleplay.svg" alt=""></a>
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-8">
-                  <div class="row row-gap-4">
-                      <div class="col-lg-3">
-                          <div class="footer-widget footer-menu">
-                              <h5 class="footer-title">For Instructor</h5>
-                              <ul>
-                                <li><a [routerLink]="routes.courseGrid">Search Mentors</a></li>
-                                <li><a [routerLink]="routes.login">Login</a></li>
-                                <li><a [routerLink]="routes.register">Register</a></li>
-                                <li><a [routerLink]="routes.courseList">Booking</a></li>
-                                <li><a [routerLink]="routes.students_Dashboard">Students Dashboard</a></li>
-                            </ul>
-                          </div>
-                      </div>
-                      <div class="col-lg-3">
-                          <div class="footer-widget footer-menu">
-                              <h5 class="footer-title">For Student</h5>
-                              <ul>
-                                <li><a href="javascript:void(0);">Appointments</a></li>
-                                <li><a [routerLink]="routes.instructorMessage">Chat</a></li>
-                                <li><a [routerLink]="routes.login">Login</a></li>
-                                <li><a [routerLink]="routes.register">Register</a></li>
-                                <li><a [routerLink]="routes.instructor_dashboard">Instructor Dashboard</a></li>
-                            </ul>
-                          </div>
-                      </div>
-                      <div class="col-lg-6">
-                          <div class="footer-widget footer-contact">
-                              <h5 class="footer-title">Newsletter</h5>
-                              <div class="subscribe-input">
-                                  <form action="javascript:void(0);">
-                                      <input type="email" class="form-control" placeholder="Enter your Email Address">
-                                      <button type="submit" class="btn btn-primary btn-sm inline-flex align-items-center"><i class="isax isax-send-2 me-1"></i>Subscribe</button>
-                                  </form>
-                              </div>
-                              <div class="footer-contact-info">
-                                  <div class="footer-address d-flex align-items-center">
-                                      <img src="assets/img/icon/icon-20.svg" alt="Img" class="img-fluid me-2">
-                                      <p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
-                                  </div>
-                                  <div class="footer-address d-flex align-items-center">
-                                      <img src="assets/img/icon/icon-19.svg" alt="Img" class="img-fluid me-2">
-                                      <p>dreamslms&#64;example.com</p>
-                                  </div>
-                                  <div class="footer-address d-flex align-items-center">
-                                      <img src="assets/img/icon/icon-21.svg" alt="Img" class="img-fluid me-2">
-                                      <p>+19 123-456-7890</p>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-  <div class="footer-bottom">
-      <div class="container">
-          <div class="row row-gap-2">
-              <div class="col-md-6">
-                  <div class="text-center text-md-start">
-                      <p class="text-white">Copyright &copy; 2025 DreamsLMS. All rights reserved.</p>
-                  </div>
-              </div>
-              <div class="col-md-6">
-                  <div>
-                      <ul class="d-flex align-items-center justify-content-center justify-content-md-end footer-link">
-                        <li><a [routerLink]="routes.page_term_condition">Terms & Conditions</a></li>
-                        <li><a [routerLink]="routes.page_privacy_policy">Privacy Policy</a></li>
-                      </ul>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</footer>
-<!-- /Footer -->

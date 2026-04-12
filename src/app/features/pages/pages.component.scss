@@ -1,0 +1,44 @@
+:host {
+  min-height: calc(100vh - 76px);
+  display: flex;
+  flex-direction: column;
+}
+
+.public-page-content {
+  flex: 1 0 auto;
+}
+
+/* breadcrumb banner with background image */
+.breadcrumb-bar {
+  position: relative;
+  padding: 60px 0 50px;
+  background-image: url('/assets/img/bg/breadcrumb-bar.png');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+
+  /* subtle dark overlay for readability */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(99,102,241,.82) 0%, rgba(124,58,237,.76) 100%);
+  }
+
+  .container { position: relative; z-index: 1; }
+
+  .breadcrumb-title {
+    color: #fff;
+    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .breadcrumb {
+    --bs-breadcrumb-divider-color: rgba(255,255,255,.6);
+    --bs-breadcrumb-item-active-color: #fff;
+    a { color: rgba(255,255,255,.8); text-decoration: none; &:hover { color: #fff; } }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,.5); }
+    .breadcrumb-item.active { color: rgba(255,255,255,.95); }
+  }
+}

@@ -1,1 +1,6 @@
 // Styles du layout SuperAdmin
+.sa-sidebar-col {
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+}

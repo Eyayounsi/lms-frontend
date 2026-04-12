@@ -37,4 +37,10 @@ export class NotificationService {
   markAllAsRead(): Observable<void> {
     return this.http.put<void>(`${this.api}/notifications/read-all`, {});
   }
+
+  getUnreadMessageCount(): Observable<number> {
+    return this.http.get<{ count: number }>(`${this.api}/user/messages/unread-count`).pipe(
+      map(res => res.count ?? 0)
+    );
+  }
 }

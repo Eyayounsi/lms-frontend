@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { routes } from '../../../shared/service/routes/routes';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
 
 @Component({
   selector: 'app-student-my-courses',
@@ -93,9 +94,7 @@ export class StudentMyCoursesComponent implements OnInit {
   }
 
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return resolveCourseImage(path);
   }
 
   getLevelLabel(level: string): string {

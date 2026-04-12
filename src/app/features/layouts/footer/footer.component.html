@@ -1,9 +1,9 @@
 <!-- Footer -->
-<footer class="footer footer-one">
+<footer class="footer footer-one" [class.footer-compact]="!showFullFooter">
 
   <!-- Footer Top -->
 
-    <div class="footer-top aos" data-aos="fade-up" data-aos-duration="1500">
+    <div *ngIf="showFullFooter" class="footer-top aos" data-aos="fade-up" data-aos-duration="1500">
       <app-footer-top-container></app-footer-top-container>
     </div>
 
@@ -13,19 +13,19 @@
   <!-- Footer Bottom -->
   <div class="footer-bottom">
     <div class="container">
-      <div class="row row-gap-2">
-        <div class="col-lg-5">
-          <div class="text-center text-lg-start">									
-            <p>Copyright 2025 © <span class="text-secondary">DreamsLMS</span>. All right reserved.</p>
+      <div class="row row-gap-2 align-items-center">
+        <div [class]="showFullFooter ? 'col-lg-5' : 'col-lg-6'">
+          <div [class]="showFullFooter ? 'text-center text-lg-start' : 'text-center text-lg-start mb-1 mb-lg-0'">
+            <p>Copyright 2025 © <span class="text-secondary">DreamsLMS</span>. Tous droits réservés.</p>
           </div>
         </div>
-        <div class="col-lg-4">
-          <ul class="d-flex align-items-center justify-content-center footer-link">
-            <li><a [routerLink]="routes.page_term_condition">Terms & Conditions</a></li>
-            <li><a [routerLink]="routes.page_privacy_policy">Privacy Policy</a></li>
+        <div [class]="showFullFooter ? 'col-lg-4' : 'col-lg-6'">
+          <ul [class]="showFullFooter ? 'd-flex align-items-center justify-content-center footer-link' : 'd-flex align-items-center justify-content-center justify-content-lg-end footer-link mb-0'">
+            <li><a [routerLink]="routes.page_term_condition">Conditions d'utilisation</a></li>
+            <li><a [routerLink]="routes.page_privacy_policy">Politique de confidentialité</a></li>
           </ul>
         </div>
-        <div class="col-lg-3">
+        <div *ngIf="showFullFooter" class="col-lg-3">
           <div class="social-icon">
             <a href="javascript:void(0);"><i class="fa-brands fa-facebook-f"></i></a>
             <a href="javascript:void(0);"><i class="fa-brands fa-instagram"></i></a>

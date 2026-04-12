@@ -1,1 +1,7 @@
 /* Admin Component Styles */
+
+.admin-sidebar-col {
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+}

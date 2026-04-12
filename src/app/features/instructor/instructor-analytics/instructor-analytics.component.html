@@ -1,0 +1,231 @@
+<!-- Instructor Analytics — Recommandations intelligentes -->
+<div class="main-wrapper">
+  <div class="page-content">
+    <div class="container-fluid p-4 ia-shell">
+
+      <!-- ═══ HEADER ════════════════════════════════════════════════════════ -->
+      <div class="ia-hero d-flex align-items-center justify-content-end mb-4 flex-wrap gap-3">
+        <div class="d-flex gap-2 align-items-center ia-hero-filters flex-wrap">
+          <div class="ia-input-wrap">
+            <i class="isax isax-search-normal"></i>
+            <input type="text" class="form-control form-control-sm" placeholder="Rechercher un cours…"
+                 [(ngModel)]="searchTerm" (ngModelChange)="applyFilters()">
+          </div>
+          <select class="form-select form-select-sm ia-select"
+                  [(ngModel)]="filterType" (ngModelChange)="applyFilters()">
+            <option value="">Tous les types</option>
+            <option value="EXCELLENT">Excellent</option>
+            <option value="SEGMENT_CONTENT">Fatigue</option>
+            <option value="SLOW_DOWN">Avis négatifs</option>
+            <option value="NEEDS_ENGAGEMENT">Engagement faible</option>
+            <option value="ON_TRACK">En progression</option>
+            <option value="NO_DATA">Pas de données</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ═══ LOADING ═══ -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary opacity-50" role="status"></div>
+        <p class="text-muted mt-3 ia-loading-text">Analyse des données en cours…</p>
+      </div>
+
+      <ng-container *ngIf="!loading">
+
+        <!-- ═══ KPI CARDS ════════════════════════════════════════════════════ -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon ia-kpi-icon--courses">
+                <i class="isax isax-teacher"></i>
+              </div>
+              <div>
+                <div class="kpi-value">{{ courses.length }}</div>
+                <div class="kpi-label">Cours publiés</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon ia-kpi-icon--attention">
+                <i class="isax isax-eye"></i>
+              </div>
+              <div>
+                <div class="kpi-value" [style.color]="avgAttention >= 70 ? '#22c55e' : avgAttention >= 50 ? '#f59e0b' : '#f43f5e'">
+                  {{ avgAttention }}%
+                </div>
+                <div class="kpi-label">Attention moyenne</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon ia-kpi-icon--rating">
+                <i class="isax isax-star-1"></i>
+              </div>
+              <div>
+                <div class="kpi-value ia-kpi-value-rating">{{ avgRating }}<span>/5</span></div>
+                <div class="kpi-label">Note moyenne</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-lg-3">
+            <div class="analytics-kpi-card">
+              <div class="kpi-icon ia-kpi-icon--students">
+                <i class="isax isax-people"></i>
+              </div>
+              <div>
+                <div class="kpi-value ia-kpi-value-students">{{ totalStudents }}</div>
+                <div class="kpi-label">Étudiants inscrits</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ EMPTY STATE ═══ -->
+        <div *ngIf="courses.length === 0" class="text-center py-5">
+          <div class="ia-empty-icon"><i class="isax isax-chart-21"></i></div>
+          <h5 class="mt-3 fw-semibold ia-empty-title">Aucun cours publié</h5>
+          <p class="text-muted ia-empty-subtitle">Publiez vos cours pour voir les analytics apparaître ici.</p>
+          <a [routerLink]="routes.instructorCourse" class="btn btn-primary btn-sm rounded-pill px-4 ia-empty-btn">Gérer mes cours</a>
+        </div>
+
+        <ng-container *ngIf="courses.length > 0">
+
+          <!-- ═══ CHARTS ROW ════════════════════════════════════════════════ -->
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+              <div class="analytics-card h-100">
+                <div class="analytics-card-header">
+                  <span><i class="isax isax-chart-1 me-2"></i>Attention par cours</span>
+                  <small class="text-muted">Score moyen de concentration</small>
+                </div>
+                <div class="analytics-card-body" *ngIf="attentionChart">
+                  <apx-chart [series]="attentionChart.series!" [chart]="attentionChart.chart!"
+                    [colors]="attentionChart.colors!" [plotOptions]="attentionChart.plotOptions!"
+                    [dataLabels]="attentionChart.dataLabels!" [xaxis]="attentionChart.xaxis!"
+                    [yaxis]="attentionChart.yaxis!" [grid]="attentionChart.grid!"
+                    [legend]="attentionChart.legend!" [tooltip]="attentionChart.tooltip!">
+                  </apx-chart>
+                </div>
+                <div *ngIf="!attentionChart" class="no-data-placeholder">
+                  <span><i class="isax isax-radar-1"></i></span><p>Activez le suivi caméra pour voir les données</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="analytics-card h-100">
+                <div class="analytics-card-header">
+                  <span><i class="isax isax-graph me-2"></i>Répartition des détections</span>
+                  <small class="text-muted">Concentration / Fatigue / Distraction</small>
+                </div>
+                <div class="analytics-card-body" *ngIf="detectionDistChart">
+                  <apx-chart [series]="detectionDistChart.series!" [chart]="detectionDistChart.chart!"
+                    [colors]="detectionDistChart.colors!" [plotOptions]="detectionDistChart.plotOptions!"
+                    [dataLabels]="detectionDistChart.dataLabels!" [xaxis]="detectionDistChart.xaxis!"
+                    [yaxis]="detectionDistChart.yaxis!" [grid]="detectionDistChart.grid!"
+                    [legend]="detectionDistChart.legend!" [fill]="detectionDistChart.fill!"
+                    [tooltip]="detectionDistChart.tooltip!">
+                  </apx-chart>
+                </div>
+                <div *ngIf="!detectionDistChart" class="no-data-placeholder">
+                  <span><i class="isax isax-radar-1"></i></span><p>Activez le suivi caméra pour voir les données</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══ COURSE CARDS GRID ════════════════════════════════════════ -->
+          <h6 class="fw-bold mb-3 ia-section-title">
+            <i class="isax isax-book-1 me-2"></i>Recommandations par cours
+            <span class="badge rounded-pill ms-2 ia-section-badge">{{ filteredCourses.length }}</span>
+          </h6>
+
+          <div class="row g-3">
+            <div class="col-lg-6 col-xl-4" *ngFor="let c of filteredCourses">
+              <div class="course-analytics-card" [class.selected]="selectedCourse?.courseId === c.courseId"
+                   (click)="selectCourse(c)" style="cursor:pointer;">
+
+                <!-- Course header -->
+                <div class="course-card-top">
+                  <img *ngIf="c.coverImage" [src]="coverUrl(c.coverImage)" alt="" class="course-thumb">
+                  <div *ngIf="!c.coverImage" class="course-thumb course-thumb-placeholder">
+                    <i class="isax isax-book-1"></i>
+                  </div>
+                  <div class="course-card-info">
+                    <div class="course-title" [title]="c.title">{{ truncate(c.title, 40) }}</div>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                      <span class="badge rounded-pill ia-reco-badge" [style.background]="c.recommendationColor + '18'"
+                            [style.color]="c.recommendationColor" [style.border]="'1px solid ' + c.recommendationColor + '60'"
+                            >
+                        {{ c.recommendationBadge }}
+                      </span>
+                      <span class="text-muted" style="font-size:11px;">{{ c.enrollmentCount }} étudiants</span>
+                    </div>
+                  </div>
+
+                  <!-- Engagement ring -->
+                  <div class="engagement-ring-container">
+                    <svg width="52" height="52" viewBox="0 0 52 52">
+                      <circle cx="26" cy="26" r="20" fill="none" stroke="#e2e8f0" stroke-width="4"/>
+                      <circle cx="26" cy="26" r="20" fill="none" [attr.stroke]="getRingColor(c.engagementScore)"
+                              stroke-width="4" stroke-linecap="round"
+                              [attr.style]="getScoreRing(c.engagementScore)"
+                              transform="rotate(-90 26 26)"/>
+                    </svg>
+                    <div class="ring-label">
+                      <span [style.color]="getRingColor(c.engagementScore)">{{ c.engagementScore | number:'1.0-0' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Metrics row -->
+                <div class="course-metrics-row">
+                  <div class="metric-item">
+                    <div class="metric-bar">
+                      <div class="metric-fill" [style.width.%]="c.avgAttentionScore"
+                          [style.background]="c.avgAttentionScore >= 70 ? '#4ade80' : c.avgAttentionScore >= 50 ? '#fbbf24' : '#fb7185'"></div>
+                    </div>
+                    <div class="metric-label"><i class="isax isax-eye"></i> Attention <strong>{{ c.avgAttentionScore | number:'1.0-0' }}%</strong></div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-bar">
+                      <div class="metric-fill" [style.width.%]="c.fatigueRate" style="background:#fbbf24;"></div>
+                    </div>
+                    <div class="metric-label"><i class="isax isax-moon"></i> Fatigue <strong>{{ c.fatigueRate | number:'1.0-0' }}%</strong></div>
+                  </div>
+                </div>
+
+                <!-- Rating & detections -->
+                <div class="d-flex align-items-center justify-content-between px-3 pb-2 pt-1 ia-course-foot">
+                  <div>
+                    <i *ngFor="let s of stars(c.avgRating)" class="isax me-1" [ngClass]="s ? 'isax-star-1 ia-star-on' : 'isax-star ia-star-off'"></i>
+                    <span class="ms-1">{{ c.avgRating != null ? (c.avgRating | number:'1.1-1') : '—' }}</span>
+                    <span class="text-muted ms-1">({{ c.reviewCount }} avis)</span>
+                  </div>
+                  <div>
+                    <span *ngIf="c.totalDetections > 0"><i class="isax isax-radar-1"></i> {{ c.totalDetections }} détections</span>
+                    <span *ngIf="c.totalDetections === 0" class="text-muted"><i class="isax isax-radar-1"></i> Pas de suivi</span>
+                  </div>
+                </div>
+
+                <!-- Recommendation (clic pour afficher/masquer) -->
+                <div class="recommendation-box" [class.open]="selectedCourse?.courseId === c.courseId">
+                  <div class="reco-inner" [style.border-top-color]="c.recommendationColor">
+                    <div class="reco-title" [style.color]="c.recommendationColor">
+                      <i class="isax isax-magicpen me-1"></i>Recommandation
+                    </div>
+                    <div class="reco-text" [innerHTML]="c.recommendationMessage"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
+      </ng-container>
+
+    </div>
+  </div>
+</div>

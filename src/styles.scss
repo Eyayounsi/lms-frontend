@@ -668,3 +668,80 @@ p-inputotp{
   .dark-mode .inner-banner .text-white {
     color: #D8DFEE !important;
   }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SweetAlert2  —  Dreams LMS Premium Theme
+   Cohérent avec : $primary:#392C7D  |  $secondary:#FF4667  |  amber:#FF9500
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sa-swal-popup {
+  border-radius: 20px !important;
+  font-family: "Inter", sans-serif !important;
+  padding: 32px 28px 28px !important;
+  box-shadow: 0 20px 64px rgba(57,44,125,.22) !important;
+  border-top: 4px solid #392C7D !important;
+  animation: saSwalIn .22s cubic-bezier(.34,1.56,.64,1) !important;
+}
+.sa-swal-danger-popup { border-top-color: #E70D0D !important; }
+.swal2-title {
+  font-family: "Inter", sans-serif !important;
+  font-size: 18px !important; font-weight: 700 !important; color: #111827 !important;
+}
+.swal2-html-container {
+  font-family: "Inter", sans-serif !important;
+  font-size: 13.5px !important; color: #6b7280 !important; margin: 8px 0 0 !important;
+}
+/* Icone SVG du Swal masquée dans nos popups personnalisés */
+.sa-swal-popup .swal2-icon { display: none !important; }
+/* Boutons */
+.sa-swal-actions { gap: 10px !important; margin-top: 24px !important; }
+.sa-swal-btn {
+  display: inline-flex !important; align-items: center !important; justify-content: center !important;
+  padding: 10px 24px !important; border-radius: 50px !important;
+  font-family: "Inter", sans-serif !important; font-size: 13.5px !important; font-weight: 600 !important;
+  border: none !important; cursor: pointer !important; transition: opacity .2s, transform .15s !important;
+  &:hover { opacity: .88 !important; transform: translateY(-1px) !important; }
+  &:focus { outline: none !important; }
+}
+.sa-swal-btn-danger {
+  background: linear-gradient(135deg, #E70D0D, #c00) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(231,13,13,.3) !important;
+}
+.sa-swal-btn-success {
+  background: linear-gradient(135deg, #03C95A, #029444) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(3,201,90,.3) !important;
+}
+.sa-swal-btn-warning {
+  background: linear-gradient(135deg, #FF9500, #FF6B00) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 20px rgba(255,149,0,.3) !important;
+}
+.sa-swal-btn-cancel {
+  background: #F3F4F6 !important; color: #374151 !important;
+  &:hover { background: #E5E7EB !important; }
+}
+/* Toast Swal */
+.sa-swal-toast {
+  border-radius: 18px !important;
+  box-shadow: 0 14px 40px rgba(57,44,125,.18) !important;
+  padding: 14px 18px !important;
+  font-family: "Inter", sans-serif !important;
+  border: 1px solid rgba(57,44,125,.08) !important;
+  border-left: 4px solid #03C95A !important;
+  overflow: hidden !important;
+  backdrop-filter: blur(8px);
+}
+.sa-swal-toast .swal2-html-container {
+  margin: 0 !important;
+}
+.sa-swal-toast .swal2-timer-progress-bar {
+  height: 3px !important;
+  background: linear-gradient(90deg, #03C95A 0%, #0ea5e9 100%) !important;
+  opacity: .95 !important;
+}
+@keyframes saSwalIn {
+  from { opacity: 0; transform: scale(.88) translateY(-10px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0);     }
+}

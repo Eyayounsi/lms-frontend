@@ -1,0 +1,228 @@
+﻿<div class="page-content">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Orange                                                             -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="tkt-hero mb-4">
+    <div class="tkt-glow tkt-glow-1"></div>
+    <div class="tkt-glow tkt-glow-2"></div>
+    <div class="tkt-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="tkt-av-wrap">
+              <div class="tkt-av-ring"></div>
+              <div class="tkt-av-border"></div>
+              <div class="tkt-av-circle">
+                <i class="ti ti-headset" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="tkt-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="tkt-chip"><i class="ti ti-ticket me-1" style="font-size:9px"></i>Support</span>
+                <span class="tkt-live"><span class="tkt-live-dot"></span>EN DIRECT</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Support Clients</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Gérez les demandes et tickets des utilisateurs</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="tkt-glass d-none d-md-flex align-items-center">
+              <div class="tkt-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ openedCount }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Ouverts</small>
+              </div>
+              <div class="tkt-stat-div"></div>
+              <div class="tkt-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ inProgressCount }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">En cours</small>
+              </div>
+              <div class="tkt-stat-div"></div>
+              <div class="tkt-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ closedCount }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Fermés</small>
+              </div>
+            </div>
+            <select class="tkt-filter" [(ngModel)]="filterStatus" (change)="onFilterChange()">
+              <option value="">Tous</option>
+              <option value="Opened">Ouvert</option>
+              <option value="Inprogress">En cours</option>
+              <option value="Closed">Fermé</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" style="color:#f97316" role="status"></div>
+    <p class="mt-2 text-muted">Chargement des tickets…</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════ Table ═══════ -->
+  <div *ngIf="!loading" class="ac-card">
+    <div *ngIf="tickets.length === 0" class="ac-empty">
+      <div class="ac-empty-icon"><i class="ti ti-headset"></i></div>
+      <h6 class="fw-semibold text-secondary mb-1">Aucun ticket</h6>
+      <p class="text-muted small mb-0">Aucun ticket correspondant au filtre sélectionné.</p>
+    </div>
+
+    <div *ngIf="tickets.length > 0" class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead style="background:linear-gradient(135deg,#fff7ed,#ffedd5);border-bottom:2px solid rgba(249,115,22,.15)">
+          <tr>
+            <th class="ps-4 py-3 text-muted small fw-semibold" style="width:140px">ID Ticket</th>
+            <th class="py-3 text-muted small fw-semibold">Sujet</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:180px">Utilisateur</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:100px">Priorité</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:110px">Statut</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:110px">Date</th>
+            <th class="py-3 text-muted small fw-semibold text-end pe-4" style="width:120px">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tk of tickets" class="tkt-row">
+            <td class="ps-4">
+              <code class="small" style="color:#f97316;background:rgba(249,115,22,.08);padding:2px 8px;border-radius:6px">{{ tk.ticketId }}</code>
+            </td>
+            <td>
+              <div class="fw-semibold" style="color:#0f172a">{{ tk.subject }}</div>
+              <div class="text-muted small">{{ tk.category }}</div>
+            </td>
+            <td>
+              <div class="fw-semibold small">{{ tk.userName }}</div>
+              <div class="text-muted small">{{ tk.userEmail }}</div>
+            </td>
+            <td><span class="ac-status" [ngClass]="getPriorityClass(tk.priority)">{{ getPriorityLabel(tk.priority) }}</span></td>
+            <td><span class="ac-status" [ngClass]="getStatusClass(tk.status)">{{ getStatusLabel(tk.status) }}</span></td>
+            <td class="text-muted small">{{ tk.date | date:'dd/MM/yy' }}</td>
+            <td class="text-end pe-4">
+              <button class="tkt-btn-icon tkt-btn-view me-1" (click)="openView(tk)" title="Voir / Répondre">
+                <i class="ti ti-eye"></i>
+              </button>
+              <button class="tkt-btn-icon tkt-btn-del" (click)="openDelete(tk)" title="Supprimer">
+                <i class="ti ti-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL VOIR / RÉPONDRE                                                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="selectedTicket" class="modal fade show d-block" tabindex="-1"
+     style="background-color:rgba(15,23,42,.55);backdrop-filter:blur(4px)">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header border-0"
+           style="background:linear-gradient(135deg,#c2410c,#f97316);border-radius:17px 17px 0 0;padding:20px 24px">
+        <h5 class="modal-title text-white fw-bold">
+          <i class="ti ti-ticket me-2"></i>Ticket #{{ selectedTicket.ticketId }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeView()"></button>
+      </div>
+      <div class="modal-body" style="padding:22px 24px">
+        <!-- Info grid -->
+        <div class="row mb-4 g-2">
+          <div class="col-sm-6">
+            <div class="tkt-info-card">
+              <div class="tkt-info-label">Utilisateur</div>
+              <div class="tkt-info-val">{{ selectedTicket.userName }}</div>
+              <div class="text-muted small">{{ selectedTicket.userEmail }}</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="tkt-info-card">
+              <div class="d-flex gap-2 flex-wrap mb-1">
+                <span class="ac-status" [ngClass]="getPriorityClass(selectedTicket.priority)">{{ getPriorityLabel(selectedTicket.priority) }}</span>
+                <span class="ac-status" [ngClass]="getStatusClass(selectedTicket.status)">{{ getStatusLabel(selectedTicket.status) }}</span>
+              </div>
+              <div class="text-muted small">{{ selectedTicket.date | date:'dd/MM/yyyy HH:mm' }}</div>
+              <div class="text-muted small">Catégorie : {{ selectedTicket.category }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold" style="color:#c2410c">Description</label>
+          <div class="p-3 rounded-3" style="background:#fff7ed;border:1px solid rgba(249,115,22,.2)">{{ selectedTicket.description }}</div>
+        </div>
+
+        <!-- Réponse existante -->
+        <div *ngIf="selectedTicket.adminReply" class="mb-3">
+          <label class="form-label fw-semibold text-success"><i class="ti ti-reply me-1"></i>Réponse précédente</label>
+          <div class="p-3 rounded-3" style="background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.2);color:#15803d">
+            {{ selectedTicket.adminReply }}
+          </div>
+          <div class="text-muted small mt-1">Répondu le {{ selectedTicket.respondedAt | date:'dd/MM/yyyy HH:mm' }}</div>
+        </div>
+
+        <!-- Nouvelle réponse -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold"><i class="ti ti-pencil me-1"></i>{{ selectedTicket.adminReply ? 'Modifier la réponse' : 'Répondre' }}</label>
+          <textarea class="form-control" rows="4" [(ngModel)]="replyText"
+                    placeholder="Votre réponse à l'utilisateur…"
+                    style="border-radius:10px;resize:none"></textarea>
+        </div>
+
+        <!-- Changer statut -->
+        <div class="d-flex align-items-center gap-2 flex-wrap p-3 rounded-3" style="background:#f8fafc;border:1px solid #e2e8f0">
+          <label class="form-label mb-0 fw-semibold flex-shrink-0 small">Changer le statut :</label>
+          <select class="form-select form-select-sm" style="width:160px;border-radius:8px" [(ngModel)]="statusToSet">
+            <option value="Opened">Ouvert</option>
+            <option value="Inprogress">En cours</option>
+            <option value="Closed">Fermé</option>
+          </select>
+          <button class="btn btn-sm fw-semibold" style="background:#f97316;color:#fff;border-radius:8px"
+                  (click)="changeStatus()" [disabled]="updatingStatus">
+            <span *ngIf="updatingStatus" class="spinner-border spinner-border-sm me-1"></span>
+            Appliquer
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0" style="padding:16px 24px 20px">
+        <button class="btn btn-light fw-semibold px-4 rounded-pill" (click)="closeView()">Fermer</button>
+        <button class="tkt-btn-primary" (click)="submitReply()" [disabled]="replying || !replyText.trim()">
+          <span *ngIf="replying" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!replying" class="ti ti-send"></i>
+          Envoyer la réponse
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL SUPPRIMER                                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div *ngIf="showDeleteModal" class="modal fade show d-block" tabindex="-1"
+     style="background-color:rgba(15,23,42,.55);backdrop-filter:blur(4px)">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-body text-center py-5 px-4">
+        <div class="ac-confirm-ico mx-auto mb-3"><i class="ti ti-trash"></i></div>
+        <h5 class="fw-bold mb-2">Supprimer ce ticket ?</h5>
+        <p class="text-muted small mb-4">Ticket <strong>{{ ticketToDelete?.ticketId }}</strong> — action irréversible.</p>
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-light fw-semibold px-4 rounded-pill" (click)="cancelDelete()">Annuler</button>
+          <button class="ac-btn-delete rounded-pill px-4" (click)="confirmDelete()" [disabled]="deleting">
+            <span *ngIf="deleting" class="spinner-border spinner-border-sm"></span>
+            <i *ngIf="!deleting" class="ti ti-trash"></i>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

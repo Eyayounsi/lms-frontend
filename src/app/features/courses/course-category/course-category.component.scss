@@ -1,0 +1,93 @@
+.course-category {
+	padding: 72px 0;
+}
+
+.course-category h2,
+.course-category p {
+	text-align: center;
+}
+
+.course-category p {
+	margin-bottom: 28px;
+	color: #6b7280;
+}
+
+.course-category-item {
+	border: 1px solid #e6eaf2;
+	border-radius: 14px;
+	background: #ffffff;
+	padding: 14px 18px;
+	margin-bottom: 16px;
+	min-height: 78px;
+	display: flex;
+	align-items: center;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-category-item:hover {
+	border-color: #d7ddeb;
+	box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+}
+
+.cc-card-link {
+	display: block;
+	text-decoration: none;
+}
+
+.cc-card-link.cc-disabled {
+	cursor: default;
+}
+
+.cc-link-wrap {
+	min-width: 0;
+	gap: 10px;
+}
+
+.cc-link-wrap h6 {
+	color: #0f172a;
+	font-weight: 700;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.cc-icon-wrap {
+	width: 46px;
+	height: 46px;
+	border-radius: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	font-size: 18px;
+}
+
+.cat-indigo { background: linear-gradient(135deg, #eef2ff, #c7d2fe); color: #4338ca; }
+.cat-sky { background: linear-gradient(135deg, #e0f2fe, #bae6fd); color: #0369a1; }
+.cat-red { background: linear-gradient(135deg, #fff1f2, #fecdd3); color: #be123c; }
+.cat-amber { background: linear-gradient(135deg, #fff7ed, #fed7aa); color: #c2410c; }
+.cat-purple { background: linear-gradient(135deg, #faf5ff, #e9d5ff); color: #7e22ce; }
+.cat-pink { background: linear-gradient(135deg, #fdf2f8, #fbcfe8); color: #be185d; }
+.cat-teal { background: linear-gradient(135deg, #f0fdfa, #99f6e4); color: #0f766e; }
+.cat-emerald { background: linear-gradient(135deg, #f0fdf4, #bbf7d0); color: #15803d; }
+.cat-slate { background: linear-gradient(135deg, #f8fafc, #e2e8f0); color: #475569; }
+
+.cat-count {
+	min-width: 40px;
+	height: 30px;
+	border-radius: 999px;
+	align-items: center;
+	justify-content: center;
+	padding: 0 10px;
+	font-size: 12px;
+}
+
+.cc-loading .spinner-border {
+	width: 2rem;
+	height: 2rem;
+}
+
+.cc-empty i {
+	font-size: 1.35rem;
+	color: #6b7280;
+}

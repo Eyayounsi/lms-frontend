@@ -1,0 +1,278 @@
+.face-register-btn {
+	border-radius: 10px;
+	font-weight: 600;
+	transition: all 0.2s;
+
+	&:hover {
+		transform: translateY(-1px);
+		border-color: #5c67e5;
+		color: #5c67e5;
+		box-shadow: 0 4px 15px rgba(92, 103, 229, 0.2);
+	}
+}
+
+:host {
+	display: block;
+	background: linear-gradient(180deg, #fff 0%, #f8faff 100%);
+}
+
+/* ========== SHARE KNOWLEDGE SECTION ========== */
+.share-your-knowledge {
+	padding-top: 24px;
+}
+
+.share-knowledge-content .card {
+	border: 1px solid rgba(99, 102, 241, 0.12);
+	border-radius: 14px;
+	box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.share-knowledge-content .card:hover {
+	transform: translateY(-3px);
+	box-shadow: 0 14px 26px rgba(15, 23, 42, 0.1);
+}
+
+.share-your-knowledge-img img {
+	object-fit: cover;
+}
+
+.become-instructor-bg-04,
+.become-instructor-bg-05 {
+	box-shadow: 0 14px 34px rgba(17, 24, 39, 0.18);
+}
+
+/* ========== REGISTER SECTION - ENHANCED ========== */
+.register-sec {
+	padding: 60px 0;
+}
+
+.register-img-container {
+	position: relative;
+	height: 480px;
+	background: linear-gradient(135deg, #5c67e5 0%, #4338ca 100%);
+	overflow: hidden;
+
+	.register-img-main {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.6s ease;
+
+		&:hover {
+			transform: scale(1.05);
+		}
+	}
+
+	.register-img-overlay {
+		background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.4) 100%);
+		z-index: 2;
+	}
+
+	.register-img-content {
+		z-index: 3;
+
+		h5 {
+			font-weight: 700;
+			margin-bottom: 8px;
+		}
+
+		p {
+			font-size: 13px;
+			margin-bottom: 0;
+		}
+	}
+}
+
+.register-img-secondary {
+	height: 180px;
+	box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
+	transition: transform 0.4s ease, box-shadow 0.4s ease;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	&:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 16px 40px rgba(15, 23, 42, 0.2);
+	}
+}
+
+.register-section {
+	background: #fff;
+	border: 1px solid rgba(99, 102, 241, 0.14);
+	border-radius: 18px;
+	box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+
+	h5 {
+		color: #0f1728;
+		font-weight: 700;
+		font-size: 28px;
+		margin-bottom: 12px;
+	}
+
+	p {
+		color: #6b7280;
+		font-size: 14px;
+		margin-bottom: 28px;
+	}
+
+	.form-label {
+		color: #0f1728;
+		font-weight: 600;
+		font-size: 14px;
+	}
+}
+
+.register-section .form-control {
+	border-radius: 10px;
+	min-height: 46px;
+	border: 1px solid rgba(99, 102, 241, 0.18);
+	transition: all 0.3s ease;
+
+	&:focus {
+		border-color: #5c67e5;
+		box-shadow: 0 0 0 3px rgba(92, 103, 229, 0.08);
+	}
+
+	&::placeholder {
+		color: #9ca3af;
+	}
+}
+
+.become-an-instructor {
+	background: linear-gradient(120deg, #4338ca 0%, #4f46e5 55%, #6366f1 100%) !important;
+	box-shadow: 0 20px 45px rgba(67, 56, 202, 0.28);
+	overflow: hidden;
+
+	h3 {
+		font-weight: 800;
+		font-size: 36px;
+	}
+
+	.text-light {
+		color: rgba(255, 255, 255, 0.9) !important;
+	}
+
+	.btn-secondary {
+		background-color: #ffffff;
+		color: #4338ca;
+		font-weight: 700;
+		transition: all 0.3s ease;
+
+		&:hover {
+			background-color: #f0f4ff;
+			color: #4338ca;
+			transform: translateY(-2px);
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+		}
+	}
+}
+
+/* ========== RESPONSIVE DESIGN ========== */
+@media (max-width: 992px) {
+	.become-instructor-hero-sec {
+		padding: 40px 0;
+
+		.instructor-hero-title {
+			font-size: 36px;
+			margin-bottom: 24px;
+		}
+
+		.instructor-hero-stats {
+			margin-top: 32px;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+	}
+
+	.instructor-hero-img-wrap {
+		height: 350px;
+
+		.instructor-hero-img-primary {
+			width: 100%;
+		}
+
+		.instructor-hero-img-secondary {
+			display: none;
+		}
+	}
+
+	.register-img-container {
+		height: 320px;
+	}
+
+	.register-img-secondary {
+		display: none !important;
+	}
+
+	.register-section {
+		margin-top: 30px;
+	}
+
+	.become-an-instructor {
+		padding: 32px !important;
+
+		h3 {
+			font-size: 26px;
+		}
+
+		.btn-secondary {
+			margin-top: 20px;
+		}
+	}
+}
+
+@media (max-width: 576px) {
+	.become-instructor-hero-sec {
+		padding: 30px 0;
+
+		.instructor-hero-title {
+			font-size: 28px;
+			margin-bottom: 20px;
+		}
+
+		.instructor-hero-stats {
+			gap: 15px;
+		}
+
+		.btn {
+			width: 100%;
+
+			&:first-of-type {
+				margin-bottom: 12px;
+			}
+		}
+	}
+
+	.instructor-hero-img-wrap {
+		display: none;
+	}
+
+	.register-section {
+		padding: 20px !important;
+
+		h5 {
+			font-size: 22px;
+		}
+	}
+
+	.become-an-instructor {
+		text-align: center;
+
+		.col-lg-8 {
+			margin-bottom: 20px;
+		}
+
+		h3 {
+			font-size: 22px;
+		}
+
+		p {
+			font-size: 14px;
+		}
+	}
+}

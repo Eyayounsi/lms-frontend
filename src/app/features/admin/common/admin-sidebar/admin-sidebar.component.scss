@@ -1,1 +1,164 @@
-// Hérite des styles .settings-sidebar définis globalement
+﻿/* ═══════════════════════════════════════════════════════════════════════════
+   Admin Sidebar  —  Dreams LMS Design System
+   Primary: #392C7D  |  Secondary: #FF4667
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── SIDEBAR SHELL ──────────────────────────────────────────────────────── */
+.adm-sidebar {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #EDEAF8;
+  overflow: hidden;
+  padding-bottom: 8px;
+  box-shadow: 0 4px 24px rgba(57,44,125,.07);
+}
+
+/* ─── PROFILE CARD ───────────────────────────────────────────────────────── */
+.adm-profile-card {
+  position: relative;
+  background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+  border-bottom: 1px solid #e0e7ff;
+  padding: 20px 18px 18px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.adm-profile-glow {
+  display: none;
+}
+
+/* Shield animé dans le profil */
+.adm-profile-shield-wrap { position: relative; flex-shrink: 0; }
+.adm-profile-shield-ring {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(253,57,149,.12), rgba(2,168,181,.08));
+  border: 2px solid rgba(253,57,149,.25);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+}
+.adm-profile-shield-box {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #FD3995, #9b59b6, #5625E8, #02a8b5);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 12px rgba(253,57,149,.35);
+}
+.adm-profile-shield-icon { font-size: 18px; color: #fff; }
+.adm-profile-shield-pulse {
+  position: absolute; inset: -3px; border-radius: 50%;
+  border: 2px solid rgba(253,57,149,.2);
+  animation: adm-sb-pulse 2.2s ease-out infinite; z-index: 1;
+}
+
+/* Role badge */
+.adm-role-badge {
+  display: inline-flex; align-items: center;
+  background: rgba(253,57,149,.08); border: 1px solid rgba(253,57,149,.2);
+  color: #9b59b6; font-size: 9.5px; font-weight: 700;
+  letter-spacing: .4px; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 20px; margin-top: 3px;
+}
+
+/* ─── SECTIONS ───────────────────────────────────────────────────────────── */
+.adm-nav-section { padding: 10px 12px 4px; }
+.adm-nav-label {
+  display: block; font-size: 9.5px; font-weight: 700;
+  letter-spacing: .7px; text-transform: uppercase;
+  color: #9ca3af; padding: 0 6px; margin-bottom: 6px;
+}
+.adm-nav-divider {
+  height: 1px; background: #F4F0FF;
+  margin: 4px 12px;
+}
+
+/* ─── NAV LIST ───────────────────────────────────────────────────────────── */
+.adm-nav-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+
+/* ─── NAV ITEM ───────────────────────────────────────────────────────────── */
+.adm-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 10px;
+  text-decoration: none !important;
+  color: #374151; font-size: 13px; font-weight: 500;
+  transition: all .18s ease;
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 0; border-radius: 0 3px 3px 0;
+    background: currentColor;
+    transition: height .18s ease;
+  }
+  &:hover {
+    background: rgba(0,0,0,.04);
+    color: inherit;
+    &::before { height: 60%; }
+    .adm-nav-ico { transform: scale(1.08); filter: brightness(1.1); }
+  }
+  &.adm-active {
+    background: rgba(0,0,0,.04);
+    font-weight: 600;
+    &::before { height: 70%; }
+    .adm-nav-ico { box-shadow: 0 3px 10px rgba(0,0,0,.15); }
+  }
+}
+.adm-nav-item-danger {
+  color: #6B7280;
+  &:hover { background: rgba(231,13,13,.06); color: #E70D0D;
+    &::before { background: linear-gradient(180deg, #E70D0D, #c00); } }
+}
+
+/* ─── NAV ICON BOXES ─────────────────────────────────────────────────────── */
+.adm-nav-ico {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; transition: transform .18s ease, box-shadow .18s ease;
+}
+/* Couleurs issues exclusivement de la palette officielle du template */
+/* Dashboard → Primary */
+.adm-ico-blue      { background: rgba(57,44,125,.1);   color: #392C7D; }
+/* Utilisateurs → Skyblue */
+.adm-ico-sky       { background: rgba(13,202,240,.12); color: #0DCAF0; }
+/* Catégories → Primary violet */
+.adm-ico-teal      { background: rgba(57,44,125,.1);  color: #392C7D; }
+/* Blog → Pink */
+.adm-ico-rose      { background: rgba(253,57,149,.1);  color: #FD3995; }
+/* Tickets → Secondary */
+.adm-ico-orange    { background: rgba(255,70,103,.1);  color: #FF4667; }
+/* Virements → Blue */
+.adm-ico-green     { background: rgba(29,78,216,.1);   color: #1d4ed8; }
+/* Analytics IA → Info */
+.adm-ico-indigo    { background: rgba(86,37,232,.1);   color: #5625E8; }
+/* Cours → Pink */
+.adm-ico-amber     { background: rgba(253,57,149,.1);   color: #FD3995; }
+/* Profil / Paramètres → Secondary */
+.adm-ico-secondary { background: rgba(255,70,103,.1);  color: #FF4667; }
+/* Déconnexion → Danger */
+.adm-ico-danger    { background: rgba(231,13,13,.1);   color: #E70D0D; }
+
+.adm-nav-text { flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
+@keyframes adm-sb-pulse { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(1.5); opacity: 0; } }
+
+// ─── DARK MODE ───────────────────────────────────────────────────────────────
+:host-context(.dark-mode) {
+  .adm-sidebar {
+    background: #1a1a2b;
+    border-color: rgba(255,255,255,.07);
+    box-shadow: 0 4px 24px rgba(0,0,0,.35);
+  }
+  .adm-profile-card {
+    background: linear-gradient(135deg, #1a1a2b 0%, #111119 100%);
+    border-bottom-color: rgba(255,255,255,.07);
+  }
+  .adm-nav-label { color: #475569; }
+  .adm-nav-divider { background: rgba(255,255,255,.06); }
+  .adm-nav-item {
+    color: #94a3b8;
+    &:hover { background: rgba(255,255,255,.05); color: #e2e8f0; }
+    &.adm-active { background: rgba(255,255,255,.07); color: #e2e8f0; }
+  }
+}

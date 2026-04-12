@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/service/auth/auth.guard';
 import { roleGuard } from './shared/service/auth/role.guard';
+import { redirectIfLoggedGuard } from './shared/service/auth/redirect-if-logged.guard';
 export const routes: Routes = [
     { path:'',
       redirectTo:'index',
@@ -10,10 +11,12 @@ export const routes: Routes = [
         children: [
             { path: 'forgot-password', loadComponent: () => import('./auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
             { path: 'login', loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent) },
+            { path: 'session-expired', loadComponent: () => import('./auth/session-expired/session-expired.component').then(m => m.SessionExpiredComponent) },
             { path: 'register', loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent) },
             { path: 'set-password', loadComponent: () => import('./auth/set-password/set-password.component').then(m => m.SetPasswordComponent) },
             { path: 'otp', loadComponent: () => import('./auth/otp/otp.component').then(m => m.OtpComponent) },
             { path: 'lock-screen', loadComponent: () => import('./auth/lock-screen/lock-screen.component').then(m => m.LockScreenComponent) },
+        { path: 'face-register', loadComponent: () => import('./auth/face-register/face-register.component').then(m => m.FaceRegisterComponent) },
             { path: 'force-change-password', loadComponent: () => import('./auth/force-change-password/force-change-password.component').then(m => m.ForceChangePasswordComponent) }
         ]
     },
@@ -24,16 +27,23 @@ export const routes: Routes = [
             children:[
                 {path:'superadmin-dashboard', loadComponent:()=>import('./features/superadmin/superadmin-dashboard/superadmin-dashboard.component').then((m)=>m.SuperadminDashboardComponent)},
                 {path:'superadmin-users', loadComponent:()=>import('./features/superadmin/superadmin-users/superadmin-users.component').then((m)=>m.SuperadminUsersComponent)},
+                {path:'superadmin-logs', loadComponent:()=>import('./features/admin/admin-logs/admin-logs.component').then((m)=>m.AdminLogsComponent)},
                 {path:'superadmin-settings', loadComponent:()=>import('./shared/components/user-profile/user-profile.component').then((m)=>m.UserProfileComponent)}
             ]
         },
         // Route Admin
         {path:'admin', canActivate:[authGuard, roleGuard('ADMIN')], loadComponent:()=>import('./features/admin/admin.component').then((m)=>m.AdminComponent),
             children:[
+                {path:'', redirectTo:'admin-dashboard', pathMatch:'full'},
                 {path:'admin-dashboard', loadComponent:()=>import('./features/admin/admin-dashboard/admin-dashboard.component').then((m)=>m.AdminDashboardComponent)},
                 {path:'admin-users', loadComponent:()=>import('./features/admin/admin-users/admin-users.component').then((m)=>m.AdminUsersComponent)},
                 {path:'admin-courses', loadComponent:()=>import('./features/admin/admin-courses/admin-courses.component').then((m)=>m.AdminCoursesComponent)},
                 {path:'admin-categories', loadComponent:()=>import('./features/admin/admin-categories/admin-categories.component').then((m)=>m.AdminCategoriesComponent)},
+                {path:'admin-blog',       loadComponent:()=>import('./features/admin/admin-blog/admin-blog.component').then((m)=>m.AdminBlogComponent)},
+                {path:'admin-tickets',    loadComponent:()=>import('./features/admin/admin-tickets/admin-tickets.component').then((m)=>m.AdminTicketsComponent)},
+                {path:'admin-payouts',    loadComponent:()=>import('./features/admin/admin-payouts/admin-payouts.component').then((m)=>m.AdminPayoutsComponent)},
+                {path:'admin-detection',  loadComponent:()=>import('./features/admin/admin-detection/admin-detection.component').then((m)=>m.AdminDetectionComponent)},
+                {path:'admin-analytics',   loadComponent:()=>import('./features/admin/admin-analytics/admin-analytics.component').then((m)=>m.AdminAnalyticsComponent)},
                 {path:'admin-settings', loadComponent:()=>import('./shared/components/user-profile/user-profile.component').then((m)=>m.UserProfileComponent)}
             ]
         },
@@ -42,10 +52,20 @@ export const routes: Routes = [
             children:[
                 {path:'recruiter-dashboard', loadComponent:()=>import('./features/recruiter/recruiter-dashboard/recruiter-dashboard.component').then((m)=>m.RecruiterDashboardComponent)},
                 {path:'recruiter-shared-profiles', loadComponent:()=>import('./features/recruiter/recruiter-shared-profiles/recruiter-shared-profiles.component').then((m)=>m.RecruiterSharedProfilesComponent)},
-                {path:'recruiter-settings', loadComponent:()=>import('./shared/components/user-profile/user-profile.component').then((m)=>m.UserProfileComponent)}
+                {path:'recruiter-certified-students', loadComponent:()=>import('./features/recruiter/recruiter-certified-students/recruiter-certified-students.component').then((m)=>m.RecruiterCertifiedStudentsComponent)},
+                {path:'recruiter-job-offers', loadComponent:()=>import('./features/recruiter/recruiter-job-offers/recruiter-job-offers.component').then((m)=>m.RecruiterJobOffersComponent)},
+                {path:'recruiter-messages', loadComponent:()=>import('./features/recruiter/recruiter-messages/recruiter-messages.component').then((m)=>m.RecruiterMessagesComponent)},
+                {path:'settings',loadComponent:()=>import ('./features/recruiter/settings/settings.component').then((m)=>m.SettingsComponent),
+                    children:[
+                        {path:'', redirectTo:'recruiter-settings', pathMatch:'full'},
+                        {path:'recruiter-settings',loadComponent:()=>import ('./features/recruiter/settings/recruiter-settings/recruiter-settings.component').then((m)=>m.RecruiterSettingsComponent)},
+                        {path:'recruiter-change-password',loadComponent:()=>import ('./features/recruiter/settings/recruiter-change-password/recruiter-change-password.component').then((m)=>m.RecruiterChangePasswordComponent)}
+                    ]
+                },
+                {path:'recruiter-settings', redirectTo:'settings/recruiter-settings', pathMatch:'full'}
             ]
         },
-        {path:'index',loadComponent:()=>import ('./features/home-list/home/home.component').then((m)=>m.HomeComponent)},
+        {path:'index', canActivate:[redirectIfLoggedGuard], loadComponent:()=>import ('./features/home-list/home/home.component').then((m)=>m.HomeComponent)},
         {path:'index-two',loadComponent:()=>import ('./features/home-list/home2/home2.component').then((m)=>m.Home2Component)},
         {path:'index-three',loadComponent:()=>import ('./features/home-list/home3/home3.component').then((m)=>m.Home3Component)},
         {path:'index-four',loadComponent:()=>import ('./features/home-list/home4/home4.component').then((m)=>m.Home4Component)},
@@ -54,6 +74,7 @@ export const routes: Routes = [
         {path:'courses',loadComponent:()=>import ('./features/courses/courses.component').then((m)=>m.CoursesComponent),
             children:[
                 {path:'add-course',loadComponent:()=>import ('./features/courses/add-course/add-course.component').then((m)=>m.AddCourseComponent)},
+                {path:'edit-course/:id',loadComponent:()=>import ('./features/courses/add-course/add-course.component').then((m)=>m.AddCourseComponent)},
                 {path:'course-details',loadComponent:()=>import ('./features/courses/course-details-2/course-details-2.component').then((m)=>m.CourseDetails2Component)},
                 {path:'course-details-2',loadComponent:()=>import ('./features/courses/course-details-2/course-details-2.component').then((m)=>m.CourseDetails2Component)},
                 {path:'course-list',loadComponent:()=>import ('./features/courses/course-list/course-list.component').then((m)=>m.CourseListComponent)},
@@ -68,7 +89,6 @@ export const routes: Routes = [
                 {path:'course-list-public',loadComponent:()=>import ('./features/courses/course-list-public/course-list-public.component').then((m)=>m.CourseListPublicComponent)},
                 {path:'certificates/verify',loadComponent:()=>import ('./features/courses/certificate-view/certificate-view.component').then((m)=>m.CertificateViewComponent)},
                 {path:'certificates/verify/:code',loadComponent:()=>import ('./features/courses/certificate-view/certificate-view.component').then((m)=>m.CertificateViewComponent)},
-                {path:'add-course',loadComponent:()=>import ('./features/courses/add-course/add-course.component').then((m)=>m.AddCourseComponent)},
         
             ]
         },
@@ -78,31 +98,34 @@ export const routes: Routes = [
                 {path:'instructor-profile',loadComponent:()=>import ('./features/instructor/instructor-profile/instructor-profile.component').then((m)=>m.InstructorProfileComponent)},
                 {path:'instructor-payouts',loadComponent:()=>import ('./features/instructor/instructor-payouts/instructor-payouts.component').then((m)=>m.InstructorPayoutsComponent)},
                 {path:'instructor-tickets',loadComponent:()=>import ('./features/instructor/instructor-tickets/instructor-tickets.component').then((m)=>m.InstructorTicketsComponent)},
-                {path:'instructor-announcements',loadComponent:()=>import ('./features/instructor/instructor-announcements/instructor-announcements.component').then((m)=>m.InstructorAnnouncementsComponent)},
                 {path:'instructor-quiz-questions/:quizId',loadComponent:()=>import ('./features/instructor/instructor-quiz-questions/instructor-quiz-questions.component').then((m)=>m.InstructorQuizQuestionsComponent)},
                 {path:'instructor-quiz-results/:quizId',loadComponent:()=>import ('./features/instructor/instructor-quiz-results/instructor-quiz-results.component').then((m)=>m.InstructorQuizResultsComponent)},
                 {path:'instructor-quiz-results',loadComponent:()=>import ('./features/instructor/instructor-quiz-results/instructor-quiz-results.component').then((m)=>m.InstructorQuizResultsComponent)},
                 {path:'instructor-quiz-details/:attemptId',loadComponent:()=>import ('./features/instructor/instructor-quiz-details/instructor-quiz-details.component').then((m)=>m.InstructorQuizDetailsComponent)},
                 {path:'instructor-quiz',loadComponent:()=>import ('./features/instructor/instructor-quiz/instructor-quiz.component').then((m)=>m.InstructorQuizComponent)},
                 {path:'instructor-certificate',loadComponent:()=>import ('./features/instructor/instructor-certificate/instructor-certificate.component').then((m)=>m.InstructorCertificateComponent)},
-                {path:'instructor-earnings',loadComponent:()=>import ('./features/instructor/instructor-earnings/instructor-earnings.component').then((m)=>m.InstructorEarningsComponent)},
-                {path:'instructor-statements',loadComponent:()=>import ('./features/instructor/instructor-statements/instructor-statements.component').then((m)=>m.InstructorStatementsComponent)},
+                {path:'instructor-earnings',redirectTo:'instructor-payouts',pathMatch:'full'},
+                {path:'instructor-statements',redirectTo:'instructor-payouts',pathMatch:'full'},
                 {path:'instructor-course',loadComponent:()=>import ('./features/instructor/instructor-course/instructor-course.component').then((m)=>m.InstructorCourseComponent)},
                 {path:'instructor-course-detail',loadComponent:()=>import ('./features/instructor/instructor-course-detail/instructor-course-detail.component').then((m)=>m.InstructorCourseDetailComponent)},
-                {path:'instructor-my-courses',loadComponent:()=>import ('./features/instructor/instructor-my-courses/instructor-my-courses.component').then((m)=>m.InstructorMyCoursesComponent)},
+                {path:'notifications',loadComponent:()=>import ('./features/pages/notifications/notifications.component').then((m)=>m.NotificationsComponent)},
+                {path:'add-course',loadComponent:()=>import ('./features/courses/add-course/add-course.component').then((m)=>m.AddCourseComponent)},
+                {path:'edit-course/:id',loadComponent:()=>import ('./features/courses/add-course/add-course.component').then((m)=>m.AddCourseComponent)},
+                {path:'instructor-my-courses',redirectTo:'instructor-course',pathMatch:'full'},
                 {path:'instructor-course-grid',loadComponent:()=>import ('./features/instructor/instructor-course-grid/instructor-course-grid.component').then((m)=>m.InstructorCourseGridComponent)},
                 {path:'instructor-message',loadComponent:()=>import ('./features/instructor/instructor-message/instructor-message.component').then((m)=>m.InstructorMessageComponent)},
-                {path:'instructor-assignment',loadComponent:()=>import ('./features/instructor/instructor-assignment/instructor-assignment.component').then((m)=>m.InstructorAssignmentComponent)},
                 {path:'students-list',loadComponent:()=>import ('./features/instructor/students-list/students-list.component').then((m)=>m.StudentsListComponent)},
                 {path:'students-grid',loadComponent:()=>import ('./features/instructor/students-grid/students-grid.component').then((m)=>m.StudentsGridComponent)},
-                {path:'students-details',loadComponent:()=>import ('./features/instructor/students-details/students-details.component').then((m)=>m.StudentsDetailsComponent)},
+                {path:'students-details/:id',loadComponent:()=>import ('./features/instructor/students-details/students-details.component').then((m)=>m.StudentsDetailsComponent)},
+                {path:'instructor-detection',loadComponent:()=>import ('./features/instructor/instructor-detection/instructor-detection.component').then((m)=>m.InstructorDetectionComponent)},
+                {path:'instructor-analytics',loadComponent:()=>import ('./features/instructor/instructor-analytics/instructor-analytics.component').then((m)=>m.InstructorAnalyticsComponent)},
                 {path:'settings',loadComponent:()=>import ('./features/instructor/settings/settings.component').then((m)=>m.SettingsComponent),
                     children:[
                         {path:'instructor-setting-withdraw',loadComponent:()=>import ('./features/instructor/settings/instructor-setting-withdraw/instructor-setting-withdraw.component').then((m)=>m.InstructorSettingWithdrawComponent)},
                         {path:'instructor-setting-notifications',loadComponent:()=>import ('./features/instructor/settings/instructor-setting-notifications/instructor-setting-notifications.component').then((m)=>m.InstructorSettingNotificationsComponent)},
-                        {path:'instructor-plans',loadComponent:()=>import ('./features/instructor/settings/instructor-plans/instructor-plans.component').then((m)=>m.InstructorPlansComponent)},
-                        {path:'instructor-integrations',loadComponent:()=>import ('./features/instructor/settings/instructor-integrations/instructor-integrations.component').then((m)=>m.InstructorIntegrationsComponent)},
-                        {path:'instructor-linked-accounts',loadComponent:()=>import ('./features/instructor/settings/instructor-linked-accounts/instructor-linked-accounts.component').then((m)=>m.InstructorLinkedAccountsComponent)},
+                        {path:'instructor-plans',redirectTo:'instructor-settings',pathMatch:'full'},
+                        {path:'instructor-integrations',redirectTo:'instructor-settings',pathMatch:'full'},
+                        {path:'instructor-linked-accounts',redirectTo:'instructor-settings',pathMatch:'full'},
                         {path:'instructor-social-profiles',loadComponent:()=>import ('./features/instructor/settings/instructor-social-profiles/instructor-social-profiles.component').then((m)=>m.InstructorSocialProfilesComponent)},
                         {path:'instructor-change-password',loadComponent:()=>import ('./features/instructor/settings/instructor-change-password/instructor-change-password.component').then((m)=>m.InstructorChangePasswordComponent)},
                         {path:'instructor-settings',loadComponent:()=>import ('./features/instructor/settings/instructor-settings/instructor-settings.component').then((m)=>m.InstructorSettingsComponent)}
@@ -153,6 +176,9 @@ export const routes: Routes = [
         {path:'student-certificate',loadComponent:()=>import ('./features/student/student-certificate/student-certificate.component').then((m)=>m.StudentCertificateComponent)},
         {path:'student-message',loadComponent:()=>import ('./features/student/student-message/student-message.component').then((m)=>m.StudentMessageComponent)},
         {path:'student-qa',loadComponent:()=>import ('./features/student/student-qa/student-qa.component').then((m)=>m.StudentQaComponent)},
+        {path:'student-job-offers',loadComponent:()=>import ('./features/student/student-job-offers/student-job-offers.component').then((m)=>m.StudentJobOffersComponent)},
+        {path:'student-challenges',loadComponent:()=>import ('./features/student/student-challenges/student-challenges.component').then((m)=>m.StudentChallengesComponent)},
+        {path:'student-points-exchange',loadComponent:()=>import ('./features/student/student-points-exchange/student-points-exchange.component').then((m)=>m.StudentPointsExchangeComponent)},
         {path:'student-order-history',loadComponent:()=>import ('./features/student/student-order-history/student-order-history.component').then((m)=>m.StudentOrderHistoryComponent)},
         {path:'student-referral',loadComponent:()=>import ('./features/student/student-referral/student-referral.component').then((m)=>m.StudentReferralComponent)},
         {path:'student-reviews',loadComponent:()=>import ('./features/student/student-reviews/student-reviews.component').then((m)=>m.StudentReviewsComponent)},

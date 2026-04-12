@@ -1,0 +1,89 @@
+.danger-zone-card {
+	border: 1px solid rgba(220, 53, 69, 0.35);
+	background: linear-gradient(180deg, #fff 0%, #fff7f8 100%);
+}
+
+.ins-set-photo-row {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 4px 0;
+}
+
+.ins-set-photo-avatar {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	object-fit: cover;
+	background: #e5e7eb;
+	border: 1px solid #e5e7eb;
+	flex-shrink: 0;
+}
+
+.ins-set-photo-avatar--initial {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-size: 30px;
+	font-weight: 800;
+	text-transform: uppercase;
+}
+
+.ins-set-photo-content {
+	min-width: 0;
+}
+
+.ins-set-photo-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 34px;
+	padding: 0 14px;
+	border: 0;
+	border-radius: 999px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1;
+	cursor: pointer;
+	transition: all .2s ease;
+}
+
+.ins-set-photo-btn--upload {
+	background: #e5e7eb;
+	color: #111827;
+
+	&:hover {
+		background: #d1d5db;
+	}
+}
+
+.ins-set-photo-btn--delete {
+	background: #ff4667;
+	color: #fff;
+
+	&:hover:enabled {
+		background: #e83b5b;
+	}
+
+	&:disabled {
+		opacity: .65;
+		cursor: not-allowed;
+	}
+}
+
+.ins-set-photo-btn.disabled {
+	opacity: .75;
+	pointer-events: none;
+}
+
+@media (max-width: 576px) {
+	.ins-set-photo-row {
+		align-items: flex-start;
+	}
+
+	.ins-set-photo-avatar {
+		width: 50px;
+		height: 50px;
+	}
+}

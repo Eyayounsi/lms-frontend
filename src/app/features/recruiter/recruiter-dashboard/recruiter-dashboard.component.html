@@ -1,125 +1,232 @@
-<!-- Bannière de bienvenue Recruteur -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card border-0 bg-success text-white">
-            <div class="card-body d-flex align-items-center gap-3 py-3">
-                <span class="icon-box bg-white bg-opacity-25 flex-shrink-0">
-                    <i class="ti ti-briefcase fs-20 text-white"></i>
-                </span>
-                <div>
-                    <h5 class="mb-0 text-white">Bienvenue, {{ userName }} !</h5>
-                    <span class="badge bg-white text-success mt-1">{{ userRole }}</span>
-                </div>
+﻿<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  HERO Recruteur                                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="rct-hero mb-4">
+  <div class="rct-glow rct-glow-1"></div>
+  <div class="rct-glow rct-glow-2"></div>
+  <div class="rct-hero-body">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="d-flex align-items-center gap-4 mb-1">
+          <div class="rct-av-wrap">
+            <div class="rct-av-ring"></div>
+            <div class="rct-av-border"></div>
+            <div class="rct-av-circle">
+              <i class="ti ti-briefcase" style="font-size:26px;color:#fff;"></i>
             </div>
+            <div class="rct-av-pulse"></div>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="rct-chip"><i class="ti ti-star me-1" style="font-size:9px"></i>Recruteur</span>
+              <span class="rct-live"><span class="rct-live-dot"></span>ACTIF</span>
+            </div>
+            <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">
+              Bienvenue,&#160;{{ userName }}&#160;!
+            </h3>
+            <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">
+              Tableau de bord recruteur — gérez vos offres et trouvez les meilleurs talents
+            </p>
+          </div>
         </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+          <div class="rct-glass d-none d-md-flex align-items-center">
+            <div class="rct-stat text-center">
+              <span class="d-block fw-bold text-white fs-18">{{ stats.sharedProfiles }}</span>
+              <small style="color:rgba(255,255,255,.55);font-size:10px">Profils</small>
+            </div>
+            <div class="rct-stat-div"></div>
+            <div class="rct-stat text-center">
+              <span class="d-block fw-bold text-white fs-18">{{ stats.pendingOffers }}</span>
+              <small style="color:rgba(255,255,255,.55);font-size:10px">Offres</small>
+            </div>
+            <div class="rct-stat-div"></div>
+            <div class="rct-stat text-center">
+              <span class="d-block fw-bold text-white fs-18">{{ stats.totalStudents }}</span>
+              <small style="color:rgba(255,255,255,.55);font-size:10px">Étudiants</small>
+            </div>
+          </div>
+          <button class="rct-refresh d-flex align-items-center gap-2" (click)="loadStats()" title="Actualiser">
+            <i class="ti ti-refresh" style="font-size:14px"></i>Actualiser
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Chargement statistiques -->
-<div *ngIf="statsLoading" class="text-center py-4">
-    <div class="spinner-border text-success" role="status">
-        <span class="visually-hidden">Chargement...</span>
-    </div>
+<!-- Skeleton -->
+<div *ngIf="statsLoading" class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi"><div class="rct-kpi-body">
+      <div class="rct-sk rct-sk-sm mb-2" style="width:45%"></div>
+      <div class="rct-sk rct-sk-lg mb-3" style="width:55%"></div>
+      <div class="rct-sk" style="width:100%;height:5px;border-radius:5px"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi"><div class="rct-kpi-body">
+      <div class="rct-sk rct-sk-sm mb-2" style="width:45%"></div>
+      <div class="rct-sk rct-sk-lg mb-3" style="width:55%"></div>
+      <div class="rct-sk" style="width:100%;height:5px;border-radius:5px"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi"><div class="rct-kpi-body">
+      <div class="rct-sk rct-sk-sm mb-2" style="width:45%"></div>
+      <div class="rct-sk rct-sk-lg mb-3" style="width:55%"></div>
+      <div class="rct-sk" style="width:100%;height:5px;border-radius:5px"></div>
+    </div></div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi"><div class="rct-kpi-body">
+      <div class="rct-sk rct-sk-sm mb-2" style="width:45%"></div>
+      <div class="rct-sk rct-sk-lg mb-3" style="width:55%"></div>
+      <div class="rct-sk" style="width:100%;height:5px;border-radius:5px"></div>
+    </div></div>
+  </div>
 </div>
 
-<!-- Erreur statistiques -->
-<div *ngIf="statsError && !statsLoading" class="alert alert-warning">
-    <i class="ti ti-alert-circle me-2"></i>{{ statsError }}
+<!-- Error -->
+<div *ngIf="statsError && !statsLoading" class="rct-alert-warn mb-4">
+  <i class="ti ti-alert-circle me-2"></i>{{ statsError }}
 </div>
 
-<!-- Statistiques Recruteur (depuis le backend) -->
-<div class="row" *ngIf="!statsLoading">
-    <div class="col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <span class="icon-box bg-primary-transparent me-2 me-xxl-3 flex-shrink-0">
-                        <i class="ti ti-users fs-20 text-primary"></i>
-                    </span>
-                    <div>
-                        <span class="d-block">Profils Partagés</span>
-                        <h4 class="fs-24 mt-1">{{ stats.sharedProfiles }}</h4>
-                    </div>
-                </div>
-            </div>
+<!-- KPI Cards -->
+<div class="row g-3 mb-4" *ngIf="!statsLoading">
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi rct-kpi-emerald">
+      <div class="rct-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="rct-kpi-icon"><i class="ti ti-users fs-20"></i></div>
+          <span class="rct-kpi-badge">Partagés</span>
         </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <span class="icon-box bg-secondary-transparent me-2 me-xxl-3 flex-shrink-0">
-                        <i class="ti ti-school fs-20 text-secondary"></i>
-                    </span>
-                    <div>
-                        <span class="d-block">Total Étudiants</span>
-                        <h4 class="fs-24 mt-1">{{ stats.totalStudents }}</h4>
-                    </div>
-                </div>
-            </div>
+        <h2 class="rct-kpi-val fw-bold mb-1">{{ stats.sharedProfiles }}</h2>
+        <p class="rct-kpi-label mb-2">Profils Partagés</p>
+        <div class="rct-kpi-bar-t">
+          <div class="rct-kpi-bar-f" [style.width]="(stats.totalStudents > 0 ? ((stats.sharedProfiles / stats.totalStudents) * 100) : 0) + '%'"></div>
         </div>
+      </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <span class="icon-box bg-warning-transparent me-2 me-xxl-3 flex-shrink-0">
-                        <i class="ti ti-file-text fs-20 text-warning"></i>
-                    </span>
-                    <div>
-                        <span class="d-block">Offres en Attente</span>
-                        <h4 class="fs-24 mt-1">{{ stats.pendingOffers }}</h4>
-                    </div>
-                </div>
-            </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi rct-kpi-violet">
+      <div class="rct-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="rct-kpi-icon"><i class="ti ti-school fs-20"></i></div>
+          <span class="rct-kpi-badge">Inscrits</span>
         </div>
+        <h2 class="rct-kpi-val fw-bold mb-1">{{ stats.totalStudents }}</h2>
+        <p class="rct-kpi-label mb-2">Total Étudiants</p>
+        <div class="rct-kpi-bar-t"><div class="rct-kpi-bar-f" style="width:75%"></div></div>
+      </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <span class="icon-box bg-info-transparent me-2 me-xxl-3 flex-shrink-0">
-                        <i class="ti ti-calendar-event fs-20 text-info"></i>
-                    </span>
-                    <div>
-                        <span class="d-block">Entretiens Planifiés</span>
-                        <h4 class="fs-24 mt-1">{{ stats.scheduledInterviews }}</h4>
-                    </div>
-                </div>
-            </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi rct-kpi-amber">
+      <div class="rct-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="rct-kpi-icon"><i class="ti ti-file-text fs-20"></i></div>
+          <span class="rct-kpi-badge">Actives</span>
         </div>
+        <h2 class="rct-kpi-val fw-bold mb-1">{{ stats.pendingOffers }}</h2>
+        <p class="rct-kpi-label mb-2">Mes Offres</p>
+        <div class="rct-kpi-bar-t"><div class="rct-kpi-bar-f" style="width:50%"></div></div>
+      </div>
     </div>
+  </div>
+  <div class="col-md-6 col-xl-3">
+    <div class="rct-kpi rct-kpi-sky">
+      <div class="rct-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div class="rct-kpi-icon"><i class="ti ti-message-circle fs-20"></i></div>
+          <span class="rct-kpi-badge">Non lus</span>
+        </div>
+        <h2 class="rct-kpi-val fw-bold mb-1">{{ stats.scheduledInterviews }}</h2>
+        <p class="rct-kpi-label mb-2">Messages</p>
+        <div class="rct-kpi-bar-t"><div class="rct-kpi-bar-f" style="width:35%"></div></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Actions rapides Recruteur -->
-<div class="row mt-2">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Actions Rapides</h5>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <a [routerLink]="routes.recruiter_shared_profiles" class="text-decoration-none">
-                            <div class="border rounded p-3 text-center hover-action">
-                                <i class="ti ti-users fs-30 text-success d-block mb-2"></i>
-                                <h6>Voir les Profils Étudiants</h6>
-                                <p class="text-muted small mb-0">Consulter les profils partagés par les étudiants</p>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <a [routerLink]="routes.recruiterSettings" class="text-decoration-none">
-                            <div class="border rounded p-3 text-center hover-action">
-                                <i class="ti ti-settings fs-30 text-primary d-block mb-2"></i>
-                                <h6>Mon Profil</h6>
-                                <p class="text-muted small mb-0">Modifier mes informations de recruteur</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Quick Actions -->
+<div class="row g-4 mb-4" *ngIf="!statsLoading">
+  <div class="col-12">
+    <div class="rct-section-hd d-flex align-items-center gap-3 mb-3">
+      <div class="rct-section-ico"><i class="ti ti-bolt" style="font-size:17px"></i></div>
+      <div>
+        <h5 class="fw-bold mb-0" style="font-size:15px;letter-spacing:-.2px">Accès Rapides</h5>
+        <p class="text-muted small mb-0">Fonctionnalités principales</p>
+      </div>
     </div>
+    <div class="row g-3">
+      <div class="col-md-4 col-sm-6">
+        <a [routerLink]="routes.recruiter_shared_profiles" class="rct-quick-link rct-ql-emerald">
+          <div class="rct-ql-icon"><i class="ti ti-users"></i></div>
+          <div class="flex-grow-1">
+            <p class="fw-semibold mb-0 small">Profils Étudiants</p>
+            <small class="text-muted">Consulter les profils partagés</small>
+          </div>
+          <i class="ti ti-chevron-right rct-ql-arrow text-muted small"></i>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a [routerLink]="routes.recruiter_certified_students" class="rct-quick-link rct-ql-amber">
+          <div class="rct-ql-icon"><i class="ti ti-medal"></i></div>
+          <div class="flex-grow-1">
+            <p class="fw-semibold mb-0 small">Étudiants Certifiés</p>
+            <small class="text-muted">Rechercher par certification</small>
+          </div>
+          <i class="ti ti-chevron-right rct-ql-arrow text-muted small"></i>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a [routerLink]="routes.recruiter_job_offers" class="rct-quick-link rct-ql-violet">
+          <div class="rct-ql-icon"><i class="ti ti-briefcase"></i></div>
+          <div class="flex-grow-1">
+            <p class="fw-semibold mb-0 small">Offres d'Emploi</p>
+            <small class="text-muted">Gérer mes offres et stages</small>
+          </div>
+          <i class="ti ti-chevron-right rct-ql-arrow text-muted small"></i>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a [routerLink]="routes.recruiter_messages" class="rct-quick-link rct-ql-sky">
+          <div class="rct-ql-icon"><i class="ti ti-message-circle"></i></div>
+          <div class="flex-grow-1">
+            <p class="fw-semibold mb-0 small">Messagerie</p>
+            <small class="text-muted">Échanger avec les étudiants</small>
+          </div>
+          <i class="ti ti-chevron-right rct-ql-arrow text-muted small"></i>
+        </a>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <a [routerLink]="routes.recruiterSettings" class="rct-quick-link rct-ql-rose">
+          <div class="rct-ql-icon"><i class="ti ti-user-circle"></i></div>
+          <div class="flex-grow-1">
+            <p class="fw-semibold mb-0 small">Mon Profil</p>
+            <small class="text-muted">Modifier mes informations</small>
+          </div>
+          <i class="ti ti-chevron-right rct-ql-arrow text-muted small"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tips Banner -->
+<div class="rct-tip-banner" *ngIf="!statsLoading">
+  <div class="rct-tip-icon">
+    <i class="ti ti-sparkles" style="font-size:22px;color:#03C95A"></i>
+  </div>
+  <div class="flex-grow-1">
+    <p class="fw-bold mb-0 small">Conseil du jour</p>
+    <p class="text-muted small mb-0">
+      Complétez votre profil recruteur pour apparaître dans les recommandations aux étudiants.
+      <a [routerLink]="routes.recruiterSettings" class="rct-tip-link ms-1">Compléter maintenant →</a>
+    </p>
+  </div>
 </div>

@@ -1,8 +1,14 @@
 ﻿
-    <div class="page-title d-flex align-items-center justify-content-between">
-        <h5 class="fw-bold">Quiz</h5>
+<section class="iq-page">
+    <div class="page-title d-flex align-items-center justify-content-between iq-page-title">
         <div>
-            <a href="javascript:void(0);" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#add_quiz" (click)="openAddModal()">Add Quiz</a>
+            <h5 class="fw-bold mb-1">Quiz</h5>
+            <p class="text-muted mb-0 fs-14">Créez et gérez vos quiz avec une expérience moderne.</p>
+        </div>
+        <div>
+            <a href="javascript:void(0);" class="btn btn-secondary iq-add-btn" data-bs-toggle="modal" data-bs-target="#add_quiz" (click)="openAddModal()">
+                <i class="isax isax-add-circle me-1"></i>Ajouter un quiz
+            </a>
         </div>
     </div>
 
@@ -12,31 +18,31 @@
     </div>
 
     <!-- Empty state -->
-    <div *ngIf="!loading && quizzes.length === 0" class="border rounded-2 p-4 text-center">
+    <div *ngIf="!loading && quizzes.length === 0" class="border rounded-2 p-4 text-center iq-empty-state">
         <p class="text-muted mb-0">Aucun quiz créé pour le moment.</p>
     </div>
 
     <!-- Quiz List -->
-    <div *ngFor="let quiz of quizzes; let last = last" class="border rounded-2 p-3 mb-3" [class.mb-0]="last">
+    <div *ngFor="let quiz of quizzes; let last = last" class="border rounded-2 p-3 mb-3 iq-quiz-card" [class.mb-0]="last">
         <div class="row align-items-center gy-3">
             <div class="col-md-8">
                 <div>
-                    <h6 class="mb-1"><a [routerLink]="['/instructor/instructor-quiz-questions', quiz.id]">{{quiz.title}}</a></h6>
+                    <h6 class="mb-1 iq-quiz-title"><a [routerLink]="['/instructor/instructor-quiz-questions', quiz.id]">{{quiz.title}}</a></h6>
                     <p class="text-muted fs-12 mb-2">
                         {{quiz.lessonTitle ? quiz.lessonTitle + '  ' : ''}}{{quiz.courseName}}
                         <span *ngIf="quiz.lessonTitle" class="badge bg-primary-transparent text-primary ms-1">
                             <i class="isax isax-book me-1"></i>Leçon
                         </span>
                     </p>
-                    <div class="question-info d-flex align-items-center">
-                        <p class="d-flex align-items-center fs-14 me-2 pe-2 border-end mb-0"><i class="isax isax-message-question5 text-primary-soft me-2"></i>{{quiz.numberOfQuestions}} Questions</p>
-                        <p class="d-flex align-items-center fs-14 me-2 pe-2 border-end mb-0"><i class="isax isax-clock5 text-secondary-soft me-2"></i>{{quiz.durationMinutes}} Min</p>
-                        <p class="d-flex align-items-center fs-14 mb-0"><i class="isax isax-medal-star5 text-warning me-2"></i>Pass: {{quiz.passMark}}/{{quiz.totalMarks}}</p>
+                    <div class="question-info d-flex align-items-center flex-wrap gap-2">
+                        <p class="d-flex align-items-center fs-14 mb-0 iq-chip"><i class="isax isax-message-question5 text-primary-soft me-2"></i>{{quiz.numberOfQuestions}} Questions</p>
+                        <p class="d-flex align-items-center fs-14 mb-0 iq-chip"><i class="isax isax-clock5 text-secondary-soft me-2"></i>{{quiz.durationMinutes}} Min</p>
+                        <p class="d-flex align-items-center fs-14 mb-0 iq-chip"><i class="isax isax-medal-star5 text-warning me-2"></i>Pass: {{quiz.passMark}}/{{quiz.totalMarks}}</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="d-flex align-items-center justify-content-end mt-2 mt-md-0">
+                <div class="d-flex align-items-center justify-content-end mt-2 mt-md-0 iq-actions-wrap">
                     <a [routerLink]="['/instructor/instructor-quiz-questions', quiz.id]" class="btn btn-sm btn-outline-primary me-2"><i class="isax isax-message-question5 me-1"></i>Questions</a>
                     <a [routerLink]="['/instructor/instructor-quiz-results', quiz.id]" class="text-info text-decoration-underline fs-12 fw-medium me-3">Résultats</a>
                     <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon" data-bs-toggle="modal" data-bs-target="#edit_quiz" (click)="openEditModal(quiz)"><i class="isax isax-edit-2"></i></a>
@@ -47,19 +53,19 @@
     </div>
 
     <!-- ADD QUIZ MODAL -->
-    <div class="modal fade" id="add_quiz">
+    <div class="modal fade iq-modal" id="add_quiz">
         <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header iq-modal-header">
                     <h5 class="fw-bold">Nouveau Quiz</h5>
                     <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="isax isax-close-circle5"></i>
                     </button>
                 </div>
                 <form (ngSubmit)="submitQuiz()">
-                    <div class="modal-body pb-0" style="max-height:65vh;overflow-y:auto">
+                    <div class="modal-body pb-0 iq-modal-body" style="max-height:65vh;overflow-y:auto">
                         <div *ngIf="formError" class="alert alert-danger py-2 mb-3">{{formError}}</div>
-                        <div class="row">
+                        <div class="row iq-form-grid">
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">Titre du quiz <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" [(ngModel)]="formTitle" name="title" placeholder="Ex: Quiz Chapitre 1">
@@ -77,9 +83,9 @@
                                 <input type="number" class="form-control" [(ngModel)]="formDuration" name="duration" min="1">
                             </div>
                         </div>
-                        <hr class="my-3">
+                        <hr class="my-3 iq-divider">
                         <p class="fw-semibold mb-2">Association cours / leçon</p>
-                        <div class="row">
+                        <div class="row iq-form-grid">
                             <div class="col-md-4 mb-3">
                                 <label class="form-label">Cours <span class="text-danger">*</span></label>
                                 <select class="form-select" [(ngModel)]="formCourseId" name="courseId" (change)="onCourseChange()">
@@ -102,7 +108,7 @@
                                 </select>
                             </div>
                         </div>
-                        <hr class="my-3">
+                        <hr class="my-3 iq-divider">
                         <div class="d-flex align-items-center justify-content-between mb-3">
                             <div>
                                 <p class="fw-semibold mb-0">Questions <span class="text-danger">*</span> <span class="text-muted fs-12">(min. 1)</span></p>
@@ -112,7 +118,7 @@
                             </div>
                             <button type="button" class="btn btn-sm btn-outline-secondary" (click)="addQuestion()"><i class="isax isax-add-circle me-1"></i>Ajouter une question</button>
                         </div>
-                        <div *ngFor="let q of formQuestions; let qi = index" class="border rounded-2 p-3 mb-3 bg-light">
+                        <div *ngFor="let q of formQuestions; let qi = index" class="border rounded-2 p-3 mb-3 bg-light iq-question-card">
                             <div class="d-flex align-items-start justify-content-between mb-2">
                                 <span class="badge bg-secondary-transparent text-secondary">Question {{qi + 1}}</span>
                                 <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeQuestion(qi)" [disabled]="formQuestions.length <= 1"><i class="isax isax-trash"></i></button>
@@ -138,7 +144,9 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Annuler</button>
-                        <button class="btn btn-secondary rounded-pill" type="submit">Créer le quiz</button>
+                        <button class="btn btn-secondary rounded-pill" type="submit" [disabled]="savingQuiz">
+                            {{ savingQuiz ? 'Création...' : 'Créer le quiz' }}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -147,17 +155,17 @@
     <!-- /Add Quiz Modal -->
 
     <!-- EDIT QUIZ MODAL -->
-    <div class="modal fade" id="edit_quiz">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal fade iq-modal" id="edit_quiz">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header iq-modal-header">
                     <h5 class="fw-bold">Modifier le Quiz</h5>
                     <button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <i class="isax isax-close-circle5"></i>
                     </button>
                 </div>
                 <form (ngSubmit)="submitQuiz()">
-                    <div class="modal-body pb-0">
+                    <div class="modal-body pb-0 iq-modal-body" style="max-height:65vh;overflow-y:auto">
                         <div *ngIf="formError" class="alert alert-danger py-2 mb-3">{{formError}}</div>
                         <div class="mb-3">
                             <label class="form-label">Titre du quiz <span class="text-danger">*</span></label>
@@ -177,10 +185,54 @@
                                 <input type="number" class="form-control" [(ngModel)]="formDuration" name="editDuration">
                             </div>
                         </div>
+
+                        <hr class="my-3 iq-divider">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div>
+                                <p class="fw-semibold mb-0">Questions <span class="text-danger">*</span> <span class="text-muted fs-12">(min. 1)</span></p>
+                                <p class="text-muted fs-12 mb-0" *ngIf="formQuestions.length > 0">
+                                    <i class="isax isax-info-circle me-1"></i>Points auto-distribués : {{formTotalMarks}} / {{formQuestions.length}} = ~{{(formTotalMarks / formQuestions.length) | number:'1.0-0'}} pts/question
+                                </p>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="addQuestion()" [disabled]="questionsLoading || savingQuiz"><i class="isax isax-add-circle me-1"></i>Ajouter une question</button>
+                        </div>
+
+                        <div *ngIf="questionsLoading" class="text-center py-3">
+                            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                            <p class="text-muted fs-12 mt-2 mb-0">Chargement des questions...</p>
+                        </div>
+
+                        <ng-container *ngIf="!questionsLoading">
+                            <div *ngFor="let q of formQuestions; let qi = index" class="border rounded-2 p-3 mb-3 bg-light iq-question-card">
+                                <div class="d-flex align-items-start justify-content-between mb-2">
+                                    <span class="badge bg-secondary-transparent text-secondary">Question {{qi + 1}}</span>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeQuestion(qi)" [disabled]="formQuestions.length <= 1 || savingQuiz"><i class="isax isax-trash"></i></button>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm" placeholder="Texte de la question *" [(ngModel)]="q.questionText" [name]="'edit_qText_'+qi">
+                                </div>
+                                <div class="row align-items-center mb-2">
+                                    <div class="col-auto"><label class="form-label fs-12 mb-0">Points:</label></div>
+                                    <div class="col-2"><input type="number" class="form-control form-control-sm" [(ngModel)]="q.marks" [name]="'edit_qMarks_'+qi" min="1"></div>
+                                </div>
+                                <p class="fs-12 text-muted mb-1">Choix  cocher la réponse correcte <span class="text-danger">*</span></p>
+                                <div *ngFor="let ch of q.choices; let ci = index" class="d-flex align-items-center gap-2 mb-1">
+                                    <input type="radio" [name]="'edit_correct_'+qi" [checked]="ch.isCorrect" (click)="setCorrect(qi, ci)" class="form-check-input mt-0 flex-shrink-0" style="cursor:pointer">
+                                    <input type="text" class="form-control form-control-sm" [(ngModel)]="ch.text" [name]="'edit_cText_'+qi+'_'+ci" placeholder="Choix *">
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 flex-shrink-0" (click)="removeChoice(qi, ci)" [disabled]="q.choices.length <= 2 || savingQuiz"><i class="isax isax-close-circle fs-12"></i></button>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link text-primary ps-0 mt-1" (click)="addChoice(qi)" [disabled]="savingQuiz"><i class="isax isax-add-circle me-1"></i>Ajouter un choix</button>
+                            </div>
+                            <div *ngIf="formQuestions.length === 0" class="text-center py-3 text-muted fs-12 border rounded-2 mb-3">
+                                Cliquez sur "Ajouter une question" pour commencer.
+                            </div>
+                        </ng-container>
                     </div>
                     <div class="modal-footer">
                         <button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Annuler</button>
-                        <button class="btn btn-secondary rounded-pill" type="submit">Sauvegarder</button>
+                        <button class="btn btn-secondary rounded-pill" type="submit" [disabled]="savingQuiz || questionsLoading">
+                            {{ savingQuiz ? 'Sauvegarde...' : 'Sauvegarder' }}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -189,10 +241,10 @@
     <!-- /Edit Quiz Modal -->
 
     <!-- DELETE MODAL -->
-    <div class="modal fade" id="delete_modal">
+    <div class="modal fade iq-modal" id="delete_modal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-body text-center custom-modal-body">
+                <div class="modal-body text-center custom-modal-body iq-modal-body">
                     <span class="avatar avatar-lg bg-danger-transparent rounded-circle mb-2">
                         <i class="isax isax-trash fs-24 text-danger"></i>
                     </span>
@@ -209,3 +261,4 @@
         </div>
     </div>
     <!-- /Delete Modal -->
+</section>

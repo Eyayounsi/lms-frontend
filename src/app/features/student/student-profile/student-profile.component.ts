@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { routes } from '../../../shared/service/routes/routes';
 import { ProfileService } from '../../../shared/service/profile/profile.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from '../../../shared/service/auth/auth.service';
 
 @Component({
     selector: 'app-student-profile',
@@ -19,8 +20,13 @@ export class StudentProfileComponent implements OnInit {
   loading = true;
   errorMessage = '';
   avatarPreview: string | null = null;
+  avatarUploading = false;
 
-  constructor(private profileService: ProfileService, private toastr: ToastrService) {}
+  constructor(
+    private profileService: ProfileService,
+    private toastr: ToastrService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.profileService.getProfile().subscribe({
@@ -38,22 +44,70 @@ export class StudentProfileComponent implements OnInit {
 
   getAvatarUrl(): string {
     if (this.avatarPreview) return this.avatarPreview;
-    if (!this.profile?.avatarPath) return 'assets/img/profiles/avatar-02.jpg';
-    const p = this.profile.avatarPath;
-    if (p.startsWith('http')) return p;
-    return 'http://localhost:8081/' + (p.startsWith('/') ? p.substring(1) : p);
+    if (!this.profile?.avatarPath) return '';
+    return this.authService.resolveAvatarUrl(this.profile.avatarPath) || '';
+  }
+
+  get avatarInitial(): string {
+    return this.profile?.fullName?.trim()?.charAt(0)?.toUpperCase() || 'U';
   }
 
   onAvatarSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
     const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) {
+      this.toastr.error('Veuillez sélectionner un fichier image valide.');
+      input.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => { this.avatarPreview = e.target?.result as string; };
     reader.readAsDataURL(file);
+    this.avatarUploading = true;
     this.profileService.uploadAvatar(file).subscribe({
-      next: (res) => { if (this.profile) this.profile.avatarPath = res.avatarPath; this.toastr.success('Avatar mis à jour !'); },
-      error: () => { this.toastr.error('Erreur lors de l\'upload'); }
+      next: (res) => {
+        this.avatarUploading = false;
+        if (this.profile) this.profile.avatarPath = res.avatarPath;
+        this.avatarPreview = null;
+        this.authService.setAvatarPath(res.avatarPath || '');
+        this.toastr.success('Avatar mis à jour !');
+        input.value = '';
+      },
+      error: (err) => {
+        this.avatarUploading = false;
+        const message = err?.error?.message || err?.error?.error || 'Erreur lors de l\'upload';
+        this.toastr.error(message);
+        input.value = '';
+      }
+    });
+  }
+
+  removeAvatar(): void {
+    if (!this.profile?.avatarPath) {
+      this.toastr.info('Aucune photo de profil à supprimer.');
+      return;
+    }
+
+    const confirmed = window.confirm('Voulez-vous supprimer votre photo de profil ?');
+    if (!confirmed) return;
+
+    this.avatarUploading = true;
+    this.profileService.deleteAvatar().subscribe({
+      next: () => {
+        this.avatarUploading = false;
+        if (this.profile) this.profile.avatarPath = null;
+        this.avatarPreview = null;
+        this.authService.setAvatarPath('');
+        this.toastr.success('Photo de profil supprimée avec succès');
+      },
+      error: (err) => {
+        this.avatarUploading = false;
+        const message = err?.error?.message || err?.error?.error || 'Impossible de supprimer la photo de profil';
+        this.toastr.error(message);
+      }
     });
   }
 

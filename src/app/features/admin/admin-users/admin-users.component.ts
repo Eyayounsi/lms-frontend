@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminApiService, AdminUser } from '../services/admin-api.service';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../../shared/service/auth/auth.service';
 
 @Component({
   selector: 'app-admin-users',
@@ -19,13 +21,16 @@ export class AdminUsersComponent implements OnInit {
   filterStatus: string = '';
 
   loading: boolean = false;
-  errorMessage: string = '';
-  successMessage: string = '';
+  private avatarLoadErrors = new Set<number>();
 
-  // For delete confirmation modal
-  userToDelete: AdminUser | null = null;
+  // For create recruiter modal
+  showCreateModal = false;
+  createForm = { fullName: '', email: '', phone: '', companyName: '', password: '' };
+  creating = false;
+  createError = '';
+  showCreatePassword = false;
 
-  constructor(private adminApi: AdminApiService) {}
+  constructor(private adminApi: AdminApiService, private authService: AuthService) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -33,7 +38,6 @@ export class AdminUsersComponent implements OnInit {
 
   loadUsers(): void {
     this.loading = true;
-    this.errorMessage = '';
     this.adminApi.getAllUsers().subscribe({
       next: (data) => {
         this.users = data;
@@ -41,7 +45,7 @@ export class AdminUsersComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        this.errorMessage = 'Impossible de charger les utilisateurs.';
+        this.showToast('error', 'Impossible de charger les utilisateurs.');
         this.loading = false;
       }
     });
@@ -68,27 +72,27 @@ export class AdminUsersComponent implements OnInit {
 
   confirmDelete(user: AdminUser): void {
     if (user.role.includes('ADMIN')) return;
-    this.userToDelete = user;
+    Swal.fire({
+      title: 'Supprimer cet utilisateur ?',
+      html: `Compte de <strong>${user.fullName}</strong> supprimé définitivement.<br><small class="text-muted">${user.email}</small>`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: '<i class="ti ti-trash me-1"></i>Supprimer',
+      cancelButtonText: 'Annuler',
+      customClass: { popup: 'rounded-4 shadow-lg' }
+    }).then(r => { if (r.isConfirmed) this.deleteUser(user); });
   }
 
-  cancelDelete(): void {
-    this.userToDelete = null;
-  }
-
-  deleteUser(): void {
-    if (!this.userToDelete) return;
-    const id = this.userToDelete.id;
-    this.adminApi.deleteUser(id).subscribe({
+  private deleteUser(user: AdminUser): void {
+    this.adminApi.deleteUser(user.id).subscribe({
       next: () => {
-        this.users = this.users.filter(u => u.id !== id);
+        this.users = this.users.filter(u => u.id !== user.id);
         this.applyFilters();
-        this.userToDelete = null;
-        this.showSuccess('Utilisateur supprimé avec succès.');
+        this.showToast('success', 'Utilisateur supprimé avec succès.');
       },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Impossible de supprimer cet utilisateur.';
-        this.userToDelete = null;
-      }
+      error: err => this.showToast('error', err.error?.message || 'Impossible de supprimer cet utilisateur.')
     });
   }
 
@@ -98,10 +102,10 @@ export class AdminUsersComponent implements OnInit {
       next: (updated) => {
         user.accountStatus = updated.accountStatus;
         const action = user.accountStatus === 'BLOCKED' ? 'bloqué' : 'débloqué';
-        this.showSuccess(`Utilisateur ${action} avec succès.`);
+        this.showToast('success', `Utilisateur ${action} avec succès.`);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Impossible de modifier le statut.';
+        this.showToast('error', err.error?.message || 'Impossible de modifier le statut.');
       }
     });
   }
@@ -112,18 +116,55 @@ export class AdminUsersComponent implements OnInit {
     this.adminApi.changeUserRole(user.id, newRole).subscribe({
       next: (updated) => {
         user.role = updated.role;
-        this.showSuccess(`Rôle de ${user.fullName} changé en ${this.getRoleLabel(updated.role)}.`);
+        this.showToast('success', `Rôle de ${user.fullName} changé en ${this.getRoleLabel(updated.role)}.`);
       },
       error: (err) => {
-        user.role = oldRole; // Annuler le changement visuel
-        this.errorMessage = err.error?.message || 'Impossible de changer le rôle.';
+        user.role = oldRole;
+        this.showToast('error', err.error?.message || 'Impossible de changer le rôle.');
       }
     });
   }
 
-  showSuccess(msg: string): void {
-    this.successMessage = msg;
-    setTimeout(() => this.successMessage = '', 4000);
+  private showToast(type: 'success' | 'error', msg: string): void {
+    const Toast = Swal.mixin({
+      toast: true, position: 'top-end',
+      showConfirmButton: false, timer: 3500, timerProgressBar: true
+    });
+    Toast.fire({ icon: type, title: msg });
+  }
+
+  openCreateModal(): void {
+    this.createForm = { fullName: '', email: '', phone: '', companyName: '', password: '' };
+    this.createError = '';
+    this.showCreatePassword = false;
+    this.showCreateModal = true;
+  }
+
+  closeCreateModal(): void {
+    this.showCreateModal = false;
+    this.createError = '';
+  }
+
+  createRecruiter(): void {
+    if (!this.createForm.fullName.trim() || !this.createForm.email.trim()) {
+      this.createError = 'Le nom et l\'email sont obligatoires.';
+      return;
+    }
+    this.creating = true;
+    this.createError = '';
+    this.adminApi.createRecruiter(this.createForm).subscribe({
+      next: (created) => {
+        this.users.push(created);
+        this.applyFilters();
+        this.creating = false;
+        this.showCreateModal = false;
+        this.showToast('success', `Recruteur "${created.fullName}" créé avec succès. Les identifiants ont été envoyés par email.`);
+      },
+      error: (err) => {
+        this.creating = false;
+        this.createError = err.error || err.error?.message || 'Erreur lors de la création du compte.';
+      }
+    });
   }
 
   getRoleBadgeClass(role: string): string {
@@ -142,6 +183,18 @@ export class AdminUsersComponent implements OnInit {
     return role;
   }
 
+  getAvatarUrl(user: AdminUser): string {
+    return this.authService.resolveAvatarUrl(user?.avatarPath || '') || '';
+  }
+
+  hasAvatar(user: AdminUser): boolean {
+    return !!this.getAvatarUrl(user) && !this.avatarLoadErrors.has(user.id);
+  }
+
+  onAvatarError(user: AdminUser): void {
+    this.avatarLoadErrors.add(user.id);
+  }
+
   formatDate(dateStr: string): string {
     if (!dateStr) return '-';
     try {
@@ -150,4 +203,9 @@ export class AdminUsersComponent implements OnInit {
       return dateStr;
     }
   }
+
+  get totalUsersCount(): number     { return this.users.length; }
+  get activeUsersCount(): number    { return this.users.filter(u => u.accountStatus === 'ACTIVE').length; }
+  get blockedUsersCount(): number   { return this.users.filter(u => u.accountStatus === 'BLOCKED').length; }
+  get instructorsCount(): number    { return this.users.filter(u => u.role.includes('INSTRUCTOR')).length; }
 }

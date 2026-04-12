@@ -1,11 +1,11 @@
 ﻿<div class="page-content">
 
   <!-- Messages -->
-  <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show">
+  <div *ngIf="successMessage" class="alert alert-dismissible fade show ins-course-alert ins-course-alert--info">
     <i class="fa-solid fa-check-circle me-2"></i>{{ successMessage }}
     <button type="button" class="btn-close" (click)="successMessage = ''"></button>
   </div>
-  <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show">
+  <div *ngIf="errorMessage" class="alert alert-dismissible fade show ins-course-alert ins-course-alert--soft">
     <i class="fa-solid fa-exclamation-circle me-2"></i>{{ errorMessage }}
     <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
   </div>
@@ -13,45 +13,37 @@
   <!-- Stats Cards -->
   <div class="row mb-4">
     <div class="col-xxl col-lg-3 col-md-6">
-      <div class="card bg-success">
+      <div class="card ins-course-stat-card ins-course-stat-card--one">
         <div class="card-body">
-          <h6 class="fw-medium mb-1 text-white">Cours Publiés</h6>
-          <h4 class="fw-bold text-white">{{ publishedCount }}</h4>
+          <h6 class="fw-medium mb-1">Cours Publiés</h6>
+          <h4 class="fw-bold">{{ publishedCount }}</h4>
         </div>
       </div>
     </div>
     <div class="col-xxl col-lg-3 col-md-6">
-      <div class="card bg-warning">
+      <div class="card ins-course-stat-card ins-course-stat-card--two">
         <div class="card-body">
-          <h6 class="fw-medium mb-1 text-white">En attente</h6>
-          <h4 class="fw-bold text-white">{{ pendingCount }}</h4>
+          <h6 class="fw-medium mb-1">En attente</h6>
+          <h4 class="fw-bold">{{ pendingCount }}</h4>
         </div>
       </div>
     </div>
     <div class="col-xxl col-lg-3 col-md-6">
-      <div class="card bg-secondary">
+      <div class="card ins-course-stat-card ins-course-stat-card--three">
         <div class="card-body">
-          <h6 class="fw-medium mb-1 text-white">Brouillons</h6>
-          <h4 class="fw-bold text-white">{{ draftCount }}</h4>
+          <h6 class="fw-medium mb-1">Brouillons</h6>
+          <h4 class="fw-bold">{{ draftCount }}</h4>
         </div>
       </div>
     </div>
     <div class="col-xxl col-lg-3 col-md-6">
-      <div class="card bg-danger">
+      <div class="card ins-course-stat-card ins-course-stat-card--four">
         <div class="card-body">
-          <h6 class="fw-medium mb-1 text-white">Rejetés</h6>
-          <h4 class="fw-bold text-white">{{ rejectedCount }}</h4>
+          <h6 class="fw-medium mb-1">Rejetés</h6>
+          <h4 class="fw-bold">{{ rejectedCount }}</h4>
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="fw-bold mb-0"><i class="fa-solid fa-graduation-cap me-2"></i>Mes Cours</h5>
-    <a [routerLink]="routes.addCourse" class="btn btn-primary">
-      <i class="fa-solid fa-plus me-1"></i>Nouveau cours
-    </a>
   </div>
 
   <!-- Filtres -->
@@ -68,6 +60,7 @@
         <option value="">Tous les statuts</option>
         <option value="DRAFT">Brouillon</option>
         <option value="PENDING">En attente</option>
+        <option value="MODIFICATION_PENDING">Modification en attente</option>
         <option value="PUBLISHED">Publié</option>
         <option value="REJECTED">Rejeté</option>
         <option value="ARCHIVED">Archivé</option>
@@ -86,7 +79,7 @@
     <i class="fa-solid fa-book-open fa-3x text-muted mb-3"></i>
     <h5 class="text-muted">Aucun cours trouvé</h5>
     <p class="text-muted">
-      <a [routerLink]="routes.addCourse" class="text-primary">Créez votre premier cours</a>
+      <a [routerLink]="routes.instructorAddCourse" class="text-primary">Créez votre premier cours</a>
     </p>
   </div>
 
@@ -98,18 +91,28 @@
 
           <!-- Image -->
           <div class="col-md-2">
-            <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded"
-                 style="height: 90px; width: 100%; object-fit: cover;" alt="cover">
+            <ng-container *ngIf="hasValidImage(course); else imagePlaceholder">
+                      <img [src]="getCourseImage(course)"
+                   (error)="onCourseImageError(course)"
+                   class="img-fluid rounded ins-course-cover"
+                   alt="cover">
+            </ng-container>
+            <ng-template #imagePlaceholder>
+              <div class="ins-course-cover ins-course-cover--placeholder"
+                   [style.background]="getPlaceholderGradient(course)">
+                {{ getCourseInitial(course) }}
+              </div>
+            </ng-template>
           </div>
 
           <!-- Info -->
           <div class="col-md-6">
             <div class="d-flex align-items-center gap-2 mb-1">
               <h5 class="mb-0">{{ course.title }}</h5>
-              <span class="badge" [ngClass]="getStatusBadgeClass(course.status)">
-                {{ getStatusLabel(course.status) }}
+              <span class="badge" [ngClass]="getStatusBadgeClass(getCourseStatus(course))">
+                {{ getStatusLabel(getCourseStatus(course)) }}
               </span>
-              <span *ngIf="course.hasPendingEdit" class="badge bg-primary">
+              <span *ngIf="shouldShowPendingEditBadge(course)" class="badge ins-course-chip ins-course-chip--edit">
                 <i class="fa-solid fa-pen-to-square me-1"></i>Modification en attente
               </span>
             </div>
@@ -126,42 +129,45 @@
               <i class="fa-solid fa-play-circle me-1"></i>{{ course.lessonsCount || 0 }} leçon(s)
             </p>
             <!-- Message rejet -->
-            <div *ngIf="course.status === 'REJECTED' && course.rejectionReason"
-                 class="alert alert-danger py-1 px-2 mt-2 mb-0 small">
+            <div *ngIf="getCourseStatus(course) === 'REJECTED' && course.rejectionReason"
+                 class="alert py-1 px-2 mt-2 mb-0 small ins-course-note ins-course-note--muted">
               <i class="fa-solid fa-ban me-1"></i><strong>Rejeté :</strong> {{ course.rejectionReason }}
             </div>
             <!-- Message rejet modification -->
             <div *ngIf="course.editRejectionReason"
-                 class="alert alert-warning py-1 px-2 mt-2 mb-0 small">
+                 class="alert py-1 px-2 mt-2 mb-0 small ins-course-note ins-course-note--soft">
               <i class="fa-solid fa-pen me-1"></i><strong>Modification rejetée :</strong> {{ course.editRejectionReason }}
             </div>
           </div>
 
           <!-- Actions -->
           <div class="col-md-4 text-end d-flex flex-column align-items-end gap-2">
-            <button class="btn btn-outline-info btn-sm w-100" (click)="viewDetails(course.id)">
+            <button class="btn btn-outline-primary btn-sm w-100" (click)="viewDetails(course.id)">
               <i class="fa-solid fa-eye me-1"></i>Détails
             </button>
-            <!-- Modifier : masqué si cours en attente de validation ou modification en cours -->
-            <button *ngIf="course.status !== 'PENDING_REVIEW' && !course.hasPendingEdit"
+            <button *ngIf="canEditCourse(course)"
                     class="btn btn-outline-primary btn-sm w-100" (click)="editCourse(course.id)">
               <i class="fa-solid fa-pen me-1"></i>Modifier
             </button>
-            <button *ngIf="course.status === 'PENDING_REVIEW' || course.hasPendingEdit"
+            <button *ngIf="showPendingValidationState(course)"
                     class="btn btn-outline-secondary btn-sm w-100 disabled" disabled
                     title="Modification impossible : en attente de validation">
               <i class="fa-solid fa-lock me-1"></i>En attente de validation
             </button>
-            <button *ngIf="course.status === 'DRAFT' || course.status === 'REJECTED'"
-                    class="btn btn-warning btn-sm w-100" (click)="submitForReview(course)">
+            <button *ngIf="canSubmitForReview(course)"
+                  class="btn btn-primary btn-sm w-100" (click)="submitForReview(course)">
               <i class="fa-solid fa-paper-plane me-1"></i>Soumettre pour validation
             </button>
-            <button *ngIf="course.status === 'PUBLISHED'"
+            <button *ngIf="canArchiveCourse(course)"
                     class="btn btn-outline-secondary btn-sm w-100" (click)="archiveCourse(course)">
               <i class="fa-solid fa-archive me-1"></i>Archiver
             </button>
-            <button *ngIf="course.status === 'DRAFT' || course.status === 'REJECTED' || course.status === 'ARCHIVED'"
-                    class="btn btn-danger btn-sm w-100" (click)="openDeleteModal(course)">
+            <button *ngIf="canUnarchiveCourse(course)"
+                    class="btn btn-outline-secondary btn-sm w-100" (click)="unarchiveCourse(course)">
+              <i class="fa-solid fa-box-open me-1"></i>Désarchiver
+            </button>
+            <button *ngIf="canDeleteCourse(course)"
+                  class="btn btn-outline-secondary btn-sm w-100" (click)="openDeleteModal(course)">
               <i class="fa-solid fa-trash me-1"></i>Supprimer
             </button>
           </div>
@@ -189,7 +195,7 @@
         </p>
         <div class="d-flex justify-content-center gap-2">
           <button class="btn btn-light rounded-pill px-4" (click)="closeDeleteModal()">Annuler</button>
-          <button class="btn btn-danger rounded-pill px-4" (click)="confirmDelete()">Oui, supprimer</button>
+          <button class="btn btn-primary rounded-pill px-4" (click)="confirmDelete()">Oui, supprimer</button>
         </div>
       </div>
     </div>

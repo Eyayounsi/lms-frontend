@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/superadmin/common/superadmin-sidebar/superadmin-sidebar.component.scss"],
-  "sourcesContent": [".superadmin-profile-box {\r\n  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);\r\n}\r\n"],
-  "mappings": ";AAAA,CAAA;AACE;IAAA;MAAA,MAAA;MAAA,QAAA,EAAA;MAAA,QAAA;;",
-  "names": []
-}

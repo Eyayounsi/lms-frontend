@@ -1,128 +1,157 @@
-
-    <div class="page-title d-flex align-items-center justify-content-between">
-        <h5>Mes Revenus</h5>
+<section class="ie-page">
+    <div class="ie-header d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+        <div>
+            <h5 class="mb-1 fw-bold">Mes Revenus</h5>
+            <p class="text-muted mb-0">Vue analytique de vos performances et de vos cours les plus rentables.</p>
+        </div>
+        <a [routerLink]="routes.instructor_payouts" class="btn btn-outline-primary btn-sm">
+            <i class="isax isax-coin-15 me-1"></i>Paiements et relevés
+        </a>
     </div>
 
-    <!-- Erreur -->
-    <div *ngIf="errorMessage" class="alert alert-warning">
+    <div *ngIf="errorMessage" class="alert alert-warning border-0 shadow-sm">
         <i class="isax isax-info-circle me-2"></i>{{ errorMessage }}
     </div>
 
-    <!-- Chargement -->
     <div *ngIf="loading" class="text-center py-5">
         <div class="spinner-border text-primary" role="status"></div>
         <p class="mt-2 text-muted">Chargement des revenus...</p>
     </div>
 
     <ng-container *ngIf="!loading">
-
-    <!-- Cartes KPI -->
-    <div class="row">
-        <div class="col-xl-4 col-md-6">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="earnings-icon bg-success">
-                            <i class="isax isax-dollar-circle4"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h6 class="mb-1">Revenu total</h6>
-                            <h5 class="fw-bold text-success mb-1">{{ (revenue?.totalRevenue || 0) | number:'1.2-2' }} €</h5>
-                            <p>Depuis le début</p>
+        <div class="row g-3 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="card ie-kpi border-0 shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="ie-kpi-icon kpi-total"><i class="isax isax-dollar-circle4"></i></span>
+                        <div>
+                            <div class="ie-kpi-label">Revenu total</div>
+                            <div class="ie-kpi-value">{{ (revenue?.totalRevenue || 0) | number:'1.2-2' }} €</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card ie-kpi border-0 shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="ie-kpi-icon kpi-month"><i class="isax isax-calendar-1"></i></span>
+                        <div>
+                            <div class="ie-kpi-label">Ce mois-ci</div>
+                            <div class="ie-kpi-value">{{ (revenue?.monthlyRevenue || 0) | number:'1.2-2' }} €</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card ie-kpi border-0 shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="ie-kpi-icon kpi-sales"><i class="isax isax-profile-tick5"></i></span>
+                        <div>
+                            <div class="ie-kpi-label">Ventes totales</div>
+                            <div class="ie-kpi-value">{{ revenue?.totalSales || 0 }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card ie-kpi border-0 shadow-sm h-100">
+                    <div class="card-body d-flex align-items-center gap-3">
+                        <span class="ie-kpi-icon kpi-ticket"><i class="isax isax-receipt-item"></i></span>
+                        <div>
+                            <div class="ie-kpi-label">Panier moyen</div>
+                            <div class="ie-kpi-value">{{ avgTicket | number:'1.2-2' }} €</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-md-6">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="earnings-icon bg-secondary">
-                            <i class="isax isax-calendar-1"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h6 class="mb-1">Ce mois-ci</h6>
-                            <h5 class="fw-bold text-secondary mb-1">{{ (revenue?.monthlyRevenue || 0) | number:'1.2-2' }} €</h5>
-                            <p>Revenu du mois en cours</p>
+
+        <div *ngIf="hasRevenueData; else emptyState" class="row g-4">
+            <div class="col-xl-8">
+                <div class="card border-0 shadow-sm ie-chart-card h-100">
+                    <div class="card-header bg-transparent border-0 pt-3 px-3 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 fw-semibold">Top cours par revenu</h6>
+                        <span class="badge bg-primary-transparent text-primary">Top 8</span>
+                    </div>
+                    <div class="card-body pt-2">
+                        <apx-chart
+                            [series]="earningChart.series"
+                            [chart]="earningChart.chart"
+                            [xaxis]="earningChart.xaxis"
+                            [yaxis]="earningChart.yaxis"
+                            [dataLabels]="earningChart.dataLabels"
+                            [plotOptions]="earningChart.plotOptions"
+                            [colors]="earningChart.colors"
+                            [tooltip]="earningChart.tooltip"
+                            [grid]="earningChart.grid"
+                        ></apx-chart>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-4">
+                <div class="card border-0 shadow-sm ie-side-card mb-3">
+                    <div class="card-body">
+                        <h6 class="fw-semibold mb-2">Cours n°1</h6>
+                        <p class="mb-1 fw-semibold text-dark">{{ topCourse?.courseTitle || 'Aucun cours' }}</p>
+                        <small class="text-muted">Revenu instructeur: {{ (topCourse?.instructorRevenue || 0) | number:'1.2-2' }} €</small>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm ie-side-card">
+                    <div class="card-body">
+                        <h6 class="fw-semibold mb-2">Part du mois</h6>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">Contribution mensuelle</small>
+                            <span class="fw-semibold">{{ monthlyShare | number:'1.0-0' }}%</span>
+                        </div>
+                        <div class="progress" style="height:8px;">
+                            <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="monthlyShare"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-transparent border-0 pt-3 px-3">
+                        <h6 class="mb-0 fw-semibold">Top 5 cours rentables</h6>
+                    </div>
+                    <div class="card-body pt-2">
+                        <div class="table-responsive custom-table">
+                            <table class="table align-middle mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Cours</th>
+                                        <th>Ventes</th>
+                                        <th>Revenu brut</th>
+                                        <th>Ma part</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of topCourses; let i = index">
+                                        <td><span class="badge bg-light text-dark">{{ i + 1 }}</span></td>
+                                        <td class="fw-medium">{{ item.courseTitle }}</td>
+                                        <td>{{ item.totalSales }}</td>
+                                        <td>{{ item.totalRevenue | number:'1.2-2' }} €</td>
+                                        <td class="text-success fw-semibold">{{ item.instructorRevenue | number:'1.2-2' }} €</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-md-6">
-            <div class="card bg-light">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <span class="earnings-icon bg-info">
-                            <i class="isax isax-profile-tick5"></i>
-                        </span>
-                        <div class="ms-3">
-                            <h6 class="mb-1">Ventes totales</h6>
-                            <h5 class="fw-bold text-info mb-1">{{ revenue?.totalSales || 0 }}</h5>
-                            <p>Inscriptions payées</p>
-                        </div>
-                    </div>
+
+        <ng-template #emptyState>
+            <div class="text-center py-5 card border-0 shadow-sm">
+                <div class="card-body py-5">
+                    <i class="isax isax-dollar-circle ie-empty-icon"></i>
+                    <h5 class="text-muted mt-3 mb-2">Aucun revenu pour l'instant</h5>
+                    <p class="text-muted mb-0">Vos revenus apparaîtront ici dès vos premières ventes de cours.</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Graphique revenus par cours -->
-        <div class="col-md-12" *ngIf="revenue?.byCourse && revenue!.byCourse.length > 0">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Revenus par cours</h5>
-                </div>
-                <div class="card-body">
-                    <apx-chart
-                        [series]="earningChart.series"
-                        [chart]="earningChart.chart"
-                        [xaxis]="earningChart.xaxis"
-                        [yaxis]="earningChart.yaxis"
-                        [dataLabels]="earningChart.dataLabels"
-                        [plotOptions]="earningChart.plotOptions"
-                        [colors]="earningChart.colors"
-                        [tooltip]="earningChart.tooltip"
-                    ></apx-chart>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Table détail par cours -->
-    <div class="card mb-0" *ngIf="revenue?.byCourse && revenue!.byCourse.length > 0">
-        <div class="card-header">
-            <h5>Détail par cours</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive custom-table">
-                <table class="table">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>Cours</th>
-                            <th>Ventes</th>
-                            <th>Revenu brut</th>
-                            <th>Ma part (70%)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of revenue!.byCourse">
-                            <td class="fw-medium">{{ item.courseTitle }}</td>
-                            <td>{{ item.totalSales }}</td>
-                            <td>{{ item.totalRevenue | number:'1.2-2' }} €</td>
-                            <td class="text-success fw-semibold">{{ item.instructorRevenue | number:'1.2-2' }} €</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Aucun revenu -->
-    <div *ngIf="!revenue || revenue.totalSales === 0" class="text-center py-5">
-        <i class="isax isax-dollar-circle" style="font-size:3rem;color:#ccc"></i>
-        <h5 class="text-muted mt-3">Aucun revenu pour l'instant</h5>
-        <p class="text-muted">Vos revenus s'afficheront ici lorsque des étudiants acheteront vos cours.</p>
-    </div>
-
+        </ng-template>
     </ng-container>
+</section>

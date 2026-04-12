@@ -1,0 +1,284 @@
+﻿<div class="page-content">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <!--  HERO — Green                                                              -->
+  <!-- ═══════════════════════════════════════════════════════════════════════════ -->
+  <div class="pay-hero mb-4">
+    <div class="pay-glow pay-glow-1"></div>
+    <div class="pay-glow pay-glow-2"></div>
+    <div class="pay-hero-body">
+      <div class="row align-items-center">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-4 mb-1">
+            <div class="pay-av-wrap">
+              <div class="pay-av-ring"></div>
+              <div class="pay-av-border"></div>
+              <div class="pay-av-circle">
+                <i class="ti ti-transfer" style="font-size:26px;color:#fff;"></i>
+              </div>
+              <div class="pay-av-pulse"></div>
+            </div>
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="pay-chip"><i class="ti ti-currency-euro me-1" style="font-size:9px"></i>Finance</span>
+                <span class="pay-live"><span class="pay-live-dot"></span>ACTIF</span>
+              </div>
+              <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Gestion des Virements</h3>
+              <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Validez et gérez les paiements instructeurs (40%)</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+            <div class="pay-glass d-none d-md-flex align-items-center">
+              <div class="pay-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ pendingCount }}</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">En attente</small>
+              </div>
+              <div class="pay-stat-div"></div>
+              <div class="pay-stat text-center">
+                <span class="d-block fw-bold text-white fs-18">{{ totalPending | number:'1.0-0' }}€</span>
+                <small style="color:rgba(255,255,255,.55);font-size:10px">Montant</small>
+              </div>
+            </div>
+            <select class="pay-filter" [(ngModel)]="filterStatus" (change)="onFilterChange()">
+              <option value="">Tous</option>
+              <option value="PENDING">En attente</option>
+              <option value="PAID">Payés</option>
+              <option value="REJECTED">Rejetés</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Summary -->
+  <div *ngIf="!loading && !filterStatus" class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="ac-kpi ac-kpi-yellow">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="ac-kpi-icon"><i class="ti ti-clock"></i></div>
+            <span class="ac-status pending">En attente</span>
+          </div>
+          <div class="ac-kpi-val">{{ pendingCount }}</div>
+          <p class="ac-kpi-label">Virements en attente</p>
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ac-kpi ac-kpi-green">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="ac-kpi-icon"><i class="ti ti-currency-euro"></i></div>
+            <span class="ac-status pending">Montant</span>
+          </div>
+          <div class="ac-kpi-val">{{ totalPending | number:'1.2-2' }}€</div>
+          <p class="ac-kpi-label">Total en attente</p>
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:100%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="ac-kpi ac-kpi-violet">
+        <div class="ac-kpi-body">
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <div class="ac-kpi-icon"><i class="ti ti-percentage"></i></div>
+            <span class="ac-status published">Commission</span>
+          </div>
+          <div class="ac-kpi-val">70/30</div>
+          <p class="ac-kpi-label">Plateforme / Instructor</p>
+          <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:30%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" style="color:#16a34a" role="status"></div>
+    <p class="mt-2 text-muted">Chargement…</p>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!loading" class="ac-card">
+    <div *ngIf="payouts.length === 0" class="ac-empty">
+      <div class="ac-empty-icon"><i class="ti ti-transfer"></i></div>
+      <h6 class="fw-semibold text-secondary mb-1">Aucun virement</h6>
+      <p class="text-muted small mb-0">Aucun virement correspondant au filtre sélectionné.</p>
+    </div>
+    <div *ngIf="payouts.length > 0" class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-bottom:2px solid rgba(22,163,74,.15)">
+          <tr>
+            <th class="ps-4 py-3 text-muted small fw-semibold" style="width:40px">#</th>
+            <th class="py-3 text-muted small fw-semibold">Instructor</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:140px">Montant</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:100px">Période</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:110px">Statut</th>
+            <th class="py-3 text-muted small fw-semibold" style="width:130px">Date demande</th>
+            <th class="py-3 text-muted small fw-semibold text-end pe-4" style="width:160px">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of payouts; let i = index" class="pay-row">
+            <td class="ps-4 text-muted small">{{ i + 1 }}</td>
+            <td>
+              <div class="fw-semibold" style="color:#0f172a">{{ p.instructorName }}</div>
+              <div class="text-muted small">{{ p.instructorEmail }}</div>
+            </td>
+            <td class="fw-bold" style="color:#16a34a">{{ p.amount | number:'1.2-2' }} €</td>
+            <td><span class="ac-status archived">{{ p.period }}</span></td>
+            <td><span class="ac-status" [ngClass]="getStatusClass(p.status)">{{ getStatusLabel(p.status) }}</span></td>
+            <td class="text-muted small">{{ p.requestedAt }}</td>
+            <td class="text-end pe-4">
+              <ng-container *ngIf="p.status === 'PENDING'">
+                <button class="pay-btn-pay me-1" (click)="openAction(p, 'pay')" title="Marquer payé">
+                  <i class="ti ti-check me-1"></i>Payer
+                </button>
+                <button class="pay-btn-reject" (click)="openAction(p, 'reject')" title="Rejeter">
+                  <i class="ti ti-x"></i>
+                </button>
+              </ng-container>
+              <button *ngIf="p.status === 'PAID'" class="pay-btn-invoice" (click)="openInvoice(p)">
+                <i class="ti ti-file-invoice me-1"></i>Facture
+              </button>
+              <span *ngIf="p.status === 'REJECTED'" class="text-muted small">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal payer / rejeter -->
+<div *ngIf="selectedPayout && actionType" class="modal fade show d-block" tabindex="-1"
+     style="background-color:rgba(15,23,42,.55);backdrop-filter:blur(4px)">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header border-0"
+           [style.background]="actionType === 'pay' ? 'linear-gradient(135deg,#14532d,#16a34a)' : 'linear-gradient(135deg,#7f1d1d,#dc2626)'"
+           style="border-radius:17px 17px 0 0;padding:20px 24px">
+        <h5 class="modal-title text-white fw-bold">
+          <i class="ti ti-{{ actionType === 'pay' ? 'circle-check' : 'circle-x' }} me-2"></i>
+          {{ actionType === 'pay' ? 'Confirmer le paiement' : 'Rejeter le virement' }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cancelAction()"></button>
+      </div>
+      <div class="modal-body" style="padding:22px 24px">
+        <div class="mb-4 p-3 rounded-3" style="background:#f0fdf4;border:1px solid rgba(22,163,74,.2)">
+          <p class="mb-1 small"><strong>Instructor :</strong> {{ selectedPayout.instructorName }}</p>
+          <p class="mb-1 small"><strong>Montant :</strong> <span class="fw-bold" style="color:#16a34a">{{ selectedPayout.amount | number:'1.2-2' }} €</span></p>
+          <p class="mb-0 small"><strong>Période :</strong> {{ selectedPayout.period }}</p>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">{{ actionType === 'pay' ? 'Notes (optionnel)' : 'Raison du rejet *' }}</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="actionNotes"
+                    [placeholder]="actionType === 'pay' ? 'Ex: Virement bancaire effectué le …' : 'Ex: Informations bancaires manquantes'"
+                    style="border-radius:10px;resize:none"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0" style="padding:16px 24px 20px">
+        <button class="btn btn-light fw-semibold px-4 rounded-pill" (click)="cancelAction()">Annuler</button>
+        <button class="btn fw-semibold px-5 rounded-pill"
+                [style.background]="actionType === 'pay' ? 'linear-gradient(135deg,#14532d,#16a34a)' : 'linear-gradient(135deg,#7f1d1d,#dc2626)'"
+                style="color:#fff;border:none"
+                (click)="confirmAction()" [disabled]="processing">
+          <span *ngIf="processing" class="spinner-border spinner-border-sm me-2"></span>
+          {{ actionType === 'pay' ? 'Confirmer' : 'Rejeter' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal facture — contenu non modifié (print area) -->
+<div *ngIf="invoicePayout" class="modal fade show d-block" tabindex="-1"
+     style="background-color:rgba(0,0,0,0.55)">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content ac-modal-glass">
+      <div class="modal-header border-0 pb-0" style="padding:20px 24px">
+        <h5 class="modal-title fw-bold">
+          <i class="ti ti-file-invoice me-2" style="color:#16a34a"></i>Facture de virement
+        </h5>
+        <div class="ms-auto d-flex gap-2">
+          <button class="btn btn-sm fw-semibold px-3 rounded-pill" style="background:#16a34a;color:#fff;border:none" (click)="printInvoice()">
+            <i class="ti ti-printer me-1"></i>Imprimer / PDF
+          </button>
+          <button class="btn btn-sm btn-outline-secondary rounded-pill" (click)="closeInvoice()">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body p-4" id="invoice-print-area" style="font-family:Arial,sans-serif;">
+        <div style="border-bottom:2px solid #16a34a;padding-bottom:16px;margin-bottom:24px;" class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <h2 style="color:#16a34a;margin:0;font-size:22px;font-weight:700;">FACTURE DE VIREMENT</h2>
+            <p style="margin:4px 0 0;color:#6b7280;font-size:13px;">Réf. : PAY-{{ invoicePayout!.id }}</p>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:700;font-size:16px;">E-Learning Platform</div>
+            <div style="color:#6b7280;font-size:13px;">eyayoounsi&#64;gmail.com</div>
+          </div>
+        </div>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div style="background:#f8fafc;border-radius:8px;padding:16px;">
+              <div style="font-weight:700;margin-bottom:8px;color:#374151;">Bénéficiaire</div>
+              <div style="font-size:15px;font-weight:600;">{{ invoicePayout!.instructorName }}</div>
+              <div style="color:#6b7280;font-size:13px;">{{ invoicePayout!.instructorEmail }}</div>
+              <div style="color:#6b7280;font-size:13px;">Rôle : Instructor</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div style="background:#f8fafc;border-radius:8px;padding:16px;">
+              <div style="font-weight:700;margin-bottom:8px;color:#374151;">Détails du virement</div>
+              <table style="width:100%;font-size:13px;">
+                <tr><td style="color:#6b7280;padding:3px 0;">Période :</td><td style="text-align:right;font-weight:600;">{{ invoicePayout!.period }}</td></tr>
+                <tr><td style="color:#6b7280;padding:3px 0;">Date demande :</td><td style="text-align:right;">{{ invoicePayout!.requestedAt }}</td></tr>
+                <tr><td style="color:#6b7280;padding:3px 0;">Date paiement :</td><td style="text-align:right;">{{ invoicePayout!.paidAt || '—' }}</td></tr>
+                <tr><td style="color:#6b7280;padding:3px 0;">Statut :</td><td style="text-align:right;"><span style="background:#22c55e;color:#fff;padding:2px 10px;border-radius:20px;font-size:12px;">Payé</span></td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:20px;margin-bottom:20px;">
+          <div style="font-weight:700;margin-bottom:12px;color:#166534;">Détail financier</div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+              <tr style="background:#16a34a;color:#fff;">
+                <th style="padding:10px 12px;text-align:left;">Description</th>
+                <th style="padding:10px 12px;text-align:right;">Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid #e5e7eb;">
+                <td style="padding:10px 12px;color:#374151;">Part instructor (40% des ventes)</td>
+                <td style="padding:10px 12px;text-align:right;font-weight:700;color:#16a34a;">{{ invoicePayout!.amount | number:'1.2-2' }} €</td>
+              </tr>
+              <tr style="background:#fafafa;">
+                <td style="padding:10px 12px;color:#6b7280;font-size:13px;">Commission plateforme retenue (60%)</td>
+                <td style="padding:10px 12px;text-align:right;color:#6b7280;">{{ (invoicePayout!.amount / 0.40 * 0.60) | number:'1.2-2' }} €</td>
+              </tr>
+              <tr style="border-top:2px solid #16a34a;background:#f0fdf4;">
+                <td style="padding:12px;font-weight:700;color:#166534;">MONTANT VERSÉ</td>
+                <td style="padding:12px;text-align:right;font-weight:700;font-size:18px;color:#166534;">{{ invoicePayout!.amount | number:'1.2-2' }} €</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div *ngIf="invoicePayout!.notes" style="background:#fef9ec;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;">
+          <span style="font-weight:600;color:#92400e;">Note admin : </span>
+          <span style="color:#78350f;">{{ invoicePayout!.notes }}</span>
+        </div>
+        <div style="margin-top:24px;text-align:center;color:#9ca3af;font-size:11px;border-top:1px solid #e5e7eb;padding-top:12px;">
+          Document généré automatiquement par E-Learning Platform — Ce document est une confirmation de virement.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

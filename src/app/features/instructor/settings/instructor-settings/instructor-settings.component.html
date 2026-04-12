@@ -1,209 +1,116 @@
-﻿
-        <div *ngIf="loadError" class="alert alert-warning m-3">{{ loadError }}</div>
+﻿<div *ngIf="loadError" class="alert alert-warning mb-3">{{ loadError }}</div>
 
-        <form (ngSubmit)="onUpdateProfile()" #profileFormRef="ngForm">
-        <div class="card">
-            <div class="card-body">									
-            <div class="profile-upload-group">									
-                <div class="d-flex align-items-center">
-                    <a [routerLink]="routes.studentProfile" class="avatar flex-shrink-0 avatar-xxxl avatar-rounded border me-3"><img src="assets/img/user/user-01.jpg" alt="Img" class="img-fluid"></a>
-                    <div class="profile-upload-head">
-                        <h6><a [routerLink]="routes.studentProfile">Your Avatar</a></h6>
-                        <p class="fs-14 mb-0">PNG or JPG no bigger than 800px width and height</p>
-                        <div class="new-employee-field">
-                            <div class="d-flex align-items-center mt-2">
-                                <div class="image-upload position-relative mb-0 me-2">
-                                    <input type="file">
-                                    <a href="javascript:void(0);" class="btn bg-gray-100 btn-sm rounded-pill image-uploads">Upload</a>
-                                </div>
-                                <div class="img-delete">
-                                    <a href="javascript:void(0);" class="btn btn-secondary btn-sm rounded-pill">Delete</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>											
+<form (ngSubmit)="onUpdateProfile()" #profileFormRef="ngForm" class="mb-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3">
+                <h5 class="mb-1 fs-18">Informations personnelles</h5>
+                <p class="text-muted mb-0">Mettez a jour vos informations de base.</p>
             </div>
-                <div>
-                    <div class="edit-profile-info mb-3">
-                        <h5 class="mb-1 fs-18">Personal Details</h5>
-                        <p>Edit your personal information</p>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">First Name <span class="text-danger"> *</span></label>
-                                <input type="text" name="fullName" class="form-control" [(ngModel)]="profileForm.fullName" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Phone Number <span class="text-danger"> *</span></label>
-                                <input type="text" name="phone" class="form-control" [(ngModel)]="profileForm.phone">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Email <span class="text-danger"> *</span></label>
-                                <input type="email" name="email" class="form-control" [(ngModel)]="profileForm.email" required>
-                            </div>
-                        </div>
-            
-                        <div class="col-md-12">
-                            <div class="mb-4">
-                                <label class="form-label">Bio <span class="text-danger"> *</span></label>
-                                <textarea rows="4" class="form-control">I am a web developer with a vast array of knowledge in many different front end and back end languages, responsive frameworks, databases, and best code practices.</textarea>
-                            </div>
-                        </div>
-                        <div class="mt-3 mb-3">
-                            <h5 class="mb-1 fs-18">Educational Details</h5>
-                            <p>Edit your Educational information</p>
-                        </div>
-                        <div class="col-md-12">                                                    
-                            <div class="row">
-                                <div class="col-xl-7">
-                                  <div class="row">
-                                   <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Degree<span class="text-danger"> *</span></label>
-                                        <input type="text" class="form-control" value="">
-                                    </div>
-                                   </div>
-                                   <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">University<span class="text-danger"> *</span></label>
-                                        <input type="text" class="form-control" value="">
-                                    </div>
-                                   </div>
-                                </div>
-                               </div>
-                                <div class="col-xl-5">
-                                    <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3 ngxdate">
-                                        <label class="form-label">From Date<span class="text-danger"> *</span></label>
-                                        <div class="input-icon position-relative calender-input">
-                                            <span class="input-icon-addon">
-                                                <i class="isax isax-calendar"></i>
-                                            </span>
-                                            <input type="text" class="form-control datetimepicker" bsDatepicker container=".ngxdate" [bsConfig]="{ adaptivePosition: true }" placeholder="">
-                                        </div>
-                                    </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3 ngxdate1">
-                                        <label class="form-label">To Date<span class="text-danger"> *</span></label>
-                                        <div class="input-icon position-relative calender-input">
-                                            <span class="input-icon-addon calender-input">
-                                                <i class="isax isax-calendar"></i>
-                                            </span>
-                                            <input type="text" class="form-control datetimepicker" bsDatepicker container=".ngxdate1" [bsConfig]="{ adaptivePosition: true }" placeholder="">
-                                        </div>
-                                    </div>
-                                    </div>
-                                   </div>
-                                </div>
-                            </div>
-                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-secondary fw-medium mb-3" id="add-new-topic-btn">
-                                <i class="isax isax-add me-1"></i> Add New
-                            </a>
-                        </div>
-                        <div class="mt-3 mb-3">
-                            <h5 class="mb-1 fs-18">Experience</h5>
-                            <p>Edit your Experience</p>
-                        </div>
-                        <div class="col-md-12">                                                    
-                            <div class="row">
-                                <div class="col-xl-7">
-                                  <div class="row">
-                                   <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Company<span class="text-danger"> *</span></label>
-                                        <input type="text" class="form-control" value="">
-                                    </div>
-                                   </div>
-                                   <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Position<span class="text-danger"> *</span></label>
-                                        <input type="text" class="form-control" value="">
-                                    </div>
-                                   </div>
-                                </div>
-                               </div>
-                                <div class="col-xl-5">
-                                    <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3 ngxdate2">
-                                        <label class="form-label">From Date<span class="text-danger"> *</span></label>
-                                        <div class="input-icon position-relative calender-input">
-                                            <span class="input-icon-addon">
-                                                <i class="isax isax-calendar"></i>
-                                            </span>
-                                            <input type="text" class="form-control datetimepicker" bsDatepicker container=".ngxdate2" [bsConfig]="{ adaptivePosition: true }" placeholder="">
-                                        </div>
-                                       </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3 ngxdate3">
-                                        <label class="form-label">To Date<span class="text-danger"> *</span></label>
-                                        <div class="input-icon position-relative calender-input">
-                                            <span class="input-icon-addon calender-input">
-                                                <i class="isax isax-calendar"></i>
-                                            </span>
-                                            <input type="text" class="form-control datetimepicker" bsDatepicker placeholder="" container=".ngxdate3" [bsConfig]="{ adaptivePosition: true }">
-                                        </div>
-                                        </div>
-                                    </div>
-                                   </div>
-                                </div>
-                            </div>
-                            <a href="javascript:void(0);" class="d-inline-flex align-items-center text-secondary fw-medium mb-3" id="add-new-topic-btn2">
-                                <i class="isax isax-add me-1"></i> Add New
-                              </a>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="alert alert-success" *ngIf="successMessage">{{ successMessage }}</div>
-                            <div class="alert alert-danger" *ngIf="errorMessage">{{ errorMessage }}</div>
-                            <button class="btn btn-secondary rounded-pill" type="submit">Update Profile</button>
-                        </div>
+
+            <div class="ins-set-photo-row mb-4">
+                <img *ngIf="getAvatarUrl()" [src]="getAvatarUrl()" class="ins-set-photo-avatar" alt="Photo profil">
+                <div *ngIf="!getAvatarUrl()" class="ins-set-photo-avatar ins-set-photo-avatar--initial" [style.background]="avatarInitialBg">
+                    {{ avatarInitial }}
+                </div>
+                <div class="ins-set-photo-content">
+                    <h6 class="mb-1">Profile Photo</h6>
+                    <p class="text-muted mb-2">PNG or JPG no bigger than 800px width and height</p>
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <label class="ins-set-photo-btn ins-set-photo-btn--upload" [class.disabled]="avatarUploading">
+                            <input type="file" accept="image/*" class="d-none" (change)="onAvatarSelected($event)" [disabled]="avatarUploading">
+                            <span *ngIf="!avatarUploading">Upload</span>
+                            <span *ngIf="avatarUploading" class="d-flex align-items-center gap-2">
+                                <span class="spinner-border spinner-border-sm"></span>Upload...
+                            </span>
+                        </label>
+                        <button type="button"
+                                class="ins-set-photo-btn ins-set-photo-btn--delete"
+                                (click)="removeAvatar()"
+                                [disabled]="avatarUploading || !avatarPath">
+                            Delete
+                        </button>
                     </div>
                 </div>
+            </div>
+
+            <div class="alert alert-success mb-3" *ngIf="avatarSuccessMessage">{{ avatarSuccessMessage }}</div>
+            <div class="alert alert-danger mb-3" *ngIf="avatarErrorMessage">{{ avatarErrorMessage }}</div>
+
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Nom complet <span class="text-danger">*</span></label>
+                        <input type="text" name="fullName" class="form-control" [(ngModel)]="profileForm.fullName" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Telephone</label>
+                        <input type="text" name="phone" class="form-control" [(ngModel)]="profileForm.phone">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Titre instructeur</label>
+                        <input type="text" name="designation" class="form-control" [(ngModel)]="profileForm.designation" placeholder="Ex: Formateur Angular senior">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">E-mail actuel</label>
+                        <input type="email" name="email" class="form-control" [(ngModel)]="profileForm.email" readonly>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-3">
+                        <label class="form-label">Adresse</label>
+                        <input type="text" name="address" class="form-control" [(ngModel)]="profileForm.address" placeholder="Ville, pays...">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="mb-0">
+                        <label class="form-label">Bio instructeur</label>
+                        <textarea name="bio" rows="4" class="form-control" [(ngModel)]="profileForm.bio" placeholder="Présentez votre expertise, vos objectifs et votre approche pédagogique..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <div class="alert alert-success mb-2" *ngIf="successMessage">{{ successMessage }}</div>
+            <div class="alert alert-danger mb-2" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+            <button class="btn btn-secondary rounded-pill" type="submit">Enregistrer le profil</button>
+        </div>
+    </div>
+</form>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="mb-3">
+            <h5 class="mb-1 fs-18">Changer l'adresse e-mail</h5>
+            <p class="text-muted mb-0">Adresse e-mail actuelle : {{ profileForm.email || '—' }}</p>
+        </div>
+
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <div class="mb-3 mb-md-0">
+                    <label class="form-label">Nouvelle adresse e-mail <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" [(ngModel)]="newEmail" name="newEmail">
+                </div>
+            </div>
+            <div class="col-md-4 d-grid">
+                <button class="btn btn-outline-secondary" type="button" (click)="onChangeEmail()" [disabled]="updatingEmail">
+                    <span *ngIf="updatingEmail" class="spinner-border spinner-border-sm me-2"></span>
+                    Mettre a jour l'adresse e-mail
+                </button>
             </div>
         </div>
-            <div class="card mb-0">
-                <div class="card-body">	
-                    <h5 class="fs-18 mb-3">Delete Account</h5>								
-                    <h6 class="mb-1">Are you sure you want to delete your account?</h6>
-                    <p class="mb-3">Refers to the action of permanently removing a user's account and associated data from a system, service and platform.</p>
-                    <a href="javascript:void(0);" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#delete_account">Delete Account</a>								
-                </div>
-            </div>
-        </form>
 
-
-            		<!-- Delete Modal -->
-			<div class="modal fade" id="delete_account">
-				<div class="modal-dialog modal-dialog-centered modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							<h5>Delete Account</h5>
-							<button type="button" class="btn-close custom-btn-close" data-bs-dismiss="modal" aria-label="Close">
-								<i class="isax isax-close-circle5"></i>
-							</button>
-						</div>
-						<div class="modal-body">
-							<div class="mb-3">
-								<h6>Confirmez la suppression du compte</h6>
-								<p class="text-muted">Cette action est irr&eacute;versible. Veuillez saisir votre mot de passe pour confirmer.</p>
-								<input type="password" class="form-control mt-2" [(ngModel)]="deletePassword" name="deletePassword" placeholder="Votre mot de passe">
-								<div class="alert alert-danger mt-2" *ngIf="deleteError">{{ deleteError }}</div>
-							</div>
-						</div>
-						<div class="modal-footer">
-							<button class="btn bg-gray-100 rounded-pill me-2" type="button" data-bs-dismiss="modal">Annuler</button>
-							<button class="btn btn-danger rounded-pill" type="button" (click)="onDeleteAccount()" data-bs-dismiss="modal">Supprimer D&eacute;finitivement</button>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- /Delete Modal -->
+        <div class="alert alert-success mt-3 mb-0" *ngIf="emailSuccessMessage">{{ emailSuccessMessage }}</div>
+        <div class="alert alert-danger mt-3 mb-0" *ngIf="emailErrorMessage">{{ emailErrorMessage }}</div>
+    </div>
+</div>

@@ -1,157 +1,223 @@
-<!-- Barre de recherche -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body d-flex align-items-center gap-3 py-3">
-                <span class="icon-box bg-success-transparent flex-shrink-0">
-                    <i class="ti ti-users fs-20 text-success"></i>
-                </span>
-                <div class="flex-grow-1">
-                    <h5 class="mb-1">Profils Étudiants Partagés</h5>
-                    <p class="text-muted mb-0 small">
-                        {{ filteredProfiles.length }} profil(s) disponible(s)
-                    </p>
-                </div>
-                <div class="ms-auto" style="min-width: 280px;">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white">
-                            <i class="ti ti-search"></i>
-                        </span>
-                        <input type="text" class="form-control" placeholder="Rechercher un profil..."
-                               [(ngModel)]="searchQuery" (input)="onSearch()">
-                    </div>
-                </div>
+﻿<!-- ═══════════════════════════════════════════════════════════════════════
+     Profils Étudiants Partagés — Premium Redesign
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<!-- Hero Banner -->
+<div class="rct-sp-hero mb-4">
+  <div class="rct-sp-glow rct-sp-glow-1"></div>
+  <div class="rct-sp-glow rct-sp-glow-2"></div>
+  <div class="rct-sp-hero-body">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="d-flex align-items-center gap-4">
+          <div class="rct-sp-av-wrap">
+            <div class="rct-sp-av-ring"></div>
+            <div class="rct-sp-av-border"></div>
+            <div class="rct-sp-av-circle">
+              <i class="ti ti-users" style="font-size:26px;color:#fff"></i>
             </div>
+            <div class="rct-sp-av-pulse"></div>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="rct-sp-chip"><i class="ti ti-address-book me-1" style="font-size:9px"></i>Talents</span>
+              <span class="rct-sp-live"><span class="rct-sp-live-dot"></span>{{ filteredProfiles.length }} profil(s)</span>
+            </div>
+            <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-0.3px">Profils Étudiants</h3>
+            <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Découvrez et contactez les meilleurs talents disponibles</p>
+          </div>
         </div>
+      </div>
+      <div class="col-lg-5 mt-3 mt-lg-0">
+        <div class="rct-sp-search-glass">
+          <i class="ti ti-search rct-sp-search-ico"></i>
+          <input type="text" class="rct-sp-search-input"
+                 placeholder="Rechercher par nom, email, spécialisation..."
+                 [(ngModel)]="searchQuery" (input)="onSearch()">
+          <button *ngIf="searchQuery" class="rct-sp-search-clear" (click)="searchQuery=''; onSearch()">
+            <i class="ti ti-x"></i>
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Chargement -->
-<div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-success" role="status">
-        <span class="visually-hidden">Chargement...</span>
+<!-- Skeleton -->
+<div *ngIf="loading" class="row g-3 mb-4">
+  <div class="col-md-6 col-xl-4" *ngFor="let _ of [1,2,3,4,5,6]">
+    <div class="rct-sp-card">
+      <div class="rct-sp-card-cover"></div>
+      <div class="rct-sp-card-body text-center pt-5">
+        <div class="rct-sp-av-placeholder mx-auto mb-3"></div>
+        <div class="rct-sk rct-sk-sm mx-auto mb-2" style="width:55%"></div>
+        <div class="rct-sk rct-sk-sm mx-auto mb-3" style="width:40%"></div>
+        <div class="rct-sk rct-sk-sm mx-auto" style="width:70%"></div>
+      </div>
     </div>
-    <p class="mt-2 text-muted">Chargement des profils...</p>
+  </div>
 </div>
 
 <!-- Erreur -->
-<div *ngIf="error && !loading" class="alert alert-danger">
-    <i class="ti ti-alert-circle me-2"></i>{{ error }}
-    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadProfiles()">Réessayer</button>
+<div *ngIf="error && !loading" class="rct-sp-alert-warn mb-4">
+  <i class="ti ti-alert-circle me-2"></i>{{ error }}
+  <button class="btn btn-sm btn-outline-warning ms-3" (click)="loadProfiles()">Réessayer</button>
 </div>
 
 <!-- Aucun profil -->
-<div *ngIf="!loading && !error && filteredProfiles.length === 0" class="text-center py-5">
-    <i class="ti ti-user-off fs-48 text-muted d-block mb-3"></i>
-    <h6 class="text-muted">Aucun profil partagé trouvé</h6>
-    <p class="text-muted small" *ngIf="searchQuery">Essayez avec d'autres mots-clés.</p>
-    <p class="text-muted small" *ngIf="!searchQuery">Aucun étudiant n'a encore activé le partage de profil.</p>
+<div *ngIf="!loading && !error && filteredProfiles.length === 0" class="rct-sp-empty">
+  <div class="rct-sp-empty-ico">
+    <i class="ti ti-user-off" style="font-size:40px;color:#03C95A"></i>
+  </div>
+  <h5 class="fw-bold mb-1" style="color:#1e1b4b">Aucun profil trouvé</h5>
+  <p class="text-muted mb-0 small" *ngIf="searchQuery">Essayez avec d'autres mots-clés.</p>
+  <p class="text-muted mb-0 small" *ngIf="!searchQuery">Aucun étudiant n'a encore activé le partage de profil.</p>
 </div>
 
 <!-- Grille de profils -->
 <div class="row g-3" *ngIf="!loading && !error && filteredProfiles.length > 0">
-    <div class="col-md-6 col-xl-4" *ngFor="let profile of filteredProfiles">
-        <div class="card h-100 border hover-shadow" style="cursor: pointer;" (click)="viewProfile(profile)">
-            <div class="card-body text-center">
-                <img [src]="getAvatarUrl(profile)" alt="Avatar"
-                     class="rounded-circle mb-3" width="72" height="72"
-                     style="object-fit: cover;">
-                <h6 class="mb-1">{{ profile.fullName }}</h6>
-                <p class="text-muted small mb-1">{{ profile.designation || 'Étudiant' }}</p>
-                <p class="text-muted small mb-2">
-                    <i class="ti ti-mail me-1"></i>{{ profile.email }}
-                </p>
-                <p *ngIf="profile.bio" class="small text-truncate mb-2" style="max-width: 250px; margin: 0 auto;">
-                    {{ profile.bio }}
-                </p>
-                <div class="d-flex justify-content-center gap-2 mt-2">
-                    <a *ngIf="profile.linkedinUrl" [href]="profile.linkedinUrl" target="_blank"
-                       class="btn btn-sm btn-outline-primary" (click)="$event.stopPropagation()">
-                        <i class="ti ti-brand-linkedin me-1"></i>LinkedIn
-                    </a>
-                    <button class="btn btn-sm btn-outline-success">
-                        <i class="ti ti-eye me-1"></i>Voir
-                    </button>
-                </div>
-            </div>
+  <div class="col-md-6 col-xl-4" *ngFor="let profile of filteredProfiles; let i = index"
+       [style.animation-delay]="(i * 0.05) + 's'">
+    <div class="rct-sp-card" (click)="viewProfile(profile)">
+      <!-- Cover gradient -->
+      <div class="rct-sp-card-cover" [style]="'background: ' + getCardGradient(i)"></div>
+      <!-- Avatar flottant -->
+      <div class="rct-sp-card-av-wrap">
+        <img [src]="getAvatarUrl(profile)" alt="Avatar" class="rct-sp-card-av">
+        <span class="rct-sp-card-av-status"></span>
+      </div>
+      <div class="rct-sp-card-body text-center pt-5 pb-3 px-3">
+        <h6 class="mb-1 fw-bold mt-2" style="color:#1e1b4b">{{ profile.fullName }}</h6>
+        <span class="rct-sp-role-badge mb-2 d-inline-block">{{ profile.designation || 'Étudiant' }}</span>
+        <p class="text-muted small mb-2">
+          <i class="ti ti-mail me-1"></i>{{ profile.email }}
+        </p>
+        <p *ngIf="profile.bio" class="small text-muted text-truncate mb-3 px-2">{{ profile.bio }}</p>
+        <!-- Actions -->
+        <div class="rct-sp-card-actions">
+          <a *ngIf="profile.linkedinUrl" [href]="profile.linkedinUrl" target="_blank"
+             class="rct-sp-btn rct-sp-btn-li"
+             (click)="$event.stopPropagation()" title="LinkedIn">
+            <i class="ti ti-brand-linkedin"></i>
+          </a>
+          <button class="rct-sp-btn rct-sp-btn-view"
+                  (click)="$event.stopPropagation(); viewProfile(profile)">
+            <i class="ti ti-eye me-1"></i>Profil
+          </button>
+          <button class="rct-sp-btn rct-sp-btn-msg"
+                  (click)="$event.stopPropagation(); contactStudent(profile)"
+                  [disabled]="contactingId === profile.id">
+            <span *ngIf="contactingId !== profile.id"><i class="ti ti-message-circle"></i></span>
+            <span *ngIf="contactingId === profile.id" class="spinner-border spinner-border-sm"></span>
+          </button>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Modal détail profil -->
-<div *ngIf="selectedProfile" class="modal-backdrop fade show" (click)="closeModal()"></div>
-<div *ngIf="selectedProfile" class="modal fade show d-block" tabindex="-1" (click)="closeModal()">
-    <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title text-white">
-                    <i class="ti ti-user me-2"></i>{{ selectedProfile.fullName }}
-                </h5>
-                <button type="button" class="btn-close btn-close-white" (click)="closeModal()"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-4 text-center mb-3">
-                        <img [src]="getAvatarUrl(selectedProfile)" alt="Avatar"
-                             class="rounded-circle mb-2" width="120" height="120"
-                             style="object-fit: cover;">
-                        <h6>{{ selectedProfile.fullName }}</h6>
-                        <p class="text-muted small">{{ selectedProfile.designation || 'Étudiant' }}</p>
-                        <p class="text-muted small"><i class="ti ti-mail me-1"></i>{{ selectedProfile.email }}</p>
-                        <a *ngIf="selectedProfile.linkedinUrl" [href]="selectedProfile.linkedinUrl"
-                           target="_blank" class="btn btn-sm btn-primary mt-1">
-                            <i class="ti ti-brand-linkedin me-1"></i>LinkedIn
-                        </a>
-                    </div>
-                    <div class="col-md-8">
-                        <!-- Bio -->
-                        <div *ngIf="selectedProfile.bio" class="mb-3">
-                            <h6 class="text-success"><i class="ti ti-info-circle me-1"></i>À propos</h6>
-                            <p class="small">{{ selectedProfile.bio }}</p>
-                        </div>
-
-                        <!-- Formation -->
-                        <div *ngIf="parseJson(selectedProfile.educationJson).length > 0" class="mb-3">
-                            <h6 class="text-success"><i class="ti ti-school me-1"></i>Formation</h6>
-                            <ul class="list-unstyled small">
-                                <li *ngFor="let edu of parseJson(selectedProfile.educationJson)" class="mb-2">
-                                    <strong>{{ edu.degree || edu.diplome }}</strong>
-                                    <span *ngIf="edu.school || edu.etablissement">
-                                        — {{ edu.school || edu.etablissement }}
-                                    </span>
-                                    <span *ngIf="edu.year || edu.annee" class="text-muted">
-                                        ({{ edu.year || edu.annee }})
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Expérience -->
-                        <div *ngIf="parseJson(selectedProfile.experienceJson).length > 0" class="mb-3">
-                            <h6 class="text-success"><i class="ti ti-briefcase me-1"></i>Expérience</h6>
-                            <ul class="list-unstyled small">
-                                <li *ngFor="let exp of parseJson(selectedProfile.experienceJson)" class="mb-2">
-                                    <strong>{{ exp.title || exp.poste }}</strong>
-                                    <span *ngIf="exp.company || exp.entreprise">
-                                        — {{ exp.company || exp.entreprise }}
-                                    </span>
-                                    <span *ngIf="exp.period || exp.periode" class="text-muted">
-                                        ({{ exp.period || exp.periode }})
-                                    </span>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Aucune info -->
-                        <div *ngIf="!selectedProfile.bio && parseJson(selectedProfile.educationJson).length === 0 && parseJson(selectedProfile.experienceJson).length === 0">
-                            <p class="text-muted small">Aucune information complémentaire disponible pour ce profil.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="closeModal()">Fermer</button>
-            </div>
-        </div>
+<!-- ═══ Modal Profil ═══ -->
+<div *ngIf="selectedProfile" class="rct-sp-modal-backdrop" (click)="closeModal()"></div>
+<div *ngIf="selectedProfile" class="rct-sp-modal" (click)="$event.stopPropagation()">
+  <!-- Cover + avatar -->
+  <div class="rct-sp-modal-cover">
+    <div class="rct-sp-modal-cover-bg"></div>
+    <div class="rct-sp-modal-av-ring">
+      <img [src]="getAvatarUrl(selectedProfile!)" alt="Avatar" class="rct-sp-modal-av">
     </div>
+    <button class="rct-sp-modal-close" (click)="closeModal()">
+      <i class="ti ti-x"></i>
+    </button>
+  </div>
+
+  <!-- Identity -->
+  <div class="text-center px-4 pt-4 pb-2">
+    <h4 class="fw-bold mb-1" style="color:#1e1b4b">{{ selectedProfile!.fullName }}</h4>
+    <span class="rct-sp-role-badge me-2">{{ selectedProfile!.designation || 'Étudiant' }}</span>
+    <span class="text-muted small"><i class="ti ti-mail me-1"></i>{{ selectedProfile!.email }}</span>
+    <div class="mt-2" *ngIf="selectedProfile!.linkedinUrl">
+      <a [href]="selectedProfile!.linkedinUrl" target="_blank" class="rct-sp-li-btn">
+        <i class="ti ti-brand-linkedin me-1"></i>LinkedIn
+      </a>
+    </div>
+  </div>
+
+  <div class="rct-sp-modal-divider"></div>
+
+  <div class="rct-sp-modal-body">
+    <!-- Bio -->
+    <div class="rct-sp-info-block rct-sp-info-emerald" *ngIf="selectedProfile!.bio">
+      <div class="rct-sp-info-ico"><i class="ti ti-info-circle" style="font-size:18px;color:#03C95A"></i></div>
+      <div>
+        <p class="fw-semibold small mb-1" style="color:#03C95A">À propos</p>
+        <p class="small mb-0">{{ selectedProfile!.bio }}</p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- Formation -->
+      <div class="col-md-6" *ngIf="parseJson(selectedProfile!.educationJson).length > 0">
+        <div class="rct-sp-info-block rct-sp-info-violet h-100">
+          <div class="w-100">
+            <p class="fw-semibold small mb-2" style="color:#392C7D"><i class="ti ti-school me-1"></i>Formation</p>
+            <ul class="list-unstyled mb-0">
+              <li *ngFor="let edu of parseJson(selectedProfile!.educationJson)" class="mb-2">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="ti ti-point-filled mt-1 flex-shrink-0" style="font-size:10px;color:#392C7D"></i>
+                  <div>
+                    <strong class="small">{{ edu.degree || edu.diplome }}</strong>
+                    <span *ngIf="edu.school || edu.etablissement" class="small text-muted d-block">{{ edu.school || edu.etablissement }}</span>
+                    <span *ngIf="edu.year || edu.annee" class="rct-sp-mini-badge" style="background:rgba(57,44,125,.1);color:#392C7D">{{ edu.year || edu.annee }}</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expérience -->
+      <div class="col-md-6" *ngIf="parseJson(selectedProfile!.experienceJson).length > 0">
+        <div class="rct-sp-info-block rct-sp-info-amber h-100">
+          <div class="w-100">
+            <p class="fw-semibold small mb-2" style="color:#F59E0B"><i class="ti ti-briefcase me-1"></i>Expérience</p>
+            <ul class="list-unstyled mb-0">
+              <li *ngFor="let exp of parseJson(selectedProfile!.experienceJson)" class="mb-2">
+                <div class="d-flex align-items-start gap-2">
+                  <i class="ti ti-point-filled mt-1 flex-shrink-0" style="font-size:10px;color:#F59E0B"></i>
+                  <div>
+                    <strong class="small">{{ exp.title || exp.poste }}</strong>
+                    <span *ngIf="exp.company || exp.entreprise" class="small text-muted d-block">{{ exp.company || exp.entreprise }}</span>
+                    <span *ngIf="exp.period || exp.periode" class="rct-sp-mini-badge" style="background:rgba(245,159,11,.1);color:#F59E0B">{{ exp.period || exp.periode }}</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pas d'infos -->
+      <div class="col-12" *ngIf="!selectedProfile!.bio && parseJson(selectedProfile!.educationJson).length === 0 && parseJson(selectedProfile!.experienceJson).length === 0">
+        <p class="text-muted small text-center py-2">Aucune information complémentaire disponible.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="rct-sp-modal-footer">
+    <button class="rct-sp-btn-contact"
+            (click)="contactStudent(selectedProfile!)"
+            [disabled]="contactingId === selectedProfile!.id">
+      <span *ngIf="contactingId !== selectedProfile!.id">
+        <i class="ti ti-message-circle me-2"></i>Envoyer un message
+      </span>
+      <span *ngIf="contactingId === selectedProfile!.id">
+        <span class="spinner-border spinner-border-sm me-2"></span>Ouverture...
+      </span>
+    </button>
+    <button class="rct-sp-btn-close-modal" (click)="closeModal()">
+      <i class="ti ti-x me-1"></i>Fermer
+    </button>
+  </div>
 </div>

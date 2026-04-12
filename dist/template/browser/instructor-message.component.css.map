@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/instructor/instructor-message/instructor-message.component.scss"],
-  "sourcesContent": ["/* Instructor sent messages — dark purple */\r\n.sent-message {\r\n  background: #4a1d96 !important;\r\n  color: #ffffff !important;\r\n  border-radius: 12px 12px 0 12px;\r\n  padding: 8px 14px;\r\n\r\n  p {\r\n    color: #ffffff !important;\r\n    margin-bottom: 0;\r\n  }\r\n}\r\n\r\n/* Received messages — keep default but show sender name clearly */\r\n.received-message {\r\n  border-radius: 12px 12px 12px 0;\r\n  padding: 8px 14px;\r\n}\r\n"],
-  "mappings": ";;;AACA,CAAA;AACE,cAAA;AACA,SAAA;AACA,iBAAA,KAAA,KAAA,EAAA;AACA,WAAA,IAAA;;AAEA,CANF,aAME;AACE,SAAA;AACA,iBAAA;;AAKJ,CAAA;AACE,iBAAA,KAAA,KAAA,KAAA;AACA,WAAA,IAAA;;",
-  "names": []
-}

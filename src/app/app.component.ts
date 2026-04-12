@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent, RouterOutlet } from '@angular/router';
+import { AuthService } from './shared/service/auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -8,11 +9,11 @@ import { NavigationStart, Router, Event as RouterEvent, RouterOutlet } from '@an
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'template';
   public base = '';
   public page = '';
-  constructor(private router: Router) {
+  constructor(private router: Router, private authService: AuthService) {
     this.router.events.subscribe((event: RouterEvent) => {
       if (event instanceof NavigationStart) {
         const URL = event.url.split('/');
@@ -37,6 +38,22 @@ export class AppComponent {
         this.page = this.base
       }
       // if (event instanceof NavigationEnd){}
+    });
+  }
+
+  ngOnInit(): void {
+    // Planifier le logout automatique au chargement de l'app (gère les rechargements de page)
+    this.authService.scheduleAutoLogout();
+
+    // Garde de sécurité : quand l'onglet redevient visible (après mise en veille,
+    // alt-tab longue durée, etc.), setTimeout peut avoir été throttlé par le navigateur.
+    // On re-vérifie l'expiry immédiatement pour couvrir ce cas.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        if (this.authService.isTokenExpired()) {
+          this.authService.forceLogout();
+        }
+      }
     });
   }
 }

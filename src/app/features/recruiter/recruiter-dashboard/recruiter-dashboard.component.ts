@@ -35,7 +35,7 @@ export class RecruiterDashboardComponent implements OnInit {
         this.loadStats();
     }
 
-    private loadStats(): void {
+    public loadStats(): void {
         this.statsLoading = true;
         this.statsError = '';
         this.recruiterService.getStats().subscribe({

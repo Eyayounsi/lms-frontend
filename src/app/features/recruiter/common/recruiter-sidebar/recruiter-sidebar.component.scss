@@ -1,1 +1,131 @@
-// Hérite des styles .settings-sidebar définis globalement
+/* ═══════════════════════════════════════════════════════════════════════════
+   Recruiter Sidebar — Premium
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.rct-sidebar {
+  background: linear-gradient(180deg, #fafcff 0%, #f4f7ff 100%);
+  border: 1px solid rgba(57,44,125,.1);
+  border-radius: 18px;
+  padding: 0 0 16px;
+  position: sticky; top: 80px; align-self: flex-start;
+  box-shadow: 0 4px 24px rgba(57,44,125,.07);
+  overflow: hidden;
+  transition: box-shadow .2s;
+  &:hover { box-shadow: 0 8px 32px rgba(57,44,125,.11); }
+}
+
+/* Profile card */
+.rct-profile-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 18px 18px 16px;
+  background: linear-gradient(135deg, rgba(3,201,90,.08), rgba(57,44,125,.07));
+  border-bottom: 1px solid rgba(57,44,125,.08);
+  margin-bottom: 8px;
+}
+.rct-profile-av {
+  position: relative; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, #03C95A, #392C7D);
+  display: flex; align-items: center; justify-content: center;
+}
+.rct-profile-initial {
+  font-size: 17px; font-weight: 800; color: #fff; line-height: 1;
+}
+.rct-profile-status {
+  position: absolute; bottom: 1px; right: 1px;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #03C95A; border: 2px solid #fff;
+}
+.rct-profile-name {
+  font-size: 13px; font-weight: 700; color: #1e1b4b; margin: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;
+}
+.rct-profile-role {
+  font-size: 10.5px; font-weight: 600; color: #03C95A;
+  background: rgba(3,201,90,.1); padding: 2px 8px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: .4px;
+}
+
+/* Nav */
+.rct-nav { padding: 0 10px; }
+.rct-nav-label {
+  font-size: 10px; font-weight: 700; color: #b0b7c8;
+  text-transform: uppercase; letter-spacing: .8px;
+  padding: 8px 8px 4px; margin: 0;
+}
+.rct-nav-divider {
+  height: 1px; background: rgba(57,44,125,.08); margin: 8px 0;
+}
+.rct-nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: 11px; margin-bottom: 2px;
+  font-size: 13px; font-weight: 500; color: #6b7280;
+  text-decoration: none !important; transition: all .18s ease;
+  position: relative;
+
+  &:hover {
+    background: rgba(57,44,125,.07);
+    color: #392C7D;
+    .rct-nav-ico i { color: #392C7D !important; }
+    .rct-nav-ico { background: rgba(57,44,125,.1); }
+  }
+  &.rct-active {
+    background: linear-gradient(135deg, rgba(3,201,90,.12), rgba(57,44,125,.09));
+    color: #392C7D; font-weight: 700;
+    border: 1px solid rgba(3,201,90,.18);
+    .rct-nav-ico { background: linear-gradient(135deg, rgba(3,201,90,.18), rgba(57,44,125,.12)); }
+    .rct-nav-ico i { color: #03C95A !important; }
+    &::after {
+      content: '';
+      position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+      width: 3px; height: 60%; border-radius: 0 3px 3px 0;
+      background: linear-gradient(180deg, #03C95A, #392C7D);
+    }
+  }
+}
+.rct-nav-ico {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .18s ease;
+  background: rgba(107,114,128,.07);
+  i { font-size: 16px; color: #9ca3af; transition: color .18s; }
+}
+.rct-nav-text { flex-grow: 1; }
+
+.rct-nav-logout {
+  margin-top: 4px;
+  color: #dc2626 !important;
+  &:hover {
+    background: rgba(239,68,68,.07) !important;
+    color: #dc2626 !important;
+    .rct-nav-ico { background: rgba(239,68,68,.1) !important; }
+    .rct-nav-ico i { color: #dc2626 !important; }
+  }
+  .rct-nav-ico i { color: #f87171 !important; }
+}
+
+/* ─── DARK MODE ─────────────────────────────────────────────────────────────── */
+:host-context(.dark-mode) {
+  .rct-sidebar {
+    background: linear-gradient(180deg, #1a1a2b 0%, #111119 100%);
+    border-color: rgba(255,255,255,.06);
+    box-shadow: 0 4px 24px rgba(0,0,0,.35);
+  }
+  .rct-profile-card {
+    background: linear-gradient(135deg, rgba(3,201,90,.08), rgba(57,44,125,.12));
+    border-bottom-color: rgba(255,255,255,.07);
+  }
+  .rct-profile-name { color: #e2e8f0; }
+  .rct-nav-label { color: #3d3d5c; }
+  .rct-nav-divider { background: rgba(255,255,255,.06); }
+  .rct-nav-item {
+    color: #64748b;
+    &:hover { background: rgba(255,255,255,.05); color: #c7c7e0; }
+    &.rct-active {
+      background: linear-gradient(135deg, rgba(3,201,90,.1), rgba(57,44,125,.1));
+      color: #e2e8f0;
+      border-color: rgba(3,201,90,.15);
+    }
+  }
+  .rct-nav-ico { background: rgba(255,255,255,.05); i { color: #475569; } }
+}

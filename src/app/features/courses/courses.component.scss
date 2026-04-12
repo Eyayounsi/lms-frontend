@@ -1,0 +1,9 @@
+:host {
+	min-height: calc(100vh - 76px);
+	display: flex;
+	flex-direction: column;
+}
+
+.public-page-content {
+	flex: 1 0 auto;
+}

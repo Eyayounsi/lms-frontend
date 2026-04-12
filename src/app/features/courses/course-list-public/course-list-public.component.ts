@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
@@ -6,6 +6,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { routes } from '../../../shared/service/routes/routes';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
+import { resolveAvatarImage } from '../../../shared/utils/avatar-image.util';
 
 @Component({
   selector: 'app-course-list-public',
@@ -182,7 +184,7 @@ export class CourseListPublicComponent implements OnInit, OnDestroy {
       this.courseService.removeFromWishlist(course.id).subscribe({ next: () => this.wishlistSet.delete(course.id), error: () => {} });
     } else {
       this.courseService.addToWishlist(course.id).subscribe({
-        next: () => { this.wishlistSet.add(course.id); this.showSuccess('Ajouté à la wishlist !'); },
+        next: () => { this.wishlistSet.add(course.id); this.showSuccess('Ajoute a la wishlist !'); },
         error: (e: any) => { this.errorMessage = e.error?.message || 'Erreur wishlist'; }
       });
     }
@@ -213,9 +215,9 @@ export class CourseListPublicComponent implements OnInit, OnDestroy {
           instructorName: course?.instructorName || ''
         });
         localStorage.setItem('guest_cart', JSON.stringify(cart));
-        this.showSuccess('Ajouté au panier ! Connectez-vous pour finaliser l\'achat.');
+        this.showSuccess('Ajoute au panier ! Connectez-vous pour finaliser l\'achat.');
       } else {
-        this.showSuccess('Ce cours est déjà dans votre panier.');
+        this.router.navigate([this.routes.cart]);
       }
       return;
     }
@@ -224,13 +226,22 @@ export class CourseListPublicComponent implements OnInit, OnDestroy {
     if (!role.includes('STUDENT')) { return; }
     this.addingToCartId = courseId;
     this.courseService.addToCart(courseId).subscribe({
-      next: () => { this.addingToCartId = null; this.showSuccess('Ajouté au panier !'); },
-      error: (e: any) => { this.addingToCartId = null; this.errorMessage = e.error?.message || 'Erreur'; setTimeout(() => this.errorMessage = '', 4000); }
+      next: () => { this.addingToCartId = null; this.showSuccess('Ajoute au panier !'); },
+      error: (e: any) => {
+        this.addingToCartId = null;
+        const status = e?.status;
+        if (status === 500 || status === 409 || status === 400) {
+          this.router.navigate([this.routes.cart]);
+          return;
+        }
+        this.errorMessage = e.error?.message || 'Erreur';
+        setTimeout(() => this.errorMessage = '', 4000);
+      }
     });
   }
 
   getLevelLabel(l: string): string {
-    const m: Record<string, string> = { BEGINNER: 'Débutant', INTERMEDIATE: 'Intermédiaire', ADVANCED: 'Avancé' };
+    const m: Record<string, string> = { BEGINNER: 'Debutant', INTERMEDIATE: 'Intermediaire', ADVANCED: 'Avance' };
     return m[l] ?? l;
   }
 
@@ -239,14 +250,54 @@ export class CourseListPublicComponent implements OnInit, OnDestroy {
     return price === 0 ? 'Gratuit' : price.toFixed(2) + ' €';
   }
 
-  getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    return `http://localhost:8081/${path}`;
+  hasActivePromotion(course: any): boolean {
+    const original = +(course?.price ?? 0);
+    const effective = +(course?.effectivePrice ?? original);
+    return !!course?.onSale
+      && this.isPromotionStillValid(course)
+      && original > 0
+      && effective < original;
   }
 
-  getInstructorAvatar(path: string): string {
-    if (!path) return 'assets/img/avatar/avatar1.jpg';
-    return `http://localhost:8081/${path}`;
+  getPromotionPercent(course: any): number {
+    const original = +(course?.price ?? 0);
+    const effective = +(course?.effectivePrice ?? original);
+    if (original <= 0 || effective >= original) {
+      return 0;
+    }
+    return Math.round(((original - effective) / original) * 100);
+  }
+
+  private isPromotionStillValid(course: any): boolean {
+    const endsAt = course?.discountEndsAt;
+    if (!endsAt) {
+      return true;
+    }
+    const expiresAt = new Date(endsAt).getTime();
+    return Number.isFinite(expiresAt) && expiresAt > Date.now();
+  }
+
+  getImageUrl(path: string): string {
+    return resolveCourseImage(path, 'assets/img/course/course-01.jpg');
+  }
+
+  getInstructorAvatar(path?: string | null, name?: string): string {
+    const resolved = resolveAvatarImage(path, '');
+    return resolved || this.generateInitialAvatar(name || 'I');
+  }
+
+  onInstructorAvatarError(event: Event, name?: string): void {
+    const img = event?.target as HTMLImageElement | null;
+    if (!img) return;
+    img.src = this.generateInitialAvatar(name || 'I');
+  }
+
+  private generateInitialAvatar(name: string): string {
+    const initial = String(name || 'I').trim().charAt(0).toUpperCase() || 'I';
+    const palette = ['#ec4899', '#a855f7', '#8b5cf6', '#6366f1', '#3b82f6', '#0ea5e9'];
+    const color = palette[initial.charCodeAt(0) % palette.length];
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="${color}"/><text x="32" y="42" text-anchor="middle" font-size="28" font-family="Arial, sans-serif" font-weight="700" fill="#ffffff">${initial}</text></svg>`;
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
 
   private showSuccess(msg: string): void {

@@ -1,44 +1,73 @@
-<div class="card">
+﻿<div class="card">
     <div class="card-body">
-        <form>
-            <div class="mb-3">
-                <label class="form-label">Twitter</label>
-                <div class="position-relative input-icon-start">
-                    <input type="text" class="form-control" placeholder="https://www.twitter.com/">
-                    <span class="social-icon"><i class="fa-brands fa-x-twitter fs-14"></i></span>
+
+        @if (loading) {
+            <div class="text-center py-4">
+                <div class="spinner-border text-secondary spinner-border-sm"></div>
+            </div>
+        } @else {
+            <form (ngSubmit)="onSave()">
+                <div class="mb-3">
+                    <label class="form-label">Twitter / X</label>
+                    <div class="position-relative input-icon-start">
+                        <input type="url" class="form-control"
+                               [(ngModel)]="socialForm.twitterUrl" name="twitter"
+                               placeholder="https://www.twitter.com/votre-profil">
+                        <span class="social-icon"><i class="fa-brands fa-x-twitter fs-14"></i></span>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Facebook</label>
-                <div class="position-relative input-icon-start">
-                    <input type="text" class="form-control" placeholder="https://www.facebook.com/">
-                    <span class="social-icon"><i class="fa-brands fa-square-facebook fs-14"></i></span>
+                <div class="mb-3">
+                    <label class="form-label">Facebook</label>
+                    <div class="position-relative input-icon-start">
+                        <input type="url" class="form-control"
+                               [(ngModel)]="socialForm.facebookUrl" name="facebook"
+                               placeholder="https://www.facebook.com/votre-profil">
+                        <span class="social-icon"><i class="fa-brands fa-square-facebook fs-14"></i></span>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Instagram</label>
-                <div class="position-relative input-icon-start">
-                    <input type="text" class="form-control" placeholder="https://www.instagram.com/">
-                    <span class="social-icon"><i class="fa-brands fa-instagram fs-14"></i></span>
+                <div class="mb-3">
+                    <label class="form-label">Instagram</label>
+                    <div class="position-relative input-icon-start">
+                        <input type="url" class="form-control"
+                               [(ngModel)]="socialForm.instagramUrl" name="instagram"
+                               placeholder="https://www.instagram.com/votre-profil">
+                        <span class="social-icon"><i class="fa-brands fa-instagram fs-14"></i></span>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">LinkedIn</label>
-                <div class="position-relative input-icon-start">
-                    <input type="text" class="form-control" placeholder="https://www.linkedin.com/">
-                    <span class="social-icon"><i class="fa-brands fa-linkedin-in fs-14"></i></span>
+                <div class="mb-3">
+                    <label class="form-label">LinkedIn</label>
+                    <div class="position-relative input-icon-start">
+                        <input type="url" class="form-control"
+                               [(ngModel)]="socialForm.linkedinUrl" name="linkedin"
+                               placeholder="https://www.linkedin.com/in/votre-profil">
+                        <span class="social-icon"><i class="fa-brands fa-linkedin-in fs-14"></i></span>
+                    </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">YouTube</label>
-                <div class="position-relative input-icon-start">
-                    <input type="text" class="form-control" placeholder="https://www.youtube.com/">
-                    <span class="social-icon"><i class="fa-brands fa-youtube fs-14"></i></span>
+                <div class="mb-3">
+                    <label class="form-label">YouTube</label>
+                    <div class="position-relative input-icon-start">
+                        <input type="url" class="form-control"
+                               [(ngModel)]="socialForm.youtubeUrl" name="youtube"
+                               placeholder="https://www.youtube.com/@votre-chaine">
+                        <span class="social-icon"><i class="fa-brands fa-youtube fs-14"></i></span>
+                    </div>
                 </div>
-            </div>
-            <div class="mt-4">
-                <button class="btn btn-secondary" type="submit">Save Social Profile</button>
-            </div>
-        </form>
+
+                @if (successMsg) {
+                    <div class="alert alert-success py-2 mb-3">{{ successMsg }}</div>
+                }
+                @if (errorMsg) {
+                    <div class="alert alert-danger py-2 mb-3">{{ errorMsg }}</div>
+                }
+
+                <div class="mt-4">
+                    <button class="btn btn-secondary" type="submit" [disabled]="saving">
+                        @if (saving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+                        Save Social Profile
+                    </button>
+                </div>
+            </form>
+        }
+
     </div>
 </div>

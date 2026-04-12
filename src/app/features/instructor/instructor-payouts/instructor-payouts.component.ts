@@ -1,113 +1,208 @@
-import { Component } from '@angular/core';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { Router } from '@angular/router';
-import { apiResultFormat, pageSelection, payout } from '../../../shared/models/model';
-import { PaginationService, tablePageSize } from '../../../shared/service/custom-pagination/pagination.service';
-import { DataService } from '../../../shared/service/data/data.service';
-import { routes } from '../../../shared/service/routes/routes';
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSelectModule } from '@angular/material/select';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { CustomPaginationComponent } from '../../../shared/service/custom-pagination/custom-pagination.component';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+import {
+  ChartComponent,
+  ApexAxisChartSeries,
+  ApexChart,
+  ApexXAxis,
+  ApexDataLabels,
+  ApexPlotOptions,
+  NgApexchartsModule,
+} from 'ng-apexcharts';
+import { InstructorRevenueService, InstructorRevenueDto, PayoutDto } from '../../../shared/service/revenue/instructor-revenue.service';
 
+export type ChartOptions = {
+  series: ApexAxisChartSeries | any;
+  chart: ApexChart | any;
+  dataLabels: ApexDataLabels | any;
+  plotOptions: ApexPlotOptions | any;
+  xaxis: ApexXAxis | any;
+  colors: ApexXAxis | any;
+};
 
 @Component({
   selector: 'app-instructor-payouts',
-  imports:[CommonModule,MatTableModule,MatSortModule,FormsModule,MatPaginatorModule,MatSelectModule,BsDatepickerModule,CustomPaginationComponent],
+  imports: [CommonModule, FormsModule, NgApexchartsModule],
   templateUrl: './instructor-payouts.component.html',
   styleUrl: './instructor-payouts.component.scss'
 })
-export class InstructorPayoutsComponent {
-  routes=routes
-// pagination variables
-public pageSize = 10;
-public tableData: payout[] = [];
-public tableDataCopy: payout[] = [];
-public actualData: payout[] = [];
-public currentPage = 1;
-public skip = 0;
-public limit: number = this.pageSize;
-public serialNumberArray: number[] = [];
-public totalData = 0;       
-public pageSelection: pageSelection[] = [];
-dataSource!: MatTableDataSource<payout>;
-public searchDataValue = '';
-constructor(
-  private data: DataService,
-  private router: Router,
-  private pagination: PaginationService
-) {
-  this.data.getPayout().subscribe((apiRes: apiResultFormat) => {
-    this.actualData = apiRes.data;
-    this.pagination.tablePageSize.subscribe((res: tablePageSize) => {
-      if (this.router.url == this.routes.instructor_payouts) {
-        this.getTableData({ skip: res.skip, limit: res.limit });
-        this.pageSize = res.pageSize;
+export class InstructorPayoutsComponent implements OnInit {
+  @ViewChild('chart') chart!: ChartComponent;
+  public earningChart: Partial<ChartOptions> | any;
+
+  revenue: InstructorRevenueDto | null = null;
+  filteredByCourse: InstructorRevenueDto['byCourse'] = [];
+  searchValue = '';
+  availableBalance: number = 0;
+  payouts: PayoutDto[] = [];
+  loading = false;
+  requesting = false;
+  showRequestModal = false;
+  invoicePayout: PayoutDto | null = null;
+
+  constructor(
+    private revenueService: InstructorRevenueService,
+    private toastr: ToastrService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadAll();
+  }
+
+  loadAll(): void {
+    this.loading = true;
+    this.revenueService.getMyRevenueDashboard().subscribe({
+      next: (data) => {
+        this.revenue = data;
+        this.filteredByCourse = [...(data.byCourse || [])];
+        this.buildChart(data.byCourse || []);
+        this.loading = false;
+      },
+      error: () => {
+        this.buildChart([]);
+        this.loading = false;
+        this.toastr.error('Impossible de charger les données');
       }
     });
-  });
-}
-private getTableData(pageOption: pageSelection): void {
-  this.data.getPayout().subscribe((apiRes: apiResultFormat) => {
-    this.tableData = [];
-    this.tableDataCopy = [];
-    this.serialNumberArray = [];
-    this.totalData = apiRes.totalData;
-    apiRes.data.map((res: payout, index: number) => {
-      const serialNumber = index + 1;
-      if (index >= pageOption.skip && serialNumber <= pageOption.limit) {
-        res.sNo = serialNumber;
-        this.tableData.push(res);
-        this.tableDataCopy.push(res);
-        this.serialNumberArray.push(serialNumber);
+    this.revenueService.getAvailableBalance().subscribe({
+      next: (data) => { this.availableBalance = data.availableBalance; }
+    });
+    this.revenueService.getMyPayouts().subscribe({
+      next: (data) => { this.payouts = data; }
+    });
+  }
+
+  searchData(value: string): void {
+    this.searchValue = value;
+    if (!this.revenue) {
+      this.filteredByCourse = [];
+      return;
+    }
+
+    const term = value.trim().toLowerCase();
+    this.filteredByCourse = term
+      ? (this.revenue.byCourse || []).filter((c) => c.courseTitle.toLowerCase().includes(term))
+      : [...(this.revenue.byCourse || [])];
+  }
+
+  get totalRevenueValue(): number {
+    return this.toSafeNumber(this.revenue?.totalRevenue);
+  }
+
+  get monthlyRevenueValue(): number {
+    return this.toSafeNumber(this.revenue?.monthlyRevenue);
+  }
+
+  get totalSalesValue(): number {
+    return this.toSafeNumber(this.revenue?.totalSales);
+  }
+
+  get avgTicket(): number {
+    const sales = this.totalSalesValue;
+    const revenue = this.totalRevenueValue;
+    if (sales <= 0 || revenue <= 0) return 0;
+    return revenue / sales;
+  }
+
+  get topCourseTitle(): string {
+    const first = [...(this.revenue?.byCourse || [])]
+      .sort((a, b) => this.toSafeNumber(b.instructorRevenue) - this.toSafeNumber(a.instructorRevenue))[0];
+    return first?.courseTitle || 'Aucun cours';
+  }
+
+  get topCourseRevenue(): number {
+    const first = [...(this.revenue?.byCourse || [])]
+      .sort((a, b) => this.toSafeNumber(b.instructorRevenue) - this.toSafeNumber(a.instructorRevenue))[0];
+    return this.toSafeNumber(first?.instructorRevenue);
+  }
+
+  buildChart(byCourse: InstructorRevenueDto['byCourse']): void {
+    const sorted = [...(byCourse || [])]
+      .sort((a, b) => this.toSafeNumber(b.instructorRevenue) - this.toSafeNumber(a.instructorRevenue))
+      .slice(0, 8);
+
+    const labels = sorted.map(c =>
+      c.courseTitle.length > 20 ? c.courseTitle.substring(0, 20) + '...' : c.courseTitle
+    );
+    const values = sorted.map(c => Number(this.toSafeNumber(c.instructorRevenue).toFixed(2)));
+    const chartLabels = labels.length > 0 ? labels : ['Aucun cours'];
+    const chartValues = values.length > 0 ? values : [0];
+
+    this.earningChart = {
+      series: [{ name: 'Revenu (€)', data: chartValues }],
+      chart: { height: 300, type: 'bar', toolbar: { show: false } },
+      colors: ['#4b55dc'],
+      dataLabels: { enabled: false },
+      plotOptions: { bar: { borderRadius: 6, horizontal: false, columnWidth: '48%' } },
+      xaxis: {
+        categories: chartLabels,
+        labels: {
+          rotate: -25,
+          trim: true,
+          hideOverlappingLabels: true
+        }
+      },
+      yaxis: { labels: { formatter: (val: any) => val + ' €' } },
+      grid: { borderColor: '#eef2f7', strokeDashArray: 4 },
+      tooltip: { y: { formatter: (val: any) => val + ' €' } }
+    };
+  }
+
+  private toSafeNumber(value: unknown): number {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  openRequestModal(): void { this.showRequestModal = true; }
+  cancelRequest(): void { this.showRequestModal = false; }
+
+  confirmRequest(): void {
+    this.requesting = true;
+    this.revenueService.requestPayout().subscribe({
+      next: (payout) => {
+        this.requesting = false;
+        this.showRequestModal = false;
+        this.payouts.unshift(payout);
+        this.availableBalance = 0;
+        this.toastr.success('Demande de virement envoyée, l\'admin la traitera prochainement');
+      },
+      error: (err) => {
+        this.requesting = false;
+        const msg = err?.error?.error || err?.error || 'Erreur lors de la demande';
+        this.toastr.error(msg);
       }
     });
-    this.dataSource = new MatTableDataSource<payout>(this.actualData);
-    this.pagination.calculatePageSize.next({
-      totalData: this.totalData,
-      pageSize: this.pageSize,
-      tableData: this.tableData,
-      tableDataCopy: this.tableDataCopy,
-      serialNumberArray: this.serialNumberArray,
-    });
-  });
-}
-
-public searchData(value: string): void {
-  if (value == '') {
-    this.tableData = this.tableDataCopy;
-  } else {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.tableData = this.dataSource.filteredData;
   }
-}
 
-public sortData(sort: Sort) {
-  const data = this.tableData.slice();
-
-  if (!sort.active || sort.direction === '') {
-    this.tableData = data;
-  } else {
-    this.tableData = data.sort((a, b) => {
-      const aValue = (a as never)[sort.active];
-
-      const bValue = (b as never)[sort.active];
-      return (aValue < bValue ? -1 : 1) * (sort.direction === 'asc' ? 1 : -1);
-    });
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'PAID':     return 'badge bg-success';
+      case 'REJECTED': return 'badge bg-danger';
+      default:         return 'badge bg-warning text-dark';
+    }
   }
-}
-public changePageSize(pageSize: number): void {
-  this.pageSelection = [];
-  this.limit = pageSize;
-  this.skip = 0;
-  this.currentPage = 1;
-  this.pagination.tablePageSize.next({
-    skip: this.skip,
-    limit: this.limit,
-    pageSize: this.pageSize,
-  });
-}
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'PAID':     return 'Payé';
+      case 'REJECTED': return 'Rejeté';
+      default:         return 'En attente';
+    }
+  }
+
+  openInvoice(p: PayoutDto): void { this.invoicePayout = p; }
+  closeInvoice(): void { this.invoicePayout = null; }
+
+  printInvoice(): void {
+    const el = document.getElementById('instructor-invoice-area');
+    if (!el) return;
+    const original = document.body.innerHTML;
+    document.body.innerHTML = el.innerHTML;
+    window.print();
+    document.body.innerHTML = original;
+    window.location.reload();
+  }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { routes } from '../../../shared/service/routes/routes';
 import { CourseService } from '../../../shared/service/course/course.service';
+import { resolveCourseImage } from '../../../shared/utils/course-image.util';
 
 @Component({
     selector: 'app-student-reviews',
@@ -112,9 +113,7 @@ export class StudentReviewsComponent implements OnInit {
   }
 
   getImageUrl(path: string): string {
-    if (!path) return 'assets/img/course/course-01.jpg';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return resolveCourseImage(path);
   }
 
   private showSuccess(msg: string): void {

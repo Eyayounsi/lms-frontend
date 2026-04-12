@@ -1,189 +1,393 @@
-<!-- Header -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <div class="card border-0 bg-danger text-white">
-          <div class="card-body d-flex align-items-center gap-3 py-3">
-            <span class="icon-box bg-white bg-opacity-25 flex-shrink-0">
-              <i class="ti ti-users fs-20 text-white"></i>
-            </span>
-            <div>
-              <h5 class="mb-0 text-white">Gestion des Utilisateurs</h5>
-              <small class="text-white opacity-75">Gérer, bloquer ou supprimer les comptes utilisateurs</small>
+﻿<!-- ══ HERO — Cyan/Sky ═════════════════════════════════════════════════ -->
+<div class="usr-hero mb-4">
+  <div class="usr-glow usr-glow-1"></div>
+  <div class="usr-glow usr-glow-2"></div>
+  <div class="usr-hero-body">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <div class="d-flex align-items-center gap-4 mb-1">
+          <div class="usr-av-wrap">
+            <div class="usr-av-ring"></div>
+            <div class="usr-av-border"></div>
+            <div class="usr-av-circle">
+                <i class="ti ti-users" style="font-size:26px;color:#fff;"></i>
             </div>
+            <div class="usr-av-pulse"></div>
+          </div>
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="usr-chip"><i class="ti ti-shield-check me-1" style="font-size:9px"></i>Administration</span>
+              <span class="usr-live"><span class="usr-live-dot"></span>EN LIGNE</span>
+            </div>
+            <h3 class="mb-0 text-white fw-bold" style="letter-spacing:-.3px">Gestion des Utilisateurs</h3>
+            <p class="mb-0 mt-1" style="color:rgba(255,255,255,.6);font-size:13px">Gérer, bloquer et administrer les comptes membres</p>
           </div>
         </div>
       </div>
-    </div>
-
-    <!-- Messages -->
-    <div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="ti ti-circle-check me-2"></i>{{ successMessage }}
-      <button type="button" class="btn-close" (click)="successMessage=''"></button>
-    </div>
-    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="ti ti-alert-circle me-2"></i>{{ errorMessage }}
-      <button type="button" class="btn-close" (click)="errorMessage=''"></button>
-    </div>
-
-    <!-- Filters -->
-    <div class="card mb-3">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-md-5">
-            <label class="form-label fw-semibold">Rechercher</label>
-            <div class="input-group">
-              <span class="input-group-text"><i class="ti ti-search"></i></span>
-              <input type="text" class="form-control" placeholder="Nom ou email..."
-                [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+      <div class="col-lg-5">
+        <div class="d-flex align-items-center justify-content-lg-end gap-3 mt-3 mt-lg-0">
+          <div class="usr-glass d-none d-md-flex align-items-center" *ngIf="!loading">
+            <div class="usr-stat text-center">
+              <span class="d-block fw-bold text-white fs-18">{{ totalUsersCount }}</span>
+              <small style="color:rgba(255,255,255,.55);font-size:10px">Total</small>
+            </div>
+            <div class="usr-stat-div"></div>
+            <div class="usr-stat text-center">
+              <span class="d-block fw-bold text-white fs-18">{{ activeUsersCount }}</span>
+              <small style="color:rgba(255,255,255,.55);font-size:10px">Actifs</small>
+            </div>
+            <div class="usr-stat-div"></div>
+            <div class="usr-stat text-center">
+              <span class="d-block fw-bold text-white fs-18">{{ blockedUsersCount }}</span>
+              <small style="color:rgba(255,255,255,.55);font-size:10px">Bloqués</small>
             </div>
           </div>
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">Rôle</label>
-            <select class="form-select" [(ngModel)]="filterRole" (ngModelChange)="onFilterChange()">
-              <option value="">Tous les rôles</option>
-              <option value="ADMIN">Admin</option>
-              <option value="INSTRUCTOR">Instructeur</option>
-              <option value="STUDENT">Étudiant</option>
-              <option value="RECRUITER">Recruteur</option>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">Statut</label>
-            <select class="form-select" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
-              <option value="">Tous les statuts</option>
-              <option value="ACTIVE">Actif</option>
-              <option value="BLOCKED">Bloqué</option>
-              <option value="PENDING">En attente</option>
-            </select>
-          </div>
-          <div class="col-md-1">
-            <button class="btn btn-outline-secondary w-100" (click)="loadUsers()" title="Rafraîchir">
-              <i class="ti ti-refresh"></i>
+          <div class="d-flex gap-2">
+            <button class="usr-btn-ghost d-flex align-items-center gap-2" (click)="loadUsers()">
+              <i class="ti ti-refresh" style="font-size:14px"></i>Actualiser
+            </button>
+            <button class="usr-btn-solid d-flex align-items-center gap-2" (click)="openCreateModal()">
+              <i class="ti ti-user-plus" style="font-size:14px"></i>Créer Recruteur
             </button>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Table -->
-    <div class="card">
-      <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">Liste des Utilisateurs</h5>
-        <span class="badge bg-primary-transparent text-primary">{{ filteredUsers.length }} utilisateur(s)</span>
-      </div>
-      <div class="card-body p-0">
-
-        <!-- Loading -->
-        <div *ngIf="loading" class="text-center py-5">
-          <div class="spinner-border text-primary" role="status"></div>
-          <p class="mt-2 text-muted">Chargement...</p>
+<!-- ══ KPI CARDS ══════════════════════════════════════════════════════════ -->
+<div *ngIf="!loading" class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="ac-kpi ac-kpi-blue">
+      <div class="ac-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <div class="ac-kpi-icon"><i class="ti ti-users"></i></div>
+          <span class="usr-kpi-badge usr-kpi-badge-blue">Total</span>
         </div>
-
-        <!-- Empty state -->
-        <div *ngIf="!loading && filteredUsers.length === 0" class="text-center py-5">
-          <i class="ti ti-users-off fs-40 text-muted d-block mb-2"></i>
-          <p class="text-muted">Aucun utilisateur trouvé</p>
-        </div>
-
-        <!-- Table -->
-        <div *ngIf="!loading && filteredUsers.length > 0" class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th class="ps-3">#</th>
-                <th>Nom complet</th>
-                <th>Email</th>
-                <th>Téléphone</th>
-                <th>Rôle</th>
-                <th>Statut</th>
-                <th>Date création</th>
-                <th class="text-center">Bloquer</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let user of filteredUsers; let i = index">
-                <td class="ps-3 text-muted small">{{ i + 1 }}</td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="avatar avatar-sm bg-primary-transparent rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px;">
-                      <span class="text-primary fw-bold text-uppercase">{{ user.fullName.charAt(0) }}</span>
-                    </div>
-                    <span class="fw-semibold">{{ user.fullName }}</span>
-                  </div>
-                </td>
-                <td class="text-muted">{{ user.email }}</td>
-                <td class="text-muted">{{ user.phone || '-' }}</td>
-                <td>
-                  <select class="form-select form-select-sm role-select"
-                    [ngModel]="user.role"
-                    [disabled]="user.role.includes('ADMIN')"
-                    (ngModelChange)="changeRole(user, $event)">
-                    <option value="STUDENT">Étudiant</option>
-                    <option value="INSTRUCTOR">Instructeur</option>
-                    <option value="RECRUITER">Recruteur</option>
-                    <option value="ADMIN">Admin</option>
-                  </select>
-                </td>
-                <td>
-                  <span *ngIf="user.accountStatus === 'ACTIVE'" class="badge bg-success-transparent text-success">
-                    <i class="ti ti-circle-check me-1"></i>Actif
-                  </span>
-                  <span *ngIf="user.accountStatus === 'BLOCKED'" class="badge bg-danger-transparent text-danger">
-                    <i class="ti ti-ban me-1"></i>Bloqué
-                  </span>
-                  <span *ngIf="user.accountStatus === 'PENDING'" class="badge bg-warning-transparent text-warning">
-                    <i class="ti ti-clock me-1"></i>En attente
-                  </span>
-                </td>
-                <td class="text-muted small">{{ formatDate(user.createdAt) }}</td>
-                <td class="text-center">
-                  <!-- Toggle switch block/unblock : désactivé pour les admins -->
-                  <div class="form-check form-switch d-flex justify-content-center mb-0">
-                    <input class="form-check-input" type="checkbox" role="switch"
-                      [checked]="user.accountStatus === 'BLOCKED'"
-                      [disabled]="user.role.includes('ADMIN')"
-                      [title]="user.role.includes('ADMIN') ? 'Impossible de bloquer un admin' : (user.accountStatus === 'BLOCKED' ? 'Débloquer' : 'Bloquer')"
-                      (change)="toggleBlock(user)">
-                  </div>
-                </td>
-                <td class="text-center">
-                  <button class="btn btn-sm btn-danger" (click)="confirmDelete(user)"
-                          [disabled]="user.role.includes('ADMIN')"
-                          [title]="user.role.includes('ADMIN') ? 'Impossible de supprimer un admin' : 'Supprimer'">
-                    <i class="ti ti-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
+        <div class="ac-kpi-val">{{ totalUsersCount }}</div>
+        <p class="ac-kpi-label">Utilisateurs</p>
+        <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="width:100%"></div></div>
       </div>
     </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="ac-kpi ac-kpi-green">
+      <div class="ac-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <div class="ac-kpi-icon"><i class="ti ti-circle-check"></i></div>
+          <span class="usr-kpi-badge usr-kpi-badge-green">Actifs</span>
+        </div>
+        <div class="ac-kpi-val">{{ activeUsersCount }}</div>
+        <p class="ac-kpi-label">Comptes actifs</p>
+        <div class="ac-kpi-bar-t">
+          <div class="ac-kpi-bar-f" [style.width.%]="totalUsersCount ? (activeUsersCount / totalUsersCount * 100) : 0"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="ac-kpi" style="--usr-r:220;--usr-g:38;--usr-b:38">
+      <div class="ac-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <div class="ac-kpi-icon" style="background:rgba(220,38,38,.1);color:#dc2626"><i class="ti ti-ban"></i></div>
+          <span class="usr-kpi-badge usr-kpi-badge-red">Bloqués</span>
+        </div>
+        <div class="ac-kpi-val" style="color:#dc2626">{{ blockedUsersCount }}</div>
+        <p class="ac-kpi-label">Comptes bloqués</p>
+        <div class="ac-kpi-bar-t"><div class="ac-kpi-bar-f" style="background:#dc2626" [style.width.%]="totalUsersCount ? (blockedUsersCount / totalUsersCount * 100) : 0"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="ac-kpi ac-kpi-violet">
+      <div class="ac-kpi-body">
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <div class="ac-kpi-icon"><i class="ti ti-chalkboard"></i></div>
+          <span class="usr-kpi-badge usr-kpi-badge-violet">Instruct.</span>
+        </div>
+        <div class="ac-kpi-val">{{ instructorsCount }}</div>
+        <p class="ac-kpi-label">Instructeurs</p>
+        <div class="ac-kpi-bar-t">
+          <div class="ac-kpi-bar-f" [style.width.%]="totalUsersCount ? (instructorsCount / totalUsersCount * 100) : 0"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" [class.show]="userToDelete" [style.display]="userToDelete ? 'block' : 'none'"
-  tabindex="-1" role="dialog" aria-modal="true">
+<!-- ══ FILTRES ════════════════════════════════════════════════════════════ -->
+<div class="ac-card p-3 mb-3">
+  <div class="row g-3 align-items-end">
+    <div class="col-lg-5 col-md-4">
+      <label class="usr-filter-label"><i class="ti ti-search me-1"></i>Rechercher</label>
+      <div class="usr-search-wrap">
+        <i class="ti ti-search usr-search-ico"></i>
+        <input type="text" class="form-control usr-filter-input usr-search-pad"
+          placeholder="Nom ou email..."
+          [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()">
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-3">
+      <label class="usr-filter-label"><i class="ti ti-users me-1"></i>Rôle</label>
+      <select class="form-select usr-filter-input" [(ngModel)]="filterRole" (ngModelChange)="onFilterChange()">
+        <option value="">Tous les rôles</option>
+        <option value="ADMIN">🛡 Admin</option>
+        <option value="INSTRUCTOR">🎓 Instructeur</option>
+        <option value="STUDENT">📚 Étudiant</option>
+        <option value="RECRUITER">💼 Recruteur</option>
+      </select>
+    </div>
+    <div class="col-lg-2 col-md-3">
+      <label class="usr-filter-label"><i class="ti ti-toggle-right me-1"></i>Statut</label>
+      <select class="form-select usr-filter-input" [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+        <option value="">Tous</option>
+        <option value="ACTIVE">✅ Actif</option>
+        <option value="BLOCKED">🚫 Bloqué</option>
+        <option value="PENDING">⏳ En attente</option>
+      </select>
+    </div>
+    <div class="col-lg-2 col-md-2 d-flex align-items-end">
+      <button class="usr-reset-btn w-100"
+        (click)="searchTerm=''; filterRole=''; filterStatus=''; applyFilters()">
+        <i class="ti ti-filter-off"></i>Réinitialiser
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TABLE CARD ═════════════════════════════════════════════════════════ -->
+<div class="ac-card mb-4">
+  <div class="d-flex align-items-center justify-content-between p-4 pb-2">
+    <div class="d-flex align-items-center gap-2">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(3,105,161,.1);display:flex;align-items:center;justify-content:center">
+        <i class="ti ti-list" style="color:#0369a1;font-size:16px"></i>
+      </div>
+      <span class="fw-bold" style="color:#0f172a">Liste des Utilisateurs</span>
+    </div>
+    <span class="usr-count-badge"><i class="ti ti-users me-1"></i>{{ filteredUsers.length }} utilisateur(s)</span>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border" style="color:#0284c7;width:2.2rem;height:2.2rem" role="status"></div>
+    <p class="text-muted small mt-3">Chargement des utilisateurs…</p>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && filteredUsers.length === 0" class="ac-empty py-5">
+    <div class="ac-empty-icon"><i class="ti ti-users-minus"></i></div>
+    <h6 class="fw-semibold mb-1">Aucun utilisateur trouvé</h6>
+    <p class="text-muted small mb-3">Modifiez vos filtres de recherche</p>
+    <button class="usr-reset-btn" (click)="searchTerm=''; filterRole=''; filterStatus=''; applyFilters()">
+      <i class="ti ti-filter-off"></i>Voir tous les utilisateurs
+    </button>
+  </div>
+
+  <!-- Data table -->
+  <div *ngIf="!loading && filteredUsers.length > 0" class="table-responsive">
+    <table class="table align-middle mb-0">
+      <thead class="usr-thead">
+        <tr>
+          <th class="ps-4" style="width:44px">#</th>
+          <th>Utilisateur</th>
+          <th>Email</th>
+          <th style="min-width:185px">Rôle</th>
+          <th style="width:115px">Statut</th>
+          <th style="width:120px">Inscription</th>
+          <th class="text-center" style="width:80px">Bloquer</th>
+          <th class="text-center" style="width:56px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers; let i = index"
+            class="usr-row"
+            [class.usr-row-admin]="user.role.includes('ADMIN')"
+            [class.usr-row-blocked]="user.accountStatus === 'BLOCKED'">
+
+          <td class="ps-4">
+            <span class="usr-row-num">{{ i + 1 }}</span>
+          </td>
+
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <div class="usr-avatar"
+                   [class.usr-av-adm]="user.role.includes('ADMIN')"
+                   [class.usr-av-inst]="user.role === 'INSTRUCTOR'"
+                   [class.usr-av-stud]="user.role === 'STUDENT'"
+                   [class.usr-av-recr]="user.role === 'RECRUITER'">
+                 <img *ngIf="hasAvatar(user)"
+                   [src]="getAvatarUrl(user)"
+                   [alt]="user.fullName"
+                   (error)="onAvatarError(user)"
+                   style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;">
+                 <span *ngIf="!hasAvatar(user)">{{ user.fullName.charAt(0).toUpperCase() }}</span>
+              </div>
+              <div>
+                <p class="mb-0 fw-semibold text-truncate" style="max-width:140px;color:#0f172a">{{ user.fullName }}</p>
+                <small class="text-muted d-flex align-items-center gap-1">
+                  <i class="ti ti-phone" style="font-size:11px"></i>
+                  {{ user.phone || 'Non renseigné' }}
+                </small>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="text-muted small d-flex align-items-center gap-1">
+              <i class="ti ti-mail" style="font-size:13px;opacity:.4"></i>{{ user.email }}
+            </span>
+          </td>
+
+          <td>
+            <select class="form-select form-select-sm usr-role-select"
+              [class.usr-rs-admin]="user.role.includes('ADMIN')"
+              [class.usr-rs-inst]="user.role === 'INSTRUCTOR'"
+              [class.usr-rs-stud]="user.role === 'STUDENT'"
+              [class.usr-rs-recr]="user.role === 'RECRUITER'"
+              [ngModel]="user.role"
+              [disabled]="user.role.includes('ADMIN')"
+              (ngModelChange)="changeRole(user, $event)">
+              <option value="STUDENT">📚 Étudiant</option>
+              <option value="INSTRUCTOR">🎓 Instructeur</option>
+              <option value="RECRUITER">💼 Recruteur</option>
+              <option value="ADMIN">🛡 Admin</option>
+            </select>
+            <div *ngIf="user.secondaryRoles?.length" class="d-flex flex-wrap gap-1 mt-1">
+              <span *ngFor="let sr of user.secondaryRoles"
+                class="usr-sr-pill"
+                [class.usr-sr-inst]="sr === 'INSTRUCTOR'"
+                [class.usr-sr-stud]="sr === 'STUDENT'"
+                [class.usr-sr-recr]="sr === 'RECRUITER'"
+                [class.usr-sr-adm]="sr === 'ADMIN'">
+                <i class="ti"
+                  [class.ti-school]="sr === 'INSTRUCTOR'"
+                  [class.ti-user-graduate]="sr === 'STUDENT'"
+                  [class.ti-briefcase]="sr === 'RECRUITER'"
+                  [class.ti-shield]="sr === 'ADMIN'"></i>
+                {{ sr === 'INSTRUCTOR' ? 'Instruct.' : sr === 'STUDENT' ? 'Étudiant' : sr === 'RECRUITER' ? 'Recruteur' : 'Admin' }}
+              </span>
+            </div>
+          </td>
+
+          <td>
+            <span *ngIf="user.accountStatus === 'ACTIVE'" class="usr-status usr-status-active">
+              <span class="usr-dot" style="background:#16a34a"></span>Actif
+            </span>
+            <span *ngIf="user.accountStatus === 'BLOCKED'" class="usr-status usr-status-blocked">
+              <span class="usr-dot" style="background:#dc2626"></span>Bloqué
+            </span>
+            <span *ngIf="user.accountStatus === 'PENDING'" class="usr-status usr-status-pending">
+              <span class="usr-dot" style="background:#d97706"></span>En attente
+            </span>
+          </td>
+
+          <td>
+            <span class="text-muted small d-flex align-items-center gap-1">
+              <i class="ti ti-calendar" style="font-size:12px;opacity:.4"></i>
+              {{ formatDate(user.createdAt) }}
+            </span>
+          </td>
+
+          <td class="text-center">
+            <div class="form-check form-switch d-flex justify-content-center mb-0">
+              <input class="form-check-input usr-switch" type="checkbox" role="switch"
+                [checked]="user.accountStatus === 'BLOCKED'"
+                [disabled]="user.role.includes('ADMIN')"
+                [title]="user.role.includes('ADMIN') ? 'Impossible de bloquer un admin' : (user.accountStatus === 'BLOCKED' ? 'Débloquer' : 'Bloquer')"
+                (change)="toggleBlock(user)">
+            </div>
+          </td>
+
+          <td class="text-center">
+            <button *ngIf="!user.role.includes('ADMIN')" class="usr-btn-del"
+              (click)="confirmDelete(user)" title="Supprimer">
+              <i class="ti ti-trash"></i>
+            </button>
+            <span *ngIf="user.role.includes('ADMIN')" class="text-muted small">—</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ MODAL — CRÉER RECRUTEUR ══════════════════════════════════════════ -->
+<div *ngIf="showCreateModal" class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-sm">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title"><i class="ti ti-alert-triangle text-danger me-2"></i>Confirmer la suppression</h5>
-        <button type="button" class="btn-close" (click)="cancelDelete()"></button>
+    <div class="modal-content border-0 ac-modal-glass" style="overflow:hidden">
+      <!-- Header gradient -->
+      <div class="d-flex align-items-center justify-content-between px-4 py-3"
+           style="background:linear-gradient(135deg,#0369a1,#0284c7)">
+        <div class="d-flex align-items-center gap-3">
+          <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center">
+            <i class="ti ti-user-plus" style="font-size:22px;color:#fff"></i>
+          </div>
+          <div>
+            <h6 class="modal-title fw-bold mb-0 text-white">Créer un compte Recruteur</h6>
+            <small style="color:rgba(255,255,255,.7)">Les identifiants seront envoyés par email</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="closeCreateModal()"></button>
       </div>
-      <div class="modal-body">
-        <p>Êtes-vous sûr de vouloir supprimer le compte de
-          <strong>{{ userToDelete?.fullName }}</strong> ?
-        </p>
-        <p class="text-muted small mb-0">Cette action est irréversible.</p>
+
+      <div class="modal-body px-4 pt-3 pb-2">
+        <div *ngIf="createError" class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-3 rounded-3">
+          <i class="ti ti-alert-circle flex-shrink-0"></i>{{ createError }}
+        </div>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label class="usr-field-label">Nom complet <span class="text-danger">*</span></label>
+            <input type="text" class="form-control usr-field" [(ngModel)]="createForm.fullName"
+              placeholder="Jean Dupont">
+          </div>
+          <div class="col-sm-6">
+            <label class="usr-field-label">Email <span class="text-danger">*</span></label>
+            <input type="email" class="form-control usr-field" [(ngModel)]="createForm.email"
+              placeholder="jean@email.com">
+          </div>
+          <div class="col-sm-6">
+            <label class="usr-field-label">Téléphone <span class="text-muted">(optionnel)</span></label>
+            <input type="text" class="form-control usr-field" [(ngModel)]="createForm.phone"
+              placeholder="+33 6 12 34 56 78">
+          </div>
+          <div class="col-sm-6">
+            <label class="usr-field-label">Société <span class="text-muted">(optionnel)</span></label>
+            <input type="text" class="form-control usr-field" [(ngModel)]="createForm.companyName"
+              placeholder="Acme Corp">
+          </div>
+          <div class="col-12">
+            <label class="usr-field-label">Mot de passe <span class="text-muted">(optionnel)</span></label>
+            <div class="input-group">
+              <input [type]="showCreatePassword ? 'text' : 'password'" class="form-control usr-field"
+                [(ngModel)]="createForm.password" placeholder="Vide = génération automatique">
+              <button class="btn btn-outline-secondary" type="button" style="border-radius:0 8px 8px 0" (click)="showCreatePassword = !showCreatePassword">
+                <i [class]="showCreatePassword ? 'ti ti-eye-off' : 'ti ti-eye'"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="usr-info-note d-flex align-items-start gap-2">
+              <i class="ti ti-info-circle mt-1 flex-shrink-0" style="font-size:15px;color:#0284c7"></i>
+              <small class="text-muted lh-sm">Si le mot de passe est vide, un mot de passe temporaire sera généré. Le recruteur devra le changer à la première connexion.</small>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-outline-secondary" (click)="cancelDelete()">Annuler</button>
-        <button type="button" class="btn btn-danger" (click)="deleteUser()">
-          <i class="ti ti-trash me-1"></i>Supprimer
+
+      <div class="modal-footer border-0 pt-2 pb-4 px-4 gap-2">
+        <button type="button" class="btn btn-light btn-sm rounded-pill px-4"
+          (click)="closeCreateModal()" [disabled]="creating">Annuler</button>
+        <button type="button"
+          class="btn btn-primary btn-sm rounded-pill px-4 d-flex align-items-center gap-2"
+          style="background:linear-gradient(135deg,#0369a1,#0284c7);border:none"
+          (click)="createRecruiter()" [disabled]="creating">
+          <span *ngIf="creating" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!creating" class="ti ti-user-plus"></i>
+          {{ creating ? 'Création...' : 'Créer le compte' }}
         </button>
       </div>
     </div>
   </div>
 </div>
-<div class="modal-backdrop fade show" *ngIf="userToDelete"></div>
+<div class="modal-backdrop fade show" *ngIf="showCreateModal"></div>

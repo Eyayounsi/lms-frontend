@@ -1,161 +1,243 @@
-<!-- Breadcrumb -->
-@if (last !== 'view') {
-  <div class="breadcrumb-bar text-center">
+<div class="content">
+  <div class="container">
+    <div class="row align-items-start row-gap-4">
+
+      <!-- SIDEBAR -->
+      <div class="col-lg-3 student-sidebar-col">
+        <app-student-sidebar />
+      </div>
+
+      <!-- CONTENT -->
+      <div class="col-lg-9 std-content-wrapper">
+        <!-- ╔═══════════════════════════════════════════════════════════════════════╗ -->
+        <!-- ║ HERO SECTION - Welcome Banner                                       ║ -->
+        <!-- ╚═══════════════════════════════════════════════════════════════════════╝ -->
+        <div class="std-shell-hero mb-4">
+          <div class="std-shell-glow std-shell-glow-1"></div>
+          <div class="std-shell-glow std-shell-glow-2"></div>
+
+          <div class="std-shell-hero-inner">
+            <div class="row align-items-center w-100">
+
+              <!-- Left: Welcome + Info -->
+              <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-3">
+
+                  <!-- Avatar -->
+                  <div class="std-shell-av-wrap">
+                    <div class="std-shell-av-ring"></div>
+                    <div class="std-shell-av-border"></div>
+                    <div class="std-shell-av-circle">
+                      <span class="std-shell-av-initials">{{ userInitials }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Text Content -->
+                  <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                      <span class="std-shell-role-chip"><i class="ti ti-school me-1" style="font-size:9px"></i>Étudiant</span>
+                      <span class="std-shell-live"><span class="std-shell-live-dot"></span>Actif</span>
+                    </div>
+                    <h3 class="std-shell-hero-title mb-0">Bienvenue</h3>
+                    <p class="std-shell-hero-subtitle mb-0 mt-1">{{ userName }}</p>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Right: Quick Actions -->
+              <div class="col-lg-4">
+                <div class="d-flex justify-content-lg-end mt-3 mt-lg-0 gap-2 flex-wrap">
+                  <a [routerLink]="routes.courseGrid" class="std-shell-action-btn std-shell-action-btn--neutral">
+                    <i class="ti ti-search"></i>
+                    <span>Parcourir cours</span>
+                  </a>
+                  <button *ngIf="hasInstructorRole" type="button" class="std-shell-action-btn"
+                    (click)="switchToInstructor()">
+                    <i class="ti ti-briefcase"></i>
+                    <span>Tableau instructeur</span>
+                  </button>
+                  <button *ngIf="!hasInstructorRole" type="button" class="std-shell-action-btn"
+                    (click)="switchToInstructor()">
+                    <i class="ti ti-plus"></i>
+                    <span>Devenir Expert</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <router-outlet></router-outlet>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ Footer ══════════════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="footer-bg">
+    <img src="assets/img/bg/footer-bg-01.png" class="footer-bg-1" alt="">
+    <img src="assets/img/bg/footer-bg-02.png" class="footer-bg-2" alt="">
+  </div>
+  <div class="footer-top">
     <div class="container">
-      <div class="row">
-        <div class="col-md-12 col-12">
-          <div class="breadcrumb-list">
-            <h2 class="breadcrumb-title">{{ last | titlecase }}</h2>
-            <nav aria-label="breadcrumb" class="page-breadcrumb">
-              <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a [routerLink] = "routes.home">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">{{ last | titlecase }}</li>
-              </ol>
-            </nav>
+      <div class="row row-gap-4">
+        <div class="col-lg-4">
+          <div class="footer-about">
+            <div class="footer-logo">
+              <img src="assets/img/logo.svg" alt="">
+            </div>
+            <p>Platform designed to help organizations, educators, and learners manage, deliver, and track learning and training activities.</p>
+            <div class="d-flex align-items-center">
+              <a href="javascript:void(0);" class="me-2"><img src="assets/img/icon/appstore.svg" alt=""></a>
+              <a href="javascript:void(0);"><img src="assets/img/icon/googleplay.svg" alt=""></a>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="row row-gap-4">
+            <div class="col-lg-3">
+              <div class="footer-widget footer-menu">
+                <h5 class="footer-title">For Students</h5>
+                <ul>
+                  <li><a [routerLink]="routes.courseGrid">Browse Courses</a></li>
+                  <li><a [routerLink]="routes.login">Login</a></li>
+                  <li><a [routerLink]="routes.register">Register</a></li>
+                  <li><a [routerLink]="routes.courseList">My Learning</a></li>
+                  <li><a [routerLink]="routes.students_Dashboard">Dashboard</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <div class="footer-widget footer-menu">
+                <h5 class="footer-title">For Instructors</h5>
+                <ul>
+                  <li><a href="javascript:void(0);">Become Instructor</a></li>
+                  <li><a [routerLink]="routes.instructorMessage">Messages</a></li>
+                  <li><a [routerLink]="routes.login">Login</a></li>
+                  <li><a [routerLink]="routes.register">Register</a></li>
+                  <li><a [routerLink]="routes.instructor_dashboard">Dashboard</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="footer-widget footer-contact">
+                <h5 class="footer-title">Newsletter</h5>
+                <div class="subscribe-input">
+                  <form action="javascript:void(0);">
+                    <input type="email" class="form-control" placeholder="Enter your Email Address">
+                    <button type="submit" class="btn btn-primary btn-sm inline-flex align-items-center"><i class="ti ti-send me-1"></i>Subscribe</button>
+                  </form>
+                </div>
+                <div class="footer-contact-info">
+                  <div class="footer-address d-flex align-items-center">
+                    <img src="assets/img/icon/icon-20.svg" alt="Img" class="img-fluid me-2">
+                    <p>3556 Beech Street, San Francisco,<br> California, CA 94108</p>
+                  </div>
+                  <div class="footer-address d-flex align-items-center">
+                    <img src="assets/img/icon/icon-19.svg" alt="Img" class="img-fluid me-2">
+                    <p>dreamslms&#64;example.com</p>
+                  </div>
+                  <div class="footer-address d-flex align-items-center">
+                    <img src="assets/img/icon/icon-21.svg" alt="Img" class="img-fluid me-2">
+                    <p>+19 123-456-7890</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-}
-<!-- /Breadcrumb -->
-<div class="content">
-  <div class="container">
-  <!-- profile box -->
-  <div class="profile-card overflow-hidden bg-blue-gradient2 mb-5 p-5">
-      <div class="profile-card-bg">
-          <img src="assets/img/bg/card-bg-01.png" class="profile-card-bg-1" alt="">
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row row-gap-2">
+        <div class="col-md-6">
+          <div class="text-center text-md-start">
+            <p class="text-white">Copyright &copy; 2026 DreamsLMS. All rights reserved.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div>
+            <ul class="d-flex align-items-center justify-content-center justify-content-md-end footer-link">
+              <li><a [routerLink]="routes.page_term_condition">Terms & Conditions</a></li>
+              <li><a [routerLink]="routes.page_privacy_policy">Privacy Policy</a></li>
+            </ul>
+          </div>
+        </div>
       </div>
-          <div class="row align-items-center row-gap-3">
-              <div class="col-lg-6">
-                  <div class="d-flex align-items-center">
-                      <span class="avatar avatar-xxl avatar-rounded me-3 border border-white border-2 position-relative">
-                          <img src="assets/img/user/user-02.jpg" alt="">
-                          <span class="verify-tick"><i class="isax isax-verify5"></i></span>
-                      </span>
-                      <div>
-                          <h5 class="mb-1 text-white d-inline-flex align-items-center"><a [routerLink]="routes.studentsDetails">Ronald Richard</a><a [routerLink]="routes.instructorProfile" class="link-light fs-16 ms-2"><i class="isax isax-edit-2"></i></a></h5>
-                          <p class="text-light">Student</p>
-                      </div>
-                  </div>
-              </div>
-              <div class="col-lg-6">
-                  <div class="d-flex align-items-center justify-content-lg-end flex-wrap gap-2">
-                      <a [routerLink]="routes.becomeAnExpert" class="btn btn-white rounded-pill me-3">Become an Instructor</a>
-                      <a [routerLink]="routes.instructor_dashboard" class="btn btn-secondary rounded-pill">Instructor Dashboard</a>
-                  </div>
-              </div>
-          </div>
+    </div>
   </div>
-  <!-- profile box -->
-      <div class="row">
-          <!-- sidebar -->
-          <div class="col-lg-3 ">
-              <app-student-sidebar/>
-          </div>
-          <!-- sidebar -->
-          <div class="col-lg-9">
-              <router-outlet></router-outlet>
-          </div>
-      </div>
-  </div>
-</div>
+</footer>
+@if (showSwitchToInstructorModal) {
+  <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border-0" style="border-radius:16px;box-shadow:0 24px 48px rgba(0,0,0,.16);animation:popInModal .2s ease">
 
-		<!-- Footer -->
-		<footer class="footer">
-			<div class="footer-bg">
-				<img src="assets/img/bg/footer-bg-01.png" class="footer-bg-1" alt="">
-				<img src="assets/img/bg/footer-bg-02.png" class="footer-bg-2" alt="">
-			</div>
-			<div class="footer-top">
-				<div class="container">
-					<div class="row row-gap-4">
-						<div class="col-lg-4">
-							<div class="footer-about">
-								<div class="footer-logo">
-									<img src="assets/img/logo.svg" alt="">
-								</div>
-								<p>Platform designed to help organizations, educators, and learners manage, deliver, and track learning and training activities.</p>
-								<div class="d-flex align-items-center">
-									<a href="javascript:void(0);" class="me-2"><img src="assets/img/icon/appstore.svg" alt=""></a>
-									<a href="javascript:void(0);"><img src="assets/img/icon/googleplay.svg" alt=""></a>
-								</div>
-							</div>
-						</div>
-						<div class="col-lg-8">
-							<div class="row row-gap-4">
-								<div class="col-lg-3">
-									<div class="footer-widget footer-menu">
-										<h5 class="footer-title">For Instructor</h5>
-										<ul>
-											<li><a [routerLink]="routes.courseGrid">Search Mentors</a></li>
-											<li><a [routerLink]="routes.login">Login</a></li>
-											<li><a [routerLink]="routes.register">Register</a></li>
-											<li><a [routerLink]="routes.courseList">Booking</a></li>
-											<li><a [routerLink]="routes.students_Dashboard">Students Dashboard</a></li>
-										</ul>
-									</div>
-								</div>
-								<div class="col-lg-3">
-									<div class="footer-widget footer-menu">
-										<h5 class="footer-title">For Student</h5>
-										<ul>
-											<li><a href="javascript:void(0);">Appointments</a></li>
-											<li><a [routerLink]="routes.instructorMessage">Chat</a></li>
-											<li><a [routerLink]="routes.login">Login</a></li>
-											<li><a [routerLink]="routes.register">Register</a></li>
-											<li><a [routerLink]="routes.instructor_dashboard">Instructor Dashboard</a></li>
-										</ul>
-									</div>
-								</div>
-								<div class="col-lg-6">
-									<div class="footer-widget footer-contact">
-										<h5 class="footer-title">Newsletter</h5>
-										<div class="subscribe-input">
-											<form action="javascript:void(0);">
-												<input type="email" class="form-control" placeholder="Enter your Email Address">
-												<button type="submit" class="btn btn-primary btn-sm inline-flex align-items-center"><i class="isax isax-send-2 me-1"></i>Subscribe</button>
-											</form>
-										</div>
-										<div class="footer-contact-info">
-											<div class="footer-address d-flex align-items-center">
-												<img src="assets/img/icon/icon-20.svg" alt="Img" class="img-fluid me-2">
-												<p> 3556  Beech Street, San Francisco,<br> California, CA 94108 </p>
-											</div>
-											<div class="footer-address d-flex align-items-center">
-												<img src="assets/img/icon/icon-19.svg" alt="Img" class="img-fluid me-2">
-												<p>dreamslms&#64;example.com</p>
-											</div>
-											<div class="footer-address d-flex align-items-center">
-												<img src="assets/img/icon/icon-21.svg" alt="Img" class="img-fluid me-2">
-												<p>+19 123-456-7890</p>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="footer-bottom">
-				<div class="container">
-					<div class="row row-gap-2">
-						<div class="col-md-6">
-							<div class="text-center text-md-start">
-								<p class="text-white">Copyright &copy; 2025 DreamsLMS. All rights reserved.</p>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<div>
-								<ul class="d-flex align-items-center justify-content-center justify-content-md-end footer-link">
-									<li><a [routerLink]="routes.page_term_condition">Terms & Conditions</a></li>
-									<li><a [routerLink]="routes.page_privacy_policy">Privacy Policy</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</footer>
+        <!-- Header -->
+        <div class="modal-header border-0 pb-0 pt-4 px-4">
+          <div class="d-flex align-items-center gap-3">
+            <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <i class="isax isax-book-1" style="font-size:22px;color:#fff"></i>
+            </div>
+            <div>
+              <h6 class="fw-bold mb-0" style="font-size:15px">Accéder au tableau de bord Instructeur</h6>
+              <small class="text-muted">Confirmez votre identité</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" (click)="showSwitchToInstructorModal=false; switchToInstructorPassword=''; switchToInstructorError=''"></button>
+        </div>
+
+        <!-- Body -->
+        <div class="modal-body px-4 pt-3 pb-2">
+          <p class="text-muted small mb-3">
+            Pour accéder au rôle <strong class="text-primary">Instructeur</strong>, 
+            veuillez entrer votre mot de passe pour plus de sécurité.
+          </p>
+
+          <label class="form-label small fw-semibold">Mot de passe actuel</label>
+          <div class="input-group">
+            <span class="input-group-text bg-light border-end-0" style="border-radius:8px 0 0 8px">
+              <i class="isax isax-lock" style="font-size:15px;color:#6b7280"></i>
+            </span>
+            <input type="password" class="form-control border-start-0 ps-0"
+              style="border-radius:0 8px 8px 0"
+              placeholder="••••••••"
+              [(ngModel)]="switchToInstructorPassword"
+              (keyup.enter)="confirmSwitchToInstructor()">
+          </div>
+          @if (switchToInstructorError) {
+            <div class="alert alert-danger d-flex align-items-center gap-2 mt-2 py-2 px-3" style="border-radius:8px;font-size:12px;">
+              <i class="isax isax-close-circle"></i>{{ switchToInstructorError }}
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex gap-2">
+          <button type="button" class="btn btn-light btn-sm flex-fill"
+            (click)="showSwitchToInstructorModal=false; switchToInstructorPassword=''; switchToInstructorError=''">
+            Annuler
+          </button>
+          <button type="button" class="btn btn-sm flex-fill text-white fw-semibold"
+            style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none"
+            [disabled]="switchingToInstructor"
+            (click)="confirmSwitchToInstructor()">
+            <span *ngIf="!switchingToInstructor"><i class="isax isax-arrow-swap-horizontal me-1"></i>Confirmer</span>
+            <span *ngIf="switchingToInstructor" class="d-flex align-items-center justify-content-center gap-2">
+              <span class="spinner-border spinner-border-sm"></span>En cours...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
+<!-- /Modal -->
 		<!-- /Footer -->

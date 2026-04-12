@@ -1,21 +1,35 @@
 <div class="settings-sidebar">
     <div>
-        <h6 class="mb-3">Main Menu</h6>
+        <div class="student-sidebar-profile mb-3">
+            <div class="student-sidebar-profile__avatar">
+                <img *ngIf="userAvatarUrl; else studentSidebarInitials"
+                     [src]="userAvatarUrl"
+                     alt="Avatar"
+                     class="student-sidebar-profile__avatar-img">
+                <ng-template #studentSidebarInitials>{{ userInitials }}</ng-template>
+            </div>
+            <div>
+                <h6 class="mb-0">{{ userName }}</h6>
+                <p class="mb-0">Espace Etudiant</p>
+            </div>
+        </div>
+
+        <h6 class="mb-3">Menu principal</h6>
         <ul class="mb-3 pb-1">
             <li>
-                <a [routerLink]="routes.students_Dashboard" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-grid-35 me-2"></i>Dashboard</a>
+                <a [routerLink]="routes.students_Dashboard" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-grid-35 me-2"></i>Tableau de bord</a>
             </li>
             <li>
-                <a [routerLink]="routes.students_profile" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="fa-solid fa-user me-2"></i>My Profile</a>
+                <a [routerLink]="routes.students_profile" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="fa-solid fa-user me-2"></i>Mon profil</a>
             </li>
             <li>
-                <a [routerLink]="routes.studentCourses" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-teacher5 me-2"></i>Enrolled Courses</a>
+                <a [routerLink]="routes.studentCourses" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-teacher5 me-2"></i>Cours inscrits</a>
             </li>
             <li>
                 <a [routerLink]="routes.studentMyCourses" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="fa-solid fa-graduation-cap me-2"></i>Mes Cours Achetés</a>
             </li>
             <li>
-                <a [routerLink]="routes.student_Certificate" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-note-215 me-2"></i>My Certificates</a>
+                <a [routerLink]="routes.student_Certificate" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-note-215 me-2"></i>Certificats</a>
             </li>
             <li>
                 <a [routerLink]="routes.studentWishlist" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-heart5 me-2"></i>Wishlist</a>
@@ -35,21 +49,33 @@
             <li>
                 <a [routerLink]="routes.studentsMessage" class="d-inline-flex align-items-center justify-content-between w-100" routerLinkActive="active">
                   <span class="d-flex align-items-center"><i class="isax isax-messages-35 me-2"></i>Messages</span>
-                  <span *ngIf="unreadMsgCount > 0" class="badge rounded-pill ms-1" style="background:#4a1d96;color:#fff;font-size:10px;">+{{ unreadMsgCount > 99 ? '99' : unreadMsgCount }}</span>
+                                    <span *ngIf="unreadMsgCount > 0" class="badge rounded-pill ms-1 sidebar-badge sidebar-badge--msg">{{ unreadMsgCount > 99 ? '99+' : unreadMsgCount }}</span>
                 </a>
+            </li>
+            <li>
+                <a [routerLink]="routes.studentQa" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-message-question5 me-2"></i>Q&amp;A</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.student_job_offers" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="ti ti-briefcase me-2"></i>Offres d'Emploi</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.studentChallenges" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="ti ti-trophy me-2"></i>Challenges</a>
+            </li>
+            <li>
+                <a [routerLink]="routes.studentPointsExchange" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="ti ti-gift me-2"></i>Échanger des Points</a>
             </li>
             <li>
                 <a [routerLink]="routes.students_tickets" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-ticket5 me-2"></i>Support Tickets</a>
             </li>
         </ul>
         <hr>
-        <h6 class="mb-3">Account Settings</h6>
+        <h6 class="mb-3">Parametres du compte</h6>
         <ul>
             <li>
-                <a [routerLink]="routes.studentSettings" class="d-inline-flex align-items-center" [class.active]="last==='student-settings'||last==='student-change-password' ||last==='student-social-profile' || last==='student-linked-accounts' || last==='student-notifications' || last==='student-billing-address'" ><i class="isax isax-setting-25 me-2"></i>Settings</a>
+                <a [routerLink]="routes.studentSettings" class="d-inline-flex align-items-center" [class.active]="last==='student-settings'||last==='student-change-password' ||last==='student-social-profile' || last==='student-linked-accounts' || last==='student-notifications' || last==='student-billing-address'" ><i class="isax isax-setting-25 me-2"></i>Parametres</a>
             </li>
             <li>
-                <a href="javascript:void(0)" (click)="onLogout()" class="d-inline-flex align-items-center"><i class="isax isax-logout5 me-2"></i>Logout</a>
+                <a href="javascript:void(0)" (click)="onLogout()" class="d-inline-flex align-items-center"><i class="isax isax-logout5 me-2"></i>Deconnexion</a>
             </li>
         </ul>
     </div>

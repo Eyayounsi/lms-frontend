@@ -38,8 +38,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     shortDescription: '',
     categoryId: null as number | null,
     level: 'BEGINNER',
-    language: 'Français',
-    featured: false
+    language: 'Français'
   };
   objectives: string[] = [''];
   requirements: string[] = [''];
@@ -48,6 +47,24 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   coverFile: File | null = null;
   coverPreview: string | null = null;
   introVideoUrl = '';
+  coverTab: 'upload' | 'preset' = 'preset';
+  selectedPresetImage: string | null = null;
+
+  readonly presetImages: string[] = [
+    'course-img1.jpg', 'course-img2.jpg', 'course-img3.jpg',
+    'course-img4.jpg', 'course-img5.jpg', 'course-img6.jpg',
+    'course-img7.jpg', 'course-img8.jpg', 'course-img9.jpg',
+    'courses-01.jpg', 'courses-02.jpg', 'courses-03.jpg',
+    'courses-04.jpg', 'courses-05.jpg', 'courses-06.jpg',
+    'cat-icon-1.svg', 'cat-icon-2.svg', 'cat-icon-3.svg',
+    'cat-icon-4.svg', 'cat-icon-5.png', 'cat-icon-6.svg',
+    'cat-icon-7.svg', 'cat-icon-8.svg', 'cat-icon-9.svg',
+    'cat-icon-10.svg', 'cat-icon-11.svg',
+    'cat-template-1.svg', 'cat-template-2.svg', 'cat-template-3.svg',
+    'cat-template-4.svg', 'cat-template-5.svg', 'cat-template-6.svg',
+    'cat-template-7.svg', 'cat-template-8.svg', 'cat-template-9.svg',
+    'cat-template-10.svg', 'cat-template-11.svg', 'cat-template-12.svg'
+  ];
 
   //  Étape 3 : Curriculum 
   sections: any[] = [];
@@ -59,6 +76,10 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     videoUrl: '',
     isFree: false
   };
+
+  // Édition du titre d'une section
+  editingSectionId: number | null = null;
+  editingSectionTitle: string = '';
 
   // Modèle pour la modal d'édition de leçon
   editLessonModel: { lesson: any; title: string; isFree: boolean } | null = null;
@@ -73,7 +94,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   };
 
   isEditMode = false;
-  courseStatus = '';   // DRAFT | PENDING_REVIEW | PUBLISHED | REJECTED
+  courseStatus = '';   // DRAFT | PENDING | PUBLISHED | REJECTED | ARCHIVED
 
   constructor(private courseService: CourseService, private router: Router, private route: ActivatedRoute) {}
 
@@ -82,11 +103,30 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       next: (cats) => (this.categories = cats),
       error: () => (this.categories = [])
     });
-    this.route.queryParams.subscribe(params => {
+    let resolvedCourseId: number | null = null;
+
+    // Nouvelle route: /courses/edit-course/:id
+    this.route.params.subscribe(params => {
       if (params['id']) {
-        this.courseId = +params['id'];
-        this.isEditMode = true;
-        this.loadCourseForEdit();
+        const parsed = +params['id'];
+        if (!Number.isNaN(parsed) && parsed > 0) {
+          resolvedCourseId = parsed;
+          this.courseId = parsed;
+          this.isEditMode = true;
+          this.loadCourseForEdit();
+        }
+      }
+    });
+
+    // Compatibilité ancienne route: /courses/add-course?id=...
+    this.route.queryParams.subscribe(params => {
+      if (!resolvedCourseId && params['id']) {
+        const parsed = +params['id'];
+        if (!Number.isNaN(parsed) && parsed > 0) {
+          this.courseId = parsed;
+          this.isEditMode = true;
+          this.loadCourseForEdit();
+        }
       }
     });
   }
@@ -103,8 +143,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
           shortDescription: course.shortDescription || '',
           categoryId: course.categoryId || null,
           level: course.level || 'BEGINNER',
-          language: course.language || 'Français',
-          featured: !!course.featured
+          language: course.language || 'Français'
         };
         const objLines: string[] = course.objectives ? course.objectives.split('\n').filter((o: string) => o.trim()) : [];
         this.objectives = objLines.length ? objLines : [''];
@@ -114,6 +153,22 @@ export class AddCourseComponent implements OnInit, OnDestroy {
         this.step5.isFree = !course.price || course.price === 0;
         this.sections = course.sections || [];
         this.courseStatus = course.status || '';
+
+        // Restaurer l'image de couverture existante
+        if (course.coverImage) {
+          if (course.coverImage.startsWith('preset:')) {
+            const imgName = course.coverImage.replace('preset:', '');
+            this.selectedPresetImage = imgName;
+            this.coverTab = 'preset';
+          } else {
+            if (course.coverImage.startsWith('http://') || course.coverImage.startsWith('https://')) {
+              this.coverPreview = course.coverImage;
+            } else {
+              this.coverPreview = course.coverImage;
+            }
+            this.coverTab = 'upload';
+          }
+        }
 
         // Cours en attente de validation → mode lecture seule
         if (this.courseStatus === 'PENDING') {
@@ -145,6 +200,9 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       this.errorMsg = 'Le titre du cours est obligatoire.';
       return;
     }
+
+    this.normalizePricingState();
+
     this.errorMsg = '';
     this.loading = true;
 
@@ -155,10 +213,12 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       categoryId: this.step1.categoryId,
       level: this.step1.level,
       language: this.step1.language,
-      featured: this.step1.featured,
       objectives: this.objectives.filter(o => o.trim()).join('\n'),
       requirements: this.requirements.filter(r => r.trim()).join('\n'),
-      price: 0
+      // Preserve pricing in edit mode and keep valid non-null price at creation.
+      price: this.step5.isFree ? 0 : (this.step5.price || 0),
+      discountPrice: (this.step5.hasDiscount && this.step5.discountPrice) ? this.step5.discountPrice : null,
+      discountEndsAt: (this.step5.hasDiscount && this.step5.discountEndsAt) ? this.step5.discountEndsAt : null
     };
 
     if (this.courseId) {
@@ -183,28 +243,37 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       this.coverFile = input.files[0];
+      this.selectedPresetImage = null;
       const reader = new FileReader();
       reader.onload = (e) => (this.coverPreview = e.target?.result as string);
       reader.readAsDataURL(this.coverFile);
     }
   }
 
+  selectPreset(img: string): void {
+    this.selectedPresetImage = img;
+    this.coverFile = null;
+    this.coverPreview = null;
+  }
+
   saveStep2(): void {
     if (!this.courseId) { this.selectedFieldSet[0] = 0; return; }
-    if (!this.coverFile) {
+    if (this.coverFile) {
+      this.loading = true;
+      this.courseService.uploadCoverImage(this.courseId, this.coverFile).subscribe({
+        next: () => { this.loading = false; this.selectedFieldSet[0] = 2; this.loadCurriculum(); },
+        error: (e) => { this.loading = false; this.errorMsg = e?.error?.message || "Erreur lors de l'upload."; }
+      });
+    } else if (this.selectedPresetImage) {
+      this.loading = true;
+      this.courseService.setPresetCover(this.courseId, this.selectedPresetImage).subscribe({
+        next: () => { this.loading = false; this.selectedFieldSet[0] = 2; this.loadCurriculum(); },
+        error: (e) => { this.loading = false; this.errorMsg = e?.error?.message || "Erreur lors de la sélection de l'image."; }
+      });
+    } else {
       this.selectedFieldSet[0] = 2;
       this.loadCurriculum();
-      return;
     }
-    this.loading = true;
-    this.courseService.uploadCoverImage(this.courseId, this.coverFile).subscribe({
-      next: () => {
-        this.loading = false;
-        this.selectedFieldSet[0] = 2;
-        this.loadCurriculum();
-      },
-      error: (e) => { this.loading = false; this.errorMsg = e?.error?.message || "Erreur lors de l'upload."; }
-    });
   }
 
   //  Étape 3 : Curriculum 
@@ -268,6 +337,38 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     });
   }
 
+  //  Édition du titre d'une section
+  startEditSection(section: any): void {
+    this.editingSectionId = section.id;
+    this.editingSectionTitle = section.title;
+  }
+
+  saveEditSection(section: any): void {
+    if (!this.editingSectionTitle.trim() || !this.courseId) {
+      this.cancelEditSection();
+      return;
+    }
+    this.loading = true;
+    this.courseService.updateSection(this.courseId, section.id, { title: this.editingSectionTitle }).subscribe({
+      next: () => {
+        section.title = this.editingSectionTitle;
+        this.loading = false;
+        this.editingSectionId = null;
+        this.editingSectionTitle = '';
+      },
+      error: () => {
+        this.loading = false;
+        this.editingSectionId = null;
+        this.editingSectionTitle = '';
+      }
+    });
+  }
+
+  cancelEditSection(): void {
+    this.editingSectionId = null;
+    this.editingSectionTitle = '';
+  }
+
   //  Upload vidéo pour une leçon
   triggerVideoUpload(lessonId: number): void {
     const input = document.createElement('input');
@@ -313,7 +414,6 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       categoryId: this.step1.categoryId,
       level: this.step1.level,
       language: this.step1.language,
-      featured: this.step1.featured,
       objectives: this.objectives.filter(o => o.trim()).join('\n'),
       requirements: this.requirements.filter(r => r.trim()).join('\n'),
       price: this.step5.isFree ? 0 : (this.step5.price || 0)
@@ -354,6 +454,11 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   /** Logique réelle de sauvegarde brouillon — appelée après confirmation Swal */
   private _doSaveDraft(): void {
     this.errorMsg = '';
+    this.normalizePricingState();
+    if (!this.validatePricing()) {
+      this.loading = false;
+      return;
+    }
     this.loading = true;
     const payload: any = {
       title: this.step1.title,
@@ -362,7 +467,6 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       categoryId: this.step1.categoryId,
       level: this.step1.level,
       language: this.step1.language,
-      featured: this.step1.featured,
       objectives: this.objectives.filter(o => o.trim()).join('\n'),
       requirements: this.requirements.filter(r => r.trim()).join('\n'),
       price: this.step5.isFree ? 0 : (this.step5.price || 0),
@@ -380,7 +484,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
           confirmButtonColor: '#198754',
           timer: 4000,
           timerProgressBar: true,
-        }).then(() => this.router.navigate([this.routes.instructorMyCourses]));
+        }).then(() => this.router.navigate([this.routes.instructorCourse]));
       },
       error: (e) => { this.loading = false; this.errorMsg = e?.error?.message || 'Erreur lors de la sauvegarde.'; }
     });
@@ -395,8 +499,13 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   submitCourse(): void {
     if (!this.courseId) return;
 
+    this.normalizePricingState();
+    if (!this.validatePricing()) {
+      return;
+    }
+
     // — Cours déjà en attente de validation —
-    if (this.courseStatus === 'PENDING_REVIEW') {
+    if (this.courseStatus === 'PENDING') {
       Swal.fire({
         icon: 'info',
         title: 'Déjà soumis',
@@ -458,6 +567,11 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   }
   /** Logique réelle de soumission — appelée après confirmation Swal */
   private _doSubmitCourse(): void {
+    this.normalizePricingState();
+    if (!this.validatePricing()) {
+      return;
+    }
+
     this.loading = true;
     const isPublished = this.courseStatus === 'PUBLISHED';
     const payload: any = {
@@ -467,7 +581,6 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       categoryId: this.step1.categoryId,
       level: this.step1.level,
       language: this.step1.language,
-      featured: this.step1.featured,
       objectives: this.objectives.filter(o => o.trim()).join('\n'),
       requirements: this.requirements.filter(r => r.trim()).join('\n'),
       price: this.step5.isFree ? 0 : this.step5.price,
@@ -484,9 +597,9 @@ export class AddCourseComponent implements OnInit, OnDestroy {
             icon: 'success',
             title: 'Modifications soumises',
             text: 'Vos modifications ont été enregistrées et soumises pour validation. L\'administrateur les examinera prochainement. Le cours reste visible aux étudiants en attendant.',
-            confirmButtonText: 'Aller vers Dashboard',
+            confirmButtonText: 'Mes cours',
             showDenyButton: true,
-            denyButtonText: 'Mes cours',
+            denyButtonText: 'Rester ici',
             customClass: {
               confirmButton: 'btn btn-secondary main-btn me-2',
               denyButton: 'btn btn-outline-secondary main-btn',
@@ -495,9 +608,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
             buttonsStyling: false,
           }).then(result => {
             if (result.isConfirmed) {
-              this.router.navigate([this.routes.instructor_dashboard]);
-            } else if (result.isDenied) {
-              this.router.navigate([this.routes.instructorMyCourses]);
+              this.router.navigate([this.routes.instructorCourse]);
             }
           });
           return;
@@ -506,7 +617,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
         this.courseService.submitForReview(this.courseId!).subscribe({
           next: () => {
             this.loading = false;
-            this.courseStatus = 'PENDING_REVIEW';
+            this.courseStatus = 'PENDING';
             const el = document.getElementById('success');
             if (el) { const modal = new bootstrap.Modal(el); modal.show(); }
           },
@@ -525,6 +636,43 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
     return `${m}m ${s.toString().padStart(2, '0')}s`;
+  }
+
+  private normalizePricingState(): void {
+    if (this.step5.isFree) {
+      this.step5.price = 0;
+      this.step5.hasDiscount = false;
+      this.step5.discountPrice = null;
+      this.step5.discountEndsAt = '';
+      return;
+    }
+
+    if (!this.step5.hasDiscount) {
+      this.step5.discountPrice = null;
+      this.step5.discountEndsAt = '';
+    }
+  }
+
+  private validatePricing(): boolean {
+    if (!this.step5.isFree && (this.step5.price == null || this.step5.price < 0)) {
+      this.errorMsg = 'Le prix du cours doit etre superieur ou egal a 0.';
+      return false;
+    }
+
+    if (!this.step5.isFree && this.step5.hasDiscount) {
+      if (this.step5.discountPrice == null || this.step5.discountPrice < 0) {
+        this.errorMsg = 'Le prix promotionnel doit etre superieur ou egal a 0.';
+        return false;
+      }
+
+      if (this.step5.discountPrice >= this.step5.price) {
+        this.errorMsg = 'Le prix promotionnel doit etre strictement inferieur au prix normal.';
+        return false;
+      }
+    }
+
+    this.errorMsg = '';
+    return true;
   }
 
   // ─── Lesson preview ─────────────────────────────────────────────────────────────────
