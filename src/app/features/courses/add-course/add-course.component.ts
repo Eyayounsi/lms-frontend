@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -18,6 +18,8 @@ declare var bootstrap: any;
 })
 export class AddCourseComponent implements OnInit, OnDestroy {
   routes = routes;
+  
+  @ViewChild('coverFileInput') coverFileInput?: ElementRef<HTMLInputElement>;
 
   //  Wizard step 
   public selectedFieldSet = [0];
@@ -185,7 +187,11 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    if (this._quill?.root) {
+      this._quill.root.removeEventListener('paste', this._onQuillPaste);
+    }
+  }
 
   //  Utilitaires 
   addObjective(): void { this.objectives.push(''); }
@@ -242,11 +248,38 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   onCoverSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
-      this.coverFile = input.files[0];
+      const file = input.files[0];
+      
+      // Validate file size (max 2MB)
+      const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+      if (file.size > maxSize) {
+        this.errorMsg = 'L\'image est trop volumineuse. Taille maximale : 2 Mo.';
+        input.value = ''; // Reset input
+        return;
+      }
+      
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        this.errorMsg = 'Format d\'image non supporté. Utilisez JPEG, PNG ou WebP.';
+        input.value = ''; // Reset input
+        return;
+      }
+      
+      this.coverFile = file;
       this.selectedPresetImage = null;
+      this.errorMsg = ''; // Clear any previous errors
+      
       const reader = new FileReader();
-      reader.onload = (e) => (this.coverPreview = e.target?.result as string);
-      reader.readAsDataURL(this.coverFile);
+      reader.onload = (e) => {
+        this.coverPreview = e.target?.result as string;
+      };
+      reader.onerror = () => {
+        this.errorMsg = 'Erreur lors de la lecture du fichier.';
+        this.coverFile = null;
+        this.coverPreview = null;
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -257,20 +290,50 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   }
 
   saveStep2(): void {
-    if (!this.courseId) { this.selectedFieldSet[0] = 0; return; }
+    if (!this.courseId) { 
+      this.errorMsg = 'Veuillez d\'abord créer le cours (étape 1).';
+      this.selectedFieldSet[0] = 0; 
+      return; 
+    }
+    
     if (this.coverFile) {
       this.loading = true;
+      this.errorMsg = '';
+      this.successMsg = '';
+      
       this.courseService.uploadCoverImage(this.courseId, this.coverFile).subscribe({
-        next: () => { this.loading = false; this.selectedFieldSet[0] = 2; this.loadCurriculum(); },
-        error: (e) => { this.loading = false; this.errorMsg = e?.error?.message || "Erreur lors de l'upload."; }
+        next: () => { 
+          this.loading = false; 
+          this.successMsg = 'Image de couverture uploadée avec succès !';
+          this.selectedFieldSet[0] = 2; 
+          this.loadCurriculum(); 
+        },
+        error: (e) => { 
+          this.loading = false; 
+          this.errorMsg = e?.error?.message || "Erreur lors de l'upload de l'image. Vérifiez la taille et le format."; 
+          console.error('Upload error:', e);
+        }
       });
     } else if (this.selectedPresetImage) {
       this.loading = true;
+      this.errorMsg = '';
+      this.successMsg = '';
+      
       this.courseService.setPresetCover(this.courseId, this.selectedPresetImage).subscribe({
-        next: () => { this.loading = false; this.selectedFieldSet[0] = 2; this.loadCurriculum(); },
-        error: (e) => { this.loading = false; this.errorMsg = e?.error?.message || "Erreur lors de la sélection de l'image."; }
+        next: () => { 
+          this.loading = false; 
+          this.successMsg = 'Image de couverture sélectionnée avec succès !';
+          this.selectedFieldSet[0] = 2; 
+          this.loadCurriculum(); 
+        },
+        error: (e) => { 
+          this.loading = false; 
+          this.errorMsg = e?.error?.message || "Erreur lors de la sélection de l'image."; 
+          console.error('Preset cover error:', e);
+        }
       });
     } else {
+      // No cover selected, skip to next step
       this.selectedFieldSet[0] = 2;
       this.loadCurriculum();
     }
@@ -705,6 +768,27 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   articleSaving = false;
   articleSaved = false;
   private _quill: any = null; // Quill instance, initialized on first modal open
+  private _onQuillPaste = (event: ClipboardEvent): void => {
+    if (!this._quill) return;
+    const clipboard = event.clipboardData;
+    if (!clipboard) return;
+
+    const plainText = (clipboard.getData('text/plain') || '').trim();
+    const htmlText = (clipboard.getData('text/html') || '').trim();
+
+    if (!plainText) return;
+
+    // If clipboard already contains rich HTML, keep Quill native behavior.
+    if (htmlText && /<\/?[a-z][\s\S]*>/i.test(htmlText)) {
+      return;
+    }
+
+    event.preventDefault();
+    const generatedHtml = this._formatPastedPlainTextToHtml(plainText);
+    const selection = this._quill.getSelection(true);
+    const insertIndex = selection ? selection.index : this._quill.getLength();
+    this._quill.clipboard.dangerouslyPasteHTML(insertIndex, generatedHtml, 'user');
+  };
 
   openArticleEditor(lesson: any): void {
     this.articleLesson = lesson;
@@ -717,7 +801,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       // Already initialized — just swap content
       this._quill.root.innerHTML = '';
       if (lesson.articleContent) {
-        this._quill.clipboard.dangerouslyPasteHTML(lesson.articleContent);
+        this._quill.root.innerHTML = this._normalizeStoredArticleForEditor(lesson.articleContent);
       }
       bsModal.show();
       return;
@@ -727,13 +811,38 @@ export class AddCourseComponent implements OnInit, OnDestroy {
     el.addEventListener('shown.bs.modal', () => {
       const Quill = (window as any).Quill;
       if (!Quill || this._quill) return;
+      
+      // Configuration complète de Quill avec tous les formats
       this._quill = new Quill('#quill-editor-container', {
         theme: 'snow',
-        modules: { toolbar: '#ql-article-toolbar' },
+        modules: { 
+          toolbar: {
+            container: '#ql-article-toolbar',
+            handlers: {
+              // Handlers personnalisés si nécessaire
+            }
+          }
+        },
+        formats: [
+          // Formats inline
+          'bold', 'italic', 'underline', 'strike',
+          'color', 'background',
+          'font', 'size',
+          'link', 'code',
+          // Formats block
+          'header', 'blockquote', 'code-block',
+          'list', 'bullet', 'indent',
+          'align', 'direction',
+          // Formats embed
+          'image', 'video', 'formula'
+        ],
         placeholder: 'Rédigez votre article ici…'
       });
+
+      this._quill.root.addEventListener('paste', this._onQuillPaste);
+      
       if (lesson.articleContent) {
-        this._quill.clipboard.dangerouslyPasteHTML(lesson.articleContent);
+        this._quill.root.innerHTML = this._normalizeStoredArticleForEditor(lesson.articleContent);
       }
     }, { once: true });
 
@@ -821,7 +930,13 @@ export class AddCourseComponent implements OnInit, OnDestroy {
 
   saveArticle(): void {
     if (!this._quill || !this.articleLesson) return;
+    
+    // Récupérer le contenu HTML de Quill avec TOUS les styles inline
     const content = this._quill.root.innerHTML;
+    
+    // Ne PAS transformer le HTML - on garde tout tel quel (couleurs, tailles, polices, etc.)
+    // Quill sauvegarde automatiquement les styles inline dans le HTML
+    
     this.articleSaving = true;
     this.courseService.saveArticleContent(this.articleLesson.id, content).subscribe({
       next: (_: any) => {
@@ -836,6 +951,100 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       },
       error: () => { this.articleSaving = false; }
     });
+  }
+
+  private _formatPastedPlainTextToHtml(rawText: string): string {
+    const text = rawText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const lines = text.split('\n');
+    const htmlParts: string[] = [];
+    let paragraphBuffer: string[] = [];
+    let codeBuffer: string[] = [];
+
+    const flushParagraph = (): void => {
+      if (!paragraphBuffer.length) return;
+      const paragraphHtml = paragraphBuffer
+        .map((line) => this._escapeHtml(line))
+        .join('<br>');
+      htmlParts.push(`<p>${paragraphHtml}</p>`);
+      paragraphBuffer = [];
+    };
+
+    const flushCode = (): void => {
+      if (!codeBuffer.length) return;
+      const codeHtml = this._escapeHtml(codeBuffer.join('\n'));
+      htmlParts.push(`<pre class="ql-syntax" spellcheck="false">${codeHtml}</pre>`);
+      codeBuffer = [];
+    };
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        flushParagraph();
+        flushCode();
+        continue;
+      }
+
+      if (this._looksLikeCodeLine(line)) {
+        flushParagraph();
+        codeBuffer.push(line);
+      } else {
+        flushCode();
+        paragraphBuffer.push(line);
+      }
+    }
+
+    flushParagraph();
+    flushCode();
+    return htmlParts.join('');
+  }
+
+  private _looksLikeCodeLine(line: string): boolean {
+    const value = line.trim();
+    if (!value) return false;
+
+    if (/^(import|export|function|const|let|var|return|class)\b/.test(value)) return true;
+    if (/=>/.test(value)) return true;
+    if (/[{};]/.test(value)) return true;
+    if (/<\/?[A-Za-z][^>]*>/.test(value)) return true;
+    if (/^\s{2,}\S+/.test(line)) return true;
+    if (/^\w+\s*\(.*\)\s*\{?$/.test(value)) return true;
+    return false;
+  }
+
+  private _escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  private _normalizeStoredArticleForEditor(rawContent: string): string {
+    const content = (rawContent || '').trim();
+    if (!content) return '';
+
+    // Legacy: full HTML content stored encoded (&lt;p&gt;...).
+    if (this._looksLikeEncodedHtml(content) && !this._looksLikeHtml(content)) {
+      const txt = document.createElement('textarea');
+      txt.innerHTML = content;
+      return txt.value;
+    }
+
+    // If this is plain text (or semi-plain), convert to safe HTML blocks.
+    if (!this._looksLikeHtml(content)) {
+      return this._formatPastedPlainTextToHtml(content);
+    }
+
+    return content;
+  }
+
+  private _looksLikeEncodedHtml(value: string): boolean {
+    return /&lt;\s*\/?\s*[a-z]/i.test(value) && /&gt;/i.test(value);
+  }
+
+  private _looksLikeHtml(value: string): boolean {
+    return /<\s*\/?\s*[a-z][^>]*>/i.test(value);
   }
 
   // ─── Shared code-block enhancer (article preview: instructor + admin) ────

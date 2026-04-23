@@ -171,16 +171,31 @@
               </div>
 
               <!--  PDF viewer  -->
-              <div *ngIf="activeLesson.lessonType === 'PDF' && activeLesson.pdfUrl">
-                <iframe [src]="getMediaUrl(activeLesson.pdfUrl) | safeUrl" class="w-100 rounded mb-2"
-                        style="height:500px; border:none;"></iframe>
+              <div *ngIf="activeLesson.lessonType === 'PDF'">
+                <div *ngIf="activeLesson.pdfUrl; else noPdf">
+                  <iframe [src]="getMediaUrl(activeLesson.pdfUrl) | safeUrl" class="w-100 rounded mb-2"
+                          style="height:500px; border:none;"></iframe>
+                </div>
+                <ng-template #noPdf>
+                  <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="isax isax-document-text fs-3 me-3"></i>
+                    <div>
+                      <h5 class="alert-heading mb-1">Document PDF manquant</h5>
+                      <p class="mb-0">Le fichier PDF de cette leçon n'a pas encore été téléchargé par l'instructeur.</p>
+                      <p class="mb-0 mt-1 small text-muted">
+                        <i class="isax isax-info-circle me-1"></i>
+                        Seuls les fichiers au format <strong>.pdf</strong> peuvent être affichés dans cette leçon.
+                      </p>
+                    </div>
+                  </div>
+                </ng-template>
               </div>
 
               <!--  Texte / Article  -->
               <div *ngIf="activeLesson.lessonType === 'TEXT'" class="p-3 bg-light rounded mb-3">
                 <div *ngIf="activeLesson.articleContent; else textFallback"
-                     [innerHTML]="activeLesson.articleContent | safeHtml"
-                     class="article-content"></div>
+                     [innerHTML]="sanitizedArticleContent"
+                     class="article-content ql-editor"></div>
                 <ng-template #textFallback>
                   <p class="mb-0 text-muted">{{ activeLesson.description || 'Contenu textuel de la leçon.' }}</p>
                 </ng-template>
@@ -205,7 +220,7 @@
                   <i class="isax isax-arrow-left-2 me-1"></i>Précédent
                 </button>
                 <button class="cw-nav-btn cw-nav-btn--complete" (click)="markCompleted()"
-                        [disabled]="lessonCompleted">
+                        [class.cw-nav-btn--completed]="lessonCompleted">
                   <i class="isax me-1"
                      [class.isax-tick-circle5]="lessonCompleted"
                      [class.isax-tick-circle]="!lessonCompleted"></i>
@@ -796,8 +811,10 @@
         <button *ngIf="studentAiHistory.length > 0"
                 class="ai-clear-btn"
                 title="Effacer la conversation"
-                (click)="studentAiHistory = []">✕ Effacer</button>
-        <button class="btn-close btn-close-white btn-sm" (click)="showStudentAiPanel = false"></button>
+                (click)="clearStudentAiHistory()">✕ Effacer</button>
+        <button class="btn-close btn-close-white btn-sm" 
+                (click)="showStudentAiPanel = false"
+                title="Fermer le panneau"></button>
       </div>
     </div>
 

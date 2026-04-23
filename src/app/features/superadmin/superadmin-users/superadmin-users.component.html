@@ -238,19 +238,19 @@
                       <i class="ti ti-shield-bolt me-1"></i>Super Admin
                     </span>
                   } @else {
-                    <select class="form-select form-select-sm sa-role-select"
-                      [class.sa-rs-admin]="user.role === 'ADMIN'"
-                      [class.sa-rs-instructor]="user.role === 'INSTRUCTOR'"
-                      [class.sa-rs-student]="user.role === 'STUDENT'"
-                      [class.sa-rs-recruiter]="user.role === 'RECRUITER'"
-                      [ngModel]="user.role"
-                      (ngModelChange)="changeRole(user, $event)">
-                      <option value="STUDENT">Étudiant</option>
-                      <option value="INSTRUCTOR">Instructeur</option>
-                      <option value="RECRUITER">Recruteur</option>
-                      <option value="ADMIN">Administrateur</option>
-                      <option value="SUPERADMIN">Super Admin</option>
-                    </select>
+                    <span class="badge"
+                      [class.sa-badge-admin]="user.role === 'ADMIN'"
+                      [class.sa-badge-instructor]="user.role === 'INSTRUCTOR'"
+                      [class.sa-badge-student]="user.role === 'STUDENT'"
+                      [class.sa-badge-recruiter]="user.role === 'RECRUITER'">
+                      {{ getRoleLabel(user.role) }}
+                    </span>
+                    @if (user.role === 'INSTRUCTOR') {
+                      <button class="btn btn-outline-primary btn-sm d-block mt-2"
+                        (click)="changeRole(user, 'STUDENT')">
+                        <i class="ti ti-arrow-down me-1"></i>Passer étudiant
+                      </button>
+                    }
                   }
 
                   @if (user.role !== 'SUPERADMIN') {

@@ -29,7 +29,10 @@
       </div>
 
       <div class="d-flex align-items-center gap-2">
-        <button type="button" class="btn btn-sm btn-outline-secondary visitor-chatbot-header-btn" (click)="toggle()">
+        <button *ngIf="messages.length > 1" type="button" class="btn btn-sm btn-outline-secondary visitor-chatbot-header-btn" (click)="clearConversation()" title="Effacer la conversation">
+          <i class="ti ti-trash"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary visitor-chatbot-header-btn" (click)="toggle()" title="Fermer">
           <i class="ti ti-x"></i>
         </button>
       </div>

@@ -1,9 +1,14 @@
-import { Component } from '@angular/core';
+
+import { Component, AfterViewInit } from '@angular/core';
 import { routes } from '../../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../shared/service/auth/auth.service';
+import { environment } from '../../../../environments/environment';
+
+declare const google: any;
+
 
 @Component({
   selector: 'app-become-an-expert',
@@ -11,12 +16,12 @@ import { AuthService } from '../../../shared/service/auth/auth.service';
   templateUrl: './become-an-expert.component.html',
   styleUrl: './become-an-expert.component.scss'
 })
-export class BecomeAnExpertComponent {
+export class BecomeAnExpertComponent implements AfterViewInit {
   routes = routes;
   password: boolean[] = [false, false];
-
   passwordValue = '';
   strengthLevel = '';
+  readonly googleAuthEnabled = !!environment.enableGoogleAuth;
 
   private poorRegExp = /[a-z]/;
   private weakRegExp = /(?=.*?[0-9])/;
@@ -24,6 +29,46 @@ export class BecomeAnExpertComponent {
   private whitespaceRegExp = /^$|\s+/;
 
   constructor(private authService: AuthService, private router: Router) {}
+
+  ngAfterViewInit(): void {
+    if (!this.googleAuthEnabled) {
+      return;
+    }
+    const initGoogle = () => {
+      if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+          client_id: environment.googleClientId,
+          callback: (response: any) => this.handleGoogleCredential(response)
+        });
+        google.accounts.id.renderButton(
+          document.getElementById('google-btn-instructor'),
+          { theme: 'outline', size: 'large', text: 'signup_with', shape: 'rectangular', width: 220 }
+        );
+      } else {
+        setTimeout(initGoogle, 300);
+      }
+    };
+    initGoogle();
+  }
+
+  handleGoogleCredential(response: any): void {
+    this.authService.loginWithGoogle(response.credential).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('id', res.id);
+        localStorage.setItem('email', res.email);
+        localStorage.setItem('fullName', res.fullName);
+        localStorage.setItem('role', res.role);
+        localStorage.setItem('firstLogin', 'false');
+        this.authService.setFullName(res.fullName || '');
+        this.authService.setCurrentRole(res.role || '');
+        this.router.navigate([routes.instructor_dashboard]);
+      },
+      error: (err: any) => {
+        alert('Connexion Google échouée: ' + (err.error?.error || 'Réessayez'));
+      }
+    });
+  }
 
   togglePassword(index: number): void {
     this.password[index] = !this.password[index];

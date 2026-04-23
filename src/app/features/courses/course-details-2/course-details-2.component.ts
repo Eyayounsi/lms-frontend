@@ -83,6 +83,15 @@ export class CourseDetails2Component implements OnInit {
     this.courseService.getCourseDetail(courseId).subscribe({
       next: (data) => {
         this.course = data;
+        
+        // Transformer objectives et requirements en arrays si ce sont des strings
+        if (this.course.objectives && typeof this.course.objectives === 'string') {
+          this.course.objectives = this.course.objectives.split('\n').filter((o: string) => o.trim());
+        }
+        if (this.course.requirements && typeof this.course.requirements === 'string') {
+          this.course.requirements = this.course.requirements.split('\n').filter((r: string) => r.trim());
+        }
+        
         this.coverImageFailed = false;
         this.instructorAvatarFailed = false;
         this.coverCandidateIndex = 0;

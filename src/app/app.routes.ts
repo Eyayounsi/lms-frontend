@@ -44,6 +44,7 @@ export const routes: Routes = [
                 {path:'admin-payouts',    loadComponent:()=>import('./features/admin/admin-payouts/admin-payouts.component').then((m)=>m.AdminPayoutsComponent)},
                 {path:'admin-detection',  loadComponent:()=>import('./features/admin/admin-detection/admin-detection.component').then((m)=>m.AdminDetectionComponent)},
                 {path:'admin-analytics',   loadComponent:()=>import('./features/admin/admin-analytics/admin-analytics.component').then((m)=>m.AdminAnalyticsComponent)},
+                {path:'chatbot-faq', loadComponent:()=>import('./features/admin/chatbot-faq/chatbot-faq.component').then((m)=>m.ChatbotFaqComponent)},
                 {path:'admin-settings', loadComponent:()=>import('./shared/components/user-profile/user-profile.component').then((m)=>m.UserProfileComponent)}
             ]
         },
@@ -83,7 +84,7 @@ export const routes: Routes = [
                 {path:'course-category-2',loadComponent:()=>import ('./features/courses/course-category-2/course-category-2.component').then((m)=>m.CourseCategory2Component)},
                 {path:'course-category-3',loadComponent:()=>import ('./features/courses/course-category-3/course-category-3.component').then((m)=>m.CourseCategory3Component)},
                 {path:'course-resume',loadComponent:()=>import ('./features/courses/course-resume/course-resume.component').then((m)=>m.CourseResumeComponent)},
-                {path:'course-watch',loadComponent:()=>import ('./features/courses/course-watch/course-watch.component').then((m)=>m.CourseWatchComponent)},
+                {path:'course-watch',canActivate:[authGuard],loadComponent:()=>import ('./features/courses/course-watch/course-watch.component').then((m)=>m.CourseWatchComponent)},
                 {path:'cart',loadComponent:()=>import ('./features/courses/course-cart/course-cart.component').then((m)=>m.CourseCartComponent)},
                 {path:'checkout',loadComponent:()=>import ('./features/courses/course-checkout/course-checkout.component').then((m)=>m.CourseCheckoutComponent)},
                 {path:'course-list-public',loadComponent:()=>import ('./features/courses/course-list-public/course-list-public.component').then((m)=>m.CourseListPublicComponent)},

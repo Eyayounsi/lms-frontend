@@ -86,25 +86,12 @@ export class AdminHeaderComponent implements OnInit, OnDestroy {
   secondaryRoles: string[] = [];
   isSwitchingRole = false;
 
-  // ─── Devenir Instructeur ─────────────────────────────────────────────────
-  showBecomeInstructorModal = false;
-  becomeInstructorPassword  = '';
-  becomingInstructor        = false;
-  becomeInstructorError     = '';
-
   // ✅ Modal générique de vérification password pour switch de rôle
   showSwitchRoleModal = false;
   switchRoleTargetRole: string | null = null;
   switchRolePassword = '';
   switchRoleError = '';
   switchingRoleWithPassword = false;
-
-  /** Vrai si l'utilisateur est étudiant et ne possède pas encore le rôle instructeur */
-  get canBecomeInstructor(): boolean {
-    return this.isStudent
-      && !this.secondaryRoles.includes('INSTRUCTOR')
-      && !this.isInstructor;
-  }
 
   /** Vrai si l'instructeur peut accéder au dashboard étudiant */
   get canAccessStudentDashboard(): boolean {
@@ -193,33 +180,6 @@ export class AdminHeaderComponent implements OnInit, OnDestroy {
       ADMIN: '#ef4444', RECRUITER: '#0ea5e9', SUPERADMIN: '#0DCAF0'
     };
     return map[role] || '#6b7280';
-  }
-
-  becomeInstructor(): void {
-    if (!this.becomeInstructorPassword.trim()) {
-      this.becomeInstructorError = 'Mot de passe requis.';
-      return;
-    }
-    this.becomingInstructor = true;
-    this.becomeInstructorError = '';
-    const email = localStorage.getItem('email') || '';
-    this.authService.addRole({ email, password: this.becomeInstructorPassword, newRole: 'INSTRUCTOR' }).subscribe({
-      next: (res: any) => {
-        localStorage.setItem('token',          res.token);
-        localStorage.setItem('role',           res.role);
-        localStorage.setItem('secondaryRoles', JSON.stringify(res.secondaryRoles || []));
-        // Synchroniser le BehaviorSubject AVANT navigation
-        this.authService.setCurrentRole(res.role);
-        this.becomingInstructor = false;
-        this.showBecomeInstructorModal = false;
-        this.becomeInstructorPassword = '';
-        this.router.navigate(['/instructor/instructor-dashboard']);
-      },
-      error: (err: any) => {
-        this.becomingInstructor = false;
-        this.becomeInstructorError = err.error?.message || err.error || 'Mot de passe incorrect ou erreur serveur.';
-      }
-    });
   }
 
   /** Afficher la modal pour vérifier le password avant de changer de rôle */

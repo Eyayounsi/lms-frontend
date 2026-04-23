@@ -73,6 +73,108 @@
     #ql-article-toolbar button:hover .ql-fill,   #ql-article-toolbar button.ql-active .ql-fill   { fill:#6c63ff;   }
     #ql-article-toolbar .ql-picker-label { color:#555; }
     #ql-article-toolbar .ql-picker-item:hover, #ql-article-toolbar .ql-picker-item.ql-selected { color:#6c63ff; }
+    
+    /* ── Styles globaux pour l'affichage du contenu Quill ────────────────── */
+    .article-content, .article-preview-body, .article-content-display {
+      white-space: pre-wrap !important;
+      word-wrap: break-word !important;
+      line-height: 1.8 !important;
+    }
+    .article-content p, .article-preview-body p, .article-content-display p {
+      white-space: pre-wrap !important;
+      word-wrap: break-word !important;
+      margin-bottom: 0.75em !important;
+    }
+    
+    /* Tailles de police Quill */
+    .article-content .ql-size-small, .article-preview-body .ql-size-small, .article-content-display .ql-size-small {
+      font-size: 0.75em !important;
+    }
+    .article-content .ql-size-large, .article-preview-body .ql-size-large, .article-content-display .ql-size-large {
+      font-size: 1.5em !important;
+    }
+    .article-content .ql-size-huge, .article-preview-body .ql-size-huge, .article-content-display .ql-size-huge {
+      font-size: 2.5em !important;
+    }
+    
+    /* Polices Quill */
+    .article-content .ql-font-serif, .article-preview-body .ql-font-serif, .article-content-display .ql-font-serif {
+      font-family: Georgia, Times New Roman, serif !important;
+    }
+    .article-content .ql-font-monospace, .article-preview-body .ql-font-monospace, .article-content-display .ql-font-monospace {
+      font-family: Monaco, Courier New, monospace !important;
+    }
+    
+    /* Alignements Quill */
+    .article-content .ql-align-center, .article-preview-body .ql-align-center, .article-content-display .ql-align-center {
+      text-align: center !important;
+    }
+    .article-content .ql-align-right, .article-preview-body .ql-align-right, .article-content-display .ql-align-right {
+      text-align: right !important;
+    }
+    .article-content .ql-align-justify, .article-preview-body .ql-align-justify, .article-content-display .ql-align-justify {
+      text-align: justify !important;
+    }
+    
+    .article-content h1, .article-preview-body h1, .article-content-display h1 {
+      font-size: 1.9rem !important;
+      font-weight: 700 !important;
+      margin: 1.2em 0 0.4em !important;
+    }
+    .article-content h2, .article-preview-body h2, .article-content-display h2 {
+      font-size: 1.5rem !important;
+      font-weight: 600 !important;
+      margin: 1em 0 0.35em !important;
+      border-bottom: 2px solid #f0f0f0 !important;
+      padding-bottom: 0.25em !important;
+    }
+    .article-content h3, .article-preview-body h3, .article-content-display h3 {
+      font-size: 1.2rem !important;
+      font-weight: 600 !important;
+      margin: 0.9em 0 0.3em !important;
+    }
+    .article-content blockquote, .article-preview-body blockquote, .article-content-display blockquote {
+      border-left: 4px solid #6c63ff !important;
+      background: #f8f7ff !important;
+      margin: 1.2em 0 !important;
+      padding: 12px 20px !important;
+      border-radius: 0 6px 6px 0 !important;
+      color: #444 !important;
+      font-style: italic !important;
+    }
+    .article-content code, .article-preview-body code, .article-content-display code {
+      background-color: #f3f4f6 !important;
+      padding: 0.2em 0.4em !important;
+      border-radius: 3px !important;
+      font-family: 'Courier New', monospace !important;
+      font-size: 0.9em !important;
+      white-space: pre-wrap !important;
+    }
+    .article-content ul, .article-preview-body ul, .article-content-display ul,
+    .article-content ol, .article-preview-body ol, .article-content-display ol {
+      padding-left: 1.8em !important;
+      margin-bottom: 1em !important;
+    }
+    .article-content li, .article-preview-body li, .article-content-display li {
+      margin-bottom: 0.5em !important;
+    }
+    .article-content img, .article-preview-body img, .article-content-display img {
+      max-width: 100% !important;
+      height: auto !important;
+      border-radius: 6px !important;
+      margin: 1em 0 !important;
+    }
+    .article-content a, .article-preview-body a, .article-content-display a {
+      color: #6c63ff !important;
+      text-decoration: underline !important;
+    }
+    .article-content strong, .article-preview-body strong, .article-content-display strong {
+      font-weight: 600 !important;
+    }
+    .article-content em, .article-preview-body em, .article-content-display em {
+      font-style: italic !important;
+    }
+    
     /* ── Code block preview (article-preview-body) ──────────────────────── */
     .article-preview-body pre.ql-syntax,
     .article-preview-body pre[class*="language-"] {

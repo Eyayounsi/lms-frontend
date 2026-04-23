@@ -1,15 +1,19 @@
-<div class="page-title d-flex flex-wrap gap-3 align-items-center justify-content-between">
-    <h5>Enrolled Courses</h5>
+<!-- Header contextuel harmonisé -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex align-items-center gap-2">
+        <i class="isax isax-book text-primary" style="font-size: 2rem;"></i>
+        <h2 class="mb-0 fw-bold" style="font-size:1.6rem;">Mes cours</h2>
+    </div>
     <div class="tab-list">
         <ul class="nav mb-0 gap-2" role="tablist">
             <li class="nav-item mb-0" role="presentation">
-                <a href="javascript:void(0);" class="active" data-bs-toggle="tab" data-bs-target="#enroll-courses" aria-selected="true" role="tab">Enrolled ({{ enrolledCount }})</a>
+                <a href="javascript:void(0);" class="active" data-bs-toggle="tab" data-bs-target="#enroll-courses" aria-selected="true" role="tab">Enregistrés ({{ enrolledCount }})</a>
             </li>
             <li class="nav-item mb-0" role="presentation">
-                <a href="javascript:void(0);" data-bs-toggle="tab" data-bs-target="#active-courses" aria-selected="false" role="tab" class="" tabindex="-1">Active ({{ activeCount }})</a>
+                <a href="javascript:void(0);" data-bs-toggle="tab" data-bs-target="#active-courses" aria-selected="false" role="tab" class="" tabindex="-1">En cours ({{ activeCount }})</a>
             </li>
             <li class="nav-item mb-0" role="presentation">
-                <a href="javascript:void(0);" data-bs-toggle="tab" data-bs-target="#complete-courses" aria-selected="false" role="tab" class="" tabindex="-1">Completed ({{ completedCount }})</a>
+                <a href="javascript:void(0);" data-bs-toggle="tab" data-bs-target="#complete-courses" aria-selected="false" role="tab" class="" tabindex="-1">Terminés ({{ completedCount }})</a>
             </li>
         </ul>
     </div>
@@ -88,7 +92,7 @@
                         </div>
                     </div>
                     <span class="badge badge-light rounded-pill bg-light d-inline-flex align-items-center fs-13 fw-medium mb-0">
-                        {{ course.categoryName || course.category || course.level || 'Course' }}
+                        {{ course.level || course.categoryName || course.category || 'Course' }}
                     </span>
                 </div>
 

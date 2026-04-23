@@ -458,43 +458,8 @@ export class AdminCoursesComponent implements OnInit {
       this._enhanceBlock(code, code);
     });
 
-    // ── Pass 3: smart fallback — article has no formal code blocks ─────────
-    if (preBlocks.length === 0 && codeBlocks.length === 0) {
-      const text = container.textContent || '';
-      const CODE_HINTS = /console\.|function |=>|var |let |const |<script|<div|document\.|window\.|import |export /;
-      if (CODE_HINTS.test(text)) {
-        // Show a banner offering to run the whole article as a JS snippet
-        const banner = document.createElement('div');
-        banner.setAttribute('data-cb-enhanced', 'true');
-        banner.style.cssText =
-          'background:#2d2d2d;border:1px solid #3a3a3a;border-radius:6px;padding:10px 14px;' +
-          'display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;';
-        banner.innerHTML =
-          '<span style="font-size:12px;color:#aaa;font-family:monospace;">' +
-          '<i class="fa-solid fa-triangle-exclamation" style="color:#ffb74d;margin-right:6px"></i>' +
-          'Aucun bloc de code formel détecté — le texte semble contenir du code.' +
-          '</span>';
-
-        const runAllBtn = document.createElement('button');
-        runAllBtn.innerHTML = '<i class="fa-solid fa-play" style="margin-right:4px"></i>Exécuter le texte comme JS';
-        runAllBtn.style.cssText =
-          'font-size:11px;padding:4px 12px;border:1px solid #4caf50;background:transparent;' +
-          'color:#4caf50;border-radius:4px;cursor:pointer;white-space:nowrap;flex-shrink:0;margin-left:12px;';
-        runAllBtn.addEventListener('click', () => {
-          // Create a temporary wrapper around the whole article for the output panel
-          let wrapper = container.querySelector<HTMLElement>('.cb-smart-wrapper');
-          if (!wrapper) {
-            wrapper = document.createElement('div');
-            wrapper.className = 'cb-smart-wrapper';
-            container.appendChild(wrapper);
-          }
-          this.runCode(text, 'js', wrapper as HTMLElement);
-        });
-
-        banner.appendChild(runAllBtn);
-        container.insertBefore(banner, container.firstChild);
-      }
-    }
+    // ── Pass 3: smart fallback désactivé pour afficher le contenu proprement ─────────
+    // Le contenu article s'affiche maintenant sans message d'avertissement
   }
 
   /** Internal helper: injects the dark card around a single block element */

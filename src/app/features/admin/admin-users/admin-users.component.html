@@ -240,19 +240,12 @@
           </td>
 
           <td>
-            <select class="form-select form-select-sm usr-role-select"
-              [class.usr-rs-admin]="user.role.includes('ADMIN')"
-              [class.usr-rs-inst]="user.role === 'INSTRUCTOR'"
-              [class.usr-rs-stud]="user.role === 'STUDENT'"
-              [class.usr-rs-recr]="user.role === 'RECRUITER'"
-              [ngModel]="user.role"
-              [disabled]="user.role.includes('ADMIN')"
-              (ngModelChange)="changeRole(user, $event)">
-              <option value="STUDENT">📚 Étudiant</option>
-              <option value="INSTRUCTOR">🎓 Instructeur</option>
-              <option value="RECRUITER">💼 Recruteur</option>
-              <option value="ADMIN">🛡 Admin</option>
-            </select>
+            <span class="badge" [ngClass]="getRoleBadgeClass(user.role)">{{ getRoleLabel(user.role) }}</span>
+            <button *ngIf="user.role === 'INSTRUCTOR'"
+              class="btn btn-outline-primary btn-sm d-block mt-2"
+              (click)="changeRole(user, 'STUDENT')">
+              <i class="ti ti-arrow-down me-1"></i>Passer étudiant
+            </button>
             <div *ngIf="user.secondaryRoles?.length" class="d-flex flex-wrap gap-1 mt-1">
               <span *ngFor="let sr of user.secondaryRoles"
                 class="usr-sr-pill"

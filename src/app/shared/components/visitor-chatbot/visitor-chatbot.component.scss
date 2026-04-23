@@ -44,6 +44,7 @@
 .visitor-chatbot-panel {
   width: min(410px, calc(100vw - 2.5rem));
   height: min(560px, 75vh);
+  max-height: calc(100vh - 100px); /* Éviter de toucher la navbar */
   border-radius: 18px;
   overflow: hidden;
   border: 1px solid #e0e7ff;
@@ -59,6 +60,8 @@
   color: #fff;
   border-bottom: none;
   min-height: 72px;
+  position: relative;
+  z-index: 1;
 }
 
 .visitor-chatbot-subtitle {
@@ -84,6 +87,9 @@
   border-color: rgba(255, 255, 255, 0.55);
   color: #fff;
   background: rgba(255, 255, 255, 0.14);
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
 
   &:hover {
     background: rgba(255, 255, 255, 0.26);

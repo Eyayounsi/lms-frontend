@@ -3,45 +3,242 @@
         <div class="std-kpi-card std-kpi-blue" style="animation-delay:0s">
             <div class="std-kpi-header">
                 <div class="std-kpi-icon"><i class="ti ti-book-2"></i></div>
+                <span class="std-kpi-chip">Vue globale</span>
             </div>
-            <span class="std-kpi-label">Total Registered</span>
+            <span class="std-kpi-label">Cours inscrits</span>
             <h4 class="std-kpi-value" *ngIf="!loading">{{ totalCourses }}</h4>
             <div *ngIf="loading" class="spinner-border spinner-border-sm text-primary"></div>
-            <p class="std-kpi-trend text-primary mt-2"><i class="ti ti-arrow-up-right"></i>All enrolled courses</p>
+            <p class="std-kpi-trend text-primary mt-2"><i class="ti ti-layout-grid-add"></i>Catalogue personnel</p>
         </div>
 
         <div class="std-kpi-card std-kpi-orange" style="animation-delay:0.1s">
             <div class="std-kpi-header">
                 <div class="std-kpi-icon"><i class="ti ti-rocket"></i></div>
+                <span class="std-kpi-chip">Dynamique</span>
             </div>
-            <span class="std-kpi-label">In Progress</span>
+            <span class="std-kpi-label">En progression</span>
             <h4 class="std-kpi-value" *ngIf="!loading">{{ activeCourses }}</h4>
             <div *ngIf="loading" class="spinner-border spinner-border-sm text-warning"></div>
-            <p class="std-kpi-trend text-warning mt-2"><i class="ti ti-flame"></i>Keep learning</p>
+            <p class="std-kpi-trend text-warning mt-2"><i class="ti ti-flame"></i>Cours à poursuivre</p>
         </div>
 
         <div class="std-kpi-card std-kpi-green" style="animation-delay:0.2s">
             <div class="std-kpi-header">
                 <div class="std-kpi-icon"><i class="ti ti-trophy"></i></div>
+                <span class="std-kpi-chip">Succès</span>
             </div>
-            <span class="std-kpi-label">Completed</span>
+            <span class="std-kpi-label">Cours terminés</span>
             <h4 class="std-kpi-value" *ngIf="!loading">{{ completedCourses }}</h4>
             <div *ngIf="loading" class="spinner-border spinner-border-sm text-success"></div>
-            <p class="std-kpi-trend text-success mt-2"><i class="ti ti-check-circle"></i>Great achievement!</p>
+            <p class="std-kpi-trend text-success mt-2"><i class="ti ti-check-circle"></i>Objectifs validés</p>
         </div>
 
         <div class="std-kpi-card std-kpi-red" style="animation-delay:0.3s">
             <div class="std-kpi-header">
                 <div class="std-kpi-icon"><i class="ti ti-status-change"></i></div>
+                <span class="std-kpi-chip">Performance</span>
             </div>
-            <span class="std-kpi-label">Progress Rate</span>
+            <span class="std-kpi-label">Taux de complétion</span>
             <h4 class="std-kpi-value" *ngIf="!loading">
-                {{ (totalCourses > 0 ? Math.round((completedCourses / totalCourses) * 100) : 0) }}<small>%</small>
+                {{ completionRate }}<small>%</small>
             </h4>
             <div *ngIf="loading" class="spinner-border spinner-border-sm text-danger"></div>
-            <p class="std-kpi-trend text-danger mt-2"><i class="ti ti-trending-up"></i>Overall performance</p>
+            <p class="std-kpi-trend text-danger mt-2"><i class="ti ti-trending-up"></i>Progression {{ completionRatioLabel }}</p>
         </div>
     </div>
+
+    <!-- PREMIUM INSIGHT STRIP ------------------------------------------ -->
+    <div class="std-hero-section mb-4">
+        <div class="std-hero-inner">
+            <div class="std-hero-content">
+                <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap mb-2">
+                    <span class="std-hero-greeting">Pilotage d'apprentissage</span>
+                    <div class="std-hero-user" title="Profil étudiant">
+                        <ng-container *ngIf="userAvatarUrl; else heroAvatarFallback">
+                            <img [src]="userAvatarUrl" [alt]="userName" class="std-hero-user-thumb">
+                        </ng-container>
+                        <ng-template #heroAvatarFallback>
+                            <div class="std-hero-user-thumb std-hero-user-fallback">{{ userInitials }}</div>
+                        </ng-template>
+                    </div>
+                </div>
+
+                <h3 class="std-hero-title">Progression intelligente, actions rapides.</h3>
+                <div class="std-hero-badge">
+                    <i class="ti ti-sparkles"></i>
+                    {{ totalCourses }} cours suivis · {{ completedCourses }} terminés · {{ activeCourses }} actifs
+                </div>
+                <p class="mt-3 mb-0 text-muted">
+                    {{ getHeroDescription() }}
+                </p>
+
+                <div class="std-hero-actions">
+                    <button type="button" class="btn btn-hero-primary" (click)="showDashboardTips()">
+                        <i class="ti ti-bolt"></i>Aperçu rapide
+                    </button>
+                    <button *ngIf="featuredCourse" type="button" class="btn btn-hero-secondary" (click)="openFeaturedCourse()">
+                        <i class="ti ti-player-play"></i>Reprendre
+                    </button>
+                </div>
+            </div>
+
+            <div class="std-hero-focus-panel">
+                <div class="std-hero-focus-card">
+                    <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+                        <span class="std-hero-focus-chip"><i class="ti ti-rocket"></i>Focus du moment</span>
+                        <button type="button" class="btn btn-sm btn-light" (click)="scrollToInvoices()">Factures</button>
+                    </div>
+
+                    <ng-container *ngIf="featuredCourse; else noFeaturedCourse">
+                        <h5 class="fw-bold mb-1">{{ featuredCourse.title }}</h5>
+                        <p class="text-muted small mb-3">Instructeur : {{ featuredCourse.instructorName }}</p>
+                        <div class="progress mb-2" style="height:8px;background:rgba(95,107,245,.14)">
+                            <div class="progress-bar" style="background:linear-gradient(90deg,#7c8cff,#5f6bf5)" [style.width.%]="featuredCourse.progressPct"></div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
+                            <span>{{ featuredCourse.progressPct }}% complété</span>
+                            <span>{{ activeCourses }} cours actifs</span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-primary w-100" style="background:linear-gradient(135deg,#7c8cff,#5f6bf5);border:none" (click)="openFeaturedCourse()">Reprendre maintenant</button>
+                    </ng-container>
+
+                    <ng-template #noFeaturedCourse>
+                        <p class="text-muted small mb-3">Vous n'avez pas encore de cours actif. Parcourez le catalogue pour démarrer votre prochaine progression.</p>
+                        <a [routerLink]="routes.courseListPublic" class="btn btn-sm btn-primary w-100" style="background:linear-gradient(135deg,#7c8cff,#5f6bf5);border:none">Explorer le catalogue</a>
+                    </ng-template>
+
+                    <div class="std-hero-mini-grid mt-3">
+                        <div class="std-hero-mini-item">
+                            <span>{{ paidOrders }}</span>
+                            <small>Factures payées</small>
+                        </div>
+                        <div class="std-hero-mini-item">
+                            <span>{{ totalSpent | number:'1.2-2' }} €</span>
+                            <small>Dépensé</small>
+                        </div>
+                        <div class="std-hero-mini-item">
+                            <span>{{ orders.length }}</span>
+                            <small>Transactions</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="std-fab" (click)="openNotesWorkspace()" aria-label="Reprendre le cours" title="Reprendre le cours">
+        <i class="ti ti-school"></i>
+    </button>
+
+        <div *ngIf="invoiceOrder" class="modal fade show d-block" tabindex="-1" style="background-color:rgba(0,0,0,0.55);">
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold">
+                            <i class="fa-solid fa-file-invoice-dollar me-2 text-primary"></i>Facture d'achat
+                        </h5>
+                        <div class="ms-auto d-flex gap-2">
+                            <button class="btn btn-sm btn-primary" (click)="printInvoice()">
+                                <i class="fa-solid fa-print me-1"></i>Imprimer / PDF
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary" (click)="closeInvoice()">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal-body p-4" id="student-invoice-area" style="font-family:Arial,sans-serif;">
+                        <div style="border-bottom:2px solid #0d6efd;padding-bottom:16px;margin-bottom:24px;" class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                            <div>
+                                <h2 style="color:#0d6efd;margin:0;font-size:22px;font-weight:700;">FACTURE D'ACHAT</h2>
+                                <p style="margin:4px 0 0;color:#6b7280;font-size:13px;">Réf. : INV-{{ invoiceOrder.enrollmentId }}</p>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-weight:700;font-size:16px;">E-Learning Platform</div>
+                                <div style="color:#6b7280;font-size:13px;">eyayoounsi&#64;gmail.com</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div style="background:#f8fafc;border-radius:8px;padding:16px;">
+                                    <div style="font-weight:700;margin-bottom:8px;color:#374151;">Acheteur</div>
+                                    <div style="font-size:15px;font-weight:600;">{{ userName }}</div>
+                                    <div style="color:#6b7280;font-size:13px;">{{ studentEmail }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div style="background:#f8fafc;border-radius:8px;padding:16px;">
+                                    <div style="font-weight:700;margin-bottom:8px;color:#374151;">Détails de la commande</div>
+                                    <table style="width:100%;font-size:13px;">
+                                        <tr>
+                                            <td style="color:#6b7280;padding:3px 0;">Référence :</td>
+                                            <td style="text-align:right;font-weight:600;">#{{ invoiceOrder.enrollmentId }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color:#6b7280;padding:3px 0;">Date d'achat :</td>
+                                            <td style="text-align:right;">{{ formatOrderDate(invoiceOrder.purchaseDate) }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="color:#6b7280;padding:3px 0;">Statut :</td>
+                                            <td style="text-align:right;">
+                                                <span [ngClass]="'badge ' + getInvoiceStatusClass(invoiceOrder.status)">
+                                                    {{ getInvoiceStatusLabel(invoiceOrder.status) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:20px;margin-bottom:20px;">
+                            <div style="font-weight:700;margin-bottom:12px;color:#0369a1;">Détail de la commande</div>
+                            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+                                <thead>
+                                    <tr style="background:#0d6efd;color:#fff;">
+                                        <th style="padding:10px 12px;text-align:left;">Description</th>
+                                        <th style="padding:10px 12px;text-align:center;">Qté</th>
+                                        <th style="padding:10px 12px;text-align:right;">Prix</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom:1px solid #e5e7eb;">
+                                        <td style="padding:12px;">
+                                            <div style="font-weight:600;">{{ invoiceOrder.courseTitle }}</div>
+                                            <div style="color:#6b7280;font-size:12px;">Instructeur : {{ invoiceOrder.instructorName }}</div>
+                                            <div style="color:#6b7280;font-size:12px;">Accès à vie · Certificat inclus</div>
+                                        </td>
+                                        <td style="padding:12px;text-align:center;">1</td>
+                                        <td style="padding:12px;text-align:right;font-weight:700;color:#0d6efd;">
+                                            {{ invoiceOrder.amount | number:'1.2-2' }} €
+                                        </td>
+                                    </tr>
+                                    <tr style="border-top:2px solid #0d6efd;background:#eff6ff;">
+                                        <td colspan="2" style="padding:12px;font-weight:700;color:#1e40af;">TOTAL TTC</td>
+                                        <td style="padding:12px;text-align:right;font-weight:700;font-size:18px;color:#1e40af;">
+                                            {{ invoiceOrder.amount | number:'1.2-2' }} €
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;margin-bottom:16px;">
+                            <span style="color:#166534;font-size:13px;">
+                                <i class="fa-solid fa-circle-info me-1"></i>
+                                Cet achat vous donne un accès permanent au cours et à toutes ses mises à jour futures.
+                            </span>
+                        </div>
+
+                        <div style="text-align:center;color:#9ca3af;font-size:11px;border-top:1px solid #e5e7eb;padding-top:12px;">
+                            Document généré automatiquement par E-Learning Platform — Conservez ce document comme preuve d'achat.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <!-- COURSES HEADER ──────────────────────────────────────────── -->
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
@@ -153,11 +350,11 @@
                     </div>
                     <div class="std-table-controls">
                         <div class="std-table-search">
-                            <input type="text" placeholder="Search invoices..." class="form-control">
+                            <input type="text" placeholder="Search invoices..." class="form-control" [(ngModel)]="orderSearch" (ngModelChange)="applyOrderFilters()">
                             <i class="ti ti-search"></i>
                         </div>
-                        <button class="btn btn-sm" style="background:linear-gradient(135deg,#7c8cff,#5f6bf5);color:#fff;border:none;border-radius:8px;padding:0.6rem 1rem;font-weight:600">
-                            <i class="ti ti-download me-1"></i>Export
+                        <button class="btn btn-sm" type="button" (click)="exportOrders()" style="background:linear-gradient(135deg,#7c8cff,#5f6bf5);color:#fff;border:none;border-radius:8px;padding:0.6rem 1rem;font-weight:600">
+                            <i class="ti ti-download me-1"></i>Télécharger PDF
                         </button>
                     </div>
                 </div>
@@ -176,144 +373,20 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Row 1 -->
-                            <tr class="std-table-row">
+                            <tr *ngFor="let order of filteredOrders; let i = index" class="std-table-row">
                                 <td>
                                     <div class="std-course-cell">
-                                        <span class="std-course-indicator" style="background:linear-gradient(135deg,#7c8cff,#5f6bf5)"></span>
-                                        <span class="std-course-name">Build Responsive Real World Websites</span>
+                                        <span class="std-course-indicator" [style.background]="['linear-gradient(135deg,#7c8cff,#5f6bf5)','linear-gradient(135deg,#03C95A,#02a876)','linear-gradient(135deg,#06b6d4,#0891b2)','linear-gradient(135deg,#f59e0b,#d97706)','linear-gradient(135deg,#8b5cf6,#7c3aed)','linear-gradient(135deg,#fb7185,#f43f5e)'][i % 6]"></span>
+                                        <span class="std-course-name">{{ order.courseTitle }}</span>
                                     </div>
                                 </td>
-                                <td><span class="std-badge-invoice">#INV001</span></td>
-                                <td><strong style="color:#191919;font-size:15px">$200.00</strong></td>
-                                <td><span class="std-date-text">Jan 15, 2026</span></td>
-                                <td><span class="std-badge std-badge-paid"><i class="ti ti-circle-filled"></i>Paid</span></td>
+                                <td><span class="std-badge-invoice">#INV{{ order.enrollmentId }}</span></td>
+                                <td><strong style="color:#191919;font-size:15px">{{ order.amount | number:'1.2-2' }} €</strong></td>
+                                <td><span class="std-date-text">{{ formatOrderDate(order.purchaseDate) }}</span></td>
+                                <td><span class="std-badge" [ngClass]="getOrderStatusClass(order.status)"><i class="ti ti-circle-filled"></i>{{ getOrderStatusLabel(order.status) }}</span></td>
                                 <td style="text-align:right">
                                     <div class="std-action-group">
-                                        <a href="javascript:void(0);" class="std-action-icon" title="Download">
-                                            <i class="ti ti-download"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" class="std-action-icon" title="View Details">
-                                            <i class="ti ti-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Row 2 -->
-                            <tr class="std-table-row">
-                                <td>
-                                    <div class="std-course-cell">
-                                        <span class="std-course-indicator" style="background:linear-gradient(135deg,#03C95A,#02a876)"></span>
-                                        <span class="std-course-name">WordPress for Beginners - Complete Guide</span>
-                                    </div>
-                                </td>
-                                <td><span class="std-badge-invoice">#INV002</span></td>
-                                <td><strong style="color:#191919;font-size:15px">$310.00</strong></td>
-                                <td><span class="std-date-text">Feb 03, 2026</span></td>
-                                <td><span class="std-badge std-badge-paid"><i class="ti ti-circle-filled"></i>Paid</span></td>
-                                <td style="text-align:right">
-                                    <div class="std-action-group">
-                                        <a href="javascript:void(0);" class="std-action-icon" title="Download">
-                                            <i class="ti ti-download"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" class="std-action-icon" title="View Details">
-                                            <i class="ti ti-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Row 3 -->
-                            <tr class="std-table-row">
-                                <td>
-                                    <div class="std-course-cell">
-                                        <span class="std-course-indicator" style="background:linear-gradient(135deg,#06b6d4,#0891b2)"></span>
-                                        <span class="std-course-name">Information About UI/UX Design Degree</span>
-                                    </div>
-                                </td>
-                                <td><span class="std-badge-invoice">#INV003</span></td>
-                                <td><strong style="color:#191919;font-size:15px">$270.00</strong></td>
-                                <td><span class="std-date-text">Feb 18, 2026</span></td>
-                                <td><span class="std-badge std-badge-paid"><i class="ti ti-circle-filled"></i>Paid</span></td>
-                                <td style="text-align:right">
-                                    <div class="std-action-group">
-                                        <a href="javascript:void(0);" class="std-action-icon" title="Download">
-                                            <i class="ti ti-download"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" class="std-action-icon" title="View Details">
-                                            <i class="ti ti-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Row 4 -->
-                            <tr class="std-table-row">
-                                <td>
-                                    <div class="std-course-cell">
-                                        <span class="std-course-indicator" style="background:linear-gradient(135deg,#f59e0b,#d97706)"></span>
-                                        <span class="std-course-name">Sketch from A to Z (2024)</span>
-                                    </div>
-                                </td>
-                                <td><span class="std-badge-invoice">#INV004</span></td>
-                                <td><strong style="color:#191919;font-size:15px">$180.00</strong></td>
-                                <td><span class="std-date-text">Mar 05, 2026</span></td>
-                                <td><span class="std-badge std-badge-paid"><i class="ti ti-circle-filled"></i>Paid</span></td>
-                                <td style="text-align:right">
-                                    <div class="std-action-group">
-                                        <a href="javascript:void(0);" class="std-action-icon" title="Download">
-                                            <i class="ti ti-download"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" class="std-action-icon" title="View Details">
-                                            <i class="ti ti-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Row 5 -->
-                            <tr class="std-table-row">
-                                <td>
-                                    <div class="std-course-cell">
-                                        <span class="std-course-indicator" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)"></span>
-                                        <span class="std-course-name">Become an app designer - Advanced UX/UI</span>
-                                    </div>
-                                </td>
-                                <td><span class="std-badge-invoice">#INV005</span></td>
-                                <td><strong style="color:#191919;font-size:15px">$220.00</strong></td>
-                                <td><span class="std-date-text">Mar 22, 2026</span></td>
-                                <td><span class="std-badge std-badge-paid"><i class="ti ti-circle-filled"></i>Paid</span></td>
-                                <td style="text-align:right">
-                                    <div class="std-action-group">
-                                        <a href="javascript:void(0);" class="std-action-icon" title="Download">
-                                            <i class="ti ti-download"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" class="std-action-icon" title="View Details">
-                                            <i class="ti ti-eye"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-
-                            <!-- Row 6 -->
-                            <tr class="std-table-row">
-                                <td>
-                                    <div class="std-course-cell">
-                                        <span class="std-course-indicator" style="background:linear-gradient(135deg,#fb7185,#f43f5e)"></span>
-                                        <span class="std-course-name">Advanced JavaScript Performance & Optimization</span>
-                                    </div>
-                                </td>
-                                <td><span class="std-badge-invoice">#INV006</span></td>
-                                <td><strong style="color:#191919;font-size:15px">$195.00</strong></td>
-                                <td><span class="std-date-text">Apr 01, 2026</span></td>
-                                <td><span class="std-badge std-badge-paid"><i class="ti ti-circle-filled"></i>Paid</span></td>
-                                <td style="text-align:right">
-                                    <div class="std-action-group">
-                                        <a href="javascript:void(0);" class="std-action-icon" title="Download">
-                                            <i class="ti ti-download"></i>
-                                        </a>
-                                        <a href="javascript:void(0);" class="std-action-icon" title="View Details">
+                                        <a href="javascript:void(0);" class="std-action-icon" title="View Details" (click)="openInvoice(order)">
                                             <i class="ti ti-eye"></i>
                                         </a>
                                     </div>
@@ -325,14 +398,13 @@
 
                 <!-- Table Footer -->
                 <div class="std-table-footer">
-                    <span class="std-footer-text">Showing <strong>1 - 6</strong> of <strong>12</strong> transactions</span>
+                    <span class="std-footer-text">Showing <strong>{{ filteredOrders.length > 0 ? '1 - ' + filteredOrders.length : '0' }}</strong> of <strong>{{ orders.length }}</strong> transactions</span>
                     <div class="std-pagination">
                         <button class="std-pagination-btn disabled">
                             <i class="ti ti-chevron-left"></i>
                         </button>
                         <button class="std-pagination-btn active">1</button>
-                        <button class="std-pagination-btn">2</button>
-                        <button class="std-pagination-btn">
+                        <button class="std-pagination-btn disabled">
                             <i class="ti ti-chevron-right"></i>
                         </button>
                     </div>

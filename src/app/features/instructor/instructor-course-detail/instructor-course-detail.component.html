@@ -219,15 +219,23 @@
                   <div class="d-flex gap-2">
                     <button *ngIf="lesson.videoUrl" type="button"
                             (click)="openPreview(lesson.videoUrl, 'video')"
-                            class="btn btn-sm btn-outline-success">
+                            class="btn btn-sm btn-outline-success"
+                            data-bs-toggle="modal" data-bs-target="#mediaPreviewModal">
                       <i class="fa-solid fa-video me-1"></i>Vidéo
                     </button>
                     <button *ngIf="lesson.pdfUrl" type="button"
                             (click)="openPreview(lesson.pdfUrl, 'pdf')"
-                            class="btn btn-sm btn-outline-info">
+                            class="btn btn-sm btn-outline-info"
+                            data-bs-toggle="modal" data-bs-target="#mediaPreviewModal">
                       <i class="fa-solid fa-file-pdf me-1"></i>PDF
                     </button>
-                    <span *ngIf="!lesson.videoUrl && !lesson.pdfUrl" class="text-muted small">Aucun fichier</span>
+                    <button *ngIf="lesson.articleContent" type="button"
+                            (click)="openPreview('', 'article', lesson.articleContent)"
+                            class="btn btn-sm btn-outline-warning"
+                            data-bs-toggle="modal" data-bs-target="#mediaPreviewModal">
+                      <i class="fa-solid fa-file-lines me-1"></i>Article
+                    </button>
+                    <span *ngIf="!lesson.videoUrl && !lesson.pdfUrl && !lesson.articleContent" class="text-muted small">Aucun contenu</span>
                   </div>
                 </div>
                 <div *ngIf="!section.lessons?.length" class="text-muted text-center py-2 small">
@@ -325,8 +333,10 @@
     <div class="modal-content bg-dark">
       <div class="modal-header border-0 pb-0">
         <h6 class="modal-title text-white">
-          <i [class]="previewType === 'video' ? 'fa-solid fa-video me-2' : 'fa-solid fa-file-pdf me-2'"></i>
-          {{ previewType === 'video' ? 'Prévisualisation vidéo' : 'Prévisualisation PDF' }}
+          <i *ngIf="previewType === 'video'" class="fa-solid fa-video me-2"></i>
+          <i *ngIf="previewType === 'pdf'" class="fa-solid fa-file-pdf me-2"></i>
+          <i *ngIf="previewType === 'article'" class="fa-solid fa-file-lines me-2"></i>
+          {{ previewType === 'video' ? 'Prévisualisation vidéo' : previewType === 'pdf' ? 'Prévisualisation PDF' : 'Prévisualisation Article' }}
         </h6>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -343,6 +353,12 @@
                 style="width:100%; height:70vh; border:none;"
                 class="rounded">
         </iframe>
+        <!-- Article -->
+        <div *ngIf="previewType === 'article'" 
+             class="bg-white p-4 rounded article-content-display" 
+             style="max-height:70vh; overflow-y:auto;"
+             [innerHTML]="previewArticleContent">
+        </div>
       </div>
     </div>
   </div>

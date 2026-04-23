@@ -164,8 +164,8 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     get pendingCourses(): number {
-        if (!this.overview) return 0;
-        return Math.max(0, this.overview.totalCourses - this.overview.publishedCourses);
+        if (!this.courseStats) return 0;
+        return this.courseStats.byStatus.PENDING || 0;
     }
 
     getRoleColor(role: string): string {

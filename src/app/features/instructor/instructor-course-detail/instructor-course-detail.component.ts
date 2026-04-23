@@ -88,11 +88,17 @@ export class InstructorCourseDetailComponent implements OnInit {
 
   // ── Prévisualisation médias ──────────────────────────────────
   previewUrl = '';
-  previewType: 'video' | 'pdf' = 'video';
+  previewType: 'video' | 'pdf' | 'article' = 'video';
+  previewArticleContent: string = '';
 
-  openPreview(url: string, type: 'video' | 'pdf'): void {
-    this.previewUrl = this.getFileUrl(url);
-    this.previewType = type;
+  openPreview(url: string, type: 'video' | 'pdf' | 'article', articleContent?: string): void {
+    if (type === 'article') {
+      this.previewArticleContent = articleContent || '';
+      this.previewType = 'article';
+    } else {
+      this.previewUrl = this.getFileUrl(url);
+      this.previewType = type;
+    }
     const el = document.getElementById('mediaPreviewModal');
     if (el) { new bootstrap.Modal(el).show(); }
   }

@@ -274,6 +274,9 @@
                                 <div class="d-flex align-items-center justify-content-center or fs-14 my-3">
                                     Ou
                                 </div>
+                                <div class="d-flex align-items-center justify-content-center mb-3" *ngIf="googleAuthEnabled">
+                                  <div id="google-btn-instructor" class="me-2"></div>
+                                </div>
                                 <a [routerLink]="routes.face_register" [queryParams]="{ role: 'INSTRUCTOR' }" class="btn btn-outline-secondary w-100 face-register-btn">
                                     <i class="ti ti-face-id fs-18 me-2"></i>
                                     Inscription avec Face ID

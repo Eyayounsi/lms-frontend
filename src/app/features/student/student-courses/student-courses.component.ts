@@ -109,14 +109,15 @@ export class StudentCoursesComponent implements OnInit {
 
   getCourseBadge(course: any): string {
     if ((course?.progressPct ?? 0) >= 100) return 'Completed';
-    if ((course?.progressPct ?? 0) > 0) return `${course.progressPct}%`;
-    return course?.categoryName || course?.category || course?.level || 'Course';
+    // Toujours afficher la progression, même si 0%
+    return `${course.progressPct ?? 0}%`;
   }
 
   getCourseBadgeClass(course: any): string {
     if ((course?.progressPct ?? 0) >= 100) return 'text-bg-success';
     if ((course?.progressPct ?? 0) > 0) return 'text-bg-primary';
-    return 'text-bg-danger';
+    // 0% = badge gris
+    return 'text-bg-secondary';
   }
 
   getCoursePrice(course: any): string {

@@ -1,8 +1,8 @@
+
 import { Component, OnInit } from '@angular/core';
 import { NavigationStart, Router, Event as RouterEvent } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 import { routes } from '../../shared/service/routes/routes';
 import { StudentSidebarComponent } from './common/student-sidebar/student-sidebar.component';
 import { AuthService } from '../../shared/service/auth/auth.service';
@@ -11,32 +11,71 @@ import { AuthService } from '../../shared/service/auth/auth.service';
     selector: 'app-student',
     templateUrl: './student.component.html',
     styleUrls: ['./student.component.scss'],
-    imports : [CommonModule,RouterModule,FormsModule,StudentSidebarComponent]
+  imports : [CommonModule,RouterModule,StudentSidebarComponent]
 })
 export class StudentComponent implements OnInit {
   public routes = routes;
   last = '';
   userName = '';
-
-  // ✅ Modal de vérification password pour switch vers instructor
-  showSwitchToInstructorModal = false;
-  switchToInstructorPassword = '';
-  switchToInstructorError = '';
-  switchingToInstructor = false;
+  userAvatarUrl = '';
 
   get userInitials(): string {
     return (this.userName || 'S').split(' ').map(p => p.charAt(0)).join('').toUpperCase().slice(0, 2);
   }
 
-  /** Vrai si le compte possède aussi le rôle INSTRUCTOR (primaire ou secondaire) */
-  get hasInstructorRole(): boolean {
-    const primaryRole = localStorage.getItem('role') || '';
-    const secondary: string[] = JSON.parse(localStorage.getItem('secondaryRoles') || '[]');
-    return primaryRole === 'INSTRUCTOR' || secondary.includes('INSTRUCTOR');
+  get pageTitle(): string {
+    // Dashboard: garder Bienvenue
+    if (this.last === '' || this.last.toLowerCase().includes('dashboard')) return 'Bienvenue';
+    // Traductions rapides (à adapter si besoin)
+    const map: any = {
+      'Enrolled Courses': 'Mes cours',
+      'My Profile': 'Mon profil',
+      'My Certificates': 'Certificats',
+      'Wishlist': 'Wishlist',
+      'Reviews': 'Avis',
+      'My Quiz Attempts': 'Quiz',
+      'Order History': 'Commandes',
+      'Referrals': 'Parrainages',
+      'Messages': 'Messages',
+      'Question & Answer': 'Q&A',
+      'Support Tickets': 'Tickets',
+      "Offres d'Emploi": "Offres d'Emploi",
+      'Challenges': 'Challenges',
+    };
+    return map[this.last] || this.last;
+  }
+
+  get pageIcon(): string {
+    if (this.last === '' || this.last.toLowerCase().includes('dashboard')) return '';
+    const map: any = {
+      'Enrolled Courses': 'isax isax-teacher5',
+      'My Profile': 'fa-solid fa-user',
+      'My Certificates': 'isax isax-note-215',
+      'Wishlist': 'isax isax-heart5',
+      'Reviews': 'isax isax-star5',
+      'My Quiz Attempts': 'isax isax-award5',
+      'Order History': 'isax isax-shopping-cart5',
+      'Referrals': 'isax isax-tag-user5',
+      'Messages': 'isax isax-messages-35',
+      'Question & Answer': 'isax isax-message-question5',
+      'Support Tickets': 'isax isax-message-question5',
+      "Offres d'Emploi": 'ti ti-briefcase',
+      'Challenges': 'ti ti-trophy',
+    };
+    return map[this.last] || 'isax isax-book';
   }
 
   ngOnInit(): void {
+    this.authService.ensureProfileIdentityLoaded();
     this.userName = localStorage.getItem('fullName') || 'Student';
+    this.userAvatarUrl = this.authService.resolveAvatarUrl(localStorage.getItem('avatarPath'));
+
+    this.authService.currentFullName$.subscribe(name => {
+      if (name) this.userName = name;
+    });
+    this.authService.currentAvatarPath$.subscribe(path => {
+      this.userAvatarUrl = this.authService.resolveAvatarUrl(path);
+    });
   }
 
   constructor(private router: Router, private authService: AuthService) {
@@ -76,44 +115,5 @@ export class StudentComponent implements OnInit {
     else {
       this.last = lastPart;
     }
-  }
-
-  /** Afficher la modal pour saisir le mot de passe avant de basculer vers instructeur */
-  switchToInstructor(): void {
-    this.switchToInstructorPassword = '';
-    this.switchToInstructorError = '';
-    this.showSwitchToInstructorModal = true;
-  }
-
-  /** Confirmer et basculer vers le rôle instructeur après vérification du password */
-  confirmSwitchToInstructor(): void {
-    if (!this.switchToInstructorPassword.trim()) {
-      this.switchToInstructorError = 'Mot de passe requis';
-      return;
-    }
-
-    this.switchingToInstructor = true;
-    this.switchToInstructorError = '';
-
-    this.authService.switchRole('INSTRUCTOR', this.switchToInstructorPassword).subscribe({
-      next: (resp: any) => {
-        localStorage.setItem('token', resp.token);
-        localStorage.setItem('role', resp.role);
-        if (resp.secondaryRoles) {
-          localStorage.setItem('secondaryRoles', JSON.stringify(resp.secondaryRoles));
-        }
-        this.authService.setCurrentRole(resp.role);
-        this.authService.scheduleAutoLogout();
-        // Fermer la modal
-        this.showSwitchToInstructorModal = false;
-        this.switchToInstructorPassword = '';
-        this.switchingToInstructor = false;
-        this.router.navigate([this.routes.instructor_dashboard]);
-      },
-      error: (err: any) => {
-        this.switchingToInstructor = false;
-        this.switchToInstructorError = err.error?.message || err.error || 'Erreur lors du changement de rôle';
-      }
-    });
   }
 }

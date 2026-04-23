@@ -283,6 +283,10 @@
                                     <i class="fa-solid fa-file-pdf"></i>
                                     <input type="file" accept=".pdf" hidden (change)="onPdfUpload($event, lesson.id)">
                                   </label>
+                                  <!-- Message d'avertissement PDF -->
+                                  <small *ngIf="lesson.lessonType === 'PDF' && !lesson.pdfUrl" class="text-warning ms-2">
+                                    <i class="fa-solid fa-info-circle"></i> Format .pdf uniquement
+                                  </small>
                                 </div>
                               </div>
                             </div>
@@ -344,6 +348,11 @@
                                     <option value="TEXT">Texte / Article</option>
                                     <option value="PDF">PDF</option>
                                   </select>
+                                  <!-- Message d'avertissement pour PDF -->
+                                  <div *ngIf="newLessonType === 'PDF'" class="alert alert-warning py-1 px-2 mt-1 mb-0" style="font-size: 11px;">
+                                    <i class="fa-solid fa-exclamation-triangle me-1"></i>
+                                    <strong>Important:</strong> Assurez-vous que le fichier est au format <strong>.pdf</strong> pour éviter les problèmes d'affichage.
+                                  </div>
                                 </div>
                                 <div class="col-4 d-flex gap-1">
                                   <button class="btn btn-sm btn-success" (click)="addLesson(section.id)" [disabled]="!newLessonTitle.trim()">

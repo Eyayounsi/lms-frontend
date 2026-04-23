@@ -1,4 +1,6 @@
-﻿import {
+﻿import DOMPurify from 'dompurify';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import {
   Component, OnInit, OnDestroy, ViewChild, ElementRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -11,7 +13,6 @@ import { DetectionService, DetectionResult } from '../../../shared/service/detec
 import { AiAgentsService } from '../../../shared/service/ai/ai-agents.service';
 import { routes } from '../../../shared/service/routes/routes';
 import { SafeUrlPipe } from '../../../shared/pipe/safe-url.pipe';
-import { SafeHtmlPipe } from '../../../shared/pipe/safe-html.pipe'; // keeps innerHTML unsanitized so Quill HTML renders correctly
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { Subscription, firstValueFrom } from 'rxjs';
@@ -19,11 +20,13 @@ import { Subscription, firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-course-watch',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, SafeUrlPipe, SafeHtmlPipe],
+  imports: [CommonModule, FormsModule, RouterLink, SafeUrlPipe],
   templateUrl: './course-watch.component.html',
   styleUrl: './course-watch.component.scss'
 })
 export class CourseWatchComponent implements OnInit, OnDestroy {
+
+  sanitizedArticleContent: SafeHtml | null = null;
 
   @ViewChild('videoPlayer') videoRef!: ElementRef<HTMLVideoElement>;
   @ViewChild('cameraVideo') cameraVideoRef!: ElementRef<HTMLVideoElement>;
@@ -143,7 +146,8 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
     private qaService: QaService,
     private detectionService: DetectionService,
     private aiAgentsService: AiAgentsService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -241,6 +245,15 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.lessonNoteSaved = false;
     this.courseNoteSaved = false;
+
+    // Sanitize article content with DOMPurify if lesson is TEXT
+    if (this.activeLesson?.lessonType === 'TEXT' && this.activeLesson.articleContent) {
+      const clean = DOMPurify.sanitize(this.activeLesson.articleContent, {USE_PROFILES: {html: true}});
+      this.sanitizedArticleContent = this.sanitizer.bypassSecurityTrustHtml(clean);
+    } else {
+      this.sanitizedArticleContent = null;
+    }
+
     // Charger la note de cette leçon (API)
     this.noteService.getLessonNote(lessonId).subscribe({
       next: (n) => { this.lessonNote = n?.content || ''; },
@@ -321,7 +334,110 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
 
   //  Marquer manuellement comme terminé 
   markCompleted(): void {
-    this.onVideoEnd();
+    if (!this.activeLessonId) return;
+
+    // Vérifier si la leçon a un quiz obligatoire
+    if (this.activeLesson?.hasQuiz && !this.lessonCompleted) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Quiz obligatoire',
+        html: `
+          <p>Cette leçon contient un quiz obligatoire.</p>
+          <p class="mb-0"><strong>Vous devez réussir le quiz avant de marquer cette leçon comme terminée.</strong></p>
+        `,
+        confirmButtonText: 'Faire le Quiz',
+        showCancelButton: true,
+        cancelButtonText: 'Annuler',
+        confirmButtonColor: '#f59e0b'
+      }).then(result => {
+        if (result.isConfirmed && this.activeLesson?.quizId) {
+          this.router.navigate(
+            ['/student/student-quiz-questions', this.activeLesson.quizId],
+            { queryParams: { courseId: this.courseId, lessonId: this.activeLesson.id } }
+          );
+        }
+      });
+      return;
+    }
+
+    // Si déjà terminé, proposer de décocher
+    if (this.lessonCompleted) {
+      this.markIncomplete();
+      return;
+    }
+
+    // Marquer comme terminé
+    this.courseService.markLessonCompleted(this.activeLessonId).subscribe({
+      next: (progress) => {
+        this.lessonCompleted = true;
+        this.lessonProgress = progress;
+        if (this.activeLessonId) this.completedLessons.add(this.activeLessonId);
+        this.toastr.success('Leçon marquée comme terminée !');
+        // Rafraîchir la progression globale
+        this.courseService.getCourseProgress(this.courseId!).subscribe({
+          next: (cp) => (this.courseProgress = cp),
+          error: () => {}
+        });
+      },
+      error: (err) => {
+        // Gérer l'erreur de quiz obligatoire
+        const errorMsg = err?.error?.message || err?.message || 'Erreur lors de la mise à jour';
+        if (errorMsg.includes('quiz')) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Quiz obligatoire non réussi',
+            text: errorMsg,
+            confirmButtonText: 'Faire le Quiz',
+            showCancelButton: true,
+            cancelButtonText: 'Fermer',
+            confirmButtonColor: '#f59e0b'
+          }).then(result => {
+            if (result.isConfirmed && this.activeLesson?.quizId) {
+              this.router.navigate(
+                ['/student/student-quiz-questions', this.activeLesson.quizId],
+                { queryParams: { courseId: this.courseId, lessonId: this.activeLesson.id } }
+              );
+            }
+          });
+        } else {
+          this.toastr.error(errorMsg);
+        }
+      }
+    });
+  }
+
+  //  Démarquer comme non terminé (toggle)
+  markIncomplete(): void {
+    if (!this.activeLessonId) return;
+
+    Swal.fire({
+      title: 'Démarquer cette leçon ?',
+      text: 'La leçon sera marquée comme non terminée et votre progression sera recalculée.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, démarquer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#6b7280'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.courseService.markLessonIncomplete(this.activeLessonId!).subscribe({
+          next: (progress) => {
+            this.lessonCompleted = false;
+            this.lessonProgress = progress;
+            if (this.activeLessonId) this.completedLessons.delete(this.activeLessonId);
+            this.toastr.info('Leçon démarquée comme non terminée');
+            // Rafraîchir la progression globale
+            this.courseService.getCourseProgress(this.courseId!).subscribe({
+              next: (cp) => (this.courseProgress = cp),
+              error: () => {}
+            });
+          },
+          error: () => {
+            this.toastr.error('Erreur lors de la mise à jour');
+          }
+        });
+      }
+    });
   }
 
   //  Aller à la leçon suivante
@@ -663,6 +779,26 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
     this.showStudentAiPanel = !this.showStudentAiPanel;
   }
 
+  clearStudentAiHistory(): void {
+    if (this.studentAiHistory.length === 0) return;
+
+    Swal.fire({
+      title: 'Effacer l\'historique ?',
+      text: 'Toutes les conversations avec l\'assistant IA seront supprimées.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Oui, effacer',
+      cancelButtonText: 'Annuler',
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6b7280'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.studentAiHistory = [];
+        this.toastr.success('Historique effacé');
+      }
+    });
+  }
+
   async sendStudentAiMessage(): Promise<void> {
     const message = this.studentAiInput.trim();
     if (!message || this.studentAiBusy) {
@@ -680,6 +816,15 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
         .trim()
         .slice(0, 1800);
 
+      // Pour les leçons PDF/VIDEO sans articleContent, construire un contexte textuel
+      const lessonType = this.activeLesson?.lessonType || '';
+      const lessonContextNote = lessonType === 'PDF'
+        ? `[Leçon de type PDF : ${this.activeLesson?.title || ''}. Le contenu est un document PDF.${this.activeLesson?.description ? ' Description : ' + this.activeLesson.description : ''}]`
+        : lessonType === 'VIDEO'
+        ? `[Leçon de type Vidéo : ${this.activeLesson?.title || ''}.${this.activeLesson?.description ? ' Description : ' + this.activeLesson.description : ''}]`
+        : '';
+      const finalLessonContent = lessonContent || lessonContextNote;
+
       const response = await firstValueFrom(
         this.aiAgentsService.studentTutor({
           message,
@@ -688,11 +833,29 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
           courseId: this.courseId ? String(this.courseId) : undefined,
           history: this.studentAiHistory.slice(-6),
           context: {
+            lessonId: this.activeLesson?.id ? String(this.activeLesson.id) : null,  // ← AJOUTÉ: ID de la leçon pour extraction PDF
             lessonTitle: this.activeLesson?.title || null,
             courseTitle: this.course?.title || null,
             courseName: this.course?.title || null,
-            lessonContent,
-            lessonType: this.activeLesson?.lessonType || null
+            courseLevel: this.course?.level || null,
+            category: this.course?.categoryName || null,
+            language: this.course?.language || null,
+            objectives: this.course?.objectives || null,
+            requirements: this.course?.requirements || null,
+            lessonContent: finalLessonContent,
+            lessonType: this.activeLesson?.lessonType || null,
+            lessonDescription: this.activeLesson?.description || null,  // ← AJOUTÉ: Description de la leçon
+            courseStructure: (this.sections || []).map((sec: any) => ({
+              id: sec.id,
+              title: sec.title,
+              orderIndex: sec.orderIndex,
+              lessons: (sec.lessons || []).map((les: any) => ({
+                id: les.id,
+                title: les.title,
+                lessonType: les.lessonType || 'VIDEO',
+                free: les.free || false
+              }))
+            }))
           }
         })
       );

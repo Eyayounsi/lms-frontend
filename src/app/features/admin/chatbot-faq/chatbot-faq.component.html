@@ -1,0 +1,185 @@
+<div class="chatbot-faq-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="page-title">
+          <i class="bi bi-chat-dots-fill"></i>
+          Questions Fréquentes du Chatbot
+        </h1>
+        <p class="page-subtitle">
+          Analysez les questions les plus posées par les étudiants pour améliorer le contenu des cours
+        </p>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-primary" (click)="refresh()" [disabled]="loading">
+          <i class="bi bi-arrow-clockwise" [class.spinning]="loading"></i>
+          Actualiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Summary -->
+  <div class="stats-summary" *ngIf="!loading && !error">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="bi bi-chat-square-text"></i>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ faqStats.total }}</div>
+        <div class="stat-label">Questions Uniques</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="bi bi-people"></i>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ getTotalInteractions() }}</div>
+        <div class="stat-label">Total Interactions</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="bi bi-graph-up"></i>
+      </div>
+      <div class="stat-content">
+        <div class="stat-value">{{ getAveragePerQuestion() }}</div>
+        <div class="stat-label">Moyenne par Question</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p>Chargement des statistiques...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="alert alert-warning" *ngIf="error && !loading">
+    <i class="bi bi-exclamation-triangle"></i>
+    {{ error }}
+  </div>
+
+  <!-- FAQ List -->
+  <div class="faq-list" *ngIf="!loading && !error && faqStats.items.length > 0">
+    <div class="faq-item" *ngFor="let item of faqStats.items; let i = index" [class]="getPopularityClass(item.count)">
+      <div class="faq-rank">
+        <span class="rank-number">#{{ i + 1 }}</span>
+      </div>
+      <div class="faq-content">
+        <div class="faq-message">
+          <i class="bi bi-chat-left-quote"></i>
+          {{ item.message }}
+        </div>
+        <div class="faq-meta">
+          <span class="meta-item" *ngIf="item.courseName || item.courseId">
+            <i class="bi bi-book"></i>
+            {{ item.courseName || 'Cours ID: ' + item.courseId }}
+          </span>
+          <span class="meta-item" *ngIf="item.sectionName">
+            <i class="bi bi-folder"></i>
+            {{ item.sectionName }}
+          </span>
+          <span class="meta-item" *ngIf="item.lessonName || item.lessonId">
+            <i class="bi bi-file-text"></i>
+            {{ item.lessonName || 'Leçon ID: ' + item.lessonId }}
+          </span>
+          <span class="meta-item" *ngIf="item.lastSeen">
+            <i class="bi bi-clock"></i>
+            {{ getRelativeTime(item.lastSeen) }}
+          </span>
+        </div>
+      </div>
+      <div class="faq-count">
+        <div class="count-badge" [class]="getPopularityClass(item.count)">
+          <i class="bi bi-fire" *ngIf="item.count >= 10"></i>
+          <i class="bi bi-star" *ngIf="item.count >= 5 && item.count < 10"></i>
+          <span class="count-value">{{ item.count }}</span>
+        </div>
+        <div class="count-label">fois</div>
+        <button class="btn btn-sm btn-primary mt-2" (click)="openResponseModal(item)" title="Créer une réponse personnalisée">
+          <i class="bi bi-pencil-square"></i> Réponse
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!loading && !error && faqStats.items.length === 0">
+    <div class="empty-icon">
+      <i class="bi bi-inbox"></i>
+    </div>
+    <h3>Aucune question pour le moment</h3>
+    <p>Les questions posées par les étudiants au chatbot apparaîtront ici.</p>
+    <p class="text-muted">Assurez-vous que MongoDB est démarré et que des étudiants ont utilisé le chatbot.</p>
+  </div>
+</div>
+
+<!-- Modal pour créer une réponse personnalisée -->
+<div class="modal fade" [class.show]="showResponseModal" [style.display]="showResponseModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square"></i>
+          Créer une Réponse Personnalisée
+        </h5>
+        <button type="button" class="btn-close" (click)="closeResponseModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Question:</label>
+          <div class="alert alert-info">
+            <i class="bi bi-chat-left-quote"></i>
+            {{ selectedQuestion?.message }}
+          </div>
+        </div>
+        <div class="mb-3" *ngIf="selectedQuestion?.courseName || selectedQuestion?.courseId || selectedQuestion?.lessonName || selectedQuestion?.lessonId">
+          <small class="text-muted">
+            <i class="bi bi-book" *ngIf="selectedQuestion?.courseName || selectedQuestion?.courseId"></i>
+            <span *ngIf="selectedQuestion?.courseName || selectedQuestion?.courseId">
+              {{ selectedQuestion?.courseName || 'Cours ID: ' + selectedQuestion?.courseId }}
+            </span>
+            <span *ngIf="selectedQuestion?.sectionName"> | </span>
+            <i class="bi bi-folder" *ngIf="selectedQuestion?.sectionName"></i>
+            <span *ngIf="selectedQuestion?.sectionName">{{ selectedQuestion?.sectionName }}</span>
+            <span *ngIf="(selectedQuestion?.courseName || selectedQuestion?.courseId) && (selectedQuestion?.lessonName || selectedQuestion?.lessonId)"> | </span>
+            <i class="bi bi-file-text" *ngIf="selectedQuestion?.lessonName || selectedQuestion?.lessonId"></i>
+            <span *ngIf="selectedQuestion?.lessonName || selectedQuestion?.lessonId">
+              {{ selectedQuestion?.lessonName || 'Leçon ID: ' + selectedQuestion?.lessonId }}
+            </span>
+          </small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Réponse Personnalisée:</label>
+          <textarea 
+            class="form-control" 
+            rows="10" 
+            [(ngModel)]="customResponseText"
+            placeholder="Écrivez la réponse que le chatbot donnera pour cette question...&#10;&#10;Vous pouvez utiliser du markdown:&#10;- **gras**&#10;- ## Titres&#10;- Listes&#10;- Emojis 📚💡🎯"
+          ></textarea>
+          <small class="text-muted">
+            <i class="bi bi-info-circle"></i>
+            Cette réponse sera utilisée en priorité par le chatbot pour cette question.
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeResponseModal()" [disabled]="savingResponse">
+          Annuler
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveCustomResponse()" [disabled]="!customResponseText.trim() || savingResponse">
+          <span *ngIf="savingResponse" class="spinner-border spinner-border-sm me-2"></span>
+          <i class="bi bi-check-circle" *ngIf="!savingResponse"></i>
+          {{ savingResponse ? 'Sauvegarde...' : 'Sauvegarder' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showResponseModal" *ngIf="showResponseModal"></div>

@@ -353,6 +353,13 @@
       height: 120px;
       background: radial-gradient(circle, rgba(255,255,255,0.13) 0%, transparent 70%);
       pointer-events: none;
+      z-index: 0;
+    }
+
+    // S'assurer que les boutons sont cliquables
+    > * {
+      position: relative;
+      z-index: 1;
     }
   }
 
@@ -419,6 +426,7 @@
 
 .ai-panel {
   bottom: 164px;
+  max-height: calc(100vh - 200px); // Éviter de toucher la navbar
 
   &__body {
     display: flex;

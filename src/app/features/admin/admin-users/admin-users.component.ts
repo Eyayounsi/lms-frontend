@@ -112,6 +112,10 @@ export class AdminUsersComponent implements OnInit {
 
   changeRole(user: AdminUser, newRole: string): void {
     if (user.role.includes('ADMIN')) return; // sécurité frontend
+    if (user.role !== 'INSTRUCTOR' || newRole !== 'STUDENT') {
+      this.showToast('error', 'Seul le passage Instructeur → Étudiant est autorisé.');
+      return;
+    }
     const oldRole = user.role;
     this.adminApi.changeUserRole(user.id, newRole).subscribe({
       next: (updated) => {

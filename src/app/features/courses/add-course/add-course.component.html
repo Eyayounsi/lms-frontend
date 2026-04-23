@@ -123,7 +123,7 @@
 
                 <div class="col-md-12">
                   <div class="input-block">
-                    <label class="form-label">Description du cours<span class="text-danger ms-1">*</span></label>
+                    <label class="form-label">Description du cours</label>
                     <textarea class="form-control" rows="5" [(ngModel)]="step1.description" placeholder="Description détaillée du cours..."></textarea>
                   </div>
                 </div>
@@ -226,7 +226,13 @@
                   <div class="col-md-12">
                     <div class="input-block">
                       <label class="form-label">Uploader votre image (JPEG, PNG, WebP – max 2 Mo)</label>
-                      <input type="file" class="form-control" accept="image/jpeg,image/png,image/webp" (change)="onCoverSelected($event)">
+                      <input #coverFileInput type="file" class="form-control d-none" accept="image/jpeg,image/png,image/webp" (change)="onCoverSelected($event)">
+                      <button type="button" class="btn btn-primary w-100" (click)="coverFileInput.click()">
+                        <i class="isax isax-document-upload me-2"></i>Choisir une image depuis votre PC
+                      </button>
+                      <small class="text-muted d-block mt-2" *ngIf="coverFile">
+                        <i class="isax isax-tick-circle me-1 text-success"></i>Fichier sélectionné : {{ coverFile.name }}
+                      </small>
                     </div>
                   </div>
                   <div class="col-md-12 mt-2" *ngIf="coverPreview">

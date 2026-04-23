@@ -97,8 +97,8 @@
           <li [class.active]="page==='student-dashboard'">
             <a [routerLink]="routes.students_Dashboard"><i class="isax isax-grid-35"></i>Tableau de bord</a>
           </li>
-          <li [class.active]="page==='student-my-courses'">
-            <a [routerLink]="routes.studentMyCourses"><i class="isax isax-book"></i>Mes cours</a>
+          <li [class.active]="page==='student-courses' || page==='student-my-courses'">
+            <a [routerLink]="routes.studentCourses"><i class="isax isax-book"></i>Mes cours</a>
           </li>
           <li [class.active]="page==='student-wishlist'">
             <a [routerLink]="routes.studentWishlist"><i class="isax isax-heart"></i>Favoris</a>
@@ -165,13 +165,6 @@
 
       <!-- ═══ ACTIONS DROITE ═══ -->
       <div class="header-btn d-flex align-items-center gap-2">
-
-        <!-- CTA Étudiant: Devenir Instructeur -->
-        <button *ngIf="canBecomeInstructor"
-           class="btn-header-cta btn-become-instructor d-none d-lg-flex"
-           (click)="showBecomeInstructorModal = true">
-          <i class="isax isax-teacher"></i>Devenir Instructeur
-        </button>
 
         <!-- Dark/Light mode toggle -->
         <div class="icon-btn">
@@ -404,7 +397,7 @@
               <!-- STUDENT -->
               <ng-container *ngIf="isStudent">
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.students_Dashboard"><i class="isax isax-grid-35 me-2 text-success"></i>Tableau de bord</a></li>
-                <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.studentMyCourses"><i class="isax isax-book me-2 text-success"></i>Mes cours</a></li>
+                <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.studentCourses"><i class="isax isax-book me-2 text-success"></i>Mes cours</a></li>
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.student_Certificate"><i class="isax isax-award me-2 text-success"></i>Mes certificats</a></li>
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.cart"><i class="isax isax-shopping-cart me-2 text-success"></i>Mon panier</a></li>
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.studentSettings"><i class="isax isax-setting-2 me-2 text-success"></i>Mon Profil</a></li>
@@ -423,22 +416,6 @@
 
             </ul>
 
-            <!-- ═══ Devenir Instructeur (student uniquement) ═══ -->
-            <ng-container *ngIf="canBecomeInstructor">
-              <div class="px-3 pt-2 pb-2 border-top">
-                <button class="become-instructor-dropdown-btn w-100" (click)="showBecomeInstructorModal = true">
-                  <span class="bi-icon">
-                    <i class="isax isax-teacher"></i>
-                  </span>
-                  <div class="text-start">
-                    <span class="d-block fw-bold" style="font-size:12.5px">Devenir Instructeur</span>
-                    <span class="text-muted" style="font-size:10px">Créez et vendez vos cours</span>
-                  </div>
-                  <i class="isax isax-arrow-right-3 ms-auto" style="font-size:13px;opacity:.5"></i>
-                </button>
-              </div>
-            </ng-container>
-
             <!-- Footer déconnexion -->
             <div class="profile-footer border-top pt-2 pb-2 px-2">
               <a href="javascript:void(0)" (click)="onLogout()" class="btn d-flex align-items-center justify-content-center w-100 gap-2" style="border:1.5px solid #e2e8f0;color:#64748b;border-radius:8px;font-size:13px;font-weight:600;transition:all .2s" onmouseover="this.style.borderColor='#6d28d9';this.style.color='#6d28d9'" onmouseout="this.style.borderColor='#e2e8f0';this.style.color='#64748b'">
@@ -456,86 +433,6 @@
     </div>
   </div>
 </header>
-
-<!-- ═══ Modal Devenir Instructeur ══════════════════════════════════════════ -->
-@if (showBecomeInstructorModal) {
-  <div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-      <div class="modal-content border-0" style="border-radius:16px;box-shadow:0 24px 48px rgba(0,0,0,.16);animation:popInModal .2s ease">
-
-        <!-- Header -->
-        <div class="modal-header border-0 pb-0 pt-4 px-4">
-          <div class="d-flex align-items-center gap-3">
-            <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-              <i class="isax isax-teacher" style="font-size:22px;color:#fff"></i>
-            </div>
-            <div>
-              <h6 class="fw-bold mb-0" style="font-size:15px">Devenir Instructeur</h6>
-              <small class="text-muted">Confirmez votre identité</small>
-            </div>
-          </div>
-          <button type="button" class="btn-close" (click)="showBecomeInstructorModal=false; becomeInstructorPassword=''; becomeInstructorError=''"></button>
-        </div>
-
-        <!-- Body -->
-        <div class="modal-body px-4 pt-3 pb-2">
-          <p class="text-muted small mb-3">
-            Votre compte obtiendra le rôle <strong class="text-primary">Instructeur</strong>. 
-            Vous pourrez créer et vendre des cours tout en gardant votre accès étudiant.
-          </p>
-
-          <!-- Bénéfices -->
-          <div class="d-flex flex-column gap-1 mb-3">
-            <div class="d-flex align-items-center gap-2 text-muted small">
-              <i class="isax isax-tick-circle text-success"></i>Créer des cours illimitées
-            </div>
-            <div class="d-flex align-items-center gap-2 text-muted small">
-              <i class="isax isax-tick-circle text-success"></i>Gérer vos étudiants et revenus
-            </div>
-            <div class="d-flex align-items-center gap-2 text-muted small">
-              <i class="isax isax-tick-circle text-success"></i>Conserver l'accès étudiant
-            </div>
-          </div>
-
-          <label class="form-label small fw-semibold">Mot de passe actuel</label>
-          <div class="input-group">
-            <span class="input-group-text bg-light border-end-0" style="border-radius:8px 0 0 8px">
-              <i class="isax isax-lock" style="font-size:15px;color:#6b7280"></i>
-            </span>
-            <input type="password" class="form-control border-start-0 ps-0"
-              style="border-radius:0 8px 8px 0"
-              placeholder="••••••••"
-              [(ngModel)]="becomeInstructorPassword"
-              (keyup.enter)="becomeInstructor()">
-          </div>
-          @if (becomeInstructorError) {
-            <div class="alert alert-danger d-flex align-items-center gap-2 mt-2 py-2 px-3" style="border-radius:8px;font-size:12px;">
-              <i class="isax isax-close-circle"></i>{{ becomeInstructorError }}
-            </div>
-          }
-        </div>
-
-        <!-- Footer -->
-        <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex gap-2">
-          <button type="button" class="btn btn-light btn-sm flex-fill"
-            (click)="showBecomeInstructorModal=false; becomeInstructorPassword=''; becomeInstructorError=''">
-            Annuler
-          </button>
-          <button type="button" class="btn btn-sm flex-fill text-white fw-semibold"
-            style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none"
-            [disabled]="becomingInstructor"
-            (click)="becomeInstructor()">
-            <span *ngIf="!becomingInstructor"><i class="isax isax-teacher me-1"></i>Devenir Instructeur</span>
-            <span *ngIf="becomingInstructor" class="d-flex align-items-center justify-content-center gap-2">
-              <span class="spinner-border spinner-border-sm"></span>En cours...
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal-backdrop fade show"></div>
-}
 
 <!-- ═══ Modal Changer de Rôle (Sécurité) ══════════════════════════════════════════ -->
 @if (showSwitchRoleModal) {

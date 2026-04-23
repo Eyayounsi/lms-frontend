@@ -122,7 +122,12 @@ export class FeaturesComponent implements OnInit, OnDestroy {
     } else {
       this.common.mainFooter.next(true);
     }
-    if (
+    
+    // Special case: course-watch should show student navbar (admin-header)
+    if (this.routeStatus == 'courses' && this.routeStatusSub == 'course-watch') {
+      this.common.isuserHeader.next(false);
+      this.common.isAdminHeader.next(true);
+    } else if (
       this.routeStatus == 'instructor' ||
       this.routeStatus == 'student' ||
       this.routeStatus == 'admin' ||

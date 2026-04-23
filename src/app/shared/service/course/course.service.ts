@@ -265,6 +265,11 @@ export class CourseService {
     return this.http.post<any>(`${this.apiUrl}/student/progress/lesson/${lessonId}/complete`, {});
   }
 
+  /** Démarquer une leçon comme non terminée (toggle) */
+  markLessonIncomplete(lessonId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/student/progress/lesson/${lessonId}/incomplete`, {});
+  }
+
   /** Progression globale sur un cours (pourcentage) */
   getCourseProgress(courseId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/student/progress/course/${courseId}`);

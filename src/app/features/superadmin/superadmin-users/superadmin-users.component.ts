@@ -199,6 +199,10 @@ export class SuperadminUsersComponent implements OnInit {
 
   changeRole(user: SuperAdminUser, newRole: string): void {
     if (user.role === 'SUPERADMIN') return;
+    if (user.role !== 'INSTRUCTOR' || newRole !== 'STUDENT') {
+      this.showSuccess('Seul le passage Instructeur → Étudiant est autorisé.');
+      return;
+    }
     const oldRole = user.role;
     this.superAdminApi.changeUserRole(user.id, newRole).subscribe({
       next: (updated) => {
@@ -305,7 +309,7 @@ export class SuperadminUsersComponent implements OnInit {
   // ─── Gestion des rôles secondaires ──────────────────────────────────────
 
   availableSecondaryRoles(user: SuperAdminUser): string[] {
-    const all = ['STUDENT', 'INSTRUCTOR', 'RECRUITER', 'ADMIN'];
+    const all = ['STUDENT', 'RECRUITER', 'ADMIN'];
     return all.filter(r => r !== user.role && !(user.secondaryRoles || []).includes(r));
   }
 
