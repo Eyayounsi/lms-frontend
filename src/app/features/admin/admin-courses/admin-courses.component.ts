@@ -399,7 +399,7 @@ export class AdminCoursesComponent implements OnInit {
   getFileUrl(path: string): string {
     if (!path) return '#';
     const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return clean;
   }
 
   // Aperçu contenu de leçon (admin)

@@ -155,7 +155,7 @@ export class InstructorCourseDetailComponent implements OnInit {
   getFileUrl(path: string): string {
     if (!path) return '#';
     const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return clean;
   }
 
   getStatusBadgeClass(status: string): string {

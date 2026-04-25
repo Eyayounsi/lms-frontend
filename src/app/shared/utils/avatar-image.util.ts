@@ -1,4 +1,4 @@
-const AVATAR_API_ROOT = 'http://localhost:8081';
+const AVATAR_API_ROOT = '';
 
 export function resolveAvatarImage(path: string | null | undefined, fallback = ''): string {
   if (!path || !String(path).trim()) {

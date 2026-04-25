@@ -1,4 +1,4 @@
-const DEFAULT_BACKEND_BASE_URL = 'http://localhost:8081';
+const DEFAULT_BACKEND_BASE_URL = '';
 
 export function resolveCourseImage(path: string | null | undefined, fallback = 'assets/img/course-img/courses-01.jpg'): string {
   const normalized = sanitizePath(path);

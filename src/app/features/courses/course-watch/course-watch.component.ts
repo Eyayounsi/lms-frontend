@@ -509,7 +509,7 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
     if (!path) return '';
     if (path.startsWith('http')) return path;
     const clean = path.startsWith('/') ? path : '/' + path;
-    return `http://localhost:8081${clean}`;
+    return clean;
   }
 
   getSectionForLesson(lessonId: number): any {

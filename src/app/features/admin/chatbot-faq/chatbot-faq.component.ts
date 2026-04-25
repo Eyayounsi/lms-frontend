@@ -58,7 +58,7 @@ export class ChatbotFaqComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    const url = `http://localhost:8081/api/ai/chatbot/admin/student-faq-stats?limit=${this.limit}`;
+    const url = `/api/ai/chatbot/admin/student-faq-stats?limit=${this.limit}`;
 
     this.http.get<FaqStatsResponse>(url).subscribe({
       next: (data) => {
@@ -106,7 +106,7 @@ export class ChatbotFaqComponent implements OnInit {
       lessonId: this.selectedQuestion.lessonId || null
     };
 
-    const url = 'http://localhost:8090/agents/admin/custom-responses';
+    const url = '/agents/admin/custom-responses';
 
     this.http.post(url, payload).subscribe({
       next: () => {
