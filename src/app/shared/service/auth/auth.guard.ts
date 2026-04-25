@@ -11,23 +11,37 @@ export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   const token = localStorage.getItem('token');
-  if (token && authService.isTokenExpired(token)) {
-    authService.startMandatoryLogoutFlow('expired');
-    return false;
-  }
 
-  // 1. Vérification locale du token (expiry) — sans réseau, instantané
-  if (!authService.isLoggedIn()) {
+  // 1. Pas de token → rediriger vers login
+  if (!token) {
     localStorage.setItem('pendingReturnUrl', state.url);
     router.navigate(['/auth/login']);
     return false;
   }
 
-  // 2. Ping backend : vérifie que le token est toujours accepté et le compte actif
-  // - 200  → OK, on laisse passer
-  // - 401  → token expiré côté serveur → forceLogout
-  // - 423  → compte bloqué → blockedInterceptor gère l'affichage de la modal
-  // - erreur réseau → on laisse passer (évite de bloquer hors-ligne)
+  // 2. Token expiré côté client → déconnexion immédiate
+  if (authService.isTokenExpired(token)) {
+    authService.startMandatoryLogoutFlow('expired');
+    return false;
+  }
+
+  // 3. Token valide → vérifier s'il expire dans moins de 5 minutes
+  //    Si oui : ping pour valider côté serveur (cas limite)
+  //    Si non : laisser passer sans aller sur le réseau (évite le flash de page)
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const msUntilExpiry = payload.exp * 1000 - Date.now();
+    const FIVE_MINUTES = 5 * 60 * 1000;
+
+    if (msUntilExpiry > FIVE_MINUTES) {
+      // Token encore largement valide — pas besoin de ping réseau
+      return true;
+    }
+  } catch {
+    // Token malformé — forcer le ping
+  }
+
+  // 4. Token proche de l'expiration → ping backend pour confirmation
   return authService.ping().pipe(
     map(() => true),
     catchError((err: HttpErrorResponse) => {

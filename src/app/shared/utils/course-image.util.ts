@@ -1,4 +1,7 @@
-const DEFAULT_BACKEND_BASE_URL = '';
+import { environment } from '../../../environments/environment';
+
+// URL de base du backend (sans /api) pour servir les fichiers /uploads
+const DEFAULT_BACKEND_BASE_URL = environment.apiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
 
 export function resolveCourseImage(path: string | null | undefined, fallback = 'assets/img/course-img/courses-01.jpg'): string {
   const normalized = sanitizePath(path);

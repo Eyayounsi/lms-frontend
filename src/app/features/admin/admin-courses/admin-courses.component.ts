@@ -398,8 +398,9 @@ export class AdminCoursesComponent implements OnInit {
 
   getFileUrl(path: string): string {
     if (!path) return '#';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return clean;
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    // Utilise resolveCourseImage pour pointer vers le backend (gestion des /uploads)
+    return resolveCourseImage(path, '#');
   }
 
   // Aperçu contenu de leçon (admin)

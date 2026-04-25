@@ -36,6 +36,16 @@ export class InstructorCourseDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    document.addEventListener('hide.bs.modal', (e: Event) => {
+      const modalEl = e.target as HTMLElement;
+      if (modalEl?.id === 'mediaPreviewModal') {
+        const closeBtn = modalEl.querySelector('.btn-close') as HTMLElement | null;
+        if (closeBtn && document.activeElement === closeBtn) {
+          closeBtn.blur();
+        }
+      }
+    });
+
     this.route.queryParams.subscribe(params => {
       this.courseId = +params['courseId'];
       if (this.courseId) {
@@ -92,18 +102,47 @@ export class InstructorCourseDetailComponent implements OnInit {
   previewArticleContent: string = '';
 
   openPreview(url: string, type: 'video' | 'pdf' | 'article', articleContent?: string): void {
+    if (type !== 'article' && (!url || url === '#' || !url.trim())) {
+      console.warn('Aucun contenu à prévisualiser pour ce type:', type);
+      return;
+    }
+
     if (type === 'article') {
       this.previewArticleContent = articleContent || '';
       this.previewType = 'article';
+      this.previewUrl = '';
     } else {
       this.previewUrl = this.getFileUrl(url);
       this.previewType = type;
     }
-    const el = document.getElementById('mediaPreviewModal');
-    if (el) { new bootstrap.Modal(el).show(); }
+    setTimeout(() => {
+      const el = document.getElementById('mediaPreviewModal');
+      if (el) {
+        this.removeBackdrop();
+        const modal = new bootstrap.Modal(el);
+        el.addEventListener('hidden.bs.modal', () => {
+          this.removeBackdrop();
+          if (document.activeElement instanceof HTMLElement && document.activeElement.classList.contains('btn-close')) {
+            document.activeElement.blur();
+          }
+        }, { once: true });
+        modal.show();
+      }
+    }, 50);
+  }
+
+  private removeBackdrop(): void {
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(bp => bp.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
   }
 
   get safePreviewUrl(): SafeResourceUrl {
+    if (!this.previewUrl || this.previewUrl === '#') {
+      return this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
+    }
     return this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
   }
 
@@ -154,8 +193,9 @@ export class InstructorCourseDetailComponent implements OnInit {
 
   getFileUrl(path: string): string {
     if (!path) return '#';
-    const clean = path.startsWith('/') ? path : '/' + path;
-    return clean;
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    // Utilise resolveCourseImage pour pointer vers le backend (gestion des /uploads)
+    return resolveCourseImage(path, '#');
   }
 
   getStatusBadgeClass(status: string): string {

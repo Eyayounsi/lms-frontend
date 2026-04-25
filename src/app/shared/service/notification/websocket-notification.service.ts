@@ -46,19 +46,38 @@ export class WebSocketNotificationService {
     private toastr: ToastrService,
     private ngZone: NgZone
   ) {
-    this.initializeWebSocket();
+    // Ne pas initialiser le WebSocket ici : attendre un appel explicite à connect()
+    // pour éviter les tentatives de connexion sans token valide au démarrage.
   }
 
   private initializeWebSocket(): void {
     // Garder la tentative de connexion silencieuse si WebSocket non disponible
     try {
       const token = localStorage.getItem('token');
+
+      // ✅ Ne pas initialiser si pas de token ou token expiré
+      if (!token) {
+        console.debug('[WebSocket] Pas de token — connexion WS ignorée.');
+        return;
+      }
+
+      // Vérifier expiration du token côté client
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.exp * 1000 < Date.now()) {
+          console.debug('[WebSocket] Token expiré — connexion WS ignorée.');
+          return;
+        }
+      } catch {
+        console.debug('[WebSocket] Token invalide — connexion WS ignorée.');
+        return;
+      }
+
       const baseUrl = environment.apiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
-      const wsUrl = token
-        ? `${baseUrl}/ws?token=${encodeURIComponent(token)}`
-        : `${baseUrl}/ws`;
+      const wsUrl = `${baseUrl}/ws?token=${encodeURIComponent(token)}`;
       this.stompClient = new Client({
         webSocketFactory: () => new SockJS(wsUrl),
+        // Reconnexion ralentie progressivement (5s puis arrêt sur erreur auth)
         reconnectDelay: 5000,
         debug: () => {
           // Désactiver les logs STOMP bruyants
@@ -73,6 +92,13 @@ export class WebSocketNotificationService {
    * Connecter à WebSocket et s'abonner aux notifications
    */
   public connect(): void {
+    // ✅ Vérifier token avant de (re)initialiser
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.debug('[WebSocket] connect() ignoré : pas de token.');
+      return;
+    }
+
     if (!this.stompClient) {
       this.initializeWebSocket();
     }
@@ -114,7 +140,18 @@ export class WebSocketNotificationService {
     };
 
     client.onStompError = (error) => {
-      console.error('[WebSocket] ❌ Erreur connexion WebSocket:', error);
+      const errorMsg = error?.headers?.['message'] || '';
+      const isForbidden = error?.headers?.['status'] === '401' ||
+                          errorMsg.includes('401') ||
+                          errorMsg.toLowerCase().includes('unauthorized');
+
+      if (isForbidden) {
+        console.debug('[WebSocket] 🔐 Erreur auth 401 — arrêt de la reconnexion WebSocket.');
+        // Arrêter les tentatives de reconnexion pour éviter le flood de 401
+        client.deactivate();
+      } else {
+        console.error('[WebSocket] ❌ Erreur connexion WebSocket:', error);
+      }
       this.connectedSubject.next(false);
     };
 

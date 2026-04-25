@@ -32,6 +32,8 @@ export class AuthService {
   // Timer auto-logout — déclenché à l'exact moment d'expiration du JWT
   private autoLogoutTimer: ReturnType<typeof setTimeout> | null = null;
   private profileIdentityHydrated = false;
+  // Protection contre les appels multiples de forceLogout (boucle de déconnexion)
+  private isLoggingOut = false;
 
   /** Appeler après chaque changement de rôle (login, switch-role, add-role) */
   setCurrentRole(role: string): void {
@@ -279,6 +281,7 @@ export class AuthService {
    * Nettoie le localStorage et redirige vers login.
    */
   forceLogout(): void {
+    if (this.isLoggingOut) return; // Évite les appels en cascade
     console.log('🔴 forceLogout() triggered - timer expired');
     this.autoLogoutTimer = null;
     this.startMandatoryLogoutFlow('expired');
@@ -289,14 +292,24 @@ export class AuthService {
    * Utilisé quand la session expire (timer, 401 backend, guard).
    */
   startMandatoryLogoutFlow(reason: 'expired' | 'unauthorized' = 'expired'): void {
+    if (this.isLoggingOut) return; // Évite les appels en cascade
+    this.isLoggingOut = true;
     console.log(`🔴 startMandatoryLogoutFlow() - reason: ${reason}`);
-    this.autoLogoutTimer = null;
+    if (this.autoLogoutTimer) {
+      clearTimeout(this.autoLogoutTimer);
+      this.autoLogoutTimer = null;
+    }
     this.internalClearSession();
     if (this.shouldRedirectToLogin()) {
       this.router.navigate(['/auth/session-expired'], {
         queryParams: { reason },
         replaceUrl: true
+      }).then(() => {
+        // Reset après navigation pour permettre un futur logout si re-login
+        this.isLoggingOut = false;
       });
+    } else {
+      this.isLoggingOut = false;
     }
   }
 
@@ -323,6 +336,11 @@ export class AuthService {
     localStorage.removeItem('email');
     localStorage.removeItem('id');
     localStorage.removeItem('secondaryRoles');
+    // Annuler tout timer auto-logout en cours
+    if (this.autoLogoutTimer) {
+      clearTimeout(this.autoLogoutTimer);
+      this.autoLogoutTimer = null;
+    }
     // Synchronise immédiatement l'UI (header/sidebar) après logout.
     this._currentRole.next('');
     this._currentFullName.next('');
