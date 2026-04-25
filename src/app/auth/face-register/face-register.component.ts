@@ -92,6 +92,14 @@ export class FaceRegisterComponent implements AfterViewInit, OnDestroy {
   // ── Camera ───────────────────────────────────────────────────────────────
   private startCamera(): void {
     this.cameraError = '';
+
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.cameraError =
+        '⚠️ La caméra nécessite HTTPS. Accédez via : https://' +
+        window.location.hostname + ':4443' + window.location.pathname;
+      return;
+    }
+
     navigator.mediaDevices
       .getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' } })
       .then(stream => {

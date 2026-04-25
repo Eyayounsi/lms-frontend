@@ -155,6 +155,15 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
     this.faceScanning     = true;
     this.errorMessage     = '';
 
+    if (!navigator.mediaDevices?.getUserMedia) {
+      this.faceLoginActive = false;
+      this.faceScanning    = false;
+      this.errorMessage =
+        '⚠️ La caméra nécessite HTTPS. Accédez via : https://' +
+        window.location.hostname + ':4443' + window.location.pathname;
+      return;
+    }
+
     navigator.mediaDevices
       .getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' } })
       .then(stream => {

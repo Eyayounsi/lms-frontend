@@ -938,6 +938,15 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
 
   async startCamera(): Promise<void> {
     try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        this.toastr.error(
+          '⚠️ La caméra nécessite HTTPS. Accédez via https://' +
+          window.location.hostname + ':4443',
+          'Caméra indisponible', { timeOut: 8000 }
+        );
+        return;
+      }
+
       this.cameraStream = await navigator.mediaDevices.getUserMedia({
         video: { width: 320, height: 240, facingMode: 'user' }
       });
