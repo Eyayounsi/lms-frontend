@@ -23,6 +23,9 @@ export class RegisterComponent implements AfterViewInit {
   readonly googleAuthEnabled = !!environment.enableGoogleAuth;
   readonly intendedRole: string;
   password: boolean[] = [false]; // Add more as needed
+  errorMessage: string = '';
+  successMessage: string = '';
+  isLoading: boolean = false;
 
   togglePassword(index: number): void {
     this.password[index] = !this.password[index];
@@ -178,27 +181,28 @@ export class RegisterComponent implements AfterViewInit {
 
   // Fonction d'enregistrement
   registerUser(form: any) {
-    console.log('Form values:', form.value); // Debug
+    this.errorMessage = '';
+    this.successMessage = '';
 
-    // Vérification que le formulaire est valide
     if (!form.valid) {
-      alert('Veuillez remplir tous les champs correctement');
+      this.errorMessage = 'Veuillez remplir tous les champs correctement.';
       return;
     }
 
     const password = form.value.password?.trim();
     const confirmPassword = form.value.confirmPassword?.trim();
 
-    console.log('Password:', password);
-    console.log('ConfirmPassword:', confirmPassword);
-
-    // Vérification que les mots de passe correspondent
     if (password !== confirmPassword) {
-      alert('Les mots de passe ne correspondent pas !');
+      this.errorMessage = 'Les mots de passe ne correspondent pas !';
       return;
     }
 
-    // Préparer les données pour l'API (en enlevant confirmPassword)
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.value.email?.trim())) {
+      this.errorMessage = 'Veuillez entrer une adresse email valide.';
+      return;
+    }
+
     const registerData = {
       fullName: form.value.fullName?.trim(),
       email: form.value.email?.trim(),
@@ -206,20 +210,25 @@ export class RegisterComponent implements AfterViewInit {
       role: this.intendedRole || undefined
     };
 
-    console.log('Sending data:', registerData); // Debug
+    this.isLoading = true;
 
     this.authService.register(registerData).subscribe({
       next: (res: any) => {
-        console.log('Inscription réussie:', res);
+        this.isLoading = false;
         localStorage.setItem('token', res.token);
         if (res.fullName) this.authService.setFullName(res.fullName);
         if (res.role) this.authService.setCurrentRole(res.role);
-        alert('Inscription réussie ! Redirection vers login...');
-        this.router.navigate([routes.login]);
+        this.successMessage = 'Inscription réussie ! Redirection en cours…';
+        setTimeout(() => this.router.navigate([routes.login]), 1500);
       },
       error: (error: any) => {
-        console.error('Erreur inscription:', error);
-        alert('Erreur inscription: ' + (error.error?.message || 'Veuillez réessayer'));
+        this.isLoading = false;
+        const msg = error.error?.message || error.error?.error || '';
+        if (msg.toLowerCase().includes('email') || msg.toLowerCase().includes('exist') || msg.toLowerCase().includes('already')) {
+          this.errorMessage = 'Cette adresse email est déjà utilisée. Veuillez vous connecter ou utiliser une autre adresse.';
+        } else {
+          this.errorMessage = msg || 'Une erreur est survenue. Veuillez réessayer.';
+        }
       }
     });
   }

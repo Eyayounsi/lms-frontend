@@ -35,20 +35,31 @@
                                 <a [routerLink]="routes.home" class="link-1">Back to Home</a>
                             </div>
                             <h1 class="fs-32 fw-bold topic">Sign up</h1>
+                            <!-- Messages globaux -->
+                            <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+                              <i class="ti ti-alert-triangle fs-18 flex-shrink-0"></i>
+                              <span>{{ errorMessage }}</span>
+                            </div>
+                            <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center gap-2 mb-3" role="alert">
+                              <i class="ti ti-circle-check fs-18 flex-shrink-0"></i>
+                              <span>{{ successMessage }}</span>
+                            </div>
                             <form #registerForm="ngForm" (ngSubmit)="registerUser(registerForm)" class="mb-3 pb-3">
                                 <div class="mb-3 position-relative">
                                     <label class="form-label">Full Name<span class="text-danger ms-1">*</span></label>
                                     <div class="position-relative">
-                                        <input type="text" name="fullName" ngModel class="form-control form-control-lg" required>
+                                        <input type="text" name="fullName" ngModel #fullNameCtrl="ngModel" class="form-control form-control-lg" [class.is-invalid]="fullNameCtrl.invalid && fullNameCtrl.touched" required>
                                         <span><i class="isax isax-user input-icon text-gray-7 fs-14"></i></span>
                                     </div>
+                                    <div *ngIf="fullNameCtrl.invalid && fullNameCtrl.touched" class="text-danger small mt-1">Le nom complet est requis.</div>
                                 </div>
                                 <div class="mb-3 position-relative">
                                     <label class="form-label">Email<span class="text-danger ms-1">*</span></label>
                                     <div class="position-relative">
-                                        <input type="email" name="email" ngModel class="form-control form-control-lg" required>
+                                        <input type="email" name="email" ngModel #emailCtrl="ngModel" class="form-control form-control-lg" [class.is-invalid]="emailCtrl.invalid && emailCtrl.touched" required email>
                                         <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
                                     </div>
+                                    <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="text-danger small mt-1">Veuillez entrer une adresse email valide.</div>
                                 </div>
                                 <div class="mb-3 position-relative">
                                     <label class="form-label">New Password <span class="text-danger"> *</span></label>
@@ -109,7 +120,10 @@
                                     </div>
                                 </div>
                                 <div class="d-grid">
-                                    <button class="btn btn-secondary btn-lg" type="submit">Sign Up <i class="isax isax-arrow-right-3 ms-1"></i></button>
+                                    <button class="btn btn-secondary btn-lg" type="submit" [disabled]="isLoading">
+                                        <span *ngIf="!isLoading">Sign Up <i class="isax isax-arrow-right-3 ms-1"></i></span>
+                                        <span *ngIf="isLoading">Inscription en cours…</span>
+                                    </button>
                                 </div>
                             </form>
 

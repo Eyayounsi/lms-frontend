@@ -52,10 +52,27 @@ export class FaceRegisterComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(form.value.email?.trim())) {
+      this.errorMessage = 'Veuillez entrer une adresse email valide.';
+      return;
+    }
+
     this.formData = {
       fullName: form.value.fullName?.trim(),
       email:    form.value.email?.trim()
     };
+
+    // Vérifier si l'email existe déjà AVANT d'ouvrir la caméra
+    try {
+      const res = await this.authService.checkEmailExists(this.formData.email).toPromise();
+      if (res?.exists) {
+        this.errorMessage = 'Cette adresse email est déjà utilisée. Veuillez vous connecter ou utiliser une autre adresse.';
+        return;
+      }
+    } catch {
+      // En cas d'erreur réseau, on laisse passer (le backend rejettera de toute façon)
+    }
 
     // SweetAlert guidance before opening camera
     const result = await Swal.fire({

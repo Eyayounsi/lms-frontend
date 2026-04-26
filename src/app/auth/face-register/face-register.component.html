@@ -54,12 +54,16 @@
               type="email"
               name="email"
               ngModel
+              #emailCtrl="ngModel"
               required
+              email
               class="form-control form-control-lg"
+              [class.is-invalid]="emailCtrl.invalid && emailCtrl.touched"
               placeholder="exemple@email.com"
             />
             <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
           </div>
+          <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="text-danger small mt-1">Veuillez entrer une adresse email valide.</div>
         </div>
 
         <!-- What happens next -->

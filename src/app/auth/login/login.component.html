@@ -49,17 +49,18 @@
                               <div class="mb-3 position-relative">
                                   <label class="form-label">Email<span class="text-danger ms-1">*</span></label>
                                   <div class="position-relative">
-                                      <input type="email" name="email" ngModel class="form-control form-control-lg" required>
+                                      <input type="email" name="email" ngModel #emailCtrl="ngModel" class="form-control form-control-lg" [class.is-invalid]="emailCtrl.invalid && emailCtrl.touched" required email>
                                       <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
                                   </div>
+                                  <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="text-danger small mt-1">Veuillez entrer une adresse email valide.</div>
                               </div>
                               <div class="mb-3 position-relative">
                                   <label class="form-label">Password <span class="text-danger ms-1">*</span></label>
                                   <div class="position-relative" id="passwordInput">
-                                      <input [type]="password ? 'text' : 'password'" name="password" ngModel class="pass-inputs form-control form-control-lg" required>
+                                      <input [type]="password ? 'text' : 'password'" name="password" ngModel #passwordCtrl="ngModel" class="pass-inputs form-control form-control-lg" [class.is-invalid]="passwordCtrl.invalid && passwordCtrl.touched" required>
                                       <span tabindex="0" (click)="togglePassword()" (keydown.enter)="togglePassword()" class="isax toggle-passwords fs-14" [ngClass]="password ? 'isax-eye' : 'isax-eye-slash'"></span>
-                                  </div>	
-                                  
+                                  </div>
+                                  <div *ngIf="passwordCtrl.invalid && passwordCtrl.touched" class="text-danger small mt-1">Le mot de passe est requis.</div>
                               </div>
                               <div class="d-flex align-items-center justify-content-between mb-4">
                                   <div class="remember-me d-flex align-items-center">
