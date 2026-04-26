@@ -8,12 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { AuthService } from '../../shared/service/auth/auth.service';
 import { environment } from '../../../environments/environment';
+import { InputOtpModule } from 'primeng/inputotp';
 
 declare const google: any;
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule,FormsModule,RouterLink,SlickCarouselModule],
+  imports: [CommonModule, FormsModule, RouterLink, SlickCarouselModule, InputOtpModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
@@ -22,10 +23,28 @@ export class RegisterComponent implements AfterViewInit {
   public welcomeLogin: welcomeLogin[] = [];
   readonly googleAuthEnabled = !!environment.enableGoogleAuth;
   readonly intendedRole: string;
-  password: boolean[] = [false]; // Add more as needed
+  password: boolean[] = [false];
   errorMessage: string = '';
   successMessage: string = '';
   isLoading: boolean = false;
+
+  // ── OTP step ─────────────────────────────────────────────────────────────
+  step: 'form' | 'otp' | 'success' = 'form';
+  pendingEmail: string = '';
+  pendingName: string = '';
+  otpCode: string = '';
+  isVerifying: boolean = false;
+  countdown: number = 5;
+  private countdownInterval: any = null;
+
+  // ── Masquer email ─────────────────────────────────────────────────────────
+  maskEmail(email: string): string {
+    const parts = email.split('@');
+    if (parts.length !== 2) return email;
+    const u = parts[0];
+    const masked = u.substring(0, 2) + '***' + u.substring(Math.max(2, u.length - 2));
+    return masked + '@' + parts[1];
+  }
 
   togglePassword(index: number): void {
     this.password[index] = !this.password[index];
@@ -212,24 +231,68 @@ export class RegisterComponent implements AfterViewInit {
 
     this.isLoading = true;
 
-    this.authService.register(registerData).subscribe({
-      next: (res: any) => {
+    this.authService.requestRegisterOtp(registerData).subscribe({
+      next: () => {
         this.isLoading = false;
-        localStorage.setItem('token', res.token);
-        if (res.fullName) this.authService.setFullName(res.fullName);
-        if (res.role) this.authService.setCurrentRole(res.role);
-        this.successMessage = 'Inscription réussie ! Redirection en cours…';
-        setTimeout(() => this.router.navigate([routes.login]), 1500);
+        this.pendingEmail = registerData.email;
+        this.pendingName  = registerData.fullName;
+        this.otpCode = '';
+        this.errorMessage = '';
+        this.step = 'otp';
       },
       error: (error: any) => {
         this.isLoading = false;
-        const msg = error.error?.message || error.error?.error || '';
+        const msg = error.error?.error || error.error?.message || '';
         if (msg.toLowerCase().includes('email') || msg.toLowerCase().includes('exist') || msg.toLowerCase().includes('already')) {
-          this.errorMessage = 'Cette adresse email est déjà utilisée. Veuillez vous connecter ou utiliser une autre adresse.';
+          this.errorMessage = 'Cette adresse email est déjà utilisée.';
         } else {
           this.errorMessage = msg || 'Une erreur est survenue. Veuillez réessayer.';
         }
       }
     });
   }
+
+  submitOtp(): void {
+    this.errorMessage = '';
+    if (!this.otpCode || this.otpCode.length !== 6) {
+      this.errorMessage = 'Veuillez entrer le code à 6 chiffres.';
+      return;
+    }
+
+    this.isVerifying = true;
+
+    this.authService.verifyRegisterOtp(this.pendingEmail, this.otpCode).subscribe({
+      next: (res: any) => {
+        this.isVerifying = false;
+        if (res.token) {
+          localStorage.setItem('token', res.token);
+          if (res.fullName) this.authService.setFullName(res.fullName);
+          if (res.role) this.authService.setCurrentRole(res.role);
+        }
+        this.step = 'success';
+        this.countdown = 5;
+        this.countdownInterval = setInterval(() => {
+          this.countdown--;
+          if (this.countdown <= 0) {
+            clearInterval(this.countdownInterval);
+            this.router.navigate([routes.login]);
+          }
+        }, 1000);
+      },
+      error: (error: any) => {
+        this.isVerifying = false;
+        this.errorMessage = error.error?.error || 'Code incorrect ou expiré.';
+      }
+    });
+  }
+
+  resendOtp(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    // Pas de resend implémenté côté back sans les données originales du formulaire
+    // On redirige vers le formulaire pour recommencer
+    this.step = 'form';
+    this.successMessage = 'Recommencez pour recevoir un nouveau code.';
+  }
 }
+

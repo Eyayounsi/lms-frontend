@@ -34,132 +34,154 @@
                                 <img src="assets/img/logo.svg" class="img-fluid" alt="Logo">
                                 <a [routerLink]="routes.home" class="link-1">Back to Home</a>
                             </div>
-                            <h1 class="fs-32 fw-bold topic">Sign up</h1>
-                            <!-- Messages globaux -->
-                            <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
-                              <i class="ti ti-alert-triangle fs-18 flex-shrink-0"></i>
-                              <span>{{ errorMessage }}</span>
-                            </div>
-                            <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center gap-2 mb-3" role="alert">
-                              <i class="ti ti-circle-check fs-18 flex-shrink-0"></i>
-                              <span>{{ successMessage }}</span>
-                            </div>
-                            <form #registerForm="ngForm" (ngSubmit)="registerUser(registerForm)" class="mb-3 pb-3">
-                                <div class="mb-3 position-relative">
-                                    <label class="form-label">Full Name<span class="text-danger ms-1">*</span></label>
-                                    <div class="position-relative">
-                                        <input type="text" name="fullName" ngModel #fullNameCtrl="ngModel" class="form-control form-control-lg" [class.is-invalid]="fullNameCtrl.invalid && fullNameCtrl.touched" required>
-                                        <span><i class="isax isax-user input-icon text-gray-7 fs-14"></i></span>
-                                    </div>
-                                    <div *ngIf="fullNameCtrl.invalid && fullNameCtrl.touched" class="text-danger small mt-1">Le nom complet est requis.</div>
-                                </div>
-                                <div class="mb-3 position-relative">
-                                    <label class="form-label">Email<span class="text-danger ms-1">*</span></label>
-                                    <div class="position-relative">
-                                        <input type="email" name="email" ngModel #emailCtrl="ngModel" class="form-control form-control-lg" [class.is-invalid]="emailCtrl.invalid && emailCtrl.touched" required email>
-                                        <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
-                                    </div>
-                                    <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="text-danger small mt-1">Veuillez entrer une adresse email valide.</div>
-                                </div>
-                                <div class="mb-3 position-relative">
-                                    <label class="form-label">New Password <span class="text-danger"> *</span></label>
-                                    <div id="passwordInput" class="pass-group">
-                                        <div class="pass-group mb-3">
-                                            <input
-                                          [type]="password[0] ? 'text' : 'password'"
-                                          id="password"
-                                          name="password"
-                                          ngModel
-                                          class="pass-input form-control form-control-lg"
-                                          (input)="checkPasswordStrength($event)"
-                                          required
-                                        />
-                                        <span class="isax toggle-password fs-14"
-                                            [ngClass]="password[0] ? 'isax-eye' : 'isax-eye-slash'"
-                                            (click)="togglePassword(0)"
-                                            (keydown.enter)="togglePassword(0)"
-                                            tabindex="0"
-                                            ></span>
-                                        </div>
-                                        <div id="passwordStrength" class="strength-meter password-strength" [ngClass]="{'poor-active':strengthLevel === 'poor','avg-active':strengthLevel === 'weak','strong-active':strengthLevel === 'strong','heavy-active':strengthLevel === 'heavy'}" >
-                                          <span id="poor" [ngClass]="{'active': strengthLevel === 'poor'||strengthLevel === 'weak'||strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
-                                          <span id="weak" [ngClass]="{'active': strengthLevel === 'weak'||strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
-                                          <span id="strong" [ngClass]="{'active': strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
-                                          <span id="heavy" [ngClass]="{'active': strengthLevel === 'heavy'}"></span>
-                                        </div>
-                                       
-                                      </div>
-                                     <div id="passwordInfo" class="mt-2" aria-live="polite">
-  <span *ngIf="strengthLevel === 'poor'" class="d-flex align-items-center text-danger fs-15 fw-semibold">
-    <img src="assets/img/icon/angry.svg" class="me-2">Weak. Must contain at least 8 characters
-  </span>
-  <span *ngIf="strengthLevel === 'weak'" class="d-flex align-items-center text-warning fs-15 fw-semibold">
-    <img src="assets/img/icon/anguish.svg" class="me-2">Average. Must contain at least 1 letter or number
-  </span>
-  <span *ngIf="strengthLevel === 'strong'" class="d-flex align-items-center text-blueL fs-15 fw-semibold">
-    <img src="assets/img/icon/smile.svg" class="me-2">Almost. Must contain special symbol
-  </span>
-  <span *ngIf="strengthLevel === 'heavy'" class="d-flex align-items-center text-success fs-15 fw-semibold">
-    <img src="assets/img/icon/smile.svg" class="me-2">Awesome! You have a secure password.
-  </span>
-</div>
-                                </div>
-                                <div class="mb-3 position-relative">
-                                    <label class="form-label">Confirm Password <span class="text-danger"> *</span></label>
-                                    <div class="position-relative" id="passwordInput">
-                                        <input [type]="password[1] ? 'text' : 'password'" name="confirmPassword" ngModel class="pass-inputs form-control form-control-lg" required>
-                                        <span tabindex="0" (click)="togglePassword(1)" (keydown.enter)="togglePassword(1)" class="isax toggle-passwords fs-14" [ngClass]="password[1] ? 'isax-eye' : 'isax-eye-slash'"></span>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between mb-4">
-                                    <div class="remember-me d-flex align-items-center">
-                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                                            <label class="form-check-label mb-0 d-inline-flex remember-me fs-14" for="flexCheckDefault">
-                                                I agree with <a href="javascript:void(0);" class="link-2 mx-2">Terms of Service</a> and <a href="javascript:void(0);" class="link-2 mx-2">Privacy Policy</a> 
-                                            </label>
-                                    </div>
-                                </div>
-                                <div class="d-grid">
-                                    <button class="btn btn-secondary btn-lg" type="submit" [disabled]="isLoading">
-                                        <span *ngIf="!isLoading">Sign Up <i class="isax isax-arrow-right-3 ms-1"></i></span>
-                                        <span *ngIf="isLoading">Inscription en cours…</span>
-                                    </button>
-                                </div>
-                            </form>
 
-                            <div class="d-flex align-items-center justify-content-center or fs-14 mb-3">
-                                Or
-                            </div>
-
-                            <div class="d-flex align-items-center justify-content-center mb-3" *ngIf="googleAuthEnabled">
-                                <div id="google-btn-register" class="me-2"></div>
-                            </div>
-
-                            <!-- Register with Face ID -->
-                            <div class="mb-3">
-                              <div class="d-flex align-items-center my-2">
-                                <hr class="flex-grow-1"><span class="px-2 text-muted fs-12">ou</span><hr class="flex-grow-1">
+                            <!-- ══ STEP 1 : Formulaire ══════════════════════════════════ -->
+                            <ng-container *ngIf="step === 'form'">
+                              <h1 class="fs-32 fw-bold topic">Sign up</h1>
+                              <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+                                <i class="ti ti-alert-triangle fs-18 flex-shrink-0"></i>
+                                <span>{{ errorMessage }}</span>
                               </div>
-                              <a
-                                [routerLink]="routes.face_register"
-                                [queryParams]="roleQueryParams"
-                                class="btn btn-outline-secondary w-100 face-register-btn"
-                              >
-                                <i class="ti ti-face-id fs-18 me-2"></i>
-                                Inscription avec Face ID
-                                <span class="badge bg-primary ms-2 fs-10">Nouveau</span>
-                              </a>
-                              <p class="text-muted text-center small mt-2 mb-0">
-                                <i class="ti ti-shield-check me-1 text-success"></i>
-                                Connectez-vous avec votre visage, sans mot de passe
+                              <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center gap-2 mb-3" role="alert">
+                                <i class="ti ti-circle-check fs-18 flex-shrink-0"></i>
+                                <span>{{ successMessage }}</span>
+                              </div>
+                              <form #registerForm="ngForm" (ngSubmit)="registerUser(registerForm)" class="mb-3 pb-3">
+                                  <div class="mb-3 position-relative">
+                                      <label class="form-label">Full Name<span class="text-danger ms-1">*</span></label>
+                                      <div class="position-relative">
+                                          <input type="text" name="fullName" ngModel #fullNameCtrl="ngModel" class="form-control form-control-lg" [class.is-invalid]="fullNameCtrl.invalid && fullNameCtrl.touched" required>
+                                          <span><i class="isax isax-user input-icon text-gray-7 fs-14"></i></span>
+                                      </div>
+                                      <div *ngIf="fullNameCtrl.invalid && fullNameCtrl.touched" class="text-danger small mt-1">Le nom complet est requis.</div>
+                                  </div>
+                                  <div class="mb-3 position-relative">
+                                      <label class="form-label">Email<span class="text-danger ms-1">*</span></label>
+                                      <div class="position-relative">
+                                          <input type="email" name="email" ngModel #emailCtrl="ngModel" class="form-control form-control-lg" [class.is-invalid]="emailCtrl.invalid && emailCtrl.touched" required email>
+                                          <span><i class="isax isax-sms input-icon text-gray-7 fs-14"></i></span>
+                                      </div>
+                                      <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="text-danger small mt-1">Veuillez entrer une adresse email valide.</div>
+                                  </div>
+                                  <div class="mb-3 position-relative">
+                                      <label class="form-label">New Password <span class="text-danger"> *</span></label>
+                                      <div id="passwordInput" class="pass-group">
+                                          <div class="pass-group mb-3">
+                                              <input [type]="password[0] ? 'text' : 'password'" id="password" name="password" ngModel class="pass-input form-control form-control-lg" (input)="checkPasswordStrength($event)" required />
+                                              <span class="isax toggle-password fs-14" [ngClass]="password[0] ? 'isax-eye' : 'isax-eye-slash'" (click)="togglePassword(0)" (keydown.enter)="togglePassword(0)" tabindex="0"></span>
+                                          </div>
+                                          <div id="passwordStrength" class="strength-meter password-strength" [ngClass]="{'poor-active':strengthLevel === 'poor','avg-active':strengthLevel === 'weak','strong-active':strengthLevel === 'strong','heavy-active':strengthLevel === 'heavy'}">
+                                              <span id="poor" [ngClass]="{'active': strengthLevel === 'poor'||strengthLevel === 'weak'||strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
+                                              <span id="weak" [ngClass]="{'active': strengthLevel === 'weak'||strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
+                                              <span id="strong" [ngClass]="{'active': strengthLevel === 'strong'||strengthLevel === 'heavy'}"></span>
+                                              <span id="heavy" [ngClass]="{'active': strengthLevel === 'heavy'}"></span>
+                                          </div>
+                                      </div>
+                                      <div id="passwordInfo" class="mt-2" aria-live="polite">
+                                          <span *ngIf="strengthLevel === 'poor'" class="d-flex align-items-center text-danger fs-15 fw-semibold"><img src="assets/img/icon/angry.svg" class="me-2">Weak. Must contain at least 8 characters</span>
+                                          <span *ngIf="strengthLevel === 'weak'" class="d-flex align-items-center text-warning fs-15 fw-semibold"><img src="assets/img/icon/anguish.svg" class="me-2">Average. Must contain at least 1 letter or number</span>
+                                          <span *ngIf="strengthLevel === 'strong'" class="d-flex align-items-center text-blueL fs-15 fw-semibold"><img src="assets/img/icon/smile.svg" class="me-2">Almost. Must contain special symbol</span>
+                                          <span *ngIf="strengthLevel === 'heavy'" class="d-flex align-items-center text-success fs-15 fw-semibold"><img src="assets/img/icon/smile.svg" class="me-2">Awesome! You have a secure password.</span>
+                                      </div>
+                                  </div>
+                                  <div class="mb-3 position-relative">
+                                      <label class="form-label">Confirm Password <span class="text-danger"> *</span></label>
+                                      <div class="position-relative" id="passwordInput">
+                                          <input [type]="password[1] ? 'text' : 'password'" name="confirmPassword" ngModel class="pass-inputs form-control form-control-lg" required>
+                                          <span tabindex="0" (click)="togglePassword(1)" (keydown.enter)="togglePassword(1)" class="isax toggle-passwords fs-14" [ngClass]="password[1] ? 'isax-eye' : 'isax-eye-slash'"></span>
+                                      </div>
+                                  </div>
+                                  <div class="d-flex align-items-center justify-content-between mb-4">
+                                      <div class="remember-me d-flex align-items-center">
+                                          <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                          <label class="form-check-label mb-0 d-inline-flex remember-me fs-14" for="flexCheckDefault">
+                                              I agree with <a href="javascript:void(0);" class="link-2 mx-2">Terms of Service</a> and <a href="javascript:void(0);" class="link-2 mx-2">Privacy Policy</a>
+                                          </label>
+                                      </div>
+                                  </div>
+                                  <div class="d-grid">
+                                      <button class="btn btn-secondary btn-lg" type="submit" [disabled]="isLoading">
+                                          <span *ngIf="!isLoading">Continuer <i class="isax isax-arrow-right-3 ms-1"></i></span>
+                                          <span *ngIf="isLoading"><span class="spinner-border spinner-border-sm me-2"></span>Envoi du code…</span>
+                                      </button>
+                                  </div>
+                              </form>
+                              <div class="d-flex align-items-center justify-content-center or fs-14 mb-3">Or</div>
+                              <div class="d-flex align-items-center justify-content-center mb-3" *ngIf="googleAuthEnabled">
+                                  <div id="google-btn-register" class="me-2"></div>
+                              </div>
+                              <div class="mb-3">
+                                  <div class="d-flex align-items-center my-2">
+                                      <hr class="flex-grow-1"><span class="px-2 text-muted fs-12">ou</span><hr class="flex-grow-1">
+                                  </div>
+                                  <a [routerLink]="routes.face_register" [queryParams]="roleQueryParams" class="btn btn-outline-secondary w-100 face-register-btn">
+                                      <i class="ti ti-face-id fs-18 me-2"></i>Inscription avec Face ID
+                                      <span class="badge bg-primary ms-2 fs-10">Nouveau</span>
+                                  </a>
+                                  <p class="text-muted text-center small mt-2 mb-0">
+                                      <i class="ti ti-shield-check me-1 text-success"></i>Connectez-vous avec votre visage, sans mot de passe
+                                  </p>
+                              </div>
+                              <div class="fs-14 fw-normal d-flex align-items-center justify-content-center">
+                                  Already you have an account?<a [routerLink]="routes.login" class="link-2 ms-1"> Login</a>
+                              </div>
+                            </ng-container>
+
+                            <!-- ══ STEP 2 : Vérification OTP ════════════════════════════ -->
+                            <ng-container *ngIf="step === 'otp'">
+                              <div class="text-center mb-4">
+                                  <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle mb-3" style="width:64px;height:64px;">
+                                      <i class="ti ti-mail-check fs-28 text-primary"></i>
+                                  </div>
+                                  <h1 class="fs-28 fw-bold mb-2">Vérifiez votre email</h1>
+                                  <p class="fs-14 text-muted mb-0">Un code à 6 chiffres a été envoyé à</p>
+                                  <p class="fs-14 fw-semibold text-primary">{{ maskEmail(pendingEmail) }}</p>
+                              </div>
+                              <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+                                  <i class="ti ti-alert-triangle fs-18 flex-shrink-0"></i>
+                                  <span>{{ errorMessage }}</span>
+                              </div>
+                              <div class="mb-4">
+                                  <label class="form-label fw-semibold text-center w-100 mb-3">Entrez le code de vérification</label>
+                                  <div class="d-flex justify-content-center">
+                                      <p-inputotp [(ngModel)]="otpCode" name="otpCode" [length]="6" [integerOnly]="true" />
+                                  </div>
+                              </div>
+                              <div class="d-grid mb-3">
+                                  <button class="btn btn-secondary btn-lg" (click)="submitOtp()" [disabled]="isVerifying || otpCode.length !== 6">
+                                      <span *ngIf="!isVerifying"><i class="ti ti-circle-check me-2"></i>Vérifier et créer mon compte</span>
+                                      <span *ngIf="isVerifying"><span class="spinner-border spinner-border-sm me-2"></span>Vérification…</span>
+                                  </button>
+                              </div>
+                              <div class="d-flex align-items-center justify-content-between fs-14">
+                                  <button class="btn btn-link p-0 fs-14 text-muted" (click)="step = 'form'">
+                                      <i class="ti ti-arrow-left me-1"></i>Retour
+                                  </button>
+                                  <a href="javascript:void(0);" class="link-2" (click)="resendOtp()">Renvoyer le code</a>
+                              </div>
+                              <p class="text-muted text-center small mt-3">
+                                  <i class="ti ti-clock me-1"></i>Le code expire dans <strong>10 minutes</strong>
                               </p>
-                            </div>
+                            </ng-container>
 
-                            <div class="fs-14 fw-normal d-flex align-items-center justify-content-center">
-                                Already you have an account?<a [routerLink]="routes.login" class="link-2 ms-1"> Login</a>
-                            </div>
-
-                            <!-- /Login -->
+                            <!-- ══ STEP 3 : Succès ══════════════════════════════════════ -->
+                            <ng-container *ngIf="step === 'success'">
+                              <div class="text-center py-4">
+                                  <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 rounded-circle mb-4" style="width:80px;height:80px;">
+                                      <i class="ti ti-circle-check fs-40 text-success"></i>
+                                  </div>
+                                  <h1 class="fs-28 fw-bold mb-2">Inscription réussie ! 🎉</h1>
+                                  <p class="fs-15 text-muted mb-1">Bienvenue, <strong>{{ pendingName }}</strong> !</p>
+                                  <p class="fs-14 text-muted mb-4">Votre compte a été créé avec succès.</p>
+                                  <div class="alert alert-success d-flex align-items-center gap-2 justify-content-center mb-4">
+                                      <i class="ti ti-arrow-right fs-18"></i>
+                                      <span>Redirection vers la page de connexion dans <strong>{{ countdown }}</strong>s…</span>
+                                  </div>
+                                  <a [routerLink]="routes.login" class="btn btn-secondary btn-lg w-100">
+                                      <i class="ti ti-login me-2"></i>Se connecter maintenant
+                                  </a>
+                              </div>
+                            </ng-container>
 
                         </div>
                     </div>

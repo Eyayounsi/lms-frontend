@@ -108,6 +108,14 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/auth/register`, data);
   }
 
+  requestRegisterOtp(data: any) {
+    return this.http.post(`${this.apiUrl}/auth/request-register-otp`, data);
+  }
+
+  verifyRegisterOtp(email: string, otpCode: string) {
+    return this.http.post(`${this.apiUrl}/auth/verify-register-otp`, { email, otpCode });
+  }
+
   checkEmailExists(email: string) {
     return this.http.get<{ exists: boolean }>(`${this.apiUrl}/auth/check-email`, {
       params: { email }
