@@ -207,10 +207,9 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
           this.loading = false;
         }
 
-        // Prompt caméra — une seule fois par cours par session navigateur
-        const camKey = `camera_prompt_${this.courseId}`;
-        if (!sessionStorage.getItem(camKey)) {
-          sessionStorage.setItem(camKey, '1');
+        // Prompt caméra — toujours affiché à chaque visite
+        if (!this.cameraPromptShown) {
+          this.cameraPromptShown = true;
           setTimeout(() => this.promptCamera(), 1000);
         }
       },
@@ -253,7 +252,10 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
 
     // Sanitize article content with DOMPurify if lesson is TEXT
     if (this.activeLesson?.lessonType === 'TEXT' && this.activeLesson.articleContent) {
-      const clean = DOMPurify.sanitize(this.activeLesson.articleContent, {USE_PROFILES: {html: true}});
+      const clean = DOMPurify.sanitize(this.activeLesson.articleContent, {
+        USE_PROFILES: {html: true},
+        ADD_ATTR: ['data-list', 'class'],
+      });
       this.sanitizedArticleContent = this.sanitizer.bypassSecurityTrustHtml(clean);
     } else {
       this.sanitizedArticleContent = null;
@@ -1050,6 +1052,10 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
       this.toastr.error('Impossible d\'accéder à la caméra. Vérifiez les permissions.');
       this.cameraActive = false;
     }
+  }
+
+  private getCameraPromptStorageKey(): string {
+    return `camera_prompt_seen_${this.currentUserId}_${this.courseId}`;
   }
 
   captureAndSendFrame(): void {

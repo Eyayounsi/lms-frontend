@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { SafeUrlPipe } from '../../../shared/pipe/safe-url.pipe';
 import { resolveCourseImage } from '../../../shared/utils/course-image.util';
@@ -71,7 +72,7 @@ export class AdminCoursesComponent implements OnInit {
   modalReviews: any[] = [];
   loadingReviews = false;
 
-  constructor(private courseService: CourseService) {}
+  constructor(private courseService: CourseService, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.loadPendingCourses();
@@ -404,9 +405,15 @@ export class AdminCoursesComponent implements OnInit {
 
   // Aperçu contenu de leçon (admin)
   previewLesson: any = null;
+  sanitizedArticleHtml: SafeHtml | null = null;
 
   openLessonPreview(lesson: any): void {
     this.previewLesson = lesson;
+    if (lesson.articleContent) {
+      this.sanitizedArticleHtml = this.sanitizer.bypassSecurityTrustHtml(lesson.articleContent);
+    } else {
+      this.sanitizedArticleHtml = null;
+    }
     setTimeout(() => {
       const el = document.getElementById('admin_lesson_preview');
       if (!el) return;

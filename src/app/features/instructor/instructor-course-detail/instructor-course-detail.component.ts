@@ -102,7 +102,10 @@ export class InstructorCourseDetailComponent implements OnInit {
       this.previewType = type;
     }
     const el = document.getElementById('mediaPreviewModal');
-    if (el) { new bootstrap.Modal(el).show(); }
+    if (el) {
+      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+      modal.show();
+    }
   }
 
   get safePreviewUrl(): SafeResourceUrl {

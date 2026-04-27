@@ -831,7 +831,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
           'link', 'code',
           // Formats block
           'header', 'blockquote', 'code-block',
-          'list', 'bullet', 'indent',
+          'list', 'indent',
           'align', 'direction',
           // Formats embed
           'image', 'video', 'formula'
@@ -853,6 +853,39 @@ export class AddCourseComponent implements OnInit, OnDestroy {
 
   openEditLessonModal(lesson: any): void {
     this.editLessonModel = { lesson, title: lesson.title, isFree: !!lesson.free };
+  }
+
+  private runAfterModalHidden(modalId: string, action: () => void): void {
+    const el = document.getElementById(modalId);
+    if (!el) {
+      action();
+      return;
+    }
+
+    const modal = bootstrap.Modal.getInstance(el);
+    if (!modal || !el.classList.contains('show')) {
+      action();
+      return;
+    }
+
+    el.addEventListener('hidden.bs.modal', () => action(), { once: true });
+    modal.hide();
+  }
+
+  triggerVideoUploadFromEditModal(lessonId: number): void {
+    this.runAfterModalHidden('edit-lesson', () => this.triggerVideoUpload(lessonId));
+  }
+
+  triggerPdfUploadFromEditModal(lessonId: number): void {
+    this.runAfterModalHidden('edit-lesson', () => this.triggerPdfUpload(lessonId));
+  }
+
+  openArticleEditorFromEditModal(lesson: any): void {
+    this.runAfterModalHidden('edit-lesson', () => this.openArticleEditor(lesson));
+  }
+
+  deleteContentFromEditModal(lesson: any, type: 'video' | 'pdf' | 'article'): void {
+    this.runAfterModalHidden('edit-lesson', () => this.deleteContent(lesson, type));
   }
 
   confirmEditLesson(): void {
@@ -1031,12 +1064,25 @@ export class AddCourseComponent implements OnInit, OnDestroy {
       return txt.value;
     }
 
-    // If this is plain text (or semi-plain), convert to safe HTML blocks.
-    if (!this._looksLikeHtml(content)) {
-      return this._formatPastedPlainTextToHtml(content);
+    // If it looks like HTML (has tags), return as-is — Quill handles it.
+    if (this._looksLikeHtml(content)) {
+      return content;
     }
 
-    return content;
+    // Plain text: wrap in <p> tags WITHOUT escaping entities.
+    // This preserves existing HTML entities like &#x1f539; (&rsquo; etc.)
+    const lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+    const parts: string[] = [];
+    let buf: string[] = [];
+    const flush = () => {
+      if (buf.length) { parts.push('<p>' + buf.join('<br>') + '</p>'); buf = []; }
+    };
+    for (const line of lines) {
+      if (!line.trim()) { flush(); continue; }
+      buf.push(line);
+    }
+    flush();
+    return parts.length ? parts.join('') : '<p>' + content + '</p>';
   }
 
   private _looksLikeEncodedHtml(value: string): boolean {

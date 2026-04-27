@@ -219,20 +219,17 @@
                   <div class="d-flex gap-2">
                     <button *ngIf="lesson.videoUrl" type="button"
                             (click)="openPreview(lesson.videoUrl, 'video')"
-                            class="btn btn-sm btn-outline-success"
-                            data-bs-toggle="modal" data-bs-target="#mediaPreviewModal">
+                          class="btn btn-sm btn-outline-success">
                       <i class="fa-solid fa-video me-1"></i>Vidéo
                     </button>
                     <button *ngIf="lesson.pdfUrl" type="button"
                             (click)="openPreview(lesson.pdfUrl, 'pdf')"
-                            class="btn btn-sm btn-outline-info"
-                            data-bs-toggle="modal" data-bs-target="#mediaPreviewModal">
+                          class="btn btn-sm btn-outline-info">
                       <i class="fa-solid fa-file-pdf me-1"></i>PDF
                     </button>
                     <button *ngIf="lesson.articleContent" type="button"
                             (click)="openPreview('', 'article', lesson.articleContent)"
-                            class="btn btn-sm btn-outline-warning"
-                            data-bs-toggle="modal" data-bs-target="#mediaPreviewModal">
+                          class="btn btn-sm btn-outline-warning">
                       <i class="fa-solid fa-file-lines me-1"></i>Article
                     </button>
                     <span *ngIf="!lesson.videoUrl && !lesson.pdfUrl && !lesson.articleContent" class="text-muted small">Aucun contenu</span>

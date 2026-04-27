@@ -691,15 +691,13 @@
                     [class.btn-success]="editLessonModel.lesson.videoUrl"
                     [class.btn-outline-success]="!editLessonModel.lesson.videoUrl"
                     title="{{ editLessonModel.lesson.videoUrl ? 'Remplacer la vidéo' : 'Ajouter une vidéo' }}"
-                    data-bs-dismiss="modal"
-                    (click)="triggerVideoUpload(editLessonModel.lesson.id)">
+                    (click)="triggerVideoUploadFromEditModal(editLessonModel.lesson.id)">
               <i class="isax isax-video-circle"></i>
               <span style="font-size:12px">Vidéo</span>
             </button>
             <button *ngIf="editLessonModel.lesson.videoUrl"
                     class="btn btn-sm btn-outline-danger" title="Supprimer la vidéo"
-                    data-bs-dismiss="modal"
-                    (click)="deleteContent(editLessonModel.lesson, 'video')">
+                    (click)="deleteContentFromEditModal(editLessonModel.lesson, 'video')">
               <i class="isax isax-trash"></i>
             </button>
           </div>
@@ -709,15 +707,13 @@
                     [class.btn-info]="editLessonModel.lesson.pdfUrl"
                     [class.btn-outline-info]="!editLessonModel.lesson.pdfUrl"
                     title="{{ editLessonModel.lesson.pdfUrl ? 'Remplacer le PDF' : 'Ajouter un PDF' }}"
-                    data-bs-dismiss="modal"
-                    (click)="triggerPdfUpload(editLessonModel.lesson.id)">
+                    (click)="triggerPdfUploadFromEditModal(editLessonModel.lesson.id)">
               <i class="isax isax-document"></i>
               <span style="font-size:12px">PDF</span>
             </button>
             <button *ngIf="editLessonModel.lesson.pdfUrl"
                     class="btn btn-sm btn-outline-danger" title="Supprimer le PDF"
-                    data-bs-dismiss="modal"
-                    (click)="deleteContent(editLessonModel.lesson, 'pdf')">
+                    (click)="deleteContentFromEditModal(editLessonModel.lesson, 'pdf')">
               <i class="isax isax-trash"></i>
             </button>
           </div>
@@ -727,15 +723,13 @@
                     [class.btn-warning]="editLessonModel.lesson.articleContent"
                     [class.btn-outline-warning]="!editLessonModel.lesson.articleContent"
                     title="{{ editLessonModel.lesson.articleContent ? 'Modifier l\'article' : 'Rédiger un article' }}"
-                    data-bs-dismiss="modal"
-                    (click)="openArticleEditor(editLessonModel.lesson)">
+                    (click)="openArticleEditorFromEditModal(editLessonModel.lesson)">
               <i class="isax isax-edit"></i>
               <span style="font-size:12px">Article</span>
             </button>
             <button *ngIf="editLessonModel.lesson.articleContent"
                     class="btn btn-sm btn-outline-danger" title="Supprimer l'article"
-                    data-bs-dismiss="modal"
-                    (click)="deleteContent(editLessonModel.lesson, 'article')">
+                    (click)="deleteContentFromEditModal(editLessonModel.lesson, 'article')">
               <i class="isax isax-trash"></i>
             </button>
           </div>
