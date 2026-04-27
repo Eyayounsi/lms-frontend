@@ -20,8 +20,16 @@ export class StudentChangePasswordComponent {
   confirmPassword = '';
   successMessage = '';
   errorMessage = '';
+  currentEmail = '';
 
   constructor(private profileService: ProfileService) {}
+
+  ngOnInit(): void {
+    this.profileService.getProfile().subscribe({
+      next: (profile) => { this.currentEmail = profile.email || ''; },
+      error: () => {}
+    });
+  }
 
   onChangePassword(): void {
     this.successMessage = '';
