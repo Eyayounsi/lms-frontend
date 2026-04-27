@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { routes } from '../../../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { MatSelectModule } from '@angular/material/select';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../../../shared/service/profile/profile.service';
@@ -13,12 +11,12 @@ import { AuthService } from '../../../../shared/service/auth/auth.service';
     selector: 'app-student-settings',
     templateUrl: './student-settings.component.html',
     styleUrl: './student-settings.component.scss',
-    imports : [CommonModule, RouterLink, MatSelectModule, BsDatepickerModule, FormsModule]
+    imports : [CommonModule, RouterLink, FormsModule]
 })
 export class StudentSettingsComponent implements OnInit {
   public routes = routes;
 
-  profileForm = { fullName: '', email: '', phone: '' };
+  profileForm = { fullName: '', email: '', phone: '', bio: '' };
   successMessage = '';
   errorMessage = '';
   deletePassword = '';
@@ -52,6 +50,7 @@ export class StudentSettingsComponent implements OnInit {
         this.profileForm.fullName = profile.fullName || '';
         this.profileForm.email = profile.email || '';
         this.profileForm.phone = profile.phone || '';
+        this.profileForm.bio   = profile.bio   || '';
         this.shareWithRecruiters = profile.shareWithRecruiters === true;
         this.avatarPath = profile.avatarPath || '';
       },
