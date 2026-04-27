@@ -49,16 +49,14 @@ export class WebSocketNotificationService {
     // Ne pas initialiser dans le constructeur — connect() sera appelé après login
   }
 
-  private initializeWebSocket(): void {
+  private initializeWebSocket(): Client | null {
     // Garder la tentative de connexion silencieuse si WebSocket non disponible
     try {
       const token = localStorage.getItem('token');
-      if (!token) return; // Pas de token → pas de connexion
+      if (!token) return null; // Pas de token → pas de connexion
       const baseUrl = environment.apiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
-      const wsUrl = token
-        ? `${baseUrl}/ws?token=${encodeURIComponent(token)}`
-        : `${baseUrl}/ws`;
-      this.stompClient = new Client({
+      const wsUrl = `${baseUrl}/ws?token=${encodeURIComponent(token)}`;
+      return new Client({
         webSocketFactory: () => new SockJS(wsUrl),
         reconnectDelay: 5000,
         debug: () => {
@@ -67,6 +65,7 @@ export class WebSocketNotificationService {
       });
     } catch (e) {
       console.debug('[WebSocket] Initialisation échouée (fallback HTTP):', e);
+      return null;
     }
   }
 
@@ -75,20 +74,18 @@ export class WebSocketNotificationService {
    */
   public connect(): void {
     // Toujours ré-initialiser pour avoir un token frais
-    this.stompClient = null;
-    this.initializeWebSocket();
-
-    if (!this.stompClient) {
+    const client = this.initializeWebSocket();
+    this.stompClient = client;
+    if (!client) {
       console.debug('[WebSocket] ❌ Pas de client STOMP disponible (SockJS non chargé)');
       return;
     }
 
-    if (this.stompClient.active) {
+    if (client.active) {
       return;
     }
 
-    const client = this.stompClient;
-    client.onConnect = (frame) => {
+    client.onConnect = (_frame: any) => {
       this.connectedSubject.next(true);
 
       if (this.notificationsSubscription) {
@@ -114,7 +111,7 @@ export class WebSocketNotificationService {
 
     };
 
-    client.onStompError = (error) => {
+    client.onStompError = (error: any) => {
       console.error('[WebSocket] ❌ Erreur connexion WebSocket:', error);
       this.connectedSubject.next(false);
     };
