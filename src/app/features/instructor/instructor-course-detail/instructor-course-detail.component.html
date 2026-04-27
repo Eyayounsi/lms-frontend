@@ -348,11 +348,19 @@
                class="rounded">
         </video>
         <!-- PDF -->
-        <iframe *ngIf="previewType === 'pdf' && previewUrl"
-                [src]="safePreviewUrl"
-                style="width:100%; height:70vh; border:none;"
-                class="rounded">
-        </iframe>
+        <div *ngIf="previewType === 'pdf' && previewUrl" style="position:relative; height:70vh;">
+          <div *ngIf="pdfLoading" class="d-flex flex-column align-items-center justify-content-center h-100 bg-dark rounded">
+            <div class="spinner-border text-light mb-3" role="status"></div>
+            <span class="text-white-50 small">Chargement du PDF…</span>
+          </div>
+          <iframe
+            [src]="safePreviewUrl"
+            (load)="pdfLoading = false"
+            style="width:100%; height:70vh; border:none;"
+            [style.display]="pdfLoading ? 'none' : 'block'"
+            class="rounded">
+          </iframe>
+        </div>
         <!-- Article -->
         <div *ngIf="previewType === 'article'" 
              class="bg-white p-4 rounded article-content-display" 

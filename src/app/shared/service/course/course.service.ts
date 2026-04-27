@@ -77,7 +77,7 @@ export class CourseService {
 
   /** Supprimer un cours */
   deleteCourse(courseId: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/instructor/courses/${courseId}`);
+    return this.http.delete(`${this.apiUrl}/instructor/courses/${courseId}`, { responseType: 'text' });
   }
 
   /** Soumettre un cours pour validation (DRAFT → PENDING) */

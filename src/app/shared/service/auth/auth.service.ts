@@ -141,8 +141,8 @@ export class AuthService {
     });
   }
 
-  /** Create user account in Spring Boot (no password — face-only auth) */
-  registerFaceUser(data: { fullName: string; email: string; role?: string }) {
+  /** Create user account in Spring Boot (password optional — also supports face-only auth) */
+  registerFaceUser(data: { fullName: string; email: string; role?: string; password?: string }) {
     return this.http.post(`${this.apiUrl}/auth/face-register`, data);
   }
 

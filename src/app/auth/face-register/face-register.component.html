@@ -66,6 +66,47 @@
           <div *ngIf="emailCtrl.invalid && emailCtrl.touched" class="text-danger small mt-1">Veuillez entrer une adresse email valide.</div>
         </div>
 
+        <!-- Password (optional) -->
+        <div class="mb-3 position-relative">
+          <label class="form-label">
+            Mot de passe
+            <span class="text-muted fw-normal small ms-1">(optionnel)</span>
+          </label>
+          <div class="position-relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              name="password"
+              ngModel
+              #passwordCtrl="ngModel"
+              minlength="6"
+              class="form-control form-control-lg"
+              [class.is-invalid]="passwordCtrl.invalid && passwordCtrl.touched"
+              placeholder="Au moins 6 caractères"
+            />
+            <span class="input-icon" style="cursor:pointer;" (click)="showPassword = !showPassword">
+              <i [class]="showPassword ? 'isax isax-eye-slash text-gray-7 fs-14' : 'isax isax-eye text-gray-7 fs-14'"></i>
+            </span>
+          </div>
+          <div *ngIf="passwordCtrl.invalid && passwordCtrl.touched" class="text-danger small mt-1">Minimum 6 caractères.</div>
+          <div class="text-muted small mt-1">Si renseigné, vous pourrez aussi vous connecter avec votre mot de passe.</div>
+        </div>
+
+        <div class="mb-4 position-relative">
+          <label class="form-label">Confirmer le mot de passe</label>
+          <div class="position-relative">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              name="confirmPassword"
+              ngModel
+              class="form-control form-control-lg"
+              placeholder="Répétez le mot de passe"
+            />
+            <span class="input-icon" style="cursor:pointer;" (click)="showConfirmPassword = !showConfirmPassword">
+              <i [class]="showConfirmPassword ? 'isax isax-eye-slash text-gray-7 fs-14' : 'isax isax-eye text-gray-7 fs-14'"></i>
+            </span>
+          </div>
+        </div>
+
         <!-- What happens next -->
         <div class="info-banner mb-4">
           <i class="ti ti-camera fs-18 me-2 text-primary"></i>

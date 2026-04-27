@@ -90,8 +90,10 @@ export class InstructorCourseDetailComponent implements OnInit {
   previewUrl = '';
   previewType: 'video' | 'pdf' | 'article' = 'video';
   previewArticleContent: string = '';
+  pdfLoading = false;
 
   openPreview(url: string, type: 'video' | 'pdf' | 'article', articleContent?: string): void {
+    this.pdfLoading = type === 'pdf';
     if (type === 'article') {
       this.previewArticleContent = articleContent || '';
       this.previewType = 'article';

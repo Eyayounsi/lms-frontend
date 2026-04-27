@@ -40,6 +40,7 @@ export class InstructorSettingsComponent implements OnInit {
 
   avatarSuccessMessage = '';
   avatarErrorMessage = '';
+  avatarCacheBuster = '';
 
   constructor(
     private profileService: ProfileService,
@@ -127,7 +128,8 @@ export class InstructorSettingsComponent implements OnInit {
   getAvatarUrl(): string {
     if (this.avatarPreview) return this.avatarPreview;
     if (!this.avatarPath) return '';
-    return this.authService.resolveAvatarUrl(this.avatarPath) || '';
+    const base = this.authService.resolveAvatarUrl(this.avatarPath) || '';
+    return base ? `${base}${this.avatarCacheBuster ? '?t=' + this.avatarCacheBuster : ''}` : '';
   }
 
   get avatarInitial(): string {
@@ -164,6 +166,7 @@ export class InstructorSettingsComponent implements OnInit {
         this.avatarUploading = false;
         this.avatarPreview = null;
         this.avatarPath = res?.avatarPath || '';
+        this.avatarCacheBuster = Date.now().toString();
         this.authService.setAvatarPath(this.avatarPath);
         this.avatarSuccessMessage = 'Photo de profil mise a jour avec succes.';
         input.value = '';

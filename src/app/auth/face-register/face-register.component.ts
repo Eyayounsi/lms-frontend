@@ -20,9 +20,11 @@ export class FaceRegisterComponent implements AfterViewInit, OnDestroy {
 
   // ── Multi-step state ─────────────────────────────────────────────────────
   step: 1 | 2 = 1;
-  formData: { fullName: string; email: string } = { fullName: '', email: '' };
+  formData: { fullName: string; email: string; password?: string } = { fullName: '', email: '' };
   requestedRole = '';
   errorMessage = '';
+  showPassword = false;
+  showConfirmPassword = false;
 
   // ── Camera state ─────────────────────────────────────────────────────────
   capturedImages: string[] = [];   // base64 strings shown as thumbnails
@@ -58,9 +60,24 @@ export class FaceRegisterComponent implements AfterViewInit, OnDestroy {
       return;
     }
 
+    // Password validation — optional but if provided must match and be ≥6 chars
+    const pwd = (form.value.password || '').trim();
+    const confirmPwd = (form.value.confirmPassword || '').trim();
+    if (pwd) {
+      if (pwd.length < 6) {
+        this.errorMessage = 'Le mot de passe doit contenir au moins 6 caractères.';
+        return;
+      }
+      if (pwd !== confirmPwd) {
+        this.errorMessage = 'Les mots de passe ne correspondent pas.';
+        return;
+      }
+    }
+
     this.formData = {
       fullName: form.value.fullName?.trim(),
-      email:    form.value.email?.trim()
+      email:    form.value.email?.trim(),
+      password: pwd || undefined
     };
 
     // Vérifier si l'email existe déjà AVANT d'ouvrir la caméra
@@ -190,12 +207,15 @@ export class FaceRegisterComponent implements AfterViewInit, OnDestroy {
           next: () => {
             Swal.close();
             this.submitting = false;
+            const loginHint = this.formData.password
+              ? '<p class="text-muted small">Vous pouvez vous connecter avec votre visage <strong>ou avec votre mot de passe</strong>.</p>'
+              : '<p class="text-muted small">Vous pouvez maintenant vous connecter avec votre visage.</p>';
             Swal.fire({
               title: '✅ Inscription réussie !',
               html: `
                 <p>Bienvenue <strong>${this.formData.fullName}</strong> !</p>
                 <p>${pyRes.faces_detected} captures de votre visage ont été enregistrées.</p>
-                <p class="text-muted small">Vous pouvez maintenant vous connecter avec votre visage.</p>
+                ${loginHint}
               `,
               icon: 'success',
               confirmButtonText: 'Aller au login',

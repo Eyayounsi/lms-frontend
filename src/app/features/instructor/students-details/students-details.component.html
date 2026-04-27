@@ -85,49 +85,6 @@
   <!-- Student Details Card -->
   @if (!loading && student) {
     <div class="row g-3">
-      <div class="col-12">
-        <div class="row g-3">
-          <div class="col-md-3 col-sm-6">
-            <div class="students-details-metric card h-100">
-              <div class="card-body">
-                <div class="students-details-metric__icon students-details-metric__icon--blue"><i class="isax isax-book"></i></div>
-                <p class="students-details-metric__label mb-1">Cours</p>
-                <h4 class="students-details-metric__value mb-0">{{ getCourseCount(student) }}</h4>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="students-details-metric card h-100">
-              <div class="card-body">
-                <div class="students-details-metric__icon students-details-metric__icon--green"><i class="isax isax-chart-2"></i></div>
-                <p class="students-details-metric__label mb-1">Progression moyenne</p>
-                <h4 class="students-details-metric__value mb-0">{{ getAverageProgress(student) }}%</h4>
-                <div class="progress students-details-metric-progress mt-2" role="progressbar" [attr.aria-valuenow]="getAverageProgress(student)" aria-valuemin="0" aria-valuemax="100">
-                  <div class="progress-bar bg-primary" [style.width.%]="getAverageProgress(student)"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="students-details-metric card h-100">
-              <div class="card-body">
-                <div class="students-details-metric__icon students-details-metric__icon--cyan"><i class="isax isax-tick-circle"></i></div>
-                <p class="students-details-metric__label mb-1">Terminés</p>
-                <h4 class="students-details-metric__value mb-0">{{ getCompletedCourseCount(student) }}</h4>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 col-sm-6">
-            <div class="students-details-metric card h-100">
-              <div class="card-body">
-                <div class="students-details-metric__icon students-details-metric__icon--pink"><i class="isax isax-calendar-1"></i></div>
-                <p class="students-details-metric__label mb-1">Dernière activité</p>
-                <h4 class="students-details-metric__value mb-0 students-details-metric__value--small">{{ getLastActivity(student) }}</h4>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div class="col-xl-4 col-lg-5 mb-3">
         <div class="card students-details-panel h-100">
@@ -135,7 +92,7 @@
             <div class="students-details-panel__section">
               <div class="students-details-mini-header">
                 <span class="students-details-mini-header__kicker">Profil</span>
-                <h6 class="mb-0 fw-bold">Coordonnées et contexte</h6>
+                <h6 class="mb-0 fw-bold">Coordonnées</h6>
               </div>
 
               <div class="students-details-contact-list">
@@ -144,14 +101,29 @@
                   <span class="students-details-contact-item__value">{{ getStudentEmail(student) }}</span>
                 </div>
                 <div class="students-details-contact-item">
-                  <span class="students-details-contact-item__label">ID étudiant</span>
-                  <span class="students-details-contact-item__value">{{ student?.studentId || student?.enrollmentId || '-' }}</span>
+                  <span class="students-details-contact-item__label">Cours</span>
+                  <span class="students-details-contact-item__value">{{ getCourseCount(student) }} inscrit(s) · {{ getCompletedCourseCount(student) }} terminé(s)</span>
+                </div>
+                <div class="students-details-contact-item">
+                  <span class="students-details-contact-item__label">Progression</span>
+                  <span class="students-details-contact-item__value">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="progress flex-grow-1" style="height:6px;">
+                        <div class="progress-bar bg-primary" [style.width.%]="getAverageProgress(student)"></div>
+                      </div>
+                      <span class="text-muted small">{{ getAverageProgress(student) }}%</span>
+                    </div>
+                  </span>
                 </div>
                 <div class="students-details-contact-item">
                   <span class="students-details-contact-item__label">Statut</span>
                   <span class="students-details-contact-item__value students-details-contact-item__value--pill">
                     <span class="badge bg-{{ getProgressTone(student) }}-transparent text-{{ getProgressTone(student) }}">{{ getProgressLabel(student) }}</span>
                   </span>
+                </div>
+                <div class="students-details-contact-item">
+                  <span class="students-details-contact-item__label">Inscription</span>
+                  <span class="students-details-contact-item__value">{{ formatDate(student.enrolledAt || student.createdAt || student.joinedAt) }}</span>
                 </div>
               </div>
 
@@ -164,28 +136,6 @@
                 </a>
               </div>
             </div>
-
-            <div class="students-details-panel__section mt-4">
-              <div class="students-details-mini-header">
-                <span class="students-details-mini-header__kicker">Insights</span>
-                <h6 class="mb-0 fw-bold">Résumé rapide</h6>
-              </div>
-
-              <div class="students-details-summary">
-                <div class="students-details-summary__item">
-                  <span class="students-details-summary__label">Cours achetés</span>
-                  <strong>{{ getCourseCount(student) }}</strong>
-                </div>
-                <div class="students-details-summary__item">
-                  <span class="students-details-summary__label">Cours terminés</span>
-                  <strong>{{ getCompletedCourseCount(student) }}</strong>
-                </div>
-                <div class="students-details-summary__item">
-                  <span class="students-details-summary__label">Moyenne</span>
-                  <strong>{{ getAverageProgress(student) }}%</strong>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -195,7 +145,7 @@
           <div class="card-body">
             <div class="students-details-mini-header mb-3">
               <span class="students-details-mini-header__kicker">Parcours</span>
-              <h6 class="mb-0 fw-bold">Cours achetés et progression</h6>
+              <h6 class="mb-0 fw-bold">Cours et progression</h6>
             </div>
 
             @if (getCourseItems(student).length > 0) {
@@ -242,7 +192,7 @@
           <div class="card-body">
             <div class="students-details-mini-header mb-3">
               <span class="students-details-mini-header__kicker">Chronologie</span>
-              <h6 class="mb-0 fw-bold">Repères d'inscription</h6>
+              <h6 class="mb-0 fw-bold">Repères d'activité</h6>
             </div>
 
             <div class="students-details-timeline">
@@ -256,7 +206,7 @@
               <div class="students-details-timeline__item">
                 <div class="students-details-timeline__dot students-details-timeline__dot--green"></div>
                 <div>
-                  <p class="mb-1 text-muted fs-14">Dernière activité connue</p>
+                  <p class="mb-1 text-muted fs-14">Dernière activité</p>
                   <p class="mb-0 fw-semibold">{{ getLastActivity(student) }}</p>
                 </div>
               </div>
@@ -264,7 +214,7 @@
                 <div class="students-details-timeline__dot students-details-timeline__dot--pink"></div>
                 <div>
                   <p class="mb-1 text-muted fs-14">Progression globale</p>
-                  <p class="mb-0 fw-semibold">{{ getAverageProgress(student) }}% - {{ getProgressLabel(student) }}</p>
+                  <p class="mb-0 fw-semibold">{{ getAverageProgress(student) }}% — {{ getProgressLabel(student) }}</p>
                 </div>
               </div>
             </div>
