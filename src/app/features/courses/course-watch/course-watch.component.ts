@@ -15,7 +15,8 @@ import { routes } from '../../../shared/service/routes/routes';
 import { SafeUrlPipe } from '../../../shared/pipe/safe-url.pipe';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { Subscription, firstValueFrom, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-course-watch',
@@ -118,6 +119,7 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
   currentTip: string | null = null;
   private tipTimer: any = null;
   private ttsTimer: any = null;
+  private destroy$ = new Subject<void>();
   private attentionSampleCounter = 0;
 
   // ═══ Breathing Exercise ═══
@@ -152,7 +154,7 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.currentUserId = parseInt(localStorage.getItem('id') || '0', 10);
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
       const cId = params['courseId'];
       const lId = params['lessonId'];
       if (cId) {
@@ -166,6 +168,8 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.saveCurrentProgress(); // Save last position before leaving
     this.clearSaveInterval();
     if (this.noteSaveTimer) clearTimeout(this.noteSaveTimer);

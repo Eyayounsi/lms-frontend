@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { routes } from '../../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, of, catchError } from 'rxjs';
+import { forkJoin, of, catchError, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { OrderService, OrderHistoryDto } from '../../../shared/service/order/order.service';
 import { resolveCourseImage } from '../../../shared/utils/course-image.util';
@@ -18,10 +19,11 @@ import { AuthService } from '../../../shared/service/auth/auth.service';
     styleUrl: './student-dashboard.component.scss',
   imports: [CommonModule, RouterLink, FormsModule],
 })
-export class StudentDashboardComponent implements OnInit {
+export class StudentDashboardComponent implements OnInit, OnDestroy {
   public routes = routes;
   public Math = Math;
   public userAvatarUrl = '';
+  private destroy$ = new Subject<void>();
 
   // ────── User Info ────────────────────────────────────────────
   public userName: string = '';
@@ -81,12 +83,17 @@ export class StudentDashboardComponent implements OnInit {
     this.studentEmail = localStorage.getItem('email') || '';
     this.authService.ensureProfileIdentityLoaded();
     this.userAvatarUrl = this.authService.resolveAvatarUrl(localStorage.getItem('avatarPath'));
-    this.authService.currentAvatarPath$.subscribe(path => {
+    this.authService.currentAvatarPath$.pipe(takeUntil(this.destroy$)).subscribe(path => {
       this.userAvatarUrl = this.authService.resolveAvatarUrl(path);
     });
 
     this.loadDashboard();
     this.loadOrders();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadDashboard(): void {

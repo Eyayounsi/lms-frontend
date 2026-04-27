@@ -49,7 +49,9 @@ export class DetectionService {
 
   private apiUrl = environment.apiUrl;
   private ws: WebSocket | null = null;
-  private wsUrl = `ws://${window.location.host}/ws/detect`;
+  private wsUrl = environment.faceServiceUrl
+    ? environment.faceServiceUrl.replace(/^http/, 'ws') + '/ws/detect'
+    : `ws://${window.location.host}/ws/detect`;
 
   /** Observable that emits each detection result from the WebSocket */
   public detection$ = new Subject<DetectionResult>();

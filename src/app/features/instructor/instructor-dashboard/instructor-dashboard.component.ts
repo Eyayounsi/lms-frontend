@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import {
   ChartComponent, ApexAxisChartSeries, ApexChart, ApexXAxis, ApexDataLabels,
   ApexTooltip, ApexStroke, ApexPlotOptions, ApexLegend, ApexYAxis,
@@ -12,7 +12,8 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { AuthService } from '../../../shared/service/auth/auth.service';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from '../../../../environments/environment';
 
@@ -40,9 +41,10 @@ export type ChartOptions = {
   styleUrls: ['./instructor-dashboard.component.scss'],
   imports: [CommonModule, RouterLink, NgApexchartsModule, FormsModule]
 })
-export class InstructorDashboardComponent implements OnInit {
+export class InstructorDashboardComponent implements OnInit, OnDestroy {
   public routes = routes;
   @ViewChild('chart') chart!: ChartComponent;
+  private destroy$ = new Subject<void>();
   private failedImageKeys = new Set<string>();
   private failedStudentAvatarKeys = new Set<string>();
   private readonly backendBaseUrl = (environment.apiUrl || '').replace(/\/api\/?$/, '');
@@ -117,10 +119,10 @@ export class InstructorDashboardComponent implements OnInit {
     this.userRole = localStorage.getItem('role') || '';
     this.userAvatarUrl = this.authService.resolveAvatarUrl(localStorage.getItem('avatarPath'));
 
-    this.authService.currentFullName$.subscribe(name => {
+    this.authService.currentFullName$.pipe(takeUntil(this.destroy$)).subscribe(name => {
       if (name) this.userName = name;
     });
-    this.authService.currentAvatarPath$.subscribe(path => {
+    this.authService.currentAvatarPath$.pipe(takeUntil(this.destroy$)).subscribe(path => {
       this.userAvatarUrl = this.authService.resolveAvatarUrl(path);
     });
 
@@ -152,6 +154,11 @@ export class InstructorDashboardComponent implements OnInit {
         });
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private computeStats(): void {

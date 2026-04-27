@@ -17,21 +17,32 @@ export const roleGuard = (requiredRole: string): CanActivateFn => {
       return false;
     }
 
-    // Rôle correct → accès autorisé
-    if (role.includes(requiredRole)) {
+    // Rôle correct → accès autorisé (vérifie rôle principal + rôles secondaires)
+    if (role === requiredRole) {
+      return true;
+    }
+    // Vérifier les rôles secondaires (ex: INSTRUCTOR peut accéder aux pages STUDENT)
+    try {
+      const secondaryRoles: string[] = JSON.parse(localStorage.getItem('secondaryRoles') || '[]');
+      if (secondaryRoles.includes(requiredRole)) {
+        return true;
+      }
+    } catch { /* ignore parse error */ }
+    // Règle implicite: INSTRUCTOR a toujours accès STUDENT
+    if (role === 'INSTRUCTOR' && requiredRole === 'STUDENT') {
       return true;
     }
 
     // Mauvais rôle → redirection vers le bon dashboard
-    if (role.includes('SUPERADMIN')) {
+    if (role === 'SUPERADMIN') {
       router.navigate(['/superadmin/superadmin-dashboard']);
-    } else if (role.includes('ADMIN')) {
+    } else if (role === 'ADMIN') {
       router.navigate(['/admin/admin-dashboard']);
-    } else if (role.includes('INSTRUCTOR')) {
+    } else if (role === 'INSTRUCTOR') {
       router.navigate(['/instructor/instructor-dashboard']);
-    } else if (role.includes('RECRUITER')) {
+    } else if (role === 'RECRUITER') {
       router.navigate(['/recruiter/recruiter-dashboard']);
-    } else if (role.includes('STUDENT')) {
+    } else if (role === 'STUDENT') {
       router.navigate(['/student/student-dashboard']);
     } else {
       router.navigate(['/index']);

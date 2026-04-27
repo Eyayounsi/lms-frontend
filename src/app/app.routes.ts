@@ -25,6 +25,7 @@ export const routes: Routes = [
         // Route SuperAdmin
         {path:'superadmin', canActivate:[authGuard, roleGuard('SUPERADMIN')], loadComponent:()=>import('./features/superadmin/superadmin.component').then((m)=>m.SuperadminComponent),
             children:[
+                {path:'', redirectTo:'superadmin-dashboard', pathMatch:'full'},
                 {path:'superadmin-dashboard', loadComponent:()=>import('./features/superadmin/superadmin-dashboard/superadmin-dashboard.component').then((m)=>m.SuperadminDashboardComponent)},
                 {path:'superadmin-users', loadComponent:()=>import('./features/superadmin/superadmin-users/superadmin-users.component').then((m)=>m.SuperadminUsersComponent)},
                 {path:'superadmin-logs', loadComponent:()=>import('./features/admin/admin-logs/admin-logs.component').then((m)=>m.AdminLogsComponent)},
@@ -77,7 +78,6 @@ export const routes: Routes = [
                 {path:'add-course',loadComponent:()=>import ('./features/courses/add-course/add-course.component').then((m)=>m.AddCourseComponent)},
                 {path:'edit-course/:id',loadComponent:()=>import ('./features/courses/add-course/add-course.component').then((m)=>m.AddCourseComponent)},
                 {path:'course-details',loadComponent:()=>import ('./features/courses/course-details-2/course-details-2.component').then((m)=>m.CourseDetails2Component)},
-                {path:'course-details-2',loadComponent:()=>import ('./features/courses/course-details-2/course-details-2.component').then((m)=>m.CourseDetails2Component)},
                 {path:'course-list',loadComponent:()=>import ('./features/courses/course-list/course-list.component').then((m)=>m.CourseListComponent)},
                 {path:'course-grid',loadComponent:()=>import ('./features/courses/course-grid/course-grid.component').then((m)=>m.CourseGridComponent)},
                 {path:'course-category',loadComponent:()=>import ('./features/courses/course-category/course-category.component').then((m)=>m.CourseCategoryComponent)},
@@ -122,6 +122,7 @@ export const routes: Routes = [
                 {path:'instructor-analytics',loadComponent:()=>import ('./features/instructor/instructor-analytics/instructor-analytics.component').then((m)=>m.InstructorAnalyticsComponent)},
                 {path:'settings',loadComponent:()=>import ('./features/instructor/settings/settings.component').then((m)=>m.SettingsComponent),
                     children:[
+                        {path:'', redirectTo:'instructor-settings', pathMatch:'full'},
                         {path:'instructor-setting-withdraw',loadComponent:()=>import ('./features/instructor/settings/instructor-setting-withdraw/instructor-setting-withdraw.component').then((m)=>m.InstructorSettingWithdrawComponent)},
                         {path:'instructor-setting-notifications',loadComponent:()=>import ('./features/instructor/settings/instructor-setting-notifications/instructor-setting-notifications.component').then((m)=>m.InstructorSettingNotificationsComponent)},
                         {path:'instructor-plans',redirectTo:'instructor-settings',pathMatch:'full'},
@@ -165,7 +166,7 @@ export const routes: Routes = [
             { path: 'blog-details', loadComponent: () => import('./features/blog/blog-details/blog-details.component').then(m => m.BlogDetailsComponent) }
         ]
         },
-        {path : 'student',canActivate:[authGuard],loadComponent:()=>import ('./features/student/student.component').then((m)=>m.StudentComponent),
+        {path : 'student',canActivate:[authGuard, roleGuard('STUDENT')],loadComponent:()=>import ('./features/student/student.component').then((m)=>m.StudentComponent),
     children:[
         {path:'student-dashboard',loadComponent:()=>import ('./features/student/student-dashboard/student-dashboard.component').then((m)=>m.StudentDashboardComponent)},
         {path:'student-profile',loadComponent:()=>import ('./features/student/student-profile/student-profile.component').then((m)=>m.StudentProfileComponent)},

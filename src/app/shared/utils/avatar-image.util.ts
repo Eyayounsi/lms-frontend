@@ -1,4 +1,6 @@
-const AVATAR_API_ROOT = '';
+const AVATAR_API_ROOT = (typeof window !== 'undefined' && (window as any).__LMS_API_URL__)
+  ? (window as any).__LMS_API_URL__.replace(/\/api\/?$/, '')
+  : '';
 
 export function resolveAvatarImage(path: string | null | undefined, fallback = ''): string {
   if (!path || !String(path).trim()) {

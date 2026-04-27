@@ -32,6 +32,7 @@ export class RegisterComponent implements AfterViewInit {
   step: 'form' | 'otp' | 'success' = 'form';
   pendingEmail: string = '';
   pendingName: string = '';
+  private pendingRegisterData: any = null;
   otpCode: string = '';
   isVerifying: boolean = false;
   countdown: number = 5;
@@ -236,6 +237,7 @@ export class RegisterComponent implements AfterViewInit {
         this.isLoading = false;
         this.pendingEmail = registerData.email;
         this.pendingName  = registerData.fullName;
+        this.pendingRegisterData = registerData;
         this.otpCode = '';
         this.errorMessage = '';
         this.step = 'otp';
@@ -289,10 +291,24 @@ export class RegisterComponent implements AfterViewInit {
   resendOtp(): void {
     this.errorMessage = '';
     this.successMessage = '';
-    // Pas de resend implémenté côté back sans les données originales du formulaire
-    // On redirige vers le formulaire pour recommencer
-    this.step = 'form';
-    this.successMessage = 'Recommencez pour recevoir un nouveau code.';
+    if (!this.pendingRegisterData) {
+      this.step = 'form';
+      this.successMessage = 'Recommencez pour recevoir un nouveau code.';
+      return;
+    }
+    this.isLoading = true;
+    this.authService.requestRegisterOtp(this.pendingRegisterData).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.otpCode = '';
+        this.successMessage = 'Un nouveau code a été envoyé à ' + this.pendingEmail;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.step = 'form';
+        this.successMessage = 'Recommencez pour recevoir un nouveau code.';
+      }
+    });
   }
 }
 

@@ -1,4 +1,6 @@
-const DEFAULT_BACKEND_BASE_URL = '';
+const DEFAULT_BACKEND_BASE_URL = (typeof window !== 'undefined' && (window as any).__LMS_API_URL__)
+  ? (window as any).__LMS_API_URL__.replace(/\/api\/?$/, '')
+  : '';
 
 export function resolveCourseImage(path: string | null | undefined, fallback = 'assets/img/course-img/courses-01.jpg'): string {
   const normalized = sanitizePath(path);

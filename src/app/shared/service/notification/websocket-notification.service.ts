@@ -46,13 +46,14 @@ export class WebSocketNotificationService {
     private toastr: ToastrService,
     private ngZone: NgZone
   ) {
-    this.initializeWebSocket();
+    // Ne pas initialiser dans le constructeur — connect() sera appelé après login
   }
 
   private initializeWebSocket(): void {
     // Garder la tentative de connexion silencieuse si WebSocket non disponible
     try {
       const token = localStorage.getItem('token');
+      if (!token) return; // Pas de token → pas de connexion
       const baseUrl = environment.apiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
       const wsUrl = token
         ? `${baseUrl}/ws?token=${encodeURIComponent(token)}`
@@ -73,9 +74,9 @@ export class WebSocketNotificationService {
    * Connecter à WebSocket et s'abonner aux notifications
    */
   public connect(): void {
-    if (!this.stompClient) {
-      this.initializeWebSocket();
-    }
+    // Toujours ré-initialiser pour avoir un token frais
+    this.stompClient = null;
+    this.initializeWebSocket();
 
     if (!this.stompClient) {
       console.debug('[WebSocket] ❌ Pas de client STOMP disponible (SockJS non chargé)');

@@ -293,7 +293,8 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   directIndex() {
-    this.router.navigate([routes.instructor_dashboard]);
+    const role = localStorage.getItem('role') || '';
+    this.redirectAfterLogin(role);
   }
 
   // ── Classic login ────────────────────────────────────────────────────────
