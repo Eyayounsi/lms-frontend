@@ -41,9 +41,6 @@
                 <a [routerLink]="routes.studentOrderHistory" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-shopping-cart5 me-2"></i>Order History</a>
             </li>
             <li>
-                <a [routerLink]="routes.students_referral" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-tag-user5 me-2"></i>Referrals</a>
-            </li>
-            <li>
                 <a [routerLink]="routes.studentsMessage" class="d-inline-flex align-items-center justify-content-between w-100" routerLinkActive="active">
                   <span class="d-flex align-items-center"><i class="isax isax-messages-35 me-2"></i>Messages</span>
                                     <span *ngIf="unreadMsgCount > 0" class="badge rounded-pill ms-1 sidebar-badge sidebar-badge--msg">{{ unreadMsgCount > 99 ? '99+' : unreadMsgCount }}</span>

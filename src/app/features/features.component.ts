@@ -123,8 +123,11 @@ export class FeaturesComponent implements OnInit, OnDestroy {
       this.common.mainFooter.next(true);
     }
     
-    // Special case: course-watch should show student navbar (admin-header)
+    // Special case: course-watch/cart/checkout should show student navbar when logged in
     if (this.routeStatus == 'courses' && this.routeStatusSub == 'course-watch') {
+      this.common.isuserHeader.next(false);
+      this.common.isAdminHeader.next(true);
+    } else if (this.routeStatus == 'courses' && (this.routeStatusSub == 'cart' || this.routeStatusSub == 'checkout') && localStorage.getItem('token')) {
       this.common.isuserHeader.next(false);
       this.common.isAdminHeader.next(true);
     } else if (

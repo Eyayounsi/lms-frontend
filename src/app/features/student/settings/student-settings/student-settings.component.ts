@@ -24,6 +24,14 @@ export class StudentSettingsComponent implements OnInit {
   deletePassword = '';
   deleteError = '';
 
+  // Avatar upload
+  avatarPreview: string | null = null;
+  avatarUploading = false;
+  avatarPath = '';
+  avatarSuccessMessage = '';
+  avatarErrorMessage = '';
+  avatarCacheBuster = '';
+
   // Share with recruiters
   shareWithRecruiters = false;
   shareLoading = false;
@@ -45,6 +53,7 @@ export class StudentSettingsComponent implements OnInit {
         this.profileForm.email = profile.email || '';
         this.profileForm.phone = profile.phone || '';
         this.shareWithRecruiters = profile.shareWithRecruiters === true;
+        this.avatarPath = profile.avatarPath || '';
       },
       error: (err) => {
         console.error('Erreur chargement profil:', err);
@@ -106,5 +115,81 @@ export class StudentSettingsComponent implements OnInit {
 
   get avatarInitial(): string {
     return this.profileForm.fullName?.trim()?.charAt(0)?.toUpperCase() || 'U';
+  }
+
+  getAvatarUrl(): string {
+    if (this.avatarPreview) return this.avatarPreview;
+    if (!this.avatarPath) return '';
+    const base = this.authService.resolveAvatarUrl(this.avatarPath) || '';
+    return base ? `${base}${this.avatarCacheBuster ? '?t=' + this.avatarCacheBuster : ''}` : '';
+  }
+
+  onAvatarSelected(event: Event): void {
+    this.avatarSuccessMessage = '';
+    this.avatarErrorMessage = '';
+
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) {
+      this.avatarErrorMessage = 'Veuillez choisir un fichier image valide (PNG/JPG).';
+      input.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.avatarPreview = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+
+    this.avatarUploading = true;
+    this.profileService.uploadAvatar(file).subscribe({
+      next: (res) => {
+        this.avatarUploading = false;
+        this.avatarPreview = null;
+        this.avatarPath = res?.avatarPath || '';
+        this.avatarCacheBuster = Date.now().toString();
+        this.authService.setAvatarPath(this.avatarPath);
+        this.avatarSuccessMessage = 'Photo de profil mise à jour avec succès.';
+        input.value = '';
+      },
+      error: (err) => {
+        this.avatarUploading = false;
+        this.avatarPreview = null;
+        this.avatarErrorMessage = err?.error?.message || err?.error?.error || 'Impossible de mettre à jour la photo.';
+        input.value = '';
+      }
+    });
+  }
+
+  removeAvatar(): void {
+    this.avatarSuccessMessage = '';
+    this.avatarErrorMessage = '';
+
+    if (!this.avatarPath) {
+      this.avatarErrorMessage = 'Aucune photo de profil à supprimer.';
+      return;
+    }
+
+    const confirmed = window.confirm('Voulez-vous supprimer votre photo de profil ?');
+    if (!confirmed) return;
+
+    this.avatarUploading = true;
+    this.profileService.deleteAvatar().subscribe({
+      next: () => {
+        this.avatarUploading = false;
+        this.avatarPreview = null;
+        this.avatarPath = '';
+        this.avatarCacheBuster = '';
+        this.authService.setAvatarPath('');
+        this.avatarSuccessMessage = 'Photo de profil supprimée.';
+      },
+      error: (err) => {
+        this.avatarUploading = false;
+        this.avatarErrorMessage = err?.error?.message || 'Impossible de supprimer la photo.';
+      }
+    });
   }
 }

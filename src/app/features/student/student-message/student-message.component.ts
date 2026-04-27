@@ -1,20 +1,22 @@
 import { AfterViewChecked, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from '../../../shared/service/message/message.service';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { MessageRealtimeService } from '../../../shared/service/message/message-realtime.service';
 import { Subscription } from 'rxjs';
+import { resolveAvatarImage } from '../../../shared/utils/avatar-image.util';
 
 @Component({
     selector: 'app-student-message',
     templateUrl: './student-message.component.html',
     styleUrl: './student-message.component.scss',
-    imports: [CommonModule, FormsModule, DatePipe]
+    imports: [CommonModule, FormsModule]
 })
 export class StudentMessageComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messagesContainer') private messagesContainer?: ElementRef<HTMLDivElement>;
 
+  searchQuery = '';
   conversations: any[] = [];
   activeConversation: any = null;
   messages: any[] = [];
@@ -23,7 +25,7 @@ export class StudentMessageComponent implements OnInit, OnDestroy, AfterViewChec
   loadingMessages = false;
   currentUserId: number = 0;
 
-  // Instructeurs suggérés (depuis les cours inscrits)
+  // Instructeurs suggérés
   instructors: { id: number; name: string; avatar: string }[] = [];
   startingConv = false;
   private realtimeSub?: Subscription;
@@ -60,6 +62,19 @@ export class StudentMessageComponent implements OnInit, OnDestroy, AfterViewChec
     }
   }
 
+  get filteredConversations(): any[] {
+    const q = this.searchQuery.trim().toLowerCase();
+    if (!q) return this.conversations;
+    return this.conversations.filter((c) =>
+      (c?.otherParticipantName || '').toLowerCase().includes(q) ||
+      String(c?.lastMessage || '').toLowerCase().includes(q)
+    );
+  }
+
+  totalUnread(): number {
+    return this.conversations.reduce((sum, c) => sum + Number(c?.unreadCount || 0), 0);
+  }
+
   loadInstructors(): void {
     this.courseService.getMyEnrolledCourses().subscribe({
       next: (courses) => {
@@ -84,7 +99,6 @@ export class StudentMessageComponent implements OnInit, OnDestroy, AfterViewChec
     this.messageService.getOrCreateConversation(instructor.id).subscribe({
       next: (conv) => {
         this.startingConv = false;
-        // Refresh conversations then open the new one
         this.messageService.getConversations().subscribe({
           next: (data) => {
             this.conversations = data;
@@ -141,8 +155,42 @@ export class StudentMessageComponent implements OnInit, OnDestroy, AfterViewChec
     });
   }
 
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendMessage();
+    }
+  }
+
   isSent(msg: any): boolean {
     return msg.senderId === this.currentUserId;
+  }
+
+  showDateSeparator(messages: any[], index: number): boolean {
+    if (index === 0) return true;
+    const prev = new Date(messages[index - 1].sentAt).toDateString();
+    const curr = new Date(messages[index].sentAt).toDateString();
+    return prev !== curr;
+  }
+
+  formatTime(dateStr: string): string {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  formatDate(dateStr: string): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const today = new Date();
+    if (d.toDateString() === today.toDateString()) return "Aujourd'hui";
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (d.toDateString() === yesterday.toDateString()) return 'Hier';
+    return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+  }
+
+  getAvatarUrl(avatarPath: string | null | undefined): string {
+    return resolveAvatarImage(avatarPath, 'assets/img/user/user-01.jpg');
   }
 
   private handleRealtimeEvent(event: any): void {

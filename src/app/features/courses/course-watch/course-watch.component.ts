@@ -203,9 +203,10 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
           this.loading = false;
         }
 
-        // Prompt caméra (une seule fois par session)
-        if (!this.cameraPromptShown) {
-          this.cameraPromptShown = true;
+        // Prompt caméra — une seule fois par cours par session navigateur
+        const camKey = `camera_prompt_${this.courseId}`;
+        if (!sessionStorage.getItem(camKey)) {
+          sessionStorage.setItem(camKey, '1');
           setTimeout(() => this.promptCamera(), 1000);
         }
       },
@@ -897,10 +898,6 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
   // ═══════════════════════════════════════════════════════════════════════
 
   promptCamera(): void {
-    const key = `cv-camera-prompted-${this.courseId}`;
-    if (localStorage.getItem(key)) return; // Only prompt once per course
-    localStorage.setItem(key, '1');
-
     Swal.fire({
       title: '🎯 Suivi intelligent par IA',
       html: `

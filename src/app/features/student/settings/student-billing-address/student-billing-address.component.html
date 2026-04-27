@@ -16,7 +16,7 @@
             @if (addresses.length === 0) {
                 <div class="text-center py-4 text-muted">
                     <i class="isax isax-location fs-36 d-block mb-2 opacity-50"></i>
-                    Aucune adresse enregistrÃ©e.
+                    Aucune adresse enregistrée.
                 </div>
             }
 
@@ -27,7 +27,7 @@
                             <h6 class="mb-1">
                                 {{ addr.title }}
                                 @if (addr.isDefault) {
-                                    <span class="badge bg-soft-success ms-1 fs-12 fw-normal">Par dÃ©faut</span>
+                                    <span class="badge bg-soft-success ms-1 fs-12 fw-normal">Par défaut</span>
                                 }
                             </h6>
                             <p class="mb-0 text-muted fs-13">
@@ -82,7 +82,7 @@
                             <label class="form-label">Adresse <span class="text-danger">*</span></label>
                             <input type="text" class="form-control"
                                    [(ngModel)]="addressForm.street" name="addStreet"
-                                   placeholder="NumÃ©ro et nom de rue" required>
+                                   placeholder="Numéro et nom de rue" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Ville</label>
@@ -107,7 +107,7 @@
                                 <input type="checkbox" class="form-check-input" id="addDefault"
                                        [(ngModel)]="addressForm.isDefault" name="addDefault">
                                 <label class="form-check-label" for="addDefault">
-                                    DÃ©finir comme adresse par dÃ©faut
+                                    Définir comme adresse par défaut
                                 </label>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
                                 <input type="checkbox" class="form-check-input" id="editDefault"
                                        [(ngModel)]="addressForm.isDefault" name="editDefault">
                                 <label class="form-check-label" for="editDefault">
-                                    Adresse par dÃ©faut
+                                    Adresse par défaut
                                 </label>
                             </div>
                         </div>
@@ -196,7 +196,7 @@
                 </span>
                 <div>
                     <h4 class="mb-2">Supprimer l'adresse</h4>
-                    <p class="mb-3">ÃŠtes-vous sÃ»r de vouloir supprimer cette adresse ?</p>
+                    <p class="mb-3">Êtes-vous sûr de vouloir supprimer cette adresse ?</p>
                     <div class="d-flex align-items-center justify-content-center">
                         <a href="javascript:void(0);" class="btn bg-gray-100 rounded-pill me-2" data-bs-dismiss="modal">Annuler</a>
                         <a href="javascript:void(0);" class="btn btn-secondary rounded-pill" (click)="confirmDelete()">Oui, Supprimer</a>

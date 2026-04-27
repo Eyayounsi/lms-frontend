@@ -325,7 +325,9 @@
 </a>
 <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
 <div *ngIf="course.onSale" class="badge text-bg-danger">En promo</div>
-<a href="javascript:void(0);" class="fav-icon ms-auto"><i class="isax isax-heart"></i></a>
+<a href="javascript:void(0);" class="fav-icon ms-auto" (click)="iconSelect(course.id)">
+  <i [class]="wishlistSet.has(course.id) ? 'isax isax-heart5 text-danger' : 'isax isax-heart'"></i>
+</a>
 </div>
 </div>
 <div class="course-content">

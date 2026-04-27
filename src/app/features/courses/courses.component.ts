@@ -18,6 +18,7 @@ routes=routes;
 base = '';
 page = '';
 last = '';
+isLoggedIn = false;
   constructor(
     private common: CommonService,
   ) {
@@ -30,7 +31,6 @@ last = '';
     this.common.last.subscribe((res: string) => {
       this.last = res;
     });
-
-
+    this.isLoggedIn = !!localStorage.getItem('token');
   }
 }

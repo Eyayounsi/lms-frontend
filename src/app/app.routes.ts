@@ -184,6 +184,10 @@ export const routes: Routes = [
         {path:'student-referral',loadComponent:()=>import ('./features/student/student-referral/student-referral.component').then((m)=>m.StudentReferralComponent)},
         {path:'student-reviews',loadComponent:()=>import ('./features/student/student-reviews/student-reviews.component').then((m)=>m.StudentReviewsComponent)},
         {path:'student-wishlist',loadComponent:()=>import ('./features/student/student-wishlist/student-wishlist.component').then((m)=>m.StudentWishlistComponent)},
+        {path:'browse-courses',loadComponent:()=>import ('./features/courses/course-grid/course-grid.component').then((m)=>m.CourseGridComponent)},
+        {path:'course-details',loadComponent:()=>import ('./features/courses/course-details-2/course-details-2.component').then((m)=>m.CourseDetails2Component)},
+        {path:'cart',loadComponent:()=>import ('./features/courses/course-cart/course-cart.component').then((m)=>m.CourseCartComponent)},
+        {path:'checkout',loadComponent:()=>import ('./features/courses/course-checkout/course-checkout.component').then((m)=>m.CourseCheckoutComponent)},
         {path:'settings',loadComponent:()=>import ('./features/student/settings/settings.component').then((m)=>m.SettingsComponent),
             children:[
                 {path:'student-linked-accounts',loadComponent:()=>import ('./features/student/settings/student-linked-accounts/student-linked-accounts.component').then((m)=>m.StudentLinkedAccountsComponent)},

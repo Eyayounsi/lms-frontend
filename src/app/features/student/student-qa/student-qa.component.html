@@ -33,7 +33,7 @@
               <img src="assets/img/icon/bookmark.svg" alt="">
             </span>
             <div>
-              <p class="mb-1">RÃ©pondues</p>
+              <p class="mb-1">Répondues</p>
               <h4 class="fw-bold">{{ answeredCount }}</h4>
             </div>
           </div>
@@ -48,7 +48,7 @@
               <img src="assets/img/icon/book.svg" alt="">
             </span>
             <div>
-              <p class="mb-1">Sans rÃ©ponse</p>
+              <p class="mb-1">Sans réponse</p>
               <h4 class="fw-bold">{{ unansweredCount }}</h4>
             </div>
           </div>
@@ -70,8 +70,8 @@
   @if (!loading && questions.length === 0) {
     <div class="text-center py-5">
       <img src="assets/img/icon/graduation.svg" alt="" class="mb-3" style="width:56px;opacity:.5">
-      <h6 class="text-muted">Vous n'avez encore posÃ© aucune question.</h6>
-      <p class="text-muted fs-14">Utilisez le bouton ci-dessus pour poser votre premiÃ¨re question.</p>
+      <h6 class="text-muted">Vous n'avez encore posé aucune question.</h6>
+      <p class="text-muted fs-14">Utilisez le bouton ci-dessus pour poser votre première question.</p>
     </div>
   }
 
@@ -98,14 +98,14 @@
                     <i class="isax isax-clock me-1 fs-10"></i>{{ q.createdAt | date:'dd MMM yyyy' }}
                   </span>
                   <span class="badge" [ngClass]="q.answerCount > 0 ? 'bg-soft-success text-success' : 'bg-soft-warning text-warning'">
-                    <i class="isax isax-message me-1 fs-10"></i>{{ q.answerCount }} rÃ©ponse{{ q.answerCount !== 1 ? 's' : '' }}
+                    <i class="isax isax-message me-1 fs-10"></i>{{ q.answerCount }} réponse{{ q.answerCount !== 1 ? 's' : '' }}
                   </span>
                 </div>
               </div>
               <div class="d-flex align-items-center gap-2 flex-shrink-0">
                 <button class="btn btn-sm btn-light border rounded-pill"
                         (click)="toggleExpand(q)"
-                        [title]="expandedId === q.id ? 'RÃ©duire' : 'Voir les rÃ©ponses'">
+                        [title]="expandedId === q.id ? 'Réduire' : 'Voir les réponses'">
                   <i class="isax fs-14"
                      [ngClass]="expandedId === q.id ? 'isax-arrow-up-3' : 'isax-arrow-down-2'"></i>
                 </button>
@@ -117,7 +117,7 @@
               </div>
             </div>
 
-            <!-- Corps de la question et rÃ©ponses (expanded) -->
+            <!-- Corps de la question et réponses (expanded) -->
             @if (expandedId === q.id) {
               <div class="mt-3 border-top pt-3">
                 <div class="bg-light rounded p-3 mb-3">
@@ -125,13 +125,13 @@
                 </div>
 
                 <h6 class="fs-14 fw-semibold mb-3">
-                  <i class="isax isax-message-text me-2"></i>RÃ©ponses
+                  <i class="isax isax-message-text me-2"></i>Réponses
                 </h6>
 
                 @if (!q.answers || q.answers.length === 0) {
                   <p class="text-muted fs-13 ps-2">
                     <i class="isax isax-info-circle me-1"></i>
-                    Aucune rÃ©ponse pour le moment. L'instructeur sera notifiÃ©.
+                    Aucune réponse pour le moment. L'instructeur sera notifié.
                   </p>
                 }
 
@@ -182,13 +182,13 @@
             <div class="col-md-12 mb-3">
               <label class="form-label">Cours <span class="text-danger">*</span></label>
               <select class="form-select" [(ngModel)]="questionForm.courseId" name="courseId" required>
-                <option value="" disabled>SÃ©lectionner un cours</option>
+                <option value="" disabled>Sélectionner un cours</option>
                 @for (course of enrolledCourses; track course.id) {
                   <option [value]="course.id">{{ course.title }}</option>
                 }
               </select>
               @if (enrolledCourses.length === 0) {
-                <small class="text-muted">Vous devez Ãªtre inscrit Ã  un cours pour poser une question.</small>
+                <small class="text-muted">Vous devez être inscrit à un cours pour poser une question.</small>
               }
             </div>
             <div class="col-md-12 mb-3">
@@ -205,7 +205,7 @@
               <textarea class="form-control" rows="5"
                         [(ngModel)]="questionForm.body"
                         name="qbody"
-                        placeholder="DÃ©crivez votre question en dÃ©tail..."
+                        placeholder="Décrivez votre question en détail..."
                         required></textarea>
             </div>
           </div>

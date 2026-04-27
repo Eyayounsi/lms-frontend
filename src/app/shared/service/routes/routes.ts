@@ -112,6 +112,10 @@ export const routes = {
   student_job_offers: '/student/student-job-offers',
   studentChallenges: '/student/student-challenges',
   studentPointsExchange: '/student/student-points-exchange',
+  studentBrowseCourses: '/student/browse-courses',
+  studentCourseDetails: '/student/course-details',
+  studentCart: '/student/cart',
+  studentCheckout: '/student/checkout',
 
   // Pages Routes
   pages: '/pages/',

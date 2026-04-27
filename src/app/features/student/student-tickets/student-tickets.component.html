@@ -80,7 +80,7 @@
     @if (!loading && filteredTickets.length === 0) {
         <div class="text-center py-5">
             <i class="isax isax-ticket-2 fs-48 text-muted mb-3 d-block"></i>
-            <h6 class="text-muted">Aucun ticket trouvÃ©.</h6>
+            <h6 class="text-muted">Aucun ticket trouvé.</h6>
         </div>
     }
 
@@ -126,7 +126,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon"
-                                       (click)="openDetailsModal(ticket)" title="DÃ©tails">
+                                       (click)="openDetailsModal(ticket)" title="Détails">
                                         <i class="isax isax-eye"></i>
                                     </a>
                                     <a href="javascript:void(0);" class="d-inline-flex fs-14 me-2 action-icon"
@@ -164,12 +164,12 @@
                             <label class="form-label">Ticket Title <span class="text-danger">*</span></label>
                             <input type="text" class="form-control"
                                    [(ngModel)]="addForm.subject" name="addSubject"
-                                   placeholder="DÃ©crivez briÃ¨vement votre problÃ¨me" required>
+                                   placeholder="Décrivez brièvement votre problème" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Category <span class="text-danger">*</span></label>
                             <select class="form-select" [(ngModel)]="addForm.category" name="addCategory" required>
-                                <option value="" disabled>SÃ©lectionner</option>
+                                <option value="" disabled>Sélectionner</option>
                                 @for (c of categories; track c) {
                                     <option [value]="c">{{ c }}</option>
                                 }
@@ -178,7 +178,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Priority <span class="text-danger">*</span></label>
                             <select class="form-select" [(ngModel)]="addForm.priority" name="addPriority" required>
-                                <option value="" disabled>SÃ©lectionner</option>
+                                <option value="" disabled>Sélectionner</option>
                                 @for (p of priorities; track p) {
                                     <option [value]="p">{{ p }}</option>
                                 }
@@ -188,7 +188,7 @@
                             <label class="form-label">Description</label>
                             <textarea class="form-control" rows="4"
                                       [(ngModel)]="addForm.description" name="addDesc"
-                                      placeholder="DÃ©crivez votre problÃ¨me en dÃ©tail..."></textarea>
+                                      placeholder="Décrivez votre problème en détail..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -225,7 +225,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Category <span class="text-danger">*</span></label>
                             <select class="form-select" [(ngModel)]="editForm.category" name="editCategory" required>
-                                <option value="" disabled>SÃ©lectionner</option>
+                                <option value="" disabled>Sélectionner</option>
                                 @for (c of categories; track c) {
                                     <option [value]="c">{{ c }}</option>
                                 }
@@ -234,7 +234,7 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Priority <span class="text-danger">*</span></label>
                             <select class="form-select" [(ngModel)]="editForm.priority" name="editPriority" required>
-                                <option value="" disabled>SÃ©lectionner</option>
+                                <option value="" disabled>Sélectionner</option>
                                 @for (p of priorities; track p) {
                                     <option [value]="p">{{ p }}</option>
                                 }

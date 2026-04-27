@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { routes } from '../../../shared/service/routes/routes';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatSliderModule } from '@angular/material/slider';
 import { CourseService } from '../../../shared/service/course/course.service';
@@ -15,18 +15,19 @@ import { resolveAvatarImage } from '../../../shared/utils/avatar-image.util';
   styleUrl: './course-grid.component.scss'
 })
 export class CourseGridComponent implements OnInit {
-  constructor(private courseService: CourseService, private router: Router) {}
+  constructor(private courseService: CourseService, private router: Router, private activatedRoute: ActivatedRoute) {}
 
   courses: any[] = [];
   filteredCourses: any[] = [];
   loading = true;
   routes=routes;
-  isSelected:boolean[]=[false];
+  wishlistSet = new Set<number>();
   startValue = 0;
   endValue = 5000;
   searchTerm = '';
   sortOption = '';
   priceFilter = '';
+  private isStudentContext = false;
   formatLabel(value: number): string {
     if (value >= 1000) {
       return Math.round(value) + '';
@@ -41,16 +42,31 @@ export class CourseGridComponent implements OnInit {
   
     return `$${value}`;
   }
-  iconSelect(index:number) : void{
-    this.isSelected[index]=!this.isSelected[index]
+  iconSelect(courseId: number): void {
+    if (this.wishlistSet.has(courseId)) {
+      this.wishlistSet.delete(courseId);
+      this.courseService.removeFromWishlist(courseId).subscribe();
+    } else {
+      this.wishlistSet.add(courseId);
+      this.courseService.addToWishlist(courseId).subscribe();
+    }
   }
 
   ngOnInit(): void {
+    this.isStudentContext = this.router.url.startsWith('/student');
+
     this.courseService.getPublishedCourses().subscribe({
       next: (data) => {
         this.courses = data;
         this.filteredCourses = data;
         this.loading = false;
+        // Load wishlist state for each course
+        data.forEach((c: any) => {
+          this.courseService.checkWishlist(c.id).subscribe({
+            next: (res) => { if (res.inWishlist) this.wishlistSet.add(c.id); },
+            error: () => {}
+          });
+        });
       },
       error: () => { this.loading = false; }
     });
@@ -95,7 +111,8 @@ export class CourseGridComponent implements OnInit {
   }
 
   goToCourse(courseId: number): void {
-    this.router.navigate([routes.courseDetails2], { queryParams: { courseId } });
+    const target = this.isStudentContext ? routes.studentCourseDetails : routes.courseDetails2;
+    this.router.navigate([target], { queryParams: { courseId } });
   }
 
   formatPrice(course: any): string {

@@ -1,159 +1,172 @@
-﻿<div class="student-message">
-    <h5 class="page-title">Messages</h5>
-    <div class="row">
+﻿<div class="std-msg-wrapper">
+    <aside class="std-msg-panel-left">
+        <div class="std-msg-panel-hd">
+            <div class="std-msg-panel-hd-top">
+                <div class="std-msg-panel-title">
+                    <i class="isax isax-message-text"></i>
+                    <span>Messagerie</span>
+                </div>
+                <span *ngIf="totalUnread() > 0" class="std-msg-badge-unread">{{ totalUnread() }}</span>
+            </div>
 
-        <!-- Chat User List -->
-        <div class="col-lg-5">
-        <div class="chat-cont-left">
-            <div class="chat-card mb-0 flex-fill">
-                <div class="chat-header">
-                    <div class="input-icon">
-                        <span class="input-icon-addon">
-                            <i class="isax isax-search-normal-1 fs-14"></i>
+            <div class="std-msg-search-box">
+                <i class="isax isax-search-normal-1 std-msg-search-icon"></i>
+                <input
+                    type="text"
+                    class="std-msg-search-input"
+                    placeholder="Rechercher une conversation..."
+                    [(ngModel)]="searchQuery"
+                />
+            </div>
+        </div>
+
+        <div class="std-msg-conv-list">
+            <div *ngIf="loading" class="std-msg-loading">
+                <div class="std-msg-sk-wrap" *ngFor="let i of [1,2,3]">
+                    <div class="std-msg-sk-av"></div>
+                    <div class="std-msg-sk-lines">
+                        <div class="std-msg-sk std-msg-sk-lg"></div>
+                        <div class="std-msg-sk std-msg-sk-sm"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="!loading && filteredConversations.length === 0 && instructors.length === 0" class="std-msg-conv-empty">
+                <div class="std-msg-conv-empty-ico"><i class="isax isax-message-remove"></i></div>
+                <p>Aucune conversation</p>
+                <small>Vos messages apparaitront ici.</small>
+            </div>
+
+            <div
+                *ngFor="let conv of filteredConversations"
+                class="std-msg-conv-item"
+                [class.std-msg-conv-active]="activeConversation?.conversationId === conv.conversationId"
+                (click)="openConversation(conv)"
+            >
+                <div class="std-msg-conv-av-wrap">
+                    <img [src]="getAvatarUrl(conv.otherParticipantAvatar)" class="std-msg-conv-av" [alt]="conv.otherParticipantName" />
+                    <span class="std-msg-online-dot"></span>
+                </div>
+
+                <div class="std-msg-conv-info">
+                    <div class="std-msg-conv-row1">
+                        <span class="std-msg-conv-name">{{ conv.otherParticipantName }}</span>
+                        <span class="std-msg-conv-time">{{ formatDate(conv.lastMessageAt) }}</span>
+                    </div>
+                    <div class="std-msg-conv-row2">
+                        <span class="std-msg-conv-preview">
+                            <span *ngIf="conv.lastMessageIsOwn" class="std-msg-you">Vous : </span>{{ conv.lastMessage || 'Nouvelle conversation' }}
                         </span>
-                        <input type="text" class="form-control form-control-md" placeholder="Search">
+                        <span *ngIf="conv.unreadCount > 0" class="std-msg-unread-bubble">{{ conv.unreadCount }}</span>
                     </div>
                 </div>
-                <div class="chat-body chat-users-list chat-scroll">
-                    <div *ngIf="loading" class="text-center py-3">
-                        <div class="spinner-border spinner-border-sm text-primary"></div>
-                    </div>
-                    <div *ngIf="!loading && conversations.length === 0 && instructors.length === 0" class="text-center py-3">
-                        <p class="text-muted mb-0 fs-14">No conversations yet</p>
-                    </div>
-                    <a href="javascript:void(0);" class="d-flex justify-content-between align-items-center chat-member"
-                       *ngFor="let conv of conversations"
-                       [class.active]="activeConversation?.conversationId === conv.conversationId"
-                       (click)="openConversation(conv)">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                <img [src]="conv.otherParticipantAvatar || 'assets/img/user/user-01.jpg'" alt="User Image">
-                            </div>
-                            <div>
-                                <h6 class="fs-16 fw-medium mb-1 d-flex align-items-center">
-                                    {{ conv.otherParticipantName }}
-                                    <span *ngIf="conv.unreadCount > 0" class="msg-count badge badge-secondary d-flex align-items-center justify-content-center rounded-circle ms-2">{{ conv.unreadCount }}</span>
-                                </h6>
-                                <p class="fs-14 text-gray-6 text-truncate">{{ conv.lastMessageAt | date:'shortTime' }}</p>
-                            </div>
-                        </div>
-                    </a>
+            </div>
 
-                    <!-- Instructeurs suggérés (si pas encore de conversation avec eux) -->
-                    <ng-container *ngIf="instructors.length > 0">
-                        <div class="px-3 pt-3 pb-1">
-                            <small class="text-muted fw-semibold text-uppercase" style="font-size:11px;">Contacter un instructeur</small>
+            <!-- Instructeurs suggérés -->
+            <ng-container *ngIf="instructors.length > 0">
+                <div class="std-msg-section-label">
+                    <small>Contacter un instructeur</small>
+                </div>
+                <div
+                    *ngFor="let inst of instructors"
+                    class="std-msg-conv-item"
+                    (click)="contactInstructor(inst)"
+                >
+                    <div class="std-msg-conv-av-wrap">
+                        <img [src]="getAvatarUrl(inst.avatar)" class="std-msg-conv-av" [alt]="inst.name" />
+                    </div>
+                    <div class="std-msg-conv-info">
+                        <div class="std-msg-conv-row1">
+                            <span class="std-msg-conv-name">{{ inst.name }}</span>
                         </div>
-                        <a href="javascript:void(0);" class="d-flex align-items-center chat-member"
-                           *ngFor="let inst of instructors"
-                           (click)="contactInstructor(inst)">
-                            <div class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                <img [src]="inst.avatar || 'assets/img/user/user-01.jpg'" alt="">
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="fs-15 fw-medium mb-0">{{ inst.name }}</h6>
-                                <small class="text-muted fs-13">Démarrer une conversation</small>
-                            </div>
+                        <div class="std-msg-conv-row2">
+                            <span class="std-msg-conv-preview">Démarrer une conversation</span>
                             <span *ngIf="startingConv" class="spinner-border spinner-border-sm text-primary ms-2"></span>
-                        </a>
-                    </ng-container>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </ng-container>
         </div>
-        </div>
-        <!-- /Chat User List -->
+    </aside>
 
-        <!-- Chat Content -->
-        <div class="col-lg-7 chat-cont-right chat-window-long">
-            <div *ngIf="!activeConversation" class="d-flex align-items-center justify-content-center h-100">
-                <p class="text-muted">Select a conversation to start chatting</p>
+    <main class="std-msg-chat">
+        <div *ngIf="!activeConversation" class="std-msg-chat-empty">
+            <div class="std-msg-chat-empty-ico"><i class="isax isax-message"></i></div>
+            <h5>Sélectionnez une conversation</h5>
+            <p>Choisissez un contact à gauche pour démarrer le chat.</p>
+        </div>
+
+        <ng-container *ngIf="activeConversation">
+            <div class="std-msg-chat-hd">
+                <div class="std-msg-chat-hd-left">
+                    <div class="std-msg-chat-hd-av-wrap">
+                        <img
+                            [src]="getAvatarUrl(activeConversation.otherParticipantAvatar)"
+                            class="std-msg-chat-hd-av"
+                            [alt]="activeConversation.otherParticipantName"
+                        />
+                        <span class="std-msg-online-dot"></span>
+                    </div>
+                    <div class="std-msg-chat-hd-info">
+                        <span class="std-msg-chat-hd-name">{{ activeConversation.otherParticipantName }}</span>
+                        <span class="std-msg-chat-hd-status"><span class="std-msg-online-pulse"></span> En ligne</span>
+                    </div>
+                </div>
             </div>
 
-            <div *ngIf="activeConversation" class="chat-two-card chat-window mb-0 shadow-none flex-fill">
-                <div class="border-0 p-0 position-relative">
-                    <div class="msg_head">
-                        <div class="d-flex bd-highlight align-items-center">
-                            <div class="avatar avatar-lg avatar-rounded flex-shrink-0 me-2">
-                                <img [src]="activeConversation.otherParticipantAvatar || 'assets/img/user/user-01.jpg'" alt="User">
-                            </div>
-                            <div>
-                                <h6 class="fs-16 mb-1">{{ activeConversation.otherParticipantName }}</h6>
-                            </div>
-                        </div>
-                    </div>
+            <div class="std-msg-chat-body" #messagesContainer>
+                <div *ngIf="loadingMessages" class="std-msg-messages-loading">
+                    <div class="spinner-border text-primary" style="width:2rem;height:2rem"></div>
                 </div>
-                <div class="msg_card_body chat-scroll" #messagesContainer>
-                    <div *ngIf="loadingMessages" class="text-center py-3">
-                        <div class="spinner-border spinner-border-sm text-primary"></div>
-                    </div>
-                    <ul class="list-unstyled p-0">
-                        <ng-container *ngFor="let msg of messages">
-                            <!-- Sent -->
-                            <li *ngIf="isSent(msg)" class="sent-message-group">
-                                <ul>
-                                    <li class="media sent d-flex align-items-end">
-                                        <div class="media-body flex-grow-1">
-                                            <div class="msg-box">
-                                                <div class="d-flex align-items-end justify-content-end mb-1">
-                                                    <div class="position-relative">
-                                                        <div class="d-flex align-items-center justify-content-end mb-1">
-                                                            <div class="d-flex align-items-center">
-                                                                <p class="mb-0">{{ msg.sentAt | date:'shortTime' }}</p>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <div class="sent-message">
-                                                                <p>{{ msg.content }}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </li>
-                            <!-- Received -->
-                            <li *ngIf="!isSent(msg)" class="media received">
-                                <div class="d-flex align-items-end mb-1">
-                                    <div class="avatar avatar-md avatar-rounded flex-shrink-0 me-2">
-                                        <img [src]="activeConversation.otherParticipantAvatar || 'assets/img/user/user-01.jpg'" alt="">
-                                    </div>
-                                    <div class="media-body flex-grow-1">
-                                        <div class="d-flex align-items-center mb-1">
-                                            <h6 class="fs-14 fw-normal">{{ activeConversation.otherParticipantName }}</h6>
-                                            <div class="d-flex align-items-center">
-                                                <i class="fa-solid fa-circle text-gray-1 fs-7 mx-1"></i>
-                                                <p>{{ msg.sentAt | date:'shortTime' }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="msg-box">
-                                            <div class="position-relative">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="received-message me-2">
-                                                        <p>{{ msg.content }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ng-container>
-                    </ul>
+
+                <div *ngIf="!loadingMessages && messages.length === 0" class="std-msg-messages-empty">
+                    <div class="std-msg-messages-empty-ico"><i class="isax isax-message-text-1"></i></div>
+                    <p>Démarrez la conversation</p>
+                    <small>Envoyez un message à {{ activeConversation.otherParticipantName }}.</small>
                 </div>
-                <div class="chat-footer border-0 pt-0">
-                    <div class="d-flex align-items-center">
-                        <div class="chat-input me-2">
-                            <input class="form-control" placeholder="Type your message here..." [(ngModel)]="newMessage" (keydown.enter)="sendMessage()">
+
+                <ng-container *ngFor="let msg of messages; let i = index">
+                    <div *ngIf="showDateSeparator(messages, i)" class="std-msg-date-sep">
+                        <span>{{ formatDate(msg.sentAt) }}</span>
+                    </div>
+
+                    <div class="std-msg-row" [class.std-msg-mine]="isSent(msg)" [class.std-msg-theirs]="!isSent(msg)">
+                        <div *ngIf="!isSent(msg)" class="std-msg-row-av-wrap">
+                            <img
+                                [src]="getAvatarUrl(activeConversation.otherParticipantAvatar)"
+                                class="std-msg-row-av"
+                                [alt]="activeConversation.otherParticipantName"
+                            />
                         </div>
-                        <div>
-                            <button class="btn btn-secondary btn_send" (click)="sendMessage()"><i class="isax isax-send-1 text-white" aria-hidden="true"></i></button>
+                        <div class="std-msg-bubble-wrap">
+                            <div class="std-msg-bubble" [class.std-msg-bubble-mine]="isSent(msg)" [class.std-msg-bubble-theirs]="!isSent(msg)">
+                                <p class="std-msg-text">{{ msg.content }}</p>
+                            </div>
+                            <div class="std-msg-meta" [class.std-msg-meta-right]="isSent(msg)">
+                                {{ formatTime(msg.sentAt) }}
+                            </div>
                         </div>
                     </div>
+                </ng-container>
+            </div>
+
+            <div class="std-msg-input-area">
+                <div class="std-msg-input-row">
+                    <div class="std-msg-input-wrap">
+                        <textarea
+                            class="std-msg-input"
+                            rows="1"
+                            placeholder="Écrivez un message... (Shift+Entrée pour nouvelle ligne)"
+                            [(ngModel)]="newMessage"
+                            (keydown)="onKeyDown($event)"
+                        ></textarea>
+                    </div>
+
+                    <button class="std-msg-send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim()" title="Envoyer">
+                        <i class="isax isax-send-1"></i>
+                    </button>
                 </div>
             </div>
-        </div>
-        <!-- /Chat Content -->
-    </div>
+        </ng-container>
+    </main>
 </div>

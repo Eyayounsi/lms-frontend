@@ -8,21 +8,29 @@
             <div class="profile-upload-group">									
                 <div class="d-flex align-items-center">
                     <a [routerLink]="routes.studentProfile"
-                       class="avatar flex-shrink-0 avatar-xxxl avatar-rounded border me-3 d-inline-flex align-items-center justify-content-center"
-                       style="background:linear-gradient(135deg,#4f46e5,#0ea5e9);color:#fff;font-size:40px;font-weight:800;text-transform:uppercase;">
-                        {{ avatarInitial }}
+                       class="avatar flex-shrink-0 avatar-xxxl avatar-rounded border me-3 d-inline-flex align-items-center justify-content-center overflow-hidden"
+                       [style.background]="getAvatarUrl() ? 'transparent' : 'linear-gradient(135deg,#4f46e5,#0ea5e9)'"
+                       style="color:#fff;font-size:40px;font-weight:800;text-transform:uppercase;">
+                        <img *ngIf="getAvatarUrl()" [src]="getAvatarUrl()" alt="Avatar"
+                             style="width:100%;height:100%;object-fit:cover;">
+                        <span *ngIf="!getAvatarUrl()">{{ avatarInitial }}</span>
                     </a>
                     <div class="profile-upload-head">
                         <h6><a [routerLink]="routes.studentProfile">Profile Photo</a></h6>
                         <p class="fs-14 mb-0">PNG or JPG no bigger than 800px width and height</p>
+                        <div *ngIf="avatarSuccessMessage" class="alert alert-success py-1 px-2 mt-1 mb-0 fs-13">{{ avatarSuccessMessage }}</div>
+                        <div *ngIf="avatarErrorMessage" class="alert alert-danger py-1 px-2 mt-1 mb-0 fs-13">{{ avatarErrorMessage }}</div>
                         <div class="new-employee-field">
                             <div class="d-flex align-items-center mt-2">
                                 <div class="image-upload position-relative mb-0 me-2">
-                                    <input type="file">
-                                    <a href="javascript:void(0);" class="btn bg-gray-100 btn-sm rounded-pill image-uploads">Upload</a>
+                                    <input type="file" accept="image/*" (change)="onAvatarSelected($event)">
+                                    <a href="javascript:void(0);" class="btn bg-gray-100 btn-sm rounded-pill image-uploads">
+                                        <span *ngIf="avatarUploading" class="spinner-border spinner-border-sm me-1"></span>
+                                        Upload
+                                    </a>
                                 </div>
                                 <div class="img-delete">
-                                    <a href="javascript:void(0);" class="btn btn-secondary btn-sm rounded-pill">Delete</a>
+                                    <a href="javascript:void(0);" class="btn btn-secondary btn-sm rounded-pill" (click)="removeAvatar()">Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -49,7 +57,7 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">TÃ©lÃ©phone</label>
+                                <label class="form-label">Téléphone</label>
                                 <input type="text" class="form-control" [(ngModel)]="profileForm.phone" name="phone">
                             </div>
                         </div>

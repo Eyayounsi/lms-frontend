@@ -1,4 +1,4 @@
-﻿
+
 <!-- Header -->
 <header class="header-two" [class.fixed]="isFixed" [style.border-top]="'3px solid ' + accentColor">
   <div class="container">
@@ -138,7 +138,7 @@
           <div class="cart-item">
             <h6>Panier</h6>
             <div class="icon-btn">
-              <a [routerLink]="routes.cart" class="position-relative">
+              <a [routerLink]="routes.studentCart" class="position-relative">
                 <i class="isax isax-shopping-cart5"></i>
               </a>
             </div>
@@ -178,7 +178,7 @@
 
         <!-- Panier — STUDENT uniquement -->
         <div *ngIf="isStudent" class="icon-btn">
-          <a [routerLink]="routes.cart" class="position-relative">
+          <a [routerLink]="routes.studentCart" class="position-relative">
             <i class="isax isax-shopping-cart5"></i>
           </a>
         </div>
@@ -399,7 +399,7 @@
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.students_Dashboard"><i class="isax isax-grid-35 me-2 text-success"></i>Tableau de bord</a></li>
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.studentCourses"><i class="isax isax-book me-2 text-success"></i>Mes cours</a></li>
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.student_Certificate"><i class="isax isax-award me-2 text-success"></i>Mes certificats</a></li>
-                <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.cart"><i class="isax isax-shopping-cart me-2 text-success"></i>Mon panier</a></li>
+                <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.studentCart"><i class="isax isax-shopping-cart me-2 text-success"></i>Mon panier</a></li>
                 <li><a class="dropdown-item d-inline-flex align-items-center rounded py-2" [routerLink]="routes.studentSettings"><i class="isax isax-setting-2 me-2 text-success"></i>Mon Profil</a></li>
               </ng-container>
 
