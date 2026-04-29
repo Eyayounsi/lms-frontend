@@ -1,4 +1,4 @@
-﻿import DOMPurify from 'dompurify';
+import DOMPurify from 'dompurify';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   Component, OnInit, OnDestroy, ViewChild, ElementRef
@@ -184,6 +184,23 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
     this.courseService.getCourseContent(this.courseId).subscribe({
       next: (data) => {
         this.course = data;
+        
+        // Fix NG0901: parse objectives and requirements if they are strings
+        if (typeof this.course.objectives === 'string') {
+          try {
+            this.course.objectives = JSON.parse(this.course.objectives);
+          } catch {
+            this.course.objectives = this.course.objectives.split('\n').filter((x: string) => x.trim());
+          }
+        }
+        if (typeof this.course.requirements === 'string') {
+          try {
+            this.course.requirements = JSON.parse(this.course.requirements);
+          } catch {
+            this.course.requirements = this.course.requirements.split('\n').filter((x: string) => x.trim());
+          }
+        }
+
         this.sections = data.sections || [];
         this.allLessons = this.sections.flatMap((s: any) => s.lessons || []);
 

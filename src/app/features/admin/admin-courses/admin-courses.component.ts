@@ -160,6 +160,7 @@ export class AdminCoursesComponent implements OnInit {
     this.selectedCourse = null;
     this.adminEditMode = false;
     this.modalReviews = [];
+    this.approveSubmitting = false;
   }
 
   loadModalReviews(courseId: number): void {
@@ -168,6 +169,15 @@ export class AdminCoursesComponent implements OnInit {
       next: (data) => { this.modalReviews = data; this.loadingReviews = false; },
       error: () => { this.loadingReviews = false; }
     });
+  }
+
+  /** Centralized refresh to ensure all tabs are up-to-date after an action */
+  refreshAll(): void {
+    this.loadPendingCourses();
+    this.loadPublishedCourses();
+    this.loadAllCourses();
+    this.loadPendingEditsCourses();
+    this.loadArchivedCourses();
   }
 
   deleteReviewAdmin(review: any): void {
@@ -193,8 +203,12 @@ export class AdminCoursesComponent implements OnInit {
     });
   }
 
+  approveSubmitting = false;
+
   // Approuver
   approveCourse(course: any): void {
+    if (this.approveSubmitting) return;
+
     Swal.fire({
       title: 'Approuver ce cours ?',
       html: `Le cours <strong>${course.title}</strong> sera visible par tous les étudiants.`,
@@ -207,13 +221,18 @@ export class AdminCoursesComponent implements OnInit {
       customClass: { popup: 'rounded-4 shadow' }
     }).then(result => {
       if (!result.isConfirmed) return;
+      this.approveSubmitting = true;
       this.courseService.reviewCourse(course.id, { action: 'APPROVE' }).subscribe({
         next: () => {
+          this.approveSubmitting = false;
           this.showToast('success', 'Cours approuvé avec succès !');
-          this.loadPendingCourses();
+          this.refreshAll();
           this.closeDetail();
         },
-        error: (err) => this.showToast('error', err.error?.message || "Erreur lors de l'approbation")
+        error: (err) => {
+          this.approveSubmitting = false;
+          this.showToast('error', err.error?.message || "Erreur lors de l'approbation");
+        }
       });
     });
   }
@@ -246,7 +265,7 @@ export class AdminCoursesComponent implements OnInit {
       next: () => {
         this.rejectSubmitting = false;
         this.showToast('success', 'Cours rejeté');
-        this.loadPendingCourses();
+        this.refreshAll();
       },
       error: (err) => {
         this.rejectSubmitting = false;
@@ -697,7 +716,7 @@ export class AdminCoursesComponent implements OnInit {
         this.showToast('success', 'Cours mis à jour !');
         this.selectedCourse = updated;
         this.adminEditMode = false;
-        this.loadPendingCourses(); this.loadPublishedCourses(); this.loadAllCourses();
+        this.refreshAll();
       },
       error: (err) => this.showToast('error', err.error?.message || 'Erreur lors de la mise à jour')
     });
@@ -751,7 +770,7 @@ export class AdminCoursesComponent implements OnInit {
       this.courseService.approvePendingEdit(course.id).subscribe({
         next: () => {
           this.showToast('success', 'Modification approuvée !');
-          this.loadPendingEditsCourses(); this.loadPublishedCourses(); this.loadAllCourses();
+          this.refreshAll();
         },
         error: (err) => this.showToast('error', err.error?.message || "Erreur lors de l'approbation")
       });
@@ -776,7 +795,7 @@ export class AdminCoursesComponent implements OnInit {
       next: () => {
         this.showToast('success', 'Modification rejetée');
         this.closeRejectEditModal();
-        this.loadPendingEditsCourses(); this.loadAllCourses();
+        this.refreshAll();
       },
       error: (err) => this.showToast('error', err.error?.message || 'Erreur lors du rejet')
     });

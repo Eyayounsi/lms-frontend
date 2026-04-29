@@ -1,20 +1,28 @@
-			<!-- Course detail -->
+<!-- Course detail -->
 			<section class="course-details-two">
 				<div class="container">
-                     <div class="row">
-                        <div class="col-12">
-                            <div class="card bg-light">
-                                <div class="card-body d-lg-flex align-items-center">
-                                    <div class="position-relative">
-                                        <lightgallery [settings]="settings" [onInit]="onInit" size="1400-933">   
-                                        <a href="https://www.youtube.com/embed/1trvO6dqQUI" id="openVideoBtn" target="_blank">
-                                            <img class="img-fluid rounded-2" src="assets/img/course/video-bg.jpg" alt="img">
-                                            <div class="play-icon">
-                                                <i class="ti ti-player-play-filled fs-28"></i>
-                                            </div>
-                                        </a>
-                                        </lightgallery>
-                                    </div>
+                      <div class="row">
+                         <div class="col-12">
+                             <div class="card bg-light">
+                                 <div class="card-body d-lg-flex align-items-center">
+                                     <div class="position-relative">
+                                         <!-- Only show video if course has introVideo -->
+                                         <ng-container *ngIf="hasIntroVideo">
+                                           <lightgallery [settings]="settings" [onInit]="onInit" size="1400-933">   
+                                             <a [href]="introVideoUrl" id="openVideoBtn" target="_blank">
+                                                 <img *ngIf="hasCourseCover()" class="img-fluid rounded-2" [src]="getCourseCoverImage()" (error)="onCourseCoverError($event)" alt="img">
+                                                 <img *ngIf="!hasCourseCover()" class="img-fluid rounded-2" src="assets/img/course/video-bg.jpg" alt="img">
+                                                 <div class="play-icon">
+                                                     <i class="ti ti-player-play-filled fs-28"></i>
+                                                 </div>
+                                             </a>
+                                           </lightgallery>
+                                         </ng-container>
+                                         <!-- Without intro video: show static placeholder image -->
+                                         <ng-container *ngIf="!hasIntroVideo">
+                                             <img class="img-fluid rounded-2" src="assets/img/course/video-bg.jpg" alt="img">
+                                         </ng-container>
+                                     </div>
                                     <div id="videoModal">
                                         <div class="modal-content1">
                                           <span class="close-btn" id="closeModal">&times;</span>

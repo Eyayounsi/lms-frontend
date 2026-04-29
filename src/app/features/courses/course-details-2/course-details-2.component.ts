@@ -29,6 +29,25 @@ export class CourseDetails2Component implements OnInit {
   settings = { counter: false, plugins: [lgZoom, lgVideo] };
   private lightGallery!: LightGallery;
   private needRefresh = false;
+  
+  // Video preview - only show if course has introVideo URL
+  get hasIntroVideo(): boolean {
+    return !!(this.course?.introVideo && this.course.introVideo.trim().length > 0);
+  }
+  
+  get introVideoUrl(): string {
+    if (!this.course?.introVideo) return '';
+    let url = this.course.introVideo.trim();
+    // Convert various YouTube URL formats to embed format
+    if (url.includes('youtube.com/watch')) {
+      const vidId = new URL(url).searchParams.get('v');
+      if (vidId) url = `https://www.youtube.com/embed/${vidId}`;
+    } else if (url.includes('youtu.be/')) {
+      const vidId = url.split('youtu.be/')[1]?.split('?')[0];
+      if (vidId) url = `https://www.youtube.com/embed/${vidId}`;
+    }
+    return url;
+  }
   ngAfterViewChecked(): void {
     if (this.needRefresh) { this.lightGallery?.refresh(); this.needRefresh = false; }
   }

@@ -75,12 +75,16 @@ export class WebSocketNotificationService {
 
       const baseUrl = environment.apiUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
       const wsUrl = `${baseUrl}/ws?token=${encodeURIComponent(token)}`;
+      
+      let authErrorCount = 0;
+      const MAX_AUTH_RETRIES = 2;
+      
       this.stompClient = new Client({
         webSocketFactory: () => new SockJS(wsUrl),
-        // Reconnexion ralentie progressivement (5s puis arrêt sur erreur auth)
-        reconnectDelay: 5000,
+        reconnectDelay: 0,
+        heartbeatIncoming: 15000,
+        heartbeatOutgoing: 15000,
         debug: () => {
-          // Désactiver les logs STOMP bruyants
         }
       });
     } catch (e) {
@@ -141,22 +145,33 @@ export class WebSocketNotificationService {
 
     client.onStompError = (error) => {
       const errorMsg = error?.headers?.['message'] || '';
-      const isForbidden = error?.headers?.['status'] === '401' ||
+      const status   = error?.headers?.['status'];
+      
+      const isForbidden = status === '401' || status === '403' ||
                           errorMsg.includes('401') ||
                           errorMsg.toLowerCase().includes('unauthorized');
+      
+      const isRateLimited = status === '429' || errorMsg.includes('429');
 
       if (isForbidden) {
-        console.debug('[WebSocket] 🔐 Erreur auth 401 — arrêt de la reconnexion WebSocket.');
-        // Arrêter les tentatives de reconnexion pour éviter le flood de 401
+        console.warn('[WebSocket] 🔐 Erreur auth (401/403) — arrêt de la reconnexion.');
         client.deactivate();
+      } else if (isRateLimited) {
+        console.warn('[WebSocket] ⏳ Limite de débit atteinte (429) — arrêt temporaire.');
+        client.deactivate();
+        setTimeout(() => { if (localStorage.getItem('token')) this.connect(); }, 60000);
       } else {
-        console.error('[WebSocket] ❌ Erreur connexion WebSocket:', error);
+        console.error('[WebSocket] ❌ Erreur STOMP:', error);
       }
       this.connectedSubject.next(false);
     };
 
-    client.onWebSocketClose = () => {
+    client.onWebSocketClose = (evt) => {
       this.connectedSubject.next(false);
+    };
+    
+    client.onWebSocketError = (evt) => {
+      console.warn('[WebSocket] Erreur connexion:', evt);
     };
 
     client.activate();

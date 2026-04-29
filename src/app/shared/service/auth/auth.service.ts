@@ -263,14 +263,22 @@ export class AuthService {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const msUntilExpiry = payload.exp * 1000 - Date.now();
+      
+      console.log(`[AuthService] Token expires in ${msUntilExpiry} ms`);
+
       if (msUntilExpiry <= 0) {
         // Token déjà expiré → déconnecter immédiatement
         this.forceLogout();
         return;
       }
+
+      // Ajouter une marge de grâce (ex: 3 secondes) pour éviter de bloquer
+      // les requêtes juste avant la limite exacte du timestamp.
+      const timeoutMs = Math.min(msUntilExpiry + 3000, 2147483647);
+
       this.autoLogoutTimer = setTimeout(() => {
         this.forceLogout();
-      }, msUntilExpiry);
+      }, timeoutMs);
     } catch {
       // Token malformé — ne rien planifier
     }

@@ -88,12 +88,16 @@ export class StudentComponent implements OnInit {
   }
 
   private updateLastFromUrl(url: string): void {
-    const parts = url.split('/');
+    // 1. Remove query parameters (e.g. ?session_id=...)
+    const pathOnly = url.split('?')[0];
+    
+    // 2. Split by '/' and get the segment
+    const parts = pathOnly.split('/');
     const lastPart = parts[2]?.replace('student-', '').trim();
 
     if (lastPart === 'profile') {
       this.last = 'My Profile';
-    } else if (lastPart === 'courses') {
+    } else if (lastPart === 'courses' || lastPart === 'my-courses') {
       this.last = 'Enrolled Courses';
     } else if (lastPart === 'chat') {
       this.last = 'Messages';

@@ -444,10 +444,10 @@ export class InstructorDashboardComponent implements OnInit {
   }
 
   private resolveAssetPresetImage(fileName: string): string {
-    if (/^course-img/i.test(fileName) || /^courses-/i.test(fileName)) {
+    if (/^(course-img|courses-|cat-icon-|cat-template-)/i.test(fileName)) {
       return `assets/img/course-img/${fileName}`;
     }
-    return `assets/img/course/${fileName}`;
+    return `assets/img/course-img/${fileName}`;
   }
 
   hasValidImage(course: any): boolean {

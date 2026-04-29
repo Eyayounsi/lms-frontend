@@ -289,7 +289,6 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ── Classic login ────────────────────────────────────────────────────────
   loginUser(form: any) {
-    console.log('Form values:', form.value);
     this.errorMessage = '';
     this.blockedMessage = '';
 

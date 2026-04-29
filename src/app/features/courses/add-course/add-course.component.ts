@@ -831,7 +831,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
           'link', 'code',
           // Formats block
           'header', 'blockquote', 'code-block',
-          'list', 'bullet', 'indent',
+          'list', 'indent',
           'align', 'direction',
           // Formats embed
           'image', 'video', 'formula'
