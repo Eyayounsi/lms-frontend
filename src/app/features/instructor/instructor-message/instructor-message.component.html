@@ -48,7 +48,7 @@
                 (click)="openConversation(conv)"
             >
                 <div class="ins-msg-conv-av-wrap">
-                    <img [src]="getAvatarUrl(getConversationAvatar(conv), getConversationName(conv))" class="ins-msg-conv-av" [alt]="getConversationName(conv)" />
+                    <img [src]="getAvatarUrl(getConversationAvatar(conv), getConversationName(conv))" class="ins-msg-conv-av" [alt]="getConversationName(conv)" (error)="onAvatarError($event, getConversationName(conv))" />
                     <span class="ins-msg-online-dot"></span>
                 </div>
 
@@ -83,6 +83,7 @@
                             [src]="getAvatarUrl(getConversationAvatar(activeConversation), getConversationName(activeConversation))"
                             class="ins-msg-chat-hd-av"
                             [alt]="getConversationName(activeConversation)"
+                            (error)="onAvatarError($event, getConversationName(activeConversation))"
                         />
                         <span class="ins-msg-online-dot"></span>
                     </div>
@@ -119,6 +120,7 @@
                                 [src]="getAvatarUrl(getConversationAvatar(activeConversation), getConversationName(activeConversation))"
                                 class="ins-msg-row-av"
                                 [alt]="getConversationName(activeConversation)"
+                                (error)="onAvatarError($event, getConversationName(activeConversation))"
                             />
                         </div>
                         <div class="ins-msg-bubble-wrap">

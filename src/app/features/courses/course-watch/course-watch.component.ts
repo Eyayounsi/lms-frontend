@@ -331,7 +331,21 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
         if (this.activeLessonId) this.completedLessons.add(this.activeLessonId);
         // Rafraîchir la progression globale
         this.courseService.getCourseProgress(this.courseId!).subscribe({
-          next: (cp) => (this.courseProgress = cp),
+          next: (cp) => {
+            const wasCompleted = (this.courseProgress?.completionPercentage || 0) >= 100;
+            this.courseProgress = cp;
+            if (!wasCompleted && (cp?.completionPercentage || 0) >= 100) {
+              Swal.fire({
+                icon: 'success',
+                title: '🎉 Félicitations !',
+                html: `<p>Vous avez complété <strong>100%</strong> du cours <strong>${this.course?.title || ''}</strong> !</p><p>Bravo pour votre persévérance ! 🏆</p>`,
+                confirmButtonText: 'Merci !',
+                confirmButtonColor: '#4CAF50',
+                timer: 8000,
+                timerProgressBar: true
+              });
+            }
+          },
           error: () => {}
         });
       },
@@ -382,7 +396,21 @@ export class CourseWatchComponent implements OnInit, OnDestroy {
         this.toastr.success('Leçon marquée comme terminée !');
         // Rafraîchir la progression globale
         this.courseService.getCourseProgress(this.courseId!).subscribe({
-          next: (cp) => (this.courseProgress = cp),
+          next: (cp) => {
+            const wasCompleted = (this.courseProgress?.completionPercentage || 0) >= 100;
+            this.courseProgress = cp;
+            if (!wasCompleted && (cp?.completionPercentage || 0) >= 100) {
+              Swal.fire({
+                icon: 'success',
+                title: '🎉 Félicitations !',
+                html: `<p>Vous avez complété <strong>100%</strong> du cours <strong>${this.course?.title || ''}</strong> !</p><p>Bravo pour votre persévérance ! 🏆</p>`,
+                confirmButtonText: 'Merci !',
+                confirmButtonColor: '#4CAF50',
+                timer: 8000,
+                timerProgressBar: true
+              });
+            }
+          },
           error: () => {}
         });
       },

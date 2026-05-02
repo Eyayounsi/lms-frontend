@@ -6,6 +6,7 @@ import { CourseService } from '../../../shared/service/course/course.service';
 import { AvatarFallbackComponent } from '../../../shared/components/avatar-fallback/avatar-fallback.component';
 import { routes } from '../../../shared/service/routes/routes';
 import { resolveCourseImage } from '../../../shared/utils/course-image.util';
+import Swal from 'sweetalert2';
 
 declare var bootstrap: any;
 
@@ -83,6 +84,16 @@ export class InstructorCourseDetailComponent implements OnInit {
   }
 
   editCourse(): void {
+    if (this.course?.hasPendingEdit) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Modification en attente',
+        html: 'Vous avez déjà soumis une modification pour ce cours.<br>Elle est <b>en attente de validation</b> par l\'administration.<br><br><span style="color:#6c757d;font-size:0.9em">Vous ne pouvez pas modifier le cours tant que la modification précédente n\'a pas été traitée.</span>',
+        confirmButtonText: 'Compris',
+        confirmButtonColor: '#6f42c1'
+      });
+      return;
+    }
     this.router.navigate([this.routes.instructorEditCourse, this.courseId]);
   }
 
@@ -91,6 +102,8 @@ export class InstructorCourseDetailComponent implements OnInit {
   previewType: 'video' | 'pdf' | 'article' = 'video';
   previewArticleContent: string = '';
   pdfLoading = false;
+  private _safePreviewUrl: SafeResourceUrl | null = null;
+  private _lastPreviewUrl = '';
 
   openPreview(url: string, type: 'video' | 'pdf' | 'article', articleContent?: string): void {
     this.pdfLoading = type === 'pdf';
@@ -99,6 +112,8 @@ export class InstructorCourseDetailComponent implements OnInit {
       this.previewType = 'article';
     } else {
       this.previewUrl = this.getFileUrl(url);
+      this._safePreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
+      this._lastPreviewUrl = this.previewUrl;
       this.previewType = type;
     }
     const el = document.getElementById('mediaPreviewModal');
@@ -109,7 +124,11 @@ export class InstructorCourseDetailComponent implements OnInit {
   }
 
   get safePreviewUrl(): SafeResourceUrl {
-    return this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
+    if (this._lastPreviewUrl !== this.previewUrl) {
+      this._safePreviewUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.previewUrl);
+      this._lastPreviewUrl = this.previewUrl;
+    }
+    return this._safePreviewUrl!;
   }
 
   // ── Helpers ──────────────────────────────────────────────────

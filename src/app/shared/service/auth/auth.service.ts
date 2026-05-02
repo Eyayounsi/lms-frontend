@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 //import { environment } from 'src/environments/environment';
 import { environment } from '../../../../environments/environment';
+import { resolveAvatarImage } from '../../utils/avatar-image.util';
 
 @Injectable({
   providedIn: 'root'
@@ -75,16 +76,7 @@ export class AuthService {
 
   /** Transforme avatarPath backend en URL exploitable côté front */
   resolveAvatarUrl(path?: string | null): string {
-    const p = (path || '').trim();
-    if (!p) return '';
-    if (p.startsWith('http://') || p.startsWith('https://')) return p;
-
-    // apiUrl attendu: http://localhost:8081/api
-    const apiRoot = this.apiUrl.endsWith('/api')
-      ? this.apiUrl.slice(0, -4)
-      : this.apiUrl;
-
-    return `${apiRoot}${p.startsWith('/') ? p : '/' + p}`;
+    return resolveAvatarImage(path, '');
   }
 
   constructor(private http: HttpClient, private router: Router) {}

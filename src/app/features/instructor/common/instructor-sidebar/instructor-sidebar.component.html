@@ -5,7 +5,8 @@
                 <img *ngIf="userAvatarUrl; else sidebarInitials"
                      [src]="userAvatarUrl"
                      alt="Avatar"
-                     class="instructor-sidebar-profile__avatar-img">
+                     class="instructor-sidebar-profile__avatar-img"
+                     (error)="onAvatarError()">
                 <ng-template #sidebarInitials>{{ userInitials }}</ng-template>
             </div>
             <div>
@@ -44,6 +45,9 @@
                                     <span class="d-flex align-items-center"><i class="isax isax-messages-35 me-2" [class.menu-icon--unread]="unreadMsgCount > 0"></i>Messages</span>
                                     <span *ngIf="unreadMsgCount > 0" class="badge rounded-pill ms-1 sidebar-badge sidebar-badge--msg">{{ unreadMsgCount > 99 ? '99+' : unreadMsgCount }}</span>
                 </a>
+            </li>
+            <li>
+                <a [routerLink]="routes.instructorQa" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-message-question5 me-2"></i>Q&amp;A</a>
             </li>
             <li>
                 <a [routerLink]="routes.instructor_tickets" class="d-inline-flex align-items-center" routerLinkActive="active"><i class="isax isax-ticket5 me-2"></i>Tickets support</a>

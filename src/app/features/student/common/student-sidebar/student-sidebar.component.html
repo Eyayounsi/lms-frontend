@@ -5,7 +5,8 @@
                 <img *ngIf="userAvatarUrl; else studentSidebarInitials"
                      [src]="userAvatarUrl"
                      alt="Avatar"
-                     class="student-sidebar-profile__avatar-img">
+                     class="student-sidebar-profile__avatar-img"
+                     (error)="onAvatarError()">
                 <ng-template #studentSidebarInitials>{{ userInitials }}</ng-template>
             </div>
             <div>

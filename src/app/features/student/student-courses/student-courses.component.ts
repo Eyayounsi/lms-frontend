@@ -22,12 +22,22 @@ export class StudentCoursesComponent implements OnInit {
   loading = true;
   errorMessage = '';
 
-  private favouriteCourseIds = new Set<number>();
+  wishlistCourseIds = new Set<number>();
+  wishlistPending = new Set<number>();
 
   constructor(private courseService: CourseService) {}
 
   ngOnInit(): void {
     this.loadMyCourses();
+    this.loadWishlist();
+  }
+
+  loadWishlist(): void {
+    this.courseService.getWishlist().pipe(catchError(() => of([]))).subscribe({
+      next: (items: any[]) => {
+        this.wishlistCourseIds = new Set(items.map((i: any) => Number(i.courseId ?? i.id)));
+      }
+    });
   }
 
   loadMyCourses(): void {
@@ -73,15 +83,30 @@ export class StudentCoursesComponent implements OnInit {
   }
 
   iconSelect(courseId: number): void {
-    if (this.favouriteCourseIds.has(courseId)) {
-      this.favouriteCourseIds.delete(courseId);
-      return;
+    if (this.wishlistPending.has(courseId)) return;
+    this.wishlistPending.add(courseId);
+
+    if (this.wishlistCourseIds.has(courseId)) {
+      this.courseService.removeFromWishlist(courseId).pipe(catchError(() => of(null))).subscribe({
+        next: () => {
+          this.wishlistCourseIds.delete(courseId);
+          this.wishlistPending.delete(courseId);
+        },
+        error: () => this.wishlistPending.delete(courseId)
+      });
+    } else {
+      this.courseService.addToWishlist(courseId).pipe(catchError(() => of(null))).subscribe({
+        next: () => {
+          this.wishlistCourseIds.add(courseId);
+          this.wishlistPending.delete(courseId);
+        },
+        error: () => this.wishlistPending.delete(courseId)
+      });
     }
-    this.favouriteCourseIds.add(courseId);
   }
 
   isSelected(courseId: number): boolean {
-    return this.favouriteCourseIds.has(courseId);
+    return this.wishlistCourseIds.has(courseId);
   }
 
   getCoursesByTab(tab: 'enrolled' | 'active' | 'completed'): any[] {

@@ -55,7 +55,7 @@
                     <span class="std-hero-greeting">Pilotage d'apprentissage</span>
                     <div class="std-hero-user" title="Profil étudiant">
                         <ng-container *ngIf="userAvatarUrl; else heroAvatarFallback">
-                            <img [src]="userAvatarUrl" [alt]="userName" class="std-hero-user-thumb">
+                            <img [src]="userAvatarUrl" [alt]="userName" class="std-hero-user-thumb" (error)="onAvatarError()">
                         </ng-container>
                         <ng-template #heroAvatarFallback>
                             <div class="std-hero-user-thumb std-hero-user-fallback">{{ userInitials }}</div>

@@ -451,4 +451,8 @@ export class AdminHeaderComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
+  onAvatarError(): void {
+    this.userAvatarUrl = '';
+  }
+
 }

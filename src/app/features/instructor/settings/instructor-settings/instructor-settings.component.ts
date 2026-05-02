@@ -140,6 +140,13 @@ export class InstructorSettingsComponent implements OnInit {
     return 'linear-gradient(135deg, #7c3aed, #ec4899)';
   }
 
+  onAvatarError(event: Event): void {
+    const img = event?.target as HTMLImageElement | null;
+    if (!img) return;
+    // Hide the broken image, the *ngIf="!getAvatarUrl()" will show initials
+    this.avatarPath = '';
+  }
+
   onAvatarSelected(event: Event): void {
     this.avatarSuccessMessage = '';
     this.avatarErrorMessage = '';

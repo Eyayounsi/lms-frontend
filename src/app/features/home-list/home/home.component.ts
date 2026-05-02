@@ -30,6 +30,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public routes = routes;
 	private readonly newCourseWindowDays = 30;
   isSelected:boolean[]=[false];
+  wishlistIds = new Set<number>();
+  wishlistPending = new Set<number>();
 	cartSet = new Set<number>();
 	activeHeroCardIndex = 0;
 	private heroCardIntervalId?: ReturnType<typeof setInterval>;
@@ -289,6 +291,7 @@ public testimonialSlider={
   ngOnInit() {
     AOS.init({ duration: 1200, once: true });
 		this.loadCartState();
+    this.loadHomeWishlist();
     this.courseService.getCategories().subscribe({
       next: (cats) => { this.categories = cats; },
       error: () => {}
@@ -392,6 +395,35 @@ public testimonialSlider={
 			return;
 		}
 	this.isSelected[index]=!this.isSelected[index]
+  }
+
+  isWishlisted(courseId: number): boolean {
+    return this.wishlistIds.has(courseId);
+  }
+
+  toggleWishlist(courseId: number): void {
+    if (!this.canUseWishlist || this.wishlistPending.has(courseId)) return;
+    this.wishlistPending.add(courseId);
+    if (this.wishlistIds.has(courseId)) {
+      this.courseService.removeFromWishlist(courseId).pipe(catchError(() => of(null))).subscribe({
+        next: () => { this.wishlistIds.delete(courseId); this.wishlistPending.delete(courseId); },
+        error: () => this.wishlistPending.delete(courseId)
+      });
+    } else {
+      this.courseService.addToWishlist(courseId).pipe(catchError(() => of(null))).subscribe({
+        next: () => { this.wishlistIds.add(courseId); this.wishlistPending.delete(courseId); },
+        error: () => this.wishlistPending.delete(courseId)
+      });
+    }
+  }
+
+  loadHomeWishlist(): void {
+    if (!this.canUseWishlist) return;
+    this.courseService.getWishlist().pipe(catchError(() => of([]))).subscribe({
+      next: (items: any[]) => {
+        this.wishlistIds = new Set(items.map((i: any) => Number(i.courseId ?? i.id)));
+      }
+    });
   }
 
 	isInCart(courseId: number): boolean {
@@ -678,6 +710,6 @@ public testimonialSlider={
 		if (!Number.isFinite(id) || id <= 0) {
 			return;
 		}
-		this.router.navigate(['/courses/course-details-2'], { queryParams: { courseId: id } });
+		this.router.navigate(['/courses/course-details'], { queryParams: { courseId: id } });
   }
 }

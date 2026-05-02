@@ -54,6 +54,7 @@ export const routes = {
   instructorCourseGrid: '/instructor/instructor-course-grid',
   instructorTickets: '/instructor/instructor-tickets',
   instructorMessage: '/instructor/instructor-message',
+  instructorQa: '/instructor/instructor-qa',
   instructorQuizDetails: '/instructor/instructor-quiz-details',
   instructorSettingWithdraw: '/instructor/settings/instructor-setting-withdraw',
   instructorSettingNotifications: '/instructor/settings/instructor-setting-notifications',

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { routes } from '../../../shared/service/routes/routes';
 import { CourseService } from '../../../shared/service/course/course.service';
 import { SafeUrlPipe } from '../../../shared/pipe/safe-url.pipe';
@@ -98,7 +99,7 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   isEditMode = false;
   courseStatus = '';   // DRAFT | PENDING | PUBLISHED | REJECTED | ARCHIVED
 
-  constructor(private courseService: CourseService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private courseService: CourseService, private router: Router, private route: ActivatedRoute, private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.courseService.getCategories().subscribe({
@@ -391,9 +392,13 @@ export class AddCourseComponent implements OnInit, OnDestroy {
         }
         const section = this.sections.find(s => s.id === this.newLesson.sectionId);
         if (section) section.lessons = [...(section.lessons || []), lesson];
-        // For TEXT lessons: auto-open the article editor once the add-lesson modal is fully closed
+        // Auto-open the appropriate editor/uploader once the add-lesson modal is fully closed
         if (selectedType === 'TEXT') {
           setTimeout(() => this.openArticleEditor(lesson), 600);
+        } else if (selectedType === 'VIDEO') {
+          setTimeout(() => this.triggerVideoUpload(lesson.id), 600);
+        } else if (selectedType === 'PDF') {
+          setTimeout(() => this.triggerPdfUpload(lesson.id), 600);
         }
       },
       error: () => {}
@@ -741,9 +746,15 @@ export class AddCourseComponent implements OnInit, OnDestroy {
   // ─── Lesson preview ─────────────────────────────────────────────────────────────────
 
   previewLesson: any = null;
+  sanitizedArticleHtml: SafeHtml | null = null;
 
   openPreview(lesson: any): void {
     this.previewLesson = lesson;
+    if (lesson.articleContent) {
+      this.sanitizedArticleHtml = this.sanitizer.bypassSecurityTrustHtml(lesson.articleContent);
+    } else {
+      this.sanitizedArticleHtml = null;
+    }
     setTimeout(() => {
       const el = document.getElementById('lesson_preview_modal');
       if (!el) return;

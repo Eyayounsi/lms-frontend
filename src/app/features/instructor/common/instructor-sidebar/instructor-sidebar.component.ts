@@ -84,6 +84,10 @@ export class InstructorSidebarComponent implements OnInit, OnDestroy {
     this.wsNotifService.disconnect();
   }
 
+  onAvatarError(): void {
+    this.userAvatarUrl = '';
+  }
+
   private refreshCounts(): void {
     this.messageService.getUnreadCount().subscribe({
       next: (res: any) => { this.unreadMsgCount = res?.count ?? res ?? 0; },

@@ -6,7 +6,7 @@
             <p class="text-muted mb-0 fs-14">Créez et gérez vos quiz avec une expérience moderne.</p>
         </div>
         <div>
-            <a href="javascript:void(0);" class="btn btn-secondary iq-add-btn" data-bs-toggle="modal" data-bs-target="#add_quiz" (click)="openAddModal()">
+            <a href="javascript:void(0);" class="btn btn-secondary iq-add-btn" (click)="openAddModal()">
                 <i class="isax isax-add-circle me-1"></i>Ajouter un quiz
             </a>
         </div>
@@ -45,7 +45,7 @@
                 <div class="d-flex align-items-center justify-content-end mt-2 mt-md-0 iq-actions-wrap">
                     <a [routerLink]="['/instructor/instructor-quiz-questions', quiz.id]" class="btn btn-sm btn-outline-primary me-2"><i class="isax isax-message-question5 me-1"></i>Questions</a>
                     <a [routerLink]="['/instructor/instructor-quiz-results', quiz.id]" class="text-info text-decoration-underline fs-12 fw-medium me-3">Résultats</a>
-                    <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon" data-bs-toggle="modal" data-bs-target="#edit_quiz" (click)="openEditModal(quiz)"><i class="isax isax-edit-2"></i></a>
+                    <a href="javascript:void(0);" class="d-inline-flex fs-14 me-1 action-icon" (click)="openEditModal(quiz)"><i class="isax isax-edit-2"></i></a>
                     <a href="javascript:void(0);" class="d-inline-flex fs-14 action-icon" data-bs-toggle="modal" data-bs-target="#delete_modal" (click)="confirmDelete(quiz.id)"><i class="isax isax-trash"></i></a>
                 </div>
             </div>

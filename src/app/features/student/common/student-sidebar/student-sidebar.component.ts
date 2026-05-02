@@ -70,6 +70,10 @@ export class StudentSidebarComponent implements OnInit, OnDestroy {
     this.identitySub?.unsubscribe();
   }
 
+  onAvatarError(): void {
+    this.userAvatarUrl = '';
+  }
+
   private refreshCount(): void {
     this.messageService.getUnreadCount().subscribe({
       next: (res: any) => { this.unreadMsgCount = res?.count ?? res ?? 0; },

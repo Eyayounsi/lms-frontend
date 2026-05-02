@@ -628,6 +628,8 @@
             <strong>Multi-contenu supporté</strong>
           </div>
           <ng-container *ngIf="newLesson.type === 'TEXT'"><span class="text-success"><i class="isax isax-document-text me-1"></i><strong>L'éditeur s'ouvrira automatiquement.</strong></span></ng-container>
+          <ng-container *ngIf="newLesson.type === 'VIDEO'"><span class="text-success"><i class="isax isax-video-circle me-1"></i><strong>L'explorateur de fichiers s'ouvrira automatiquement.</strong></span></ng-container>
+          <ng-container *ngIf="newLesson.type === 'PDF'"><span class="text-danger"><i class="isax isax-document me-1"></i><strong>L'explorateur de fichiers s'ouvrira automatiquement.</strong></span></ng-container>
         </div>
         <div class="d-flex align-items-center">
           <div class="form-check me-3">
@@ -899,8 +901,8 @@
             <span class="badge bg-warning text-dark"><i class="isax isax-edit me-1"></i>Article</span>
             <span class="text-muted" style="font-size:11px;font-weight:400;">Les blocs de code affichent un bouton <strong>Exécuter</strong></span>
           </h6>
-          <div class="article-preview-body p-4 bg-light rounded border"
-               [innerHTML]="previewLesson.articleContent"
+          <div class="article-preview-body article-content-display ql-editor p-4 bg-light rounded border"
+               [innerHTML]="sanitizedArticleHtml"
                style="font-size:15px;line-height:1.7"></div>
         </div>
 

@@ -42,6 +42,16 @@ export class QaService {
     return this.http.get<any[]>(`${this.apiUrl}/user/qa/my-questions`);
   }
 
+  /** Toutes les questions des cours auxquels l'étudiant est inscrit */
+  getEnrolledQuestions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/qa/enrolled-questions`);
+  }
+
+  /** Toutes les questions des cours de l'instructeur connecté */
+  getInstructorQuestions(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user/qa/instructor-questions`);
+  }
+
   // Réponses
   answerQuestion(questionId: number, data: { body: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/user/qa/questions/${questionId}/answers`, data);

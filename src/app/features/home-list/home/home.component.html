@@ -347,9 +347,10 @@
                 </h6>
                 <a href="javascript:void(0);"
                    class="fc-fav-btn fc-body-fav"
-                   [ngClass]="{'active': isSelected[i+1], 'fc-fav-disabled': !canUseWishlist}"
-                   (click)="iconSelect(i+1)">
-                  <i class="isax isax-heart"></i>
+                   [ngClass]="{'active': isWishlisted(course.id), 'fc-fav-disabled': !canUseWishlist}"
+                   (click)="toggleWishlist(course.id)">
+                  <i class="fa-solid fa-heart" *ngIf="isWishlisted(course.id)"></i>
+                  <i class="fa-regular fa-heart" *ngIf="!isWishlisted(course.id)"></i>
                 </a>
               </div>
 

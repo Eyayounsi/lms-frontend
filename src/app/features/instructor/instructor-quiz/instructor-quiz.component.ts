@@ -170,6 +170,14 @@ export class InstructorQuizComponent implements OnInit {
   openAddModal(): void {
     this.resetForm();
     this.addQuestion(); // start with 1 question
+    setTimeout(() => {
+      const el = document.getElementById('add_quiz');
+      if (el) {
+        el.removeAttribute('aria-hidden');
+        const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+        modal.show();
+      }
+    });
   }
 
   openEditModal(quiz: any): void {
@@ -182,6 +190,16 @@ export class InstructorQuizComponent implements OnInit {
     this.formDuration = quiz.durationMinutes;
     this.formError = '';
     this.questionsLoading = true;
+
+    // Open the modal programmatically (avoid aria-hidden focus conflict)
+    setTimeout(() => {
+      const el = document.getElementById('edit_quiz');
+      if (el) {
+        el.removeAttribute('aria-hidden');
+        const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+        modal.show();
+      }
+    });
 
     this.quizService.getQuestions(quiz.id).subscribe({
       next: (questions: any[]) => {

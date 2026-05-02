@@ -17,10 +17,12 @@ declare var bootstrap: any;
 export class StudentQaComponent implements OnInit {
 
   questions: any[] = [];
+  allCourseQuestions: any[] = [];
   enrolledCourses: any[] = [];
   loading = false;
   expandedId: number | null = null;
   selectedQuestion: any = null;
+  activeTab: 'mine' | 'all' = 'all';
 
   // Formulaire nouvelle question
   questionForm = { courseId: '', title: '', body: '' };
@@ -34,6 +36,7 @@ export class StudentQaComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMyQuestions();
+    this.loadAllCourseQuestions();
     this.loadEnrolledCourses();
   }
 
@@ -48,6 +51,13 @@ export class StudentQaComponent implements OnInit {
         this.loading = false;
         this.toastr.error('Impossible de charger vos questions.');
       }
+    });
+  }
+
+  loadAllCourseQuestions(): void {
+    this.qaService.getEnrolledQuestions().subscribe({
+      next: (data) => { this.allCourseQuestions = data; },
+      error: () => {}
     });
   }
 
@@ -108,6 +118,34 @@ export class StudentQaComponent implements OnInit {
   get totalQuestions(): number { return this.questions.length; }
   get answeredCount(): number { return this.questions.filter(q => q.answerCount > 0).length; }
   get unansweredCount(): number { return this.questions.filter(q => q.answerCount === 0).length; }
+
+  get displayedQuestions(): any[] {
+    return this.activeTab === 'mine' ? this.questions : this.allCourseQuestions;
+  }
+
+  // ─── Répondre à une question ───────────────────────────────────────
+  replyText: { [id: number]: string } = {};
+  submittingReply: { [id: number]: boolean } = {};
+
+  submitReply(q: any): void {
+    const body = (this.replyText[q.id] || '').trim();
+    if (!body) return;
+    this.submittingReply[q.id] = true;
+    this.qaService.answerQuestion(q.id, { body }).subscribe({
+      next: (answer) => {
+        if (!q.answers) q.answers = [];
+        q.answers.push(answer);
+        q.answerCount = (q.answerCount || 0) + 1;
+        this.replyText[q.id] = '';
+        this.submittingReply[q.id] = false;
+        this.toastr.success('Réponse publiée.');
+      },
+      error: () => {
+        this.submittingReply[q.id] = false;
+        this.toastr.error('Erreur lors de la publication.');
+      }
+    });
+  }
 
   getAvatarUrl(path: string | null): string {
     return resolveAvatarImage(path, 'assets/img/user/user-01.jpg');

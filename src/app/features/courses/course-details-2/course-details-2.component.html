@@ -270,10 +270,8 @@
             <div class="card">
               <div class="card-body">
                 <div class="position-relative mb-4">
-                  <lightgallery [settings]="settings" [onInit]="onInit" size="1400-933">
-                    <a href="https://www.youtube.com/embed/1trvO6dqQUI" id="openVideoBtn" target="_blank">
                       <img *ngIf="hasCourseCover()"
-                           class="img-fluid"
+                           class="img-fluid rounded"
                            [src]="getCourseCoverImage()"
                            (error)="onCourseCoverError($event)"
                            alt="course cover">
@@ -281,11 +279,6 @@
                         <i class="ti ti-book-2"></i>
                         <span>{{ getCourseCoverInitial() }}</span>
                       </div>
-                      <div class="play-icon">
-                        <i class="ti ti-player-play-filled fs-28"></i>
-                      </div>
-                    </a>
-                  </lightgallery>
                 </div>
 
                 <!-- Price display -->

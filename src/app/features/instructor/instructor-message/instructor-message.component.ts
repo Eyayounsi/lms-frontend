@@ -237,6 +237,12 @@ export class InstructorMessageComponent implements OnInit, OnDestroy, AfterViewC
     return resolveAvatarImage(avatarPath, this.generateInitialAvatar(name || 'U'));
   }
 
+  onAvatarError(event: Event, name?: string): void {
+    const img = event?.target as HTMLImageElement | null;
+    if (!img) return;
+    img.src = this.generateInitialAvatar(name || 'U');
+  }
+
   private generateInitialAvatar(name: string): string {
     const initial = (name || 'U').charAt(0).toUpperCase();
     const colors = ['#392C7D', '#03C95A', '#0DCAF0', '#6d28d9', '#059669'];

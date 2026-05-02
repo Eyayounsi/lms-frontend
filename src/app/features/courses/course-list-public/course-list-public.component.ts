@@ -46,6 +46,7 @@ export class CourseListPublicComponent implements OnInit, OnDestroy {
   // Auth
   isLoggedIn = false;
   wishlistSet = new Set<number>();
+  courseImageFailed: Record<number, boolean> = {};
   enrolledSet = new Set<number>();
   buyingCourseId: number | null = null;
   addingToCartId: number | null = null;
@@ -179,7 +180,7 @@ export class CourseListPublicComponent implements OnInit, OnDestroy {
 
   toggleWishlist(course: any, event: Event): void {
     event.stopPropagation();
-    if (!this.isLoggedIn) { this.router.navigate(['/auth/login']); return; }
+    if (!this.isLoggedIn) { return; }
     if (this.isInWishlist(course.id)) {
       this.courseService.removeFromWishlist(course.id).subscribe({ next: () => this.wishlistSet.delete(course.id), error: () => {} });
     } else {
@@ -279,6 +280,29 @@ export class CourseListPublicComponent implements OnInit, OnDestroy {
 
   getImageUrl(path: string): string {
     return resolveCourseImage(path, 'assets/img/course/course-01.jpg');
+  }
+
+  onCourseCoverError(event: Event, course: any): void {
+    const img = event?.target as HTMLImageElement | null;
+    if (!img) return;
+    this.courseImageFailed[course.id] = true;
+  }
+
+  getCoursePlaceholderGradient(course: any): string {
+    const gradients = [
+      'linear-gradient(135deg, #5625E8 0%, #02a8b5 100%)',
+      'linear-gradient(135deg, #FD3995 0%, #9b59b6 100%)',
+      'linear-gradient(135deg, #02a8b5 0%, #5625E8 100%)',
+      'linear-gradient(135deg, #9b59b6 0%, #FD3995 100%)'
+    ];
+    const key = String(course?.id || course?.title || 'c');
+    let hash = 0;
+    for (let i = 0; i < key.length; i++) { hash = ((hash << 5) - hash) + key.charCodeAt(i); hash |= 0; }
+    return gradients[Math.abs(hash) % gradients.length];
+  }
+
+  getCourseCoverInitial(course: any): string {
+    return (String(course?.title || 'C').trim().charAt(0) || 'C').toUpperCase();
   }
 
   getInstructorAvatar(path?: string | null, name?: string): string {

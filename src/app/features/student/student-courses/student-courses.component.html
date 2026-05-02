@@ -77,7 +77,10 @@
                 </a>
                 <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
                     <div class="badge" [ngClass]="getCourseBadgeClass(course)">{{ getCourseBadge(course) }}</div>
-                    <a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected': isSelected(course.id)}" (click)="iconSelect(course.id)"><i class="isax isax-heart"></i></a>
+                    <a href="javascript:void(0);" class="fav-icon ms-auto" [ngClass]="{'selected': isSelected(course.id)}" (click)="iconSelect(course.id)">
+                  <i class="fa-solid fa-heart" *ngIf="isSelected(course.id)"></i>
+                  <i class="fa-regular fa-heart" *ngIf="!isSelected(course.id)"></i>
+                </a>
                 </div>
             </div>
 

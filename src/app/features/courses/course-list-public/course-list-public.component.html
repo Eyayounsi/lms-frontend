@@ -237,7 +237,10 @@
           <div class="col-xl-4 col-md-6 d-flex" *ngFor="let course of paginatedCourses">
             <div class="course-item-two course-item mx-0 flex-fill" style="cursor:pointer;" (click)="goToDetail(course.id)">
               <div class="course-img">
-                <img [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" style="height:185px;object-fit:cover;">
+                <img *ngIf="!courseImageFailed[course.id]" [src]="getImageUrl(course.coverImage)" alt="{{ course.title }}" class="img-fluid" style="height:185px;object-fit:cover;" (error)="onCourseCoverError($event, course)">
+                <div *ngIf="courseImageFailed[course.id]" class="d-flex align-items-center justify-content-center" [style.background]="getCoursePlaceholderGradient(course)" style="height:185px;border-radius:8px 8px 0 0;">
+                  <span style="font-size:3rem;font-weight:700;color:#fff;">{{ getCourseCoverInitial(course) }}</span>
+                </div>
                 <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-3">
                   <span *ngIf="hasActivePromotion(course)" class="badge bg-danger text-white me-2">
                     -{{ getPromotionPercent(course) }}%
@@ -310,7 +313,10 @@
             <div class="courses-list-item" style="cursor:pointer;" (click)="goToDetail(course.id)">
               <div class="d-md-flex align-items-center">
                 <div class="position-relative overflow-hidden rounded-3 card-image">
-                  <img [src]="getImageUrl(course.coverImage)" class="img-fluid rounded-3" alt="{{ course.title }}" style="min-height:120px;object-fit:cover;">
+                  <img *ngIf="!courseImageFailed[course.id]" [src]="getImageUrl(course.coverImage)" class="img-fluid rounded-3" alt="{{ course.title }}" style="min-height:120px;object-fit:cover;" (error)="onCourseCoverError($event, course)">
+                  <div *ngIf="courseImageFailed[course.id]" class="d-flex align-items-center justify-content-center rounded-3" [style.background]="getCoursePlaceholderGradient(course)" style="min-height:120px;">
+                    <span style="font-size:2.5rem;font-weight:700;color:#fff;">{{ getCourseCoverInitial(course) }}</span>
+                  </div>
                   <div class="position-absolute start-0 top-0 d-flex align-items-start w-100 z-index-2 p-2">
                     <span *ngIf="hasActivePromotion(course)" class="badge bg-danger text-white me-2">
                       -{{ getPromotionPercent(course) }}%

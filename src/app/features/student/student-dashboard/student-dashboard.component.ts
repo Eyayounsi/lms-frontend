@@ -96,6 +96,10 @@ export class StudentDashboardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  onAvatarError(): void {
+    this.userAvatarUrl = '';
+  }
+
   loadDashboard(): void {
     forkJoin({
       courses: this.courseService.getMyEnrolledCourses().pipe(

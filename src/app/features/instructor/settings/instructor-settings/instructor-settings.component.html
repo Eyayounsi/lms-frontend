@@ -9,7 +9,7 @@
             </div>
 
             <div class="ins-set-photo-row mb-4">
-                <img *ngIf="getAvatarUrl()" [src]="getAvatarUrl()" class="ins-set-photo-avatar" alt="Photo profil">
+                <img *ngIf="getAvatarUrl()" [src]="getAvatarUrl()" class="ins-set-photo-avatar" alt="Photo profil" (error)="onAvatarError($event)">
                 <div *ngIf="!getAvatarUrl()" class="ins-set-photo-avatar ins-set-photo-avatar--initial" [style.background]="avatarInitialBg">
                     {{ avatarInitial }}
                 </div>

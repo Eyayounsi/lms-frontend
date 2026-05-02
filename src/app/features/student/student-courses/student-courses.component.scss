@@ -1,0 +1,15 @@
+.fav-icon {
+  color: #cbd5e1;
+  font-size: 18px;
+  transition: color .2s, transform .15s;
+  line-height: 1;
+
+  &:hover {
+    color: #f43f5e;
+    transform: scale(1.15);
+  }
+
+  &.selected {
+    color: #f43f5e;
+  }
+}

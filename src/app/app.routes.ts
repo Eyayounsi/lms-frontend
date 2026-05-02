@@ -115,6 +115,7 @@ export const routes: Routes = [
                 {path:'instructor-my-courses',redirectTo:'instructor-course',pathMatch:'full'},
                 {path:'instructor-course-grid',loadComponent:()=>import ('./features/instructor/instructor-course-grid/instructor-course-grid.component').then((m)=>m.InstructorCourseGridComponent)},
                 {path:'instructor-message',loadComponent:()=>import ('./features/instructor/instructor-message/instructor-message.component').then((m)=>m.InstructorMessageComponent)},
+                {path:'instructor-qa',loadComponent:()=>import ('./features/instructor/instructor-qa/instructor-qa.component').then((m)=>m.InstructorQaComponent)},
                 {path:'students-list',loadComponent:()=>import ('./features/instructor/students-list/students-list.component').then((m)=>m.StudentsListComponent)},
                 {path:'students-grid',loadComponent:()=>import ('./features/instructor/students-grid/students-grid.component').then((m)=>m.StudentsGridComponent)},
                 {path:'students-details/:id',loadComponent:()=>import ('./features/instructor/students-details/students-details.component').then((m)=>m.StudentsDetailsComponent)},

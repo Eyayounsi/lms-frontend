@@ -57,6 +57,20 @@
     </div>
   </div>
 
+  <!-- Onglets -->
+  <ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'all'" (click)="activeTab = 'all'">
+        <i class="isax isax-message-question me-1"></i>Toutes les Q&amp;A de mes cours ({{ allCourseQuestions.length }})
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'mine'" (click)="activeTab = 'mine'">
+        <i class="isax isax-user me-1"></i>Mes questions ({{ questions.length }})
+      </button>
+    </li>
+  </ul>
+
   <!-- Loading -->
   @if (loading) {
     <div class="text-center py-5">
@@ -67,18 +81,23 @@
   }
 
   <!-- Empty state -->
-  @if (!loading && questions.length === 0) {
+  @if (!loading && displayedQuestions.length === 0) {
     <div class="text-center py-5">
       <img src="assets/img/icon/graduation.svg" alt="" class="mb-3" style="width:56px;opacity:.5">
-      <h6 class="text-muted">Vous n'avez encore posé aucune question.</h6>
-      <p class="text-muted fs-14">Utilisez le bouton ci-dessus pour poser votre première question.</p>
+      @if (activeTab === 'mine') {
+        <h6 class="text-muted">Vous n'avez encore posé aucune question.</h6>
+        <p class="text-muted fs-14">Utilisez le bouton ci-dessus pour poser votre première question.</p>
+      } @else {
+        <h6 class="text-muted">Aucune question sur vos cours pour le moment.</h6>
+        <p class="text-muted fs-14">Les questions posées par les autres étudiants apparaîtront ici.</p>
+      }
     </div>
   }
 
   <!-- Liste des questions -->
-  @if (!loading && questions.length > 0) {
+  @if (!loading && displayedQuestions.length > 0) {
     <div class="questions-list">
-      @for (q of questions; track q.id) {
+      @for (q of displayedQuestions; track q.id) {
         <div class="card mb-3 border">
           <div class="card-body pb-2">
             <!-- Header de la question -->
@@ -156,6 +175,26 @@
                     </div>
                   </div>
                 }
+
+                <!-- Zone de réponse étudiant -->
+                <div class="mt-3 border-top pt-3">
+                  <h6 class="fs-14 fw-semibold mb-2">
+                    <i class="isax isax-message-add me-2 text-secondary"></i>Ajouter une réponse
+                  </h6>
+                  <textarea class="form-control mb-2"
+                            rows="3"
+                            placeholder="Rédigez votre réponse..."
+                            [(ngModel)]="replyText[q.id]"
+                            [name]="'reply_' + q.id"></textarea>
+                  <button class="btn btn-secondary btn-sm rounded-pill"
+                          [disabled]="submittingReply[q.id] || !replyText[q.id]?.trim()"
+                          (click)="submitReply(q)">
+                    @if (submittingReply[q.id]) {
+                      <span class="spinner-border spinner-border-sm me-1"></span>
+                    }
+                    <i class="isax isax-send-2 me-1 fs-10"></i>Publier
+                  </button>
+                </div>
               </div>
             }
           </div>
